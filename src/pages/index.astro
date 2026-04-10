@@ -180,6 +180,22 @@
     .project-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
     .project-link { font-size: 0.82rem; color: var(--accent); text-decoration: none; white-space: nowrap; }
     .project-link:hover { text-decoration: underline; }
+    .project-links { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+    .btn-link {
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      border: 0.5px solid var(--border);
+      color: var(--muted);
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .btn-link:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-link.paper { border-color: rgba(124,111,247,0.4); color: var(--accent); }
+    .btn-link.paper:hover { background: rgba(124,111,247,0.1); }
+    .btn-link.video { border-color: rgba(93,202,165,0.4); color: var(--accent2); }
+    .btn-link.video:hover { background: rgba(93,202,165,0.1); }
     .project-badge {
       font-size: 0.72rem;
       padding: 2px 8px;
@@ -332,6 +348,10 @@
             <span class="tag">LLM</span>
             <span class="tag">可视化</span>
           </div>
+          <div class="project-links">
+            <a href="/papers/toa-chi26.pdf" target="_blank" class="btn-link paper">📄 Paper</a>
+            <a href="/videos/toa-demo.mp4" target="_blank" class="btn-link video">▶ Video</a>
+          </div>
         </div>
       </div>
 
@@ -347,6 +367,10 @@
             <span class="tag">LangGraph</span>
             <span class="tag">Agent</span>
             <span class="tag">数据叙事</span>
+          </div>
+          <div class="project-links">
+            <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper">📄 Paper</a>
+            <a href="/videos/narrasteer-demo.mp4" target="_blank" class="btn-link video">▶ Video</a>
           </div>
         </div>
       </div>
