@@ -6,7 +6,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>张伟 · 全栈开发工程师</title>
+  <title>屈非塬 · HCI Researcher</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -158,7 +158,7 @@
     /* ── 项目 ── */
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: 1fr;
       gap: 1rem;
     }
     .project-card {
@@ -167,13 +167,28 @@
       border-radius: 12px;
       padding: 1.5rem;
       transition: all .2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
     }
     .project-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .project-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .project-card p { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
-    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .project-link { font-size: 0.82rem; color: var(--accent); text-decoration: none; margin-top: 1rem; display: inline-block; }
+    .project-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .project-card .project-sub { font-size: 0.82rem; color: var(--accent2); margin-bottom: 0.5rem; }
+    .project-card p { font-size: 0.88rem; color: var(--muted); }
+    .project-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+    .project-link { font-size: 0.82rem; color: var(--accent); text-decoration: none; white-space: nowrap; }
     .project-link:hover { text-decoration: underline; }
+    .project-badge {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(124,111,247,0.15);
+      color: var(--accent);
+      border: 0.5px solid var(--accent);
+      white-space: nowrap;
+    }
 
     /* ── 联系 ── */
     .contact-grid {
@@ -209,6 +224,9 @@
       .tl-date { padding-top: 0; }
       nav { padding: 1rem; }
       .nav-links { gap: 1rem; }
+      .project-card { flex-direction: column; gap: 1rem; }
+      .project-right { align-items: flex-start; }
+      .project-tags { justify-content: flex-start; }
     }
   </style>
 </head>
@@ -216,10 +234,10 @@
 
   <!-- 导航 -->
   <nav>
-    <div class="logo">张<span>.</span>伟</div>
+    <div class="logo">屈<span>.</span>非塬</div>
     <ul class="nav-links">
       <li><a href="#skills">技能</a></li>
-      <li><a href="#experience">经历</a></li>
+      <li><a href="#education">教育</a></li>
       <li><a href="#projects">项目</a></li>
       <li><a href="#contact">联系</a></li>
     </ul>
@@ -227,12 +245,12 @@
 
   <!-- Hero -->
   <div class="hero">
-    <span class="badge">可接受新机会</span>
-    <h1>你好，我是<br /><span class="highlight">张伟</span></h1>
-    <p>全栈开发工程师，专注于构建高性能 Web 应用。热爱开源，喜欢用代码解决实际问题。</p>
+    <span class="badge">CHI'26 · UIST'26 Accepted</span>
+    <h1>你好，我是<br /><span class="highlight">屈非塬</span></h1>
+    <p>浙江大学 CAD&CG 全国重点实验室硕士研究生，研究方向为人机交互与智能可视化（LLM4Vis · NLI4Vis · Chart Generation）。</p>
     <div class="cta-group">
       <a href="#projects" class="btn btn-primary">查看项目</a>
-      <a href="#contact" class="btn btn-ghost">联系我</a>
+      <a href="mailto:feiyuan_qu@zju.edu.cn" class="btn btn-ghost">联系我</a>
     </div>
   </div>
 
@@ -242,64 +260,54 @@
     <h2>我能做什么</h2>
     <div class="skills-grid">
       <div class="skill-card">
-        <h3>前端</h3>
+        <h3>设计</h3>
         <div class="tags">
-          <span class="tag">React</span>
-          <span class="tag">Vue</span>
-          <span class="tag">TypeScript</span>
-          <span class="tag">Astro</span>
-          <span class="tag">TailwindCSS</span>
+          <span class="tag">Figma</span>
+          <span class="tag">交互设计</span>
+          <span class="tag">原型开发</span>
+          <span class="tag">用户研究</span>
         </div>
       </div>
       <div class="skill-card">
-        <h3>后端</h3>
+        <h3>开发</h3>
         <div class="tags">
           <span class="tag">Python</span>
-          <span class="tag">Node.js</span>
-          <span class="tag">FastAPI</span>
-          <span class="tag">PostgreSQL</span>
-          <span class="tag">Redis</span>
+          <span class="tag">LangChain</span>
+          <span class="tag">LangGraph</span>
+          <span class="tag">Stable Diffusion</span>
         </div>
       </div>
       <div class="skill-card">
-        <h3>工具 & 其他</h3>
+        <h3>研究</h3>
         <div class="tags">
-          <span class="tag">Git</span>
-          <span class="tag">Docker</span>
-          <span class="tag">Linux</span>
-          <span class="tag">GitHub Actions</span>
+          <span class="tag">LLM4Vis</span>
+          <span class="tag">NLI4Vis</span>
+          <span class="tag">Chart Generation</span>
+          <span class="tag">Paper Writing</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 经历 -->
-  <section id="experience">
-    <p class="section-label">工作经历</p>
-    <h2>我做过什么</h2>
+  <!-- 教育经历 -->
+  <section id="education">
+    <p class="section-label">教育经历</p>
+    <h2>我在哪里学习</h2>
     <div class="timeline">
       <div class="tl-item">
-        <div class="tl-date">2023 — 至今</div>
+        <div class="tl-date">2024.09 — 至今</div>
         <div class="tl-content">
-          <h3>高级前端工程师</h3>
-          <div class="company">某科技有限公司</div>
-          <p>负责核心产品前端架构设计，主导组件库建设，将页面加载速度提升 40%。</p>
+          <h3>工学硕士 · 工业设计</h3>
+          <div class="company">浙江大学 · CAD&CG 全国重点实验室</div>
+          <p>导师：巫英才　研究方向：LLM4Vis · NLI4Vis · Chart Generation</p>
         </div>
       </div>
       <div class="tl-item">
-        <div class="tl-date">2021 — 2023</div>
+        <div class="tl-date">2020.09 — 2024.06</div>
         <div class="tl-content">
-          <h3>全栈开发工程师</h3>
-          <div class="company">某互联网公司</div>
-          <p>负责后台管理系统的全栈开发，独立完成从需求分析到上线部署的全流程。</p>
-        </div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-date">2017 — 2021</div>
-        <div class="tl-content">
-          <h3>计算机科学与技术 · 本科</h3>
-          <div class="company">某大学</div>
-          <p>GPA 3.8 / 4.0，获优秀毕业生称号。</p>
+          <h3>工学学士 · 工业设计</h3>
+          <div class="company">湖南大学</div>
+          <p>年级第一　主修课程：智能设计方法 · 人机交互设计</p>
         </div>
       </div>
     </div>
@@ -307,50 +315,74 @@
 
   <!-- 项目 -->
   <section id="projects">
-    <p class="section-label">项目作品</p>
+    <p class="section-label">项目 & 论文</p>
     <h2>我做过的项目</h2>
     <div class="projects-grid">
+
       <div class="project-card">
-        <h3>个人博客系统</h3>
-        <p>基于 Astro + MDX 构建的静态博客，支持暗色模式和 RSS 订阅，部署在 GitHub Pages。</p>
-        <div class="project-tags">
-          <span class="tag">Astro</span>
-          <span class="tag">MDX</span>
-          <span class="tag">TailwindCSS</span>
+        <div>
+          <h3>ToA：对话式可视分析产品设计</h3>
+          <div class="project-sub">CHI'26 · 人机交互 CCF-A · Accepted · 2025.07—2025.11</div>
+          <p>将用户与 LLM 的分析对话重组为一棵可分支、可回溯的"分析树"，让探索过程一目了然。对照线性对话界面（N=12），洞察数量增加 58.3%，深度思考时间增加 17%。</p>
         </div>
-        <a href="https://github.com" class="project-link">查看源码 →</a>
-      </div>
-      <div class="project-card">
-        <h3>任务管理 App</h3>
-        <p>全栈任务管理应用，前端 React，后端 FastAPI，支持多人协作和实时同步。</p>
-        <div class="project-tags">
-          <span class="tag">React</span>
-          <span class="tag">FastAPI</span>
-          <span class="tag">PostgreSQL</span>
+        <div class="project-right">
+          <span class="project-badge">独立一作</span>
+          <div class="project-tags">
+            <span class="tag">LangChain</span>
+            <span class="tag">LLM</span>
+            <span class="tag">可视化</span>
+          </div>
         </div>
-        <a href="https://github.com" class="project-link">查看源码 →</a>
-      </div>
-      <div class="project-card">
-        <h3>CLI 工具集</h3>
-        <p>一组提升开发效率的命令行工具，Python 编写，发布在 PyPI，超过 500 次下载。</p>
-        <div class="project-tags">
-          <span class="tag">Python</span>
-          <span class="tag">Click</span>
-          <span class="tag">PyPI</span>
-        </div>
-        <a href="https://github.com" class="project-link">查看源码 →</a>
       </div>
 
       <div class="project-card">
-        <h3>论文标题</h3>
-        <p>发表于 某期刊 / 某会议 · 2024</p>
-        <div class="project-tags">
-          <span class="tag">关键词一</span>
-          <span class="tag">关键词二</span>
-          <span class="tag">关键词三</span>
+        <div>
+          <h3>NarraSteer：面向数据叙事的 Agent 交互产品设计</h3>
+          <div class="project-sub">UIST'26 · 人机交互 CCF-A · 2026.01—2026.04</div>
+          <p>把 AI 生成报告的过程变成可拖拽的故事线，用户从旁观者变成导演。相较仅用 ToA 展示 Agent 轨迹（N=16），洞察密度提升 13%，心理负荷显著下降（p&lt;.05），感知可控性显著提升（p&lt;.05）。</p>
         </div>
-        <a href="你的论文链接或/paper.pdf" class="project-link">查看论文 →</a>
+        <div class="project-right">
+          <span class="project-badge">独立一作</span>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">Agent</span>
+            <span class="tag">数据叙事</span>
+          </div>
+        </div>
       </div>
+
+      <div class="project-card">
+        <div>
+          <h3>跨社交媒体舆情分析与治理平台</h3>
+          <div class="project-sub">G 端产品设计 · 国家重点研发计划 3000w · 2024.09—2025.04</div>
+          <p>将数据集成、传播溯源、群体分析、分众推荐、模拟仿真五大技术模块转化为可交互业务流程，定义平台三层结构——可视化大屏、工作台仪表盘、可视化中台。</p>
+        </div>
+        <div class="project-right">
+          <span class="project-badge">设计</span>
+          <div class="project-tags">
+            <span class="tag">Figma</span>
+            <span class="tag">信息架构</span>
+            <span class="tag">G端</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div>
+          <h3>基于深度学习的齐白石国画动效技术研究与设计</h3>
+          <div class="project-sub">AIGC 交互展览 · 国家级大创 2w 优秀结题 · 2022.05—2024.05</div>
+          <p>创新性使用 Stable Diffusion + LoRA + ControlNet 代替传统 ChipGAN，将训练数据集从 1000 张减少至 15 张，显著提高画面质量。生成动效视频受邀参加中国美术家协会展览。</p>
+        </div>
+        <div class="project-right">
+          <span class="project-badge">设计 & 开发</span>
+          <div class="project-tags">
+            <span class="tag">Stable Diffusion</span>
+            <span class="tag">LoRA</span>
+            <span class="tag">AIGC</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -359,26 +391,26 @@
     <p class="section-label">保持联系</p>
     <h2>找到我</h2>
     <div class="contact-grid">
-      <a href="mailto:your@email.com" class="contact-card">
+      <a href="mailto:feiyuan_qu@zju.edu.cn" class="contact-card">
         <div class="icon">✉</div>
         <div class="label">邮箱</div>
-        <div class="value">your@email.com</div>
+        <div class="value">feiyuan_qu@zju.edu.cn</div>
       </a>
-      <a href="https://github.com/yourusername" class="contact-card">
-        <div class="icon">⌥</div>
-        <div class="label">GitHub</div>
-        <div class="value">@yourusername</div>
+      <a href="tel:18996001976" class="contact-card">
+        <div class="icon">T</div>
+        <div class="label">电话</div>
+        <div class="value">189-9600-1976</div>
       </a>
-      <a href="https://linkedin.com" class="contact-card">
-        <div class="icon">in</div>
-        <div class="label">LinkedIn</div>
-        <div class="value">张伟</div>
+      <a href="/屈非塬-浙江大学.pdf" class="contact-card">
+        <div class="icon">↓</div>
+        <div class="label">简历</div>
+        <div class="value">下载 PDF</div>
       </a>
     </div>
   </section>
 
   <footer>
-    <p>© 2026 张伟 · 用 Astro 构建</p>
+    <p>© 2026 屈非塬 · 浙江大学 CAD&CG 实验室</p>
   </footer>
 
 </body>
