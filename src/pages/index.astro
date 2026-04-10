@@ -1,0 +1,385 @@
+---
+// 把这个文件的内容复制到 src/pages/index.astro
+---
+
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>张伟 · 全栈开发工程师</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0e0e0e;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --text: #e8e8e8;
+      --muted: #888;
+      --accent: #7c6ff7;
+      --accent2: #5dcaa5;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.7;
+    }
+
+    /* ── 导航 ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2rem;
+      background: rgba(14,14,14,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 0.5px solid var(--border);
+    }
+    .logo { font-weight: 600; font-size: 1rem; letter-spacing: 0.05em; }
+    .logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 2rem 4rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      border: 0.5px solid var(--accent2);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 .highlight { color: var(--accent); }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 2.5rem;
+    }
+    .cta-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all .2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #6a5fe0; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--text); border: 0.5px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--muted); }
+
+    /* ── 通用 Section ── */
+    section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+      border-top: 0.5px solid var(--border);
+    }
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 2.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── 技能 ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .skill-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: border-color .2s;
+    }
+    .skill-card:hover { border-color: var(--accent); }
+    .skill-card h3 { font-size: 0.85rem; color: var(--accent2); margin-bottom: 0.75rem; font-weight: 500; letter-spacing: 0.05em; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-size: 0.78rem;
+      padding: 3px 10px;
+      border-radius: 4px;
+      background: #1e1e1e;
+      color: var(--muted);
+      border: 0.5px solid var(--border);
+    }
+
+    /* ── 经历 ── */
+    .timeline { display: flex; flex-direction: column; gap: 2rem; }
+    .tl-item {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 1.5rem;
+    }
+    .tl-date { font-size: 0.82rem; color: var(--muted); padding-top: 4px; }
+    .tl-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .tl-content .company { font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem; }
+    .tl-content p { font-size: 0.9rem; color: var(--muted); }
+
+    /* ── 项目 ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .project-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all .2s;
+    }
+    .project-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .project-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .project-card p { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .project-link { font-size: 0.82rem; color: var(--accent); text-decoration: none; margin-top: 1rem; display: inline-block; }
+    .project-link:hover { text-decoration: underline; }
+
+    /* ── 联系 ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .contact-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: all .2s;
+    }
+    .contact-card:hover { border-color: var(--accent2); }
+    .contact-card .icon { font-size: 1.2rem; margin-bottom: 0.5rem; }
+    .contact-card .label { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .contact-card .value { font-size: 0.9rem; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      border-top: 0.5px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .tl-item { grid-template-columns: 1fr; gap: 0.25rem; }
+      .tl-date { padding-top: 0; }
+      nav { padding: 1rem; }
+      .nav-links { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 导航 -->
+  <nav>
+    <div class="logo">张<span>.</span>伟</div>
+    <ul class="nav-links">
+      <li><a href="#skills">技能</a></li>
+      <li><a href="#experience">经历</a></li>
+      <li><a href="#projects">项目</a></li>
+      <li><a href="#contact">联系</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="badge">可接受新机会</span>
+    <h1>你好，我是<br /><span class="highlight">张伟</span></h1>
+    <p>全栈开发工程师，专注于构建高性能 Web 应用。热爱开源，喜欢用代码解决实际问题。</p>
+    <div class="cta-group">
+      <a href="#projects" class="btn btn-primary">查看项目</a>
+      <a href="#contact" class="btn btn-ghost">联系我</a>
+    </div>
+  </div>
+
+  <!-- 技能 -->
+  <section id="skills">
+    <p class="section-label">专业技能</p>
+    <h2>我能做什么</h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <h3>前端</h3>
+        <div class="tags">
+          <span class="tag">React</span>
+          <span class="tag">Vue</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">Astro</span>
+          <span class="tag">TailwindCSS</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>后端</h3>
+        <div class="tags">
+          <span class="tag">Python</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">FastAPI</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">Redis</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>工具 & 其他</h3>
+        <div class="tags">
+          <span class="tag">Git</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Linux</span>
+          <span class="tag">GitHub Actions</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 经历 -->
+  <section id="experience">
+    <p class="section-label">工作经历</p>
+    <h2>我做过什么</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date">2023 — 至今</div>
+        <div class="tl-content">
+          <h3>高级前端工程师</h3>
+          <div class="company">某科技有限公司</div>
+          <p>负责核心产品前端架构设计，主导组件库建设，将页面加载速度提升 40%。</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2021 — 2023</div>
+        <div class="tl-content">
+          <h3>全栈开发工程师</h3>
+          <div class="company">某互联网公司</div>
+          <p>负责后台管理系统的全栈开发，独立完成从需求分析到上线部署的全流程。</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2017 — 2021</div>
+        <div class="tl-content">
+          <h3>计算机科学与技术 · 本科</h3>
+          <div class="company">某大学</div>
+          <p>GPA 3.8 / 4.0，获优秀毕业生称号。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 项目 -->
+  <section id="projects">
+    <p class="section-label">项目作品</p>
+    <h2>我做过的项目</h2>
+    <div class="projects-grid">
+      <div class="project-card">
+        <h3>个人博客系统</h3>
+        <p>基于 Astro + MDX 构建的静态博客，支持暗色模式和 RSS 订阅，部署在 GitHub Pages。</p>
+        <div class="project-tags">
+          <span class="tag">Astro</span>
+          <span class="tag">MDX</span>
+          <span class="tag">TailwindCSS</span>
+        </div>
+        <a href="https://github.com" class="project-link">查看源码 →</a>
+      </div>
+      <div class="project-card">
+        <h3>任务管理 App</h3>
+        <p>全栈任务管理应用，前端 React，后端 FastAPI，支持多人协作和实时同步。</p>
+        <div class="project-tags">
+          <span class="tag">React</span>
+          <span class="tag">FastAPI</span>
+          <span class="tag">PostgreSQL</span>
+        </div>
+        <a href="https://github.com" class="project-link">查看源码 →</a>
+      </div>
+      <div class="project-card">
+        <h3>CLI 工具集</h3>
+        <p>一组提升开发效率的命令行工具，Python 编写，发布在 PyPI，超过 500 次下载。</p>
+        <div class="project-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Click</span>
+          <span class="tag">PyPI</span>
+        </div>
+        <a href="https://github.com" class="project-link">查看源码 →</a>
+      </div>
+
+      <div class="project-card">
+  <h3>论文标题</h3>
+  <p>发表于 某期刊 / 某会议 · 2024</p>
+  <div class="project-tags">
+    <span class="tag">关键词一</span>
+    <span class="tag">关键词二</span>
+    <span class="tag">关键词三</span>
+  </div>
+  <a href="你的论文链接或/paper.pdf" class="project-link">查看论文 →</a>
+</div>
+    </div>
+  </section>
+
+  <!-- 联系 -->
+  <section id="contact">
+    <p class="section-label">保持联系</p>
+    <h2>找到我</h2>
+    <div class="contact-grid">
+      <a href="mailto:your@email.com" class="contact-card">
+        <div class="icon">✉</div>
+        <div class="label">邮箱</div>
+        <div class="value">your@email.com</div>
+      </a>
+      <a href="https://github.com/yourusername" class="contact-card">
+        <div class="icon">⌥</div>
+        <div class="label">GitHub</div>
+        <div class="value">@yourusername</div>
+      </a>
+      <a href="https://linkedin.com" class="contact-card">
+        <div class="icon">in</div>
+        <div class="label">LinkedIn</div>
+        <div class="value">张伟</div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 张伟 · 用 Astro 构建</p>
+  </footer>
+
+</body>
+</html>
