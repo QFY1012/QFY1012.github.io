@@ -190,11 +190,11 @@
     .project-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
     .project-card .project-sub { font-size: 0.82rem; color: var(--accent2); margin-bottom: 0.5rem; }
     .project-card p { font-size: 0.88rem; color: var(--muted); }
-    .project-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+    .project-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; align-self: stretch; }
     .project-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
     .project-link { font-size: 0.82rem; color: var(--accent); text-decoration: none; white-space: nowrap; }
     .project-link:hover { text-decoration: underline; }
-    .project-links { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+    .project-links { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; margin-top: auto; }
     .btn-link {
       font-size: 0.78rem;
       padding: 4px 10px;
@@ -292,19 +292,17 @@
       <div class="skill-card">
         <h3>设计</h3>
         <div class="tags">
-          <span class="tag">Figma</span>
-          <span class="tag">交互设计</span>
-          <span class="tag">原型开发</span>
-          <span class="tag">用户研究</span>
+          <span class="tag">原型设计</span>
+          <span class="tag">原型验证</span>
         </div>
       </div>
       <div class="skill-card">
         <h3>开发</h3>
         <div class="tags">
           <span class="tag">Python</span>
+          <span class="tag">React</span>
           <span class="tag">LangChain</span>
           <span class="tag">LangGraph</span>
-          <span class="tag">Stable Diffusion</span>
         </div>
       </div>
       <div class="skill-card">
@@ -410,7 +408,29 @@
         </div>
       </div>
 
-      <div class="project-group-label">本科<a href="/papers/portfolio.pdf" target="_blank" class="btn-link paper" style="text-transform:none;letter-spacing:0">↓ 下载本科阶段作品集</a></div>
+      <div class="project-group-label">本科<a href="/papers/portfolio.pdf" target="_blank" class="btn-link paper" style="text-transform:none;letter-spacing:0">📥 下载本科阶段作品集</a></div>
+
+      <div class="project-card">
+        <div>
+          <h3>XR 沉浸式展厅开发与设计——滕王阁图</h3>
+          <div class="project-sub">XR 沉浸式展厅 · 本科毕业设计 · 2024届</div>
+          <p>打通 XR 展厅从软件到硬件的完整开发流程，独立完成场景渲染与 Shader 编写，结合雷达传感器设计体感交互，最终落地可运行的沉浸式展演装置。项目为央视《闪光的青春——2024 五四青年节特别节目》提供拍摄素材与 3D 资产。</p>
+        </div>
+        <div class="project-right">
+          <span class="project-badge">设计 & 开发</span>
+          <div class="project-tags">
+            <span class="tag">XR</span>
+            <span class="tag">Unreal Engine</span>
+            <span class="tag">Shader</span>
+          </div>
+          <div class="project-links">
+            <a href="#" class="btn-link paper">📄 说明</a>
+            <a href="#" class="btn-link video">▶ 实拍</a>
+            <a href="#" class="btn-link video">▶ 交互</a>
+            <a href="#" class="btn-link video">▶ 渲染</a>
+          </div>
+        </div>
+      </div>
 
       <div class="project-card">
         <div>
@@ -426,7 +446,7 @@
             <span class="tag">Unity</span>
           </div>
           <div class="project-links">
-            <a href="#" class="btn-link video">▶ Video</a>
+            <a href="/videos/coco.mp4" target="_blank" class="btn-link video">▶ Video</a>
           </div>
         </div>
       </div>
@@ -464,7 +484,7 @@
             <span class="tag">Figma</span>
           </div>
           <div class="project-links">
-            <a href="#" class="btn-link video">▶ Video</a>
+            <a href="/videos/jieguan.mp4" target="_blank" class="btn-link video">▶ Video</a>
           </div>
         </div>
       </div>
