@@ -7,7 +7,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>屈非塬 · HCI Researcher</title>
-  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')</script>
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light')</script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -225,6 +225,9 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 2rem;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
     }
     .project-card:hover { border-color: var(--accent); transform: translateY(-2px); }
     .project-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
@@ -394,7 +397,7 @@
 
       <div class="project-group-label">研究生</div>
 
-      <div class="project-card">
+      <a href="/toa" class="project-card">
         <div>
           <h3>ToA：对话式可视分析产品设计</h3>
           <div class="project-sub">CHI'26 · 人机交互 CCF-A · Accepted · 2025.07—2025.11</div>
@@ -413,9 +416,9 @@
             <a href="/videos/toa-demo.mp4" target="_blank" class="btn-link video">▶ Video</a>
           </div>
         </div>
-      </div>
+      </a>
 
-      <div class="project-card">
+      <a href="/narrasteer" class="project-card">
         <div>
           <h3>NarraSteer：面向数据叙事的 Agent 交互产品设计</h3>
           <div class="project-sub">UIST'26 · 人机交互 CCF-A · Under Review · 2026.01—2026.04</div>
@@ -434,7 +437,7 @@
             <a href="/videos/narrasteer-demo.mp4" target="_blank" class="btn-link video">▶ Video</a>
           </div>
         </div>
-      </div>
+      </a>
 
       <div class="project-card">
         <div>
