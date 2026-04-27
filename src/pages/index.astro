@@ -7,6 +7,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>屈非塬 · HCI Researcher</title>
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')</script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -18,6 +19,29 @@
       --muted: #888;
       --accent: #7c6ff7;
       --accent2: #5dcaa5;
+      --nav-bg: rgba(14,14,14,0.85);
+      --tag-bg: #1e1e1e;
+      --badge-bg: rgba(124,111,247,0.12);
+      --paper-border: rgba(124,111,247,0.4);
+      --paper-hover: rgba(124,111,247,0.1);
+      --video-border: rgba(93,202,165,0.4);
+      --video-hover: rgba(93,202,165,0.1);
+    }
+    [data-theme="light"] {
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --border: #dde3ed;
+      --text: #1a1a2e;
+      --muted: #5a6580;
+      --accent: #2563eb;
+      --accent2: #0891b2;
+      --nav-bg: rgba(245,247,250,0.88);
+      --tag-bg: #e8edf5;
+      --badge-bg: rgba(37,99,235,0.08);
+      --paper-border: rgba(37,99,235,0.4);
+      --paper-hover: rgba(37,99,235,0.08);
+      --video-border: rgba(8,145,178,0.4);
+      --video-hover: rgba(8,145,178,0.08);
     }
 
     body {
@@ -27,7 +51,23 @@
       line-height: 1.7;
     }
 
-    /* ── 导航 ── */
+    .theme-toggle {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .theme-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color .2s, transform .2s;
+    }
+    .theme-dot:hover { transform: scale(1.2); }
+    .theme-dot.active { border-color: var(--text); }
+    .theme-dot.dark { background: #0e0e0e; box-shadow: 0 0 0 1px #555; }
+    .theme-dot.light { background: #f5f5f5; box-shadow: 0 0 0 1px #bbb; }
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -36,7 +76,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.2rem 2rem;
-      background: rgba(14,14,14,0.85);
+      background: var(--nav-bg);
       backdrop-filter: blur(12px);
       border-bottom: 0.5px solid var(--border);
     }
@@ -137,8 +177,8 @@
     .tag {
       font-size: 0.78rem;
       padding: 3px 10px;
-      border-radius: 4px;
-      background: #1e1e1e;
+      border-radius: 999px;
+      background: var(--tag-bg);
       color: var(--muted);
       border: 0.5px solid var(--border);
     }
@@ -188,7 +228,7 @@
     }
     .project-card:hover { border-color: var(--accent); transform: translateY(-2px); }
     .project-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .project-card .project-sub { font-size: 0.82rem; color: var(--accent2); margin-bottom: 0.5rem; }
+    .project-card .project-sub { font-size: 0.82rem; color: var(--accent); margin-bottom: 0.5rem; }
     .project-card p { font-size: 0.88rem; color: var(--muted); }
     .project-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; align-self: stretch; }
     .project-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
@@ -206,15 +246,17 @@
       white-space: nowrap;
     }
     .btn-link:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-link.paper { border-color: rgba(124,111,247,0.4); color: var(--accent); }
-    .btn-link.paper:hover { background: rgba(124,111,247,0.1); }
-    .btn-link.video { border-color: rgba(93,202,165,0.4); color: var(--accent2); }
-    .btn-link.video:hover { background: rgba(93,202,165,0.1); }
+    .btn-link.detail { border-color: var(--paper-border); color: var(--accent); }
+    .btn-link.detail:hover { background: var(--paper-hover); }
+    .btn-link.paper { border-color: var(--paper-border); color: var(--accent); }
+    .btn-link.paper:hover { background: var(--paper-hover); }
+    .btn-link.video { border-color: var(--video-border); color: var(--accent2); }
+    .btn-link.video:hover { background: var(--video-hover); }
     .project-badge {
       font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: rgba(124,111,247,0.15);
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--badge-bg);
       color: var(--accent);
       border: 0.5px solid var(--accent);
       white-space: nowrap;
@@ -271,6 +313,10 @@
       <li><a href="#projects">项目</a></li>
       <li><a href="#contact">联系</a></li>
     </ul>
+    <div class="theme-toggle">
+      <div class="theme-dot dark" data-t="dark" title="暗色"></div>
+      <div class="theme-dot light" data-t="light" title="亮色"></div>
+    </div>
   </nav>
 
   <!-- Hero -->
@@ -362,6 +408,7 @@
             <span class="tag">可视化</span>
           </div>
           <div class="project-links">
+            <a href="/toa" class="btn-link detail">详情</a>
             <a href="/papers/toa-chi26.pdf" target="_blank" class="btn-link paper">📄 Paper</a>
             <a href="/videos/toa-demo.mp4" target="_blank" class="btn-link video">▶ Video</a>
           </div>
@@ -382,6 +429,7 @@
             <span class="tag">数据叙事</span>
           </div>
           <div class="project-links">
+            <a href="/narrasteer" class="btn-link detail">详情</a>
             <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper">📄 Paper</a>
             <a href="/videos/narrasteer-demo.mp4" target="_blank" class="btn-link video">▶ Video</a>
           </div>
@@ -517,4 +565,17 @@
   </footer>
 
 </body>
+<script>
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.querySelectorAll('.theme-dot').forEach(dot => {
+    if (dot.dataset.t === saved) dot.classList.add('active');
+    dot.addEventListener('click', () => {
+      const t = dot.dataset.t;
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.t === t));
+    });
+  });
+</script>
 </html>

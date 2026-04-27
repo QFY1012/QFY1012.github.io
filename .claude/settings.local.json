@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"\nimport sys\ntry:\n    import pdfplumber\n    with pdfplumber.open\\(r'D:\\\\website\\\\public\\\\papers\\\\toa-chi26.pdf'\\) as pdf:\n        print\\(f'Total pages: {len\\(pdf.pages\\)}'\\)\n        for i, page in enumerate\\(pdf.pages[:5]\\):\n            print\\(f'--- PAGE {i+1} ---'\\)\n            text = page.extract_text\\(\\)\n            if text:\n                print\\(text[:3000]\\)\n            print\\(\\)\nexcept ImportError:\n    print\\('pdfplumber not available'\\)\nexcept Exception as e:\n    print\\(f'Error: {e}'\\)\n\")",
+      "Bash(python -c \"\ntry:\n    import PyPDF2\n    with open\\(r'D:\\\\website\\\\public\\\\papers\\\\toa-chi26.pdf', 'rb'\\) as f:\n        reader = PyPDF2.PdfReader\\(f\\)\n        print\\(f'Total pages: {len\\(reader.pages\\)}'\\)\n        for i in range\\(min\\(5, len\\(reader.pages\\)\\)\\):\n            print\\(f'--- PAGE {i+1} ---'\\)\n            text = reader.pages[i].extract_text\\(\\)\n            print\\(text[:3000] if text else '[No text]'\\)\n            print\\(\\)\nexcept ImportError:\n    print\\('PyPDF2 not available'\\)\nexcept Exception as e:\n    print\\(f'Error: {e}'\\)\n\")",
+      "Bash(python -c \"\ncontent = open\\('D:/website/src/pages/toa.astro', encoding='utf-8'\\).read\\(\\)\nbad = [\\(i, hex\\(ord\\(c\\)\\), c\\) for i, c in enumerate\\(content\\) if ord\\(c\\) > 0x9fff and not \\(0x4e00 <= ord\\(c\\) <= 0x9fff\\)]\nfor pos, h, c in bad[:20]:\n    print\\(f'pos {pos}: {h} context: {repr\\(content[max\\(0,pos-20\\):pos+20]\\)}'\\)\nprint\\(f'Total suspicious: {len\\(bad\\)}'\\)\n\")",
+      "Bash(python3 -c \"\nimport sys\ntry:\n    import pypdf\n    reader = pypdf.PdfReader\\('D:/website/public/papers/toa-chi26.pdf'\\)\n    print\\(f'Pages: {len\\(reader.pages\\)}'\\)\n    for i, page in enumerate\\(reader.pages\\):\n        print\\(f'=== PAGE {i+1} ==='\\)\n        print\\(page.extract_text\\(\\)\\)\nexcept ImportError:\n    print\\('pypdf not available'\\)\n\" 2>&1 | head -200)"
+    ]
+  }
+}
