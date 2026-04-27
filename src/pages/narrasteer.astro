@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NarraSteer · 数据叙事 Agent 交互 · 屈非塬</title>
-  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light')</script>
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')</script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -714,7 +714,7 @@
 
 </body>
 <script>
-  const saved = localStorage.getItem('theme') || 'light';
+  const saved = localStorage.getItem('theme') || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
   document.querySelectorAll('.theme-dot').forEach(dot => {
     if (dot.dataset.t === saved) dot.classList.add('active');
