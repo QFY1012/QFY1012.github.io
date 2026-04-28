@@ -1,0 +1,166 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans SC',sans-serif;font-size:13px;color:var(--color-text-primary);line-height:1.6}
+.page{max-width:720px;margin:0 auto;padding:0.5rem 2rem 1rem}
+.header{text-align:center;padding-bottom:0.6rem;border-bottom:1.5px solid var(--color-text-primary)}
+.name{font-family:'Noto Serif SC',serif;font-size:24px;font-weight:500;letter-spacing:4px;margin-bottom:4px}
+.contact{font-size:12px;color:var(--color-text-secondary);letter-spacing:1px}
+.contact span{margin:0 8px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);padding:0.6rem 0}
+.edu-block{padding-right:1.5rem}
+.edu-block+.edu-block{padding-right:0;padding-left:1.5rem;border-left:0.5px solid var(--color-border-tertiary)}
+.date{font-size:12px;color:var(--color-text-secondary);margin-bottom:2px}
+.inst{font-size:14px;font-weight:500;margin-bottom:2px}
+.degree{font-size:12px;color:var(--color-text-secondary)}
+.skills-row{display:flex;flex-wrap:wrap;gap:3px;padding:0.4rem 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.skill-tag{font-size:11px;padding:2px 4px;color:var(--color-text-secondary)}
+.section{padding:0.75rem 0;border-bottom:0.5px solid var(--color-border-tertiary);page-break-inside:avoid}
+.section:last-child{border-bottom:none}
+.proj-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+.proj-title{font-size:15px;font-weight:500;flex:1}
+.proj-badge{font-size:10px;padding:2px 8px;border-radius:3px;background:#CECBF6;color:#3C3489;margin-left:8px;white-space:nowrap;flex-shrink:0}
+.proj-badge.green{background:#C0DD97;color:#27500A}
+.proj-meta{font-size:11px;color:var(--color-text-secondary);margin-bottom:8px}
+.star-grid{display:grid;grid-template-columns:56px 1fr;gap:5px 10px;margin-top:6px}
+.star-label{font-size:11px;font-weight:500;padding-top:1px;color:var(--color-text-secondary);text-align:right;letter-spacing:0.5px}
+.star-content{font-size:12.5px;color:var(--color-text-primary);line-height:1.65}
+.star-content em{font-style:normal;font-weight:500;color:#185FA5}
+.solo{display:inline-block;font-size:10px;padding:1px 6px;border:0.5px solid var(--color-border-secondary);border-radius:2px;color:var(--color-text-secondary);margin-left:8px;vertical-align:middle}
+.proj-link-hint{font-size:10px;color:var(--color-text-secondary);margin-left:6px;font-weight:400}
+.proj-title a:hover .proj-link-hint{color:#185FA5}
+</style>
+
+<div class="page">
+  <div class="header">
+    <div class="name">屈 非 塬</div>
+    <div class="contact">
+      <span>189-9600-1976</span>
+      <span>feiyuan_qu@zju.edu.cn</span>
+      <span><a href="https://qfy1012.github.io/" style="color:inherit;text-decoration:none">qfy1012.github.io <span style="font-size:10px">↗</span></a></span>
+      <span>求职方向：AI 产品经理</span>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="edu-block">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">
+        <div class="inst">湖南大学 <span style="font-size:11px;font-weight:400;color:var(--color-text-secondary)">年级第一</span></div>
+        <div class="date">2020.09 — 2024.06</div>
+      </div>
+      <div class="degree">工业设计 · 工学学士｜智能设计方法、人机交互设计</div>
+    </div>
+    <div class="edu-block">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">
+        <div class="inst">浙江大学 <span style="font-size:11px;font-weight:400;color:var(--color-text-secondary)">导师：唐谈 巫英才</span></div>
+        <div class="date">2024.09 — 至今</div>
+      </div>
+      <div class="degree">人机交互 · 工学硕士｜ Agent4Vis · Chart Generation</div>
+    </div>
+  </div>
+
+  <div class="skills-row">
+    <span style="font-size:11px;color:var(--color-text-secondary);margin-right:4px;align-self:center">技能</span>
+    <span class="skill-tag">Python</span>
+    <span class="skill-tag">LangChain</span>
+    <span class="skill-tag">LangGraph</span>
+    <span class="skill-tag">SQL</span>
+    <span class="skill-tag">Prompt Engineering</span>
+  </div>
+
+  <div class="section">
+    <div class="proj-header">
+      <div class="proj-title"><a href="https://qfy1012.github.io/toa" style="color:inherit;text-decoration:none">对话式可视分析产品设计<span class="proj-link-hint">↗ 点击查看项目详情</span></a><span class="solo">独立完成</span></div>
+      <span class="proj-badge">CHI'26 &nbsp;人机交互 CCF-A</span>
+    </div>
+    <div class="proj-meta">2025.07 — 2025.11</div>
+    <div class="star-grid">
+      <div class="star-label">背景</div>
+      <div class="star-content">LLM 线性对话界面导致新手用户在多轮分析中迷失方向，难以回溯历史、对比分支路径；现有方案仅提供孤立的"下一步推荐"，缺乏对整体探索过程的全局可视化。</div>
+
+      <div class="star-label">任务</div>
+      <div class="star-content">为现有 LLM 对话界面设计一款分析树插件，将零散对话自动重组为可交互的树形结构，支持分支创建、路径回溯与全局概览，提升探索效率。</div>
+
+      <div class="star-label">行动</div>
+      <div class="star-content">
+        ① 对 205 条用户 Prompt 进行主题分析编码，归纳出 7 类查询类型 + 2 类分析机会点，为系统设计奠定实证基础；
+        ② 基于 <em>LangChain</em> 搭建 对话式可视分析 对话底座：编排 LLM Workflow，用户每轮自然语言提问后生成 <em>Vega-Lite</em> 图表规格代码并实时渲染为可交互图表；
+        ③ 定义分析树数据结构并设计节点生成算法：从每轮对话中提取图表所展示的数据属性与筛选条件，再调用多模态 LLM（Gemini 2.5 Flash）以 <em>Few-shot + Multiple Choices Prompting</em> 从图表中识别值得深挖的分析机会点，构建分析节点；
+        ④ 设计节点插入算法：基于 7 类查询类型归纳出 7 条连接规则，自动判断新节点应连接在哪个已有节点下；
+        ⑤ 编排推荐生成 Workflow：提取从根节点到当前节点的完整探索路径作为上下文，再结合当前节点的分析机会点，利用 <em>Multiple Choices Prompting</em> 预测后续 Query 的数据维度与筛选条件，并推荐后续分析节点与query。</div>
+
+      <div class="star-label">结果</div>
+      <div class="star-content">对比线性对话界面（N=12），洞察数量 <em>↑58.3%</em>，深度思考时间 <em>↑17%</em>；研究独立完成，录用于 CHI'26。</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="proj-header">
+      <div class="proj-title"><a href="https://qfy1012.github.io/narrasteer" style="color:inherit;text-decoration:none">面向数据叙事的 Agent 交互产品设计<span class="proj-link-hint">↗ 点击查看项目详情</span></a><span class="solo">独立完成</span></div>
+      <span class="proj-badge">UIST'26 在审 &nbsp;人机交互 CCF-A</span>
+    </div>
+    <div class="proj-meta">2026.01 — 2026.04</div>
+    <div class="star-grid">
+      <div class="star-label">背景</div>
+      <div class="star-content">LLM Agent 能自动完成数据报告等复杂任务，但执行过程不透明、不可控；现有方案（如 Manus）只暴露操作日志，用户看不清报告的构建逻辑。</div>
+
+      <div class="star-label">任务</div>
+      <div class="star-content">将 Agent 的探索过程从操作日志重构为叙事故事线，并可视化呈现，让用户一眼看清报告走向并随时干预。</div>
+
+      <div class="star-label">行动</div>
+      <div class="star-content">
+        ① 定义数据故事线数据结构：每个节点记录"当前分析了哪些指标、用了哪些筛选条件、发现了什么"，节点之间用 6 种叙事关系（对比、细化、因果等）串联，把 Agent 零散的操作记录变成一条有逻辑的故事线；
+        ② 基于 <em>LangGraph</em> 构建 <em>ReAct Agent</em>，封装数据探索与洞察计算工具，Agent 通过工具调用自主探索数据，提出多个候选故事线节点；
+        ③ 编排故事线扩展 Workflow，利用 <em>Multiple Choices Prompting</em> 从候选节点中，按逻辑性、连贯性、多样性、相关性四个维度评选最优节点挂入故事线，并生成图表渲染代码；
+        ④ 设计叙事空间可视化：将故事线投影至圆盘，节点位置反映其探索的数据维度，空白区域即为未探索方向，用户可通过拖拽手势直接指定 Agent 下一步走向，无需手写 Prompt。</div>
+
+      <div class="star-label">结果</div>
+      <div class="star-content">对比树形 baseline（N=16），故事洞察数量 <em>↑13.2%</em>（p=0.035），心理负荷显著下降（p=0.046），感知可控性显著提升（p&lt;0.05）；<em>15/16</em> 参与者主动使用拖拽干预；投稿至 UIST'26，目前在审中。</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="proj-header">
+      <div class="proj-title"><a href="https://qfy1012.github.io/#projects" style="color:inherit;text-decoration:none">跨社交媒体舆情分析与治理平台 · G 端产品设计<span class="proj-link-hint">↗ 点击查看项目详情</span></a></div>
+      <span class="proj-badge green">国家重点研发计划 3000w</span>
+    </div>
+    <div class="proj-meta">2024.09 — 2025.04 &nbsp;·&nbsp; 负责：设计</div>
+    <div class="star-grid">
+      <div class="star-label">背景</div>
+      <div class="star-content">国家重点研发项目五大技术模块研发完成，需从零主导将算法能力转化为政府可用的 G 端产品。</div>
+
+      <div class="star-label">任务</div>
+      <div class="star-content">主导产品设计，将数据集成、传播溯源、群体分析、分众推荐、模拟仿真五大模块转化为可交互的产品。</div>
+
+      <div class="star-label">行动</div>
+      <div class="star-content">
+        ① 深入对接技术团队，将五大模块的算法能力翻译为可落地的业务流程；② 定义三层信息架构（大屏 / 仪表盘 / 可视化中台），完成高保真原型与设计规范，跟进前端还原与走查。</div>
+
+      <div class="star-label">结果</div>
+      <div class="star-content">产品完整落地，支撑国家重点研发计划交付节点。</div>
+    </div>
+  </div>
+
+  <!-- <div class="section">
+    <div class="proj-header">
+      <div class="proj-title">基于深度学习的齐白石国画动效技术研究与设计</div>
+      <span class="proj-badge green">国家级大创 2w &nbsp;优秀结题</span>
+    </div>
+    <div class="proj-meta">2022.05 — 2024.05 &nbsp;·&nbsp; 负责：设计 · 开发</div>
+    <div class="star-grid">
+      <div class="star-label">背景</div>
+      <div class="star-content">北京画院人工制作齐白石动效<em>成本高昂</em>，市面各类国画 AI 模型生成效果与齐白石风格相差甚远。</div>
+
+      <div class="star-label">任务</div>
+      <div class="star-content">建立齐白石动效<em>画面质量评估指标</em>，对比多种 AIGC 技术路径，找到低成本、高还原度的最优方案。</div>
+
+      <div class="star-label">行动</div>
+      <div class="star-content">① 建立画面质量评估指标体系，系统横评多条 AIGC 技术路径；② 创新采用 <em>Stable Diffusion + LoRA + ControlNet</em> 替代传统 ChipGAN，将训练数据集需求从 <em>1000 张缩减至 15 张</em>，同时提升画面质量。</div>
+
+      <div class="star-label">结果</div>
+      <div class="star-content">生成动效视频受邀参加<em>中国美术家协会展览</em>，收获热烈反响；国家级大创项目获优秀结题（2 万元资助）。</div>
+    </div>
+  </div> -->
+
+</div>
