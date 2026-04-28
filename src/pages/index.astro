@@ -584,7 +584,7 @@
   document.querySelectorAll('.project-card.clickable').forEach(card => {
     card.style.cursor = 'pointer';
     card.addEventListener('click', e => {
-      if (!e.target.closest('a')) {
+      if (!e.target.closest('a') && !window.getSelection().toString()) {
         window.location.href = card.dataset.href;
       }
     });
