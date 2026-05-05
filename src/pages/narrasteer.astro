@@ -1,4 +1,5 @@
 ---
+import '../styles/tokens.css';
 ---
 <html lang="zh">
 <head>
@@ -7,443 +8,71 @@
   <title>NarraSteer · 数据叙事 Agent 交互 · 屈非塬</title>
   <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')</script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --bg: #0e0e0e;
-      --surface: #161616;
-      --border: #2a2a2a;
-      --text: #e8e8e8;
-      --muted: #888;
-      --accent: #7c6ff7;
-      --accent2: #5dcaa5;
-      --nav-bg: rgba(14,14,14,0.85);
-      --tag-bg: #1e1e1e;
-      --paper-border: rgba(124,111,247,0.4);
-      --paper-hover: rgba(124,111,247,0.1);
-      --video-border: rgba(93,202,165,0.4);
-      --video-hover: rgba(93,202,165,0.1);
-      --badge-bg: rgba(124,111,247,0.12);
-    }
-    [data-theme="light"] {
-      --bg: #f5f7fa;
-      --surface: #ffffff;
-      --border: #dde3ed;
-      --text: #1a1a2e;
-      --muted: #5a6580;
-      --accent: #2563eb;
-      --accent2: #0891b2;
-      --nav-bg: rgba(245,247,250,0.88);
-      --tag-bg: #e8edf5;
-      --paper-border: rgba(37,99,235,0.4);
-      --paper-hover: rgba(37,99,235,0.08);
-      --video-border: rgba(8,145,178,0.4);
-      --video-hover: rgba(8,145,178,0.08);
-      --badge-bg: rgba(37,99,235,0.08);
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      line-height: 1.7;
-    }
-
-    .theme-toggle {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .theme-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: border-color .2s, transform .2s;
-    }
-    .theme-dot:hover { transform: scale(1.2); }
-    .theme-dot.active { border-color: var(--text); }
-    .theme-dot.dark { background: #0e0e0e; box-shadow: 0 0 0 1px #555; }
-    .theme-dot.light { background: #f5f5f5; box-shadow: 0 0 0 1px #bbb; }
-
-    /* nav */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 2rem;
-      background: var(--nav-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 0.5px solid var(--border);
-    }
-    .back-link {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: color .2s;
-    }
-    .back-link:hover { color: var(--text); }
-    .nav-badge {
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-      border: 0.5px solid var(--accent);
-      padding: 3px 10px;
-      border-radius: 999px;
-    }
-
-    /* hero */
-    .hero {
-      padding: 9rem 2rem 4rem;
-      max-width: 860px;
-      margin: 0 auto;
-    }
-    .conf-badge {
-      display: inline-block;
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent2);
-      border: 0.5px solid var(--accent2);
-      padding: 4px 12px;
-      border-radius: 999px;
-      margin-bottom: 1.5rem;
-    }
+    /* ── NarraSteer 页面专有样式 ── */
+    .hero { padding: 8rem 2.5rem 3rem; max-width: 900px; margin: 0 auto; }
     .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-      margin-bottom: 1rem;
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4.5vw, 3rem);
+      font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 1rem;
     }
     .hero h1 .highlight { color: var(--accent); }
-    .hero .subtitle {
-      font-size: 1rem;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-    }
-    .hero .authors {
-      font-size: 0.88rem;
-      color: var(--muted);
-      margin-bottom: 2rem;
-    }
+    .hero .subtitle { font-size: 0.88rem; color: var(--text-dim); margin-bottom: 0.4rem; }
+    .hero .authors { font-size: 0.78rem; color: var(--text-dimmer); margin-bottom: 2rem; letter-spacing: 0.03em; }
     .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    .btn-link {
-      font-size: 0.82rem;
-      padding: 6px 14px;
-      border-radius: 6px;
-      text-decoration: none;
-      border: 0.5px solid var(--border);
-      color: var(--muted);
-      transition: all .2s;
-      white-space: nowrap;
-    }
-    .btn-link:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-link.paper { border-color: var(--paper-border); color: var(--accent); }
-    .btn-link.paper:hover { background: var(--paper-hover); }
-    .btn-link.video { border-color: var(--video-border); color: var(--accent2); }
-    .btn-link.video:hover { background: var(--video-hover); }
 
-    /* section */
-    section {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 4rem 2rem;
-      border-top: 0.5px solid var(--border);
-    }
-    .section-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.4rem;
-    }
-    h2 {
-      font-size: 1.6rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.01em;
-    }
-    h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
-    p { color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem; }
-    p:last-child { margin-bottom: 0; }
-    strong { color: var(--text); }
-
-    /* stat cards */
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      margin: 1.5rem 0;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-    }
-    .stat-card .stat-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent2);
-      margin-bottom: 0.4rem;
-    }
-    .stat-card .stat-value {
-      font-size: 1.05rem;
-      color: var(--text);
-      font-weight: 600;
-    }
-    .stat-card .stat-sub {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
-    }
-
-    /* obs cards */
-    .obs-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin: 1.5rem 0;
-    }
-    .obs-item {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-    }
+    /* Obs list */
+    .obs-list { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--border); background: var(--border); margin: 1.5rem 0; }
+    .obs-item { display: flex; gap: 1rem; align-items: flex-start; background: var(--surface); padding: 1rem 1.25rem; transition: background var(--transition); }
+    .obs-item:hover { background: var(--surface2); }
     .obs-num {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--accent2);
-      background: rgba(93,202,165,0.1);
-      border: 0.5px solid rgba(93,202,165,0.3);
-      border-radius: 6px;
-      padding: 2px 8px;
-      white-space: nowrap;
-      margin-top: 2px;
+      font-size: 0.68rem; font-weight: 700; color: var(--accent2);
+      background: rgba(0,232,200,0.1); border: 1px solid rgba(0,232,200,0.3);
+      padding: 2px 8px; white-space: nowrap; margin-top: 2px; flex-shrink: 0;
     }
-    .obs-item h3 { font-size: 0.9rem; margin-bottom: 0.2rem; }
-    .obs-item p { font-size: 0.86rem; margin: 0; }
+    .obs-item h3 { font-size: 0.88rem; margin-bottom: 0.2rem; }
+    .obs-item p { font-size: var(--text-md); margin: 0; }
 
-    /* design goals */
-    .dg-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-top: 1.25rem;
-    }
-    .dg-item {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-    }
-    .dg-num {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--accent);
-      background: rgba(124,111,247,0.1);
-      border: 0.5px solid rgba(124,111,247,0.3);
-      border-radius: 6px;
-      padding: 2px 8px;
-      white-space: nowrap;
-      margin-top: 2px;
-    }
-    .dg-item h3 { font-size: 0.9rem; margin-bottom: 0.2rem; }
-    .dg-item p { font-size: 0.86rem; margin: 0; }
-
-    /* features */
-    .feature-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-    .feature-item {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-    }
-    .feature-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: var(--badge-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-    .feature-item h3 { font-size: 0.95rem; }
-    .feature-item p { font-size: 0.88rem; margin: 0; }
-
-    /* transition tags */
-    .trans-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 1rem;
-    }
+    /* Transition tags */
+    .trans-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
     .ttag {
-      font-size: 0.82rem;
-      padding: 5px 12px;
-      border-radius: 6px;
-      background: rgba(93,202,165,0.08);
-      border: 0.5px solid rgba(93,202,165,0.25);
+      font-size: 0.75rem; padding: 4px 10px;
+      background: rgba(0,232,200,0.07); border: 1px solid rgba(0,232,200,0.25);
       color: var(--accent2);
     }
 
-    /* images */
-    .screenshot-img {
-      width: 100%;
-      border-radius: 12px;
-      border: 0.5px solid var(--border);
-      margin-top: 1.5rem;
-      display: block;
-    }
-    .img-caption {
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-align: center;
-      margin-top: 0.5rem;
-      opacity: 0.7;
-    }
-
-    /* img grid */
-    .img-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
+    .img-grid { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
     .img-item { display: flex; flex-direction: column; gap: 0.4rem; }
 
-    /* results */
-    .result-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
-      margin: 1.5rem 0;
-    }
-    .result-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      text-align: center;
-    }
-    .result-card .metric {
-      font-size: 1.9rem;
-      font-weight: 700;
-      color: var(--accent2);
-      line-height: 1;
-      margin-bottom: 0.3rem;
-    }
-    .result-card .metric-sub {
-      font-size: 0.75rem;
-      color: var(--accent);
-      margin-bottom: 0.3rem;
-    }
-    .result-card .metric-label {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
+    .behavior-list { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--border); background: var(--border); margin-top: 1.25rem; }
+    .behavior-item { background: var(--surface); padding: 1.25rem; }
+    .behavior-item h3 { font-size: 0.88rem; margin-bottom: 0.5rem; }
 
-    /* behaviors */
-    .behavior-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-top: 1.25rem;
-    }
-    .behavior-item {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-    }
-    .behavior-item h3 { font-size: 0.9rem; margin-bottom: 0.5rem; }
-    .behavior-item p { font-size: 0.87rem; margin-bottom: 0.5rem; }
-    .quote {
-      font-size: 0.84rem;
-      color: var(--muted);
-      border-left: 2px solid var(--accent);
-      padding-left: 0.75rem;
-      margin-top: 0.5rem;
-      font-style: italic;
-    }
-    .quote .speaker { color: var(--accent); font-style: normal; font-weight: 600; font-size: 0.78rem; }
+    .video-wrap { width: 100%; aspect-ratio: 16/9; margin-top: 1.5rem; overflow: hidden; border: 1px solid var(--border); background: #000; }
+    .video-wrap video { width: 100%; height: 100%; object-fit: contain; }
 
-    /* video */
-    .video-wrap {
-      width: 100%;
-      aspect-ratio: 16/9;
-      margin-top: 1.5rem;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 0.5px solid var(--border);
-      background: #000;
-    }
-    .video-wrap video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    /* footer */
-    footer {
-      text-align: center;
-      padding: 2rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      border-top: 0.5px solid var(--border);
-    }
-
-    @media (max-width: 600px) {
-      nav { padding: 1rem; }
-      .hero h1 { font-size: 1.8rem; }
-      .stat-grid, .result-grid { grid-template-columns: 1fr 1fr; }
-    }
+    @media (max-width: 600px) { .hero { padding: 6.5rem 1.25rem 2.5rem; } }
   </style>
 </head>
 <body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 
-  <!-- 导航 -->
   <nav>
     <a href="/" class="back-link">← 返回首页</a>
-    <span class="nav-badge">UIST'26 · CCF-A</span>
-    <div class="theme-toggle">
-      <div class="theme-dot dark" data-t="dark" title="暗色"></div>
-      <div class="theme-dot light" data-t="light" title="亮色"></div>
+    <div class="nav-right">
+      <span class="nav-badge">UIST'26 · CCF-A</span>
+      <div class="theme-toggle">
+        <div class="theme-dot dark" data-t="dark" title="暗色"></div>
+        <div class="theme-dot light" data-t="light" title="亮色"></div>
+      </div>
     </div>
   </nav>
 
-  <!-- Hero -->
   <div class="hero">
     <span class="conf-badge">UIST 2026 · CCF-A · Under Review</span>
     <h1>NarraSteer：在<span class="highlight">叙事空间</span>里<br />引导数据 Agent</h1>
     <div class="subtitle">Reconstructing Trajectories as Storylines: Steering LLM Agents in Narrative Space</div>
-    <div class="authors">屈非塬 · 独立一作 · 浙江大学 CAD&amp;CG 全国重点实验室 · 2026.01—2026.04</div>
+    <div class="authors">屈非塬 · 独立一作 · State Key Lab of CAD&amp;CG, ZJU · 2026.01—2026.04</div>
     <div class="hero-actions">
       <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper">📄 Paper</a>
       <a href="/images/narrasteer/usecase.mp4" target="_blank" class="btn-link video">▶ Demo Video</a>
@@ -452,27 +81,24 @@
     <p class="img-caption">Fig. 1 — NarraSteer 把 Agent 的执行轨迹（左：线性动作流）重构为叙事故事线（右：圆盘状叙事空间），用户可以直接拖拽引导 Agent 下一步要探索的方向</p>
   </div>
 
-  <!-- 面向普通用户的引导 -->
-  <div style="max-width:860px;margin:0 auto;padding:2.5rem 2rem 0;border-top:0.5px solid var(--border);">
-    <p style="font-size:1.05rem;line-height:1.9;color:var(--muted);">
+  <div class="intro-band">
+    <p style="font-size:0.95rem;line-height:1.95;color:var(--text-dim);">
       这个研究是关于<strong style="color:var(--text);">怎么跟 AI Agent 一起做数据分析</strong>的。如果你用过 Manus 这类 AI 自动分析工具，你可能会有这种感觉：给 AI 一份数据，让它帮你找故事，结果只能干坐着等——等它跑完代码、生成图表，然后发现它做的方向完全不是你想要的。
     </p>
-    <p style="font-size:1.05rem;line-height:1.9;color:var(--muted);margin-top:0.75rem;">
+    <p style="font-size:0.95rem;line-height:1.95;color:var(--text-dim);margin-top:0.75rem;">
       NarraSteer 的解决方案是：把 Agent 每一步的行动，重新整理成你能看懂的<strong style="color:var(--text);">叙事节点</strong>，并且布局在一个圆盘状的<strong style="color:var(--text);">叙事空间</strong>里。你不用读代码，只要看节点落在圆盘的哪个位置，就知道 Agent 在探索什么——然后直接拖拽，告诉它往哪走。
     </p>
   </div>
 
-  <!-- 研究背景 -->
   <section>
-    <p class="section-label">Research Background</p>
+    <p class="sec-label">Research Background</p>
     <h2>问题从哪里来？</h2>
     <p>现在有一类工具叫 LLM Agent——你给它一份数据，描述你的目标，它自动帮你探索数据、生成图表、整理洞察，最后输出一份数据故事。但实际用起来，你会发现自己全程插不上手：Agent 在底层跑代码，你只能看着进度条转，不知道它在往哪个方向走，也不知道什么时候该叫停。</p>
     <p>这种"被动等待"的体验，在开放式的数据叙事任务里尤其突出——目标是模糊的、方向是动态的，用户需要在过程中持续判断和干预，而不是交给 Agent 一跑到底。</p>
   </section>
 
-  <!-- 形成性研究 -->
   <section>
-    <p class="section-label">Formative Study</p>
+    <p class="sec-label">Formative Study</p>
     <h2>用真实用户验证一下这个问题</h2>
     <p>在开始设计之前，我们先做了一轮观察研究——找来 8 个有数据分析经验的用户，让他们用 Manus（一个真实的自主 LLM Agent）分析一份智能手机销售数据集，目标是用幻灯片形式做出一份有故事性的数据报告。研究采用 think-aloud 协议，让参与者边做边出声描述想法，之后再进行访谈。</p>
 
@@ -506,7 +132,7 @@
         <span class="obs-num">O1</span>
         <div>
           <h3>74% 的时间在干等，5/8 的人最后才发现跑偏了</h3>
-          <p>Agent 执行期间，轨迹只暴露操作步骤（"正在调用工具""正在画图"），没有背后的叙事意图——用户根本无从判断方向对不对，只能坐等 Agent 跑完。5/8 的参与者直到最终结果出来才意识到故事方向已经偏离了预期。</p>
+          <p>Agent 执行期间，轨迹只暴露操作步骤，没有背后的叙事意图——用户根本无从判断方向对不对，只能坐等 Agent 跑完。5/8 的参与者直到最终结果出来才意识到故事方向已经偏离了预期。</p>
         </div>
       </div>
       <div class="obs-item">
@@ -556,9 +182,8 @@
     </div>
   </section>
 
-  <!-- 系统设计 -->
   <section>
-    <p class="section-label">System Design</p>
+    <p class="sec-label">System Design</p>
     <h2>NarraSteer 是怎么工作的？</h2>
     <p>打开 NarraSteer，界面分三块：左边是数据概览面板（数据集里有哪些字段一目了然），中间是核心的<strong>叙事空间圆盘</strong>，右边是叙事节点的详情面板。Agent 每跑一步，圆盘上就自动长出一个新节点，节点的位置根据它探索的数据维度自动布局——相似的探索聚在一起，不同方向自然分开。</p>
 
@@ -581,7 +206,7 @@
         <div class="feature-icon">✋</div>
         <div>
           <h3>拖拽引导 Agent</h3>
-          <p>想让 Agent 往某个方向探索？直接把圆盘上的节点往那个数据属性拖过去。NarraSteer 会把你的拖拽���图翻译成具体的叙事过渡类型（比如"深入细化"还是"换个对比角度"），然后生成对应的 prompt 发给 Agent——不需要你手写任何文字，Agent 就会按你拖的方向继续跑。</p>
+          <p>想让 Agent 往某个方向探索？直接把圆盘上的节点往那个数据属性拖过去。NarraSteer 会把你的拖拽意图翻译成具体的叙事过渡类型（比如"深入细化"还是"换个对比角度"），然后生成对应的 prompt 发给 Agent——不需要你手写任何文字，Agent 就会按你拖的方向继续跑。</p>
         </div>
       </div>
       <div class="feature-item">
@@ -594,7 +219,7 @@
     </div>
 
     <div style="margin-top:1.25rem;">
-      <p style="margin-bottom:0.5rem;font-size:0.88rem;color:var(--muted);">6 种叙事过渡关系：</p>
+      <p style="margin-bottom:0.5rem;font-size:0.8rem;color:var(--text-dim);">// 6 种叙事过渡关系</p>
       <div class="trans-tags">
         <span class="ttag">展开细化 (Elaboration)</span>
         <span class="ttag">对比转折 (Contrast)</span>
@@ -605,7 +230,7 @@
       </div>
     </div>
 
-    <p style="margin-top:1rem;font-size:0.85rem;color:var(--muted);">技术栈：前端 Vue3 + TypeScript + Vite · 图表 Vega-Lite · 后端 FastAPI · LLM Google Gemini Flash · 编排 LangChain + LangGraph · Agent 架构 ReAct</p>
+    <p style="margin-top:1rem;font-size:0.78rem;color:var(--text-dimmer);">// 技术栈：前端 Vue3 + TypeScript + Vite · 图表 Vega-Lite · 后端 FastAPI · LLM Google Gemini Flash · 编排 LangChain + LangGraph · Agent 架构 ReAct</p>
 
     <img src="/images/narrasteer/Interface_and_Case.png" alt="NarraSteer Interface" class="screenshot-img" />
     <p class="img-caption">Fig. 3 — 左：数据概览面板；中：叙事空间圆盘（外圈=数据属性，节点=叙事历史）；右：节点详情面板。用户将节点向"价格"属性拖动，Agent 随即深入探索价格相关维度。</p>
@@ -618,9 +243,8 @@
     </div>
   </section>
 
-  <!-- 用户实验 -->
   <section>
-    <p class="section-label">User Study</p>
+    <p class="sec-label">User Study</p>
     <h2>效果怎么样？</h2>
     <p>我们做了一个对照实验：招募 <strong>16 名有数据分析经验的用户</strong>（6女10男，平均年龄 23.4 岁，平均数据分析经验 2.4 年，日常使用 LLM Agent），分别用 NarraSteer 和基线系统完成两项数据叙事任务——分析宏观经济指标数据集 / 分析中东石油生产数据集。每个人两个任务都做，用哪个系统先做随机分配。</p>
     <p>基线系统和 NarraSteer 功能完全一样，唯一的区别是：<strong>基线用树状结构展示 Agent 轨迹，NarraSteer 用叙事空间圆盘展示</strong>——两者都支持拖拽引导，排除了交互模态的干扰。每项任务约 95 分钟：15 分钟介绍 → 任务探索 → 挑选最佳故事片段 → 问卷 → 最后访谈。</p>
@@ -628,7 +252,7 @@
     <img src="/images/narrasteer/Baseline.png" alt="Baseline" class="screenshot-img" />
     <p class="img-caption">基线系统：树状轨迹展示，节点位置与数据内容无关</p>
 
-    <h3 style="margin-top:1.5rem;margin-bottom:1rem;">量化结果一眼看</h3>
+    <h3 style="margin-top:1.5rem;margin-bottom:1rem;">量化结果</h3>
     <div class="result-grid">
       <div class="result-card">
         <div class="metric">+13.2%</div>
@@ -662,11 +286,11 @@
     </div>
 
     <h3 style="margin-top:2rem;margin-bottom:1rem;">主观感受</h3>
-    <p>NASA-TLX 认知负荷量表显示，NarraSteer 下用户的<strong>心理需求</strong>（p = 0.046）显著更低、<strong>绩效感知</strong>（p = 0.049）显著更高——心理负荷降低可能来自叙事空间和拖拽的结合，用户不需要想"我该怎么写 prompt"，直接拖就行。感知可控性量表（4 题 7 分制）里，NarraSteer 在三项上都显著胜出：</p>
+    <p>NASA-TLX 认知负荷量表显示，NarraSteer 下用户的<strong>心理需求</strong>（p = 0.046）显著更低、<strong>绩效感知</strong>（p = 0.049）显著更高。感知可控性量表（4 题 7 分制）里，NarraSteer 在三项上都显著胜出：</p>
     <ul style="list-style:none;display:flex;flex-direction:column;gap:0.4rem;margin:1rem 0;padding-left:1rem;">
-      <li style="font-size:0.9rem;color:var(--muted);position:relative;"><span style="position:absolute;left:-1rem;">·</span><strong>Q1 识别已探索完的方向</strong>（p = 0.004, r = 0.724）</li>
-      <li style="font-size:0.9rem;color:var(--muted);position:relative;"><span style="position:absolute;left:-1rem;">·</span><strong>Q2 判断哪些叙事角度还没被覆盖</strong>（p = 0.024, r = 0.565）</li>
-      <li style="font-size:0.9rem;color:var(--muted);position:relative;"><span style="position:absolute;left:-1rem;">·</span><strong>Q3 主动决定下一步探索哪个方向</strong>（p = 0.020, r = 0.582）</li>
+      <li style="font-size:0.82rem;color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q1 识别已探索完的方向</strong>（p = 0.004, r = 0.724）</li>
+      <li style="font-size:0.82rem;color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q2 判断哪些叙事角度还没被覆盖</strong>（p = 0.024, r = 0.565）</li>
+      <li style="font-size:0.82rem;color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q3 主动决定下一步探索哪个方向</strong>（p = 0.020, r = 0.582）</li>
     </ul>
 
     <div class="img-grid">
@@ -685,32 +309,24 @@
       <div class="behavior-item">
         <h3>叙事空间让引导 Agent 变得更轻松</h3>
         <p>圆盘上每个节点的位置直接对应它探索的数据属性——用户不用读文字，看位置就知道节点在说什么。拖拽有了真实的空间语义：往哪拖，就是在让 Agent 往哪个方向探索。这让引导 Agent 变得直观、省力，用户能以更少的努力探索更多方向。</p>
-        <div class="quote">
-          <span class="speaker">P5（基线）：</span>"在树里拖不直观。我试着拖，结果所有子节点都堆在父节点下面，不管探索的是什么属性，位置都一样——完全没感觉自己在往哪里走。"
-        </div>
-        <div class="quote" style="margin-top:0.5rem;">
-          <span class="speaker">P5（NarraSteer）：</span>"圆盘上，我光看节点坐在哪就知道它在说什么。所以我拖的时候，就已经知道我在让 Agent 去探索什么——感觉很直接，很快。"
-        </div>
+        <div class="quote"><span class="speaker">P5（基线）：</span>"在树里拖不直观。我试着拖，结果所有子节点都堆在父节点下面，不管探索的是什么属性，位置都一样——完全没感觉自己在往哪里走。"</div>
+        <div class="quote" style="margin-top:0.5rem;"><span class="speaker">P5（NarraSteer）：</span>"圆盘上，我光看节点坐在哪就知道它在说什么。所以我拖的时候，就已经知道我在让 Agent 去探索什么——感觉很直接，很快。"</div>
       </div>
       <div class="behavior-item">
         <h3>用户开始在 Agent 执行过程中主动介入</h3>
-        <p>基线里只有 5/16 人会在 Agent 执行过程中打断或重新引导——靠读文字日志很难立刻判断方向对不对，遇到字段名相似时更慢。NarraSteer 里有 10/16 人开始主动中途介入，因为新节点出现在圆盘上时，它的位置直接告诉了用户"Agent 在往哪走"，几乎实时就能判断。不过随着故事线变长，节点会向圆盘中心靠拢、离属性锚点越来越远，这也解释了为什么 Q4（识别 Agent 偏移）没有显著提升。</p>
-        <div class="quote">
-          <span class="speaker">P6：</span>"每次 Agent 加了新节点，它就出现在它探索的属性旁边，我马上就知道它在朝我想要的方向走没有——比读树里的文字快多了。"
-        </div>
+        <p>基线里只有 5/16 人会在 Agent 执行过程中打断或重新引导——靠读文字日志很难立刻判断方向对不对。NarraSteer 里有 10/16 人开始主动中途介入，因为新节点出现在圆盘上时，它的位置直接告诉了用户"Agent 在往哪走"，几乎实时就能判断。</p>
+        <div class="quote"><span class="speaker">P6：</span>"每次 Agent 加了新节点，它就出现在它探索的属性旁边，我马上就知道它在朝我想要的方向走没有——比读树里的文字快多了。"</div>
       </div>
     </div>
 
-    <div style="margin-top:2rem;padding-top:2rem;border-top:0.5px solid var(--border);display:flex;gap:0.75rem;flex-wrap:wrap;">
+    <div style="margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border);display:flex;gap:0.75rem;flex-wrap:wrap;">
       <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper">📄 下载论文 PDF</a>
       <a href="/images/narrasteer/usecase.mp4" target="_blank" class="btn-link video">▶ 观看演示视频</a>
       <a href="/" class="btn-link">← 返回首页</a>
     </div>
   </section>
 
-  <footer>
-    <p>© 2026 屈非塬 · 浙江大学 CAD&amp;CG 实验室</p>
-  </footer>
+  <footer>© 2026 屈非塬 · State Key Lab of CAD&amp;CG, ZJU</footer>
 
 </body>
 <script>

@@ -1,5 +1,5 @@
 ---
-// 把这个文件的内容复制到 src/pages/index.astro
+import '../styles/tokens.css';
 ---
 
 <html lang="zh">
@@ -9,343 +9,350 @@
   <title>屈非塬 · HCI Researcher</title>
   <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')</script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ── index 专有：tokens.css 中没有的部分 ── */
 
-    :root {
-      --bg: #0e0e0e;
-      --surface: #161616;
-      --border: #2a2a2a;
-      --text: #e8e8e8;
-      --muted: #888;
-      --accent: #7c6ff7;
-      --accent2: #5dcaa5;
-      --nav-bg: rgba(14,14,14,0.85);
-      --tag-bg: #1e1e1e;
-      --badge-bg: rgba(124,111,247,0.12);
-      --paper-border: rgba(124,111,247,0.4);
-      --paper-hover: rgba(124,111,247,0.1);
-      --video-border: rgba(93,202,165,0.4);
-      --video-hover: rgba(93,202,165,0.1);
+    /* accent3 (仅 index 用到) */
+    :root { --accent3: #ff6b8a; }
+    [data-theme="light"] { --accent3: #cc2244; }
+
+    /* NAV logo */
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 800; font-size: 1.05rem; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 0.4rem;
     }
-    [data-theme="light"] {
-      --bg: #f5f7fa;
-      --surface: #ffffff;
-      --border: #dde3ed;
-      --text: #1a1a2e;
-      --muted: #5a6580;
-      --accent: #2563eb;
-      --accent2: #0891b2;
-      --nav-bg: rgba(245,247,250,0.88);
-      --tag-bg: #e8edf5;
-      --badge-bg: rgba(37,99,235,0.08);
-      --paper-border: rgba(37,99,235,0.4);
-      --paper-hover: rgba(37,99,235,0.08);
-      --video-border: rgba(8,145,178,0.4);
-      --video-hover: rgba(8,145,178,0.08);
+    .logo-b { color: var(--accent); opacity: 0.55; }
+    .logo-tag {
+      font-size: 0.72rem; font-weight: 400; letter-spacing: 0.06em;
+      color: var(--accent2); margin-left: 0.5rem;
+      font-family: var(--font-mono);
+    }
+    .logo-cur {
+      display: inline-block; width: 2px; height: 0.95em;
+      background: var(--accent2);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle; margin-left: 1px;
     }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      line-height: 1.7;
+    nav { justify-content: space-between; }
+    .nav-center { position: absolute; left: 50%; transform: translateX(-50%); }
+    .nav-right { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-links { display: flex; list-style: none; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none;
+      font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
     }
+    .nav-links a:hover { color: var(--accent2); border-color: var(--border); background: var(--glow-b); }
 
-    .theme-toggle {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .theme-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: border-color .2s, transform .2s;
-    }
-    .theme-dot:hover { transform: scale(1.2); }
-    .theme-dot.active { border-color: var(--text); }
-    .theme-dot.dark { background: #0e0e0e; box-shadow: 0 0 0 1px #555; }
-    .theme-dot.light { background: #f5f5f5; box-shadow: 0 0 0 1px #bbb; }
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 2rem;
-      background: var(--nav-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 0.5px solid var(--border);
-    }
-    .logo { font-weight: 600; font-size: 1rem; letter-spacing: 0.05em; }
-    .logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color .2s; }
-    .nav-links a:hover { color: var(--text); }
+    .theme-toggle { display: flex; gap: 5px; align-items: center; margin-left: 0.75rem; }
 
-    /* ── Hero ── */
+    /* HERO */
     .hero {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 8rem 2rem 4rem;
-      max-width: 800px;
-      margin: 0 auto;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 8rem 2.5rem 5rem;
+      max-width: 960px; margin: 0 auto;
     }
-    .badge {
-      display: inline-block;
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent2);
-      border: 0.5px solid var(--accent2);
-      padding: 4px 12px;
-      border-radius: 999px;
-      margin-bottom: 1.5rem;
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.75rem;
+      font-size: 0.68rem; color: var(--text-dimmer); letter-spacing: 0.12em;
     }
+    .hero-eyebrow .dash { width: 36px; height: 1px; background: var(--border-hi); }
+    .hero-eyebrow-tag { color: var(--accent2); }
+    .hero-role {
+      font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.5rem;
+    }
+    .hero-role::before { content: '> '; }
     .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.02em;
     }
-    .hero h1 .highlight { color: var(--accent); }
-    .hero p {
-      font-size: 1.1rem;
-      color: var(--muted);
-      max-width: 520px;
-      margin-bottom: 2.5rem;
+    .hero h1 .en {
+      display: block;
+      font-size: clamp(1.1rem, 2.8vw, 1.8rem);
+      font-family: var(--font-display);
+      font-weight: 400; letter-spacing: 0.18em;
+      color: var(--text-dim); margin-bottom: 0.6rem;
     }
-    .cta-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero h1 .zh { position: relative; display: inline-block; color: var(--text); letter-spacing: 0.15em; }
+    .hero h1 .zh::after {
+      content: ''; position: absolute; bottom: 2px; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0); transform-origin: left;
+      animation: uline 0.8s 0.6s ease forwards;
+    }
+    @keyframes uline { to { transform: scaleX(1); } }
+
+    .hero-desc { margin: 2.5rem 0 3rem; max-width: 580px; }
+    .hero-desc .prompt { font-size: 0.72rem; color: var(--accent); margin-bottom: 0.4rem; }
+    .hero-desc p {
+      font-size: 0.94rem; color: var(--text-dim); line-height: 1.95;
+      border-left: 2px solid var(--border-hi); padding-left: 1rem;
+    }
+
+    .cta-group { display: flex; gap: 0.875rem; flex-wrap: wrap; }
     .btn {
-      padding: 0.75rem 1.75rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: all .2s;
-      cursor: pointer;
-      border: none;
+      font-family: var(--font-mono);
+      font-size: 0.76rem; letter-spacing: 0.07em;
+      padding: 0.6rem 1.4rem; text-decoration: none;
+      border: 1px solid transparent; cursor: crosshair;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
     }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #6a5fe0; transform: translateY(-1px); }
-    .btn-ghost { background: transparent; color: var(--text); border: 0.5px solid var(--border); }
-    .btn-ghost:hover { border-color: var(--muted); }
+    .btn-primary {
+      color: var(--accent2); border-color: var(--accent2);
+      position: relative; overflow: hidden;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--accent2); transform: translateX(-100%);
+      transition: transform 0.22s ease; z-index: -1;
+    }
+    .btn-primary:hover::before { transform: translateX(0); }
+    .btn-primary:hover { color: var(--bg); }
+    .btn-ghost { color: var(--text-dim); border-color: var(--border-hi); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── 通用 Section ── */
-    section {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 5rem 2rem;
-      border-top: 0.5px solid var(--border);
-    }
-    .section-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      font-size: 1.8rem;
-      font-weight: 600;
-      margin-bottom: 2.5rem;
-      letter-spacing: -0.01em;
-    }
+    /* fade-up */
+    .fu { opacity: 0; transform: translateY(18px); animation: fu 0.65s ease forwards; }
+    @keyframes fu { to { opacity: 1; transform: translateY(0); } }
+    .fu-1 { animation-delay: 0.05s; }
+    .fu-2 { animation-delay: 0.15s; }
+    .fu-3 { animation-delay: 0.27s; }
+    .fu-4 { animation-delay: 0.42s; }
+    .fu-5 { animation-delay: 0.57s; }
 
-    /* ── 技能 ── */
+    /* SECTIONS */
+    section { max-width: 960px; margin: 0 auto; padding: 5rem 2.5rem; }
+    section + section { border-top: 1px solid var(--border); }
+    .sec-head { display: flex; align-items: flex-end; gap: 1.5rem; margin-bottom: 2.75rem; }
+    .sec-head-text { flex-shrink: 0; }
+    .sec-n { font-size: 0.65rem; color: var(--text-dimmer); letter-spacing: 0.1em; margin-bottom: 0.2rem; }
+    .sec-sub { font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.2rem; }
+    h2 { font-family: var(--font-display); font-size: 1.65rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
+    .sec-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-hi), transparent); margin-bottom: 0.4rem; }
+
+    /* SKILLS */
     .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1px; border: 1px solid var(--border); background: var(--border);
     }
     .skill-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      transition: border-color .2s;
+      background: var(--surface); padding: 1.4rem;
+      transition: background 0.2s; position: relative; overflow: hidden;
     }
-    .skill-card:hover { border-color: var(--accent); }
-    .skill-card h3 { font-size: 0.85rem; color: var(--accent2); margin-bottom: 0.75rem; font-weight: 500; letter-spacing: 0.05em; }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
+    }
+    .skill-card:hover { background: var(--surface2); }
+    .skill-card:hover::before { transform: scaleX(1); }
+    .skill-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.9rem; }
+    .skill-card h3 { font-size: 0.69rem; color: var(--accent2); letter-spacing: 0.14em; text-transform: uppercase; }
+    .skill-idx { font-size: 0.6rem; color: var(--text-dimmer); }
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; }
     .tag {
-      font-size: 0.78rem;
-      padding: 3px 10px;
-      border-radius: 999px;
-      background: var(--tag-bg);
-      color: var(--muted);
-      border: 0.5px solid var(--border);
+      font-size: 0.69rem; padding: 3px 8px;
+      border: 1px solid var(--border-hi); color: var(--text-dim);
+      transition: all 0.2s;
     }
+    .tag:hover { border-color: var(--accent2); color: var(--accent2); }
 
-    /* ── 经历 ── */
-    .timeline { display: flex; flex-direction: column; gap: 2rem; }
+    /* TIMELINE */
+    .timeline { display: flex; flex-direction: column; }
     .tl-item {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 1.5rem;
+      display: grid; grid-template-columns: 155px 1fr; gap: 2rem;
+      padding: 1.75rem 0; border-bottom: 1px solid var(--border);
     }
-    .tl-date { font-size: 0.82rem; color: var(--muted); padding-top: 4px; }
-    .tl-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .tl-content .company { font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem; }
-    .tl-content p { font-size: 0.9rem; color: var(--muted); }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-date { font-size: 0.69rem; color: var(--text-dimmer); padding-top: 3px; letter-spacing: 0.04em; }
+    .tl-content h3 { font-family: var(--font-display); font-size: 0.98rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .tl-content .company {
+      font-size: 0.75rem; color: var(--accent); margin-bottom: 0.6rem; letter-spacing: 0.04em;
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .tl-content p { font-size: 0.86rem; color: var(--text-dim); }
 
-    /* ── 项目 ── */
-    .projects-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
+    /* PROJECTS */
+    .projects-grid { display: flex; flex-direction: column; }
+    .pg-label {
+      font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-dimmer); padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border); margin-top: 1.75rem;
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .project-group-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 0.5rem 0 0.25rem;
-      border-bottom: 0.5px solid var(--border);
-      margin-bottom: 0.25rem;
-      margin-top: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .project-group-label:first-child { margin-top: 0; }
+    .pg-label:first-child { margin-top: 0; }
+    .pg-label-left::before { content: '# '; color: var(--accent); }
     .project-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      transition: all .2s;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 2rem;
-      text-decoration: none;
-      color: inherit;
-      cursor: pointer;
+      border-bottom: 1px solid var(--border); padding: 1.6rem 0;
+      display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start;
+      position: relative; transition: padding-left 0.2s, background 0.2s;
+      cursor: crosshair;
     }
-    .project-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .project-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .project-card .project-sub { font-size: 0.82rem; color: var(--accent); margin-bottom: 0.5rem; }
-    .project-card p { font-size: 0.88rem; color: var(--muted); }
-    .project-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; align-self: stretch; }
-    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
-    .project-link { font-size: 0.82rem; color: var(--accent); text-decoration: none; white-space: nowrap; }
-    .project-link:hover { text-decoration: underline; }
-    .project-links { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; margin-top: auto; }
+    .project-card::before {
+      content: ''; position: absolute; left: -2.5rem; top: 0; bottom: 0; width: 2px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      transform: scaleY(0); transform-origin: top; transition: transform 0.28s ease;
+    }
+    .project-card:hover::before { transform: scaleY(1); }
+    .project-card:hover { background: rgba(98,114,255,0.025); padding-left: 0.6rem; }
+    .ptitle-row { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.35rem; flex-wrap: wrap; }
+    .project-card h3 { font-family: var(--font-display); font-size: 0.97rem; font-weight: 700; line-height: 1.4; }
+    .project-badge {
+      font-size: 0.62rem; padding: 2px 7px;
+      border: 1px solid var(--accent); color: var(--accent);
+      white-space: nowrap; letter-spacing: 0.07em; flex-shrink: 0; margin-top: 3px;
+    }
+    .project-sub { font-size: 0.72rem; color: var(--accent2); margin-bottom: 0.65rem; letter-spacing: 0.03em; }
+    .project-card p { font-size: 0.86rem; color: var(--text-dim); line-height: 1.85; max-width: 580px; }
+    .project-right {
+      display: flex; flex-direction: column; align-items: flex-end;
+      gap: 0.65rem; flex-shrink: 0; min-width: 110px;
+    }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+    .project-links { display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-end; }
     .btn-link {
-      font-size: 0.78rem;
-      padding: 4px 10px;
-      border-radius: 6px;
-      text-decoration: none;
-      border: 0.5px solid var(--border);
-      color: var(--muted);
-      transition: all .2s;
-      white-space: nowrap;
+      font-size: 0.66rem; padding: 3px 9px;
+      border: 1px solid var(--border-hi); color: var(--text-dim);
+      text-decoration: none; transition: all 0.2s; letter-spacing: 0.05em; white-space: nowrap;
     }
     .btn-link:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-link.detail { border-color: var(--paper-border); color: var(--accent); }
-    .btn-link.detail:hover { background: var(--paper-hover); }
-    .btn-link.paper { border-color: var(--paper-border); color: var(--accent); }
-    .btn-link.paper:hover { background: var(--paper-hover); }
-    .btn-link.video { border-color: var(--video-border); color: var(--accent2); }
-    .btn-link.video:hover { background: var(--video-hover); }
-    .project-badge {
-      font-size: 0.72rem;
-      padding: 3px 10px;
-      border-radius: 999px;
-      background: var(--badge-bg);
-      color: var(--accent);
-      border: 0.5px solid var(--accent);
-      white-space: nowrap;
-    }
+    .btn-link.detail { border-color: rgba(98,114,255,0.4); color: var(--accent); }
+    .btn-link.detail:hover { background: rgba(98,114,255,0.1); }
+    .btn-link.paper { border-color: rgba(98,114,255,0.4); color: var(--accent); }
+    .btn-link.paper:hover { background: rgba(98,114,255,0.1); }
+    .btn-link.video { border-color: rgba(0,232,200,0.4); color: var(--accent2); }
+    .btn-link.video:hover { background: rgba(0,232,200,0.07); }
 
-    /* ── 联系 ── */
+    /* CONTACT */
     .contact-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 1px; border: 1px solid var(--border); background: var(--border);
     }
     .contact-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      text-decoration: none;
-      color: var(--text);
-      transition: all .2s;
+      background: var(--surface); padding: 1.4rem;
+      text-decoration: none; color: var(--text);
+      transition: background 0.2s; position: relative; overflow: hidden;
     }
-    .contact-card:hover { border-color: var(--accent2); }
-    .contact-card .icon { font-size: 1.2rem; margin-bottom: 0.5rem; }
-    .contact-card .label { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.25rem; }
-    .contact-card .value { font-size: 0.9rem; }
+    .contact-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
+    }
+    .contact-card:hover { background: var(--surface2); }
+    .contact-card:hover::after { transform: scaleX(1); }
+    .c-type { font-size: 0.62rem; letter-spacing: 0.15em; color: var(--text-dimmer); text-transform: uppercase; margin-bottom: 0.45rem; }
+    .c-label { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+    .c-value { font-size: 0.85rem; color: var(--text); }
 
-    /* ── Footer ── */
+    /* FOOTER */
     footer {
-      text-align: center;
-      padding: 2rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      border-top: 0.5px solid var(--border);
+      max-width: 960px; margin: 0 auto;
+      padding: 1.75rem 2.5rem 5rem;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;
+      font-size: 0.65rem; color: var(--text-dimmer); letter-spacing: 0.07em;
     }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
-    @media (max-width: 600px) {
-      .tl-item { grid-template-columns: 1fr; gap: 0.25rem; }
-      .tl-date { padding-top: 0; }
-      nav { padding: 1rem; }
-      .nav-links { gap: 1rem; }
-      .project-card { flex-direction: column; gap: 1rem; }
+    @media (max-width: 680px) {
+      nav { padding: 0.75rem 1.25rem; }
+      .nav-links a { padding: 0.35rem 0.55rem; font-size: 0.66rem; }
+      .hero { padding: 6.5rem 1.25rem 4rem; }
+      section { padding: 3.5rem 1.25rem; }
+      .tl-item { grid-template-columns: 1fr; gap: 0.2rem; }
+      .project-card { grid-template-columns: 1fr; }
       .project-right { align-items: flex-start; }
-      .project-tags { justify-content: flex-start; }
+      .project-tags, .project-links { justify-content: flex-start; }
+      .status-bar { padding: 0.28rem 1.25rem; }
+      footer { padding: 1.5rem 1.25rem 4.5rem; flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 导航 -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- NAV -->
   <nav>
-    <div class="logo">屈非塬</div>
-    <ul class="nav-links">
-      <li><a href="#skills">技能</a></li>
-      <li><a href="#education">教育</a></li>
-      <li><a href="#projects">项目</a></li>
-      <li><a href="#contact">联系</a></li>
-    </ul>
-    <div class="theme-toggle">
-      <div class="theme-dot dark" data-t="dark" title="暗色"></div>
-      <div class="theme-dot light" data-t="light" title="亮色"></div>
+    <div class="logo">
+      <span>屈非塬</span>
+      <span class="logo-tag" id="logo-tag"></span>
+      <span class="logo-cur"></span>
+    </div>
+    <div class="nav-center">
+      <ul class="nav-links">
+        <li><a href="#skills">skills</a></li>
+        <li><a href="#education">edu</a></li>
+        <li><a href="#projects">works</a></li>
+        <li><a href="#contact">contact</a></li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <div class="theme-toggle">
+        <div class="theme-dot dark" data-t="dark" title="暗色"></div>
+        <div class="theme-dot light" data-t="light" title="亮色"></div>
+      </div>
     </div>
   </nav>
 
-  <!-- Hero -->
+  <!-- HERO -->
   <div class="hero">
-    <span class="badge">设计 · 开发 · 用研 · 全栈 HCI</span>
-    <h1>你好，我是<br /><span class="highlight">屈非塬</span></h1>
-    <p>浙江大学 CAD&CG 全国重点实验室硕士研究生，研究方向为人机交互与智能可视化，专注于通过交互创新手段让 LLM 更好地完成数据分析与可视叙事任务(LLM4Vis · Agent4Vis · Chart Generation)</p>
-    <div class="cta-group">
-      <a href="#projects" class="btn btn-primary">查看项目</a>
+
+    <div class="hero-role fu fu-1">HCI Researcher · Designer · Developer</div>
+
+    <h1 class="fu fu-2">
+      <span class="en">QU FEIYUAN</span>
+      <span class="zh">屈非塬</span>
+    </h1>
+
+    <div class="hero-desc fu fu-3">
+      <p>浙江大学 CAD&amp;CG 全国重点实验室硕士研究生，研究方向为人机交互与智能可视化，专注于通过交互创新手段让 LLM 更好地完成数据分析与可视叙事任务（LLM4Vis · Agent4Vis · Chart Generation）</p>
+    </div>
+
+    <div class="cta-group fu fu-4">
+      <a href="#projects" class="btn btn-primary">→ 查看项目</a>
       <a href="mailto:feiyuan_qu@zju.edu.cn" class="btn btn-ghost">联系我</a>
     </div>
   </div>
 
-  <!-- 技能 -->
+  <!-- SKILLS -->
   <section id="skills">
-    <p class="section-label">专业技能</p>
-    <h2>我能做什么</h2>
+    <div class="sec-head">
+      <div class="sec-head-text">
+        <div class="sec-n">01 /</div>
+        <div class="sec-sub">专业技能</div>
+        <h2>CAPABILITIES</h2>
+      </div>
+      <div class="sec-line"></div>
+    </div>
     <div class="skills-grid">
       <div class="skill-card">
-        <h3>设计</h3>
+        <div class="skill-head">
+          <h3>设计</h3>
+          <span class="skill-idx">[0x01]</span>
+        </div>
         <div class="tags">
           <span class="tag">原型设计</span>
+          <span class="tag">Figma</span>
+          <span class="tag">用户研究</span>
+          <span class="tag">信息架构</span>
         </div>
       </div>
       <div class="skill-card">
-        <h3>开发</h3>
+        <div class="skill-head">
+          <h3>开发</h3>
+          <span class="skill-idx">[0x02]</span>
+        </div>
         <div class="tags">
           <span class="tag">Python</span>
           <span class="tag">React</span>
@@ -354,7 +361,10 @@
         </div>
       </div>
       <div class="skill-card">
-        <h3>研究</h3>
+        <div class="skill-head">
+          <h3>研究</h3>
+          <span class="skill-idx">[0x03]</span>
+        </div>
         <div class="tags">
           <span class="tag">LLM4Vis</span>
           <span class="tag">Agent4Vis</span>
@@ -365,16 +375,22 @@
     </div>
   </section>
 
-  <!-- 教育经历 -->
+  <!-- EDUCATION -->
   <section id="education">
-    <p class="section-label">教育经历</p>
-    <h2>我在哪里学习</h2>
+    <div class="sec-head">
+      <div class="sec-head-text">
+        <div class="sec-n">02 /</div>
+        <div class="sec-sub">教育经历</div>
+        <h2>EDUCATION</h2>
+      </div>
+      <div class="sec-line"></div>
+    </div>
     <div class="timeline">
       <div class="tl-item">
         <div class="tl-date">2024.09 — 至今</div>
         <div class="tl-content">
           <h3>工学硕士 · 人机交互</h3>
-          <div class="company">浙江大学 · CAD&CG 全国重点实验室</div>
+          <div class="company">浙江大学 · CAD&amp;CG 全国重点实验室</div>
           <p>导师：巫英才　研究方向：LLM4Vis · Agent4Vis · Chart Generation</p>
         </div>
       </div>
@@ -382,29 +398,42 @@
         <div class="tl-date">2020.09 — 2024.06</div>
         <div class="tl-content">
           <h3>工学学士 · 工业设计</h3>
-          <div class="company">湖南大学　<a href="/papers/gpa.pdf" target="_blank" class="btn-link paper" style="font-size:0.75rem;padding:2px 8px">📄 成绩单</a></div>
+          <div class="company">
+            湖南大学
+            <a href="/papers/gpa.pdf" target="_blank" class="btn-link paper" style="font-size:0.65rem;padding:2px 7px">📄 成绩单</a>
+          </div>
           <p>年级第一　主修课程：智能设计方法 · 人机交互设计</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 项目 -->
+  <!-- PROJECTS -->
   <section id="projects">
-    <p class="section-label">项目 & 论文</p>
-    <h2>我做过的项目</h2>
+    <div class="sec-head">
+      <div class="sec-head-text">
+        <div class="sec-n">03 /</div>
+        <div class="sec-sub">项目 &amp; 论文</div>
+        <h2>WORKS</h2>
+      </div>
+      <div class="sec-line"></div>
+    </div>
     <div class="projects-grid">
 
-      <div class="project-group-label">研究生</div>
+      <div class="pg-label">
+        <span class="pg-label-left">研究生</span>
+      </div>
 
       <div class="project-card clickable" data-href="/toa">
         <div>
-          <h3>ToA：对话式可视分析产品设计</h3>
+          <div class="ptitle-row">
+            <h3>ToA：对话式可视分析产品设计</h3>
+            <span class="project-badge">独立一作</span>
+          </div>
           <div class="project-sub">CHI'26 · 人机交互 CCF-A · Accepted · 2025.07—2025.11</div>
-          <p>新手在多轮可视分析对话中频繁"迷路"：线性界面难以回溯历史决策，认知负担持续积累。ToA 将分析对话重组为可分支、可回溯的"分析树"，让用户随时定位当前位置、自由切换探索路径。系统基于 LangChain 编排 LLM Workflow，每轮问答生成数据分析图表，并将结果作为节点插入分析树。对照实验(N=12)表明：洞察数量增加 58.3%，深度思考时间增加 17%</p>
+          <p>新手在多轮可视分析对话中频繁"迷路"：线性界面难以回溯历史决策，认知负担持续积累。ToA 将分析对话重组为可分支、可回溯的"分析树"，让用户随时定位当前位置、自由切换探索路径。系统基于 LangChain 编排 LLM Workflow，每轮问答生成数据分析图表，并将结果作为节点插入分析树。对照实验（N=12）表明：洞察数量增加 58.3%，深度思考时间增加 17%</p>
         </div>
         <div class="project-right">
-          <span class="project-badge">独立一作</span>
           <div class="project-tags">
             <span class="tag">LangChain</span>
             <span class="tag">LLM</span>
@@ -420,12 +449,14 @@
 
       <div class="project-card clickable" data-href="/narrasteer">
         <div>
-          <h3>NarraSteer：面向数据叙事的 Agent 交互产品设计</h3>
+          <div class="ptitle-row">
+            <h3>NarraSteer：面向数据叙事的 Agent 交互产品设计</h3>
+            <span class="project-badge">独立一作</span>
+          </div>
           <div class="project-sub">UIST'26 · 人机交互 CCF-A · Under Review · 2026.01—2026.04</div>
-          <p>LLM Agent 执行数据叙事任务时，中间步骤杂乱无序、过程不透明，用户只能被动等待结果。NarraSteer 将 Agent 的执行过程重组为可拖拽的故事线，让用户得以实时介入、主动调整叙事方向。系统基于 LangGraph 构建 ReAct Agent，依据用户叙事工作流重新设计 Tool，并将每步 Reasoning-Acting 轨迹映射为可拖拽的叙事节点。对照实验(N=16)表明：洞察密度提升 13%，心理负荷显著下降(p&lt;.05)，感知可控性显著提升(p&lt;.05)</p>
+          <p>LLM Agent 执行数据叙事任务时，中间步骤杂乱无序、过程不透明，用户只能被动等待结果。NarraSteer 将 Agent 的执行过程重组为可拖拽的故事线，让用户得以实时介入、主动调整叙事方向。系统基于 LangGraph 构建 ReAct Agent，依据用户叙事工作流重新设计 Tool，并将每步 Reasoning-Acting 轨迹映射为可拖拽的叙事节点。对照实验（N=16）表明：洞察密度提升 13%，心理负荷显著下降（p&lt;.05），感知可控性显著提升（p&lt;.05）</p>
         </div>
         <div class="project-right">
-          <span class="project-badge">独立一作</span>
           <div class="project-tags">
             <span class="tag">LangGraph</span>
             <span class="tag">Agent</span>
@@ -441,12 +472,14 @@
 
       <div class="project-card">
         <div>
-          <h3>跨社交媒体舆情分析与治理平台</h3>
+          <div class="ptitle-row">
+            <h3>跨社交媒体舆情分析与治理平台</h3>
+            <span class="project-badge">设计</span>
+          </div>
           <div class="project-sub">G 端产品设计 · 国家重点研发计划 3000w · 2024.09—2025.04</div>
           <p>政府用户在舆情监控、研判、处置过程中面临信息分散、流程割裂的挑战。承接国家重点研发计划，主导平台从 0 到 1 的产品设计：深入调研业务场景后，规划可视化大屏、工作台仪表盘、可视化中台三层信息架构，并协调五大技术团队推动方案落地交付</p>
         </div>
         <div class="project-right">
-          <span class="project-badge">设计</span>
           <div class="project-tags">
             <span class="tag">Figma</span>
             <span class="tag">信息架构</span>
@@ -458,16 +491,21 @@
         </div>
       </div>
 
-      <div class="project-group-label">本科<a href="/papers/portfolio.pdf" target="_blank" class="btn-link paper" style="text-transform:none;letter-spacing:0">📥 下载本科阶段作品集</a></div>
+      <div class="pg-label">
+        <span class="pg-label-left">本科</span>
+        <a href="/papers/portfolio.pdf" target="_blank" class="btn-link paper" style="text-transform:none;letter-spacing:0">📥 下载本科阶段作品集</a>
+      </div>
 
       <div class="project-card">
         <div>
-          <h3>XR 沉浸式展厅开发与设计——滕王阁图</h3>
+          <div class="ptitle-row">
+            <h3>XR 沉浸式展厅开发与设计——滕王阁图</h3>
+            <span class="project-badge">设计 &amp; 开发</span>
+          </div>
           <div class="project-sub">XR 沉浸式展厅 · 本科毕业设计 · 2024届</div>
-          <p>传统文化展演依赖静态展板，难以带给观众沉浸感与互动体验。以滕王阁图为主题，独立完成从场景建模、渲染、Shader 编写到雷达体感交互的完整开发链路，最终交付可运行的沉浸式展演装置。项目入选央视《闪光的青春: 2024 五四青年节特别节目》，提供拍摄素材与 3D 资产</p>
+          <p>传统文化展演依赖静态展板，难以带给观众沉浸感与互动体验。以滕王阁图为主题，独立完成从场景建模、渲染、Shader 编写到雷达体感交互的完整开发链路，最终交付可运行的沉浸式展演装置。项目入选央视《闪光的青春：2024 五四青年节特别节目》，提供拍摄素材与 3D 资产</p>
         </div>
         <div class="project-right">
-          <span class="project-badge">设计 & 开发</span>
           <div class="project-tags">
             <span class="tag">XR</span>
             <span class="tag">Unreal Engine</span>
@@ -481,12 +519,14 @@
 
       <div class="project-card">
         <div>
-          <h3>COCOCREATE：VR 参与式设计会议平台</h3>
+          <div class="ptitle-row">
+            <h3>COCOCREATE：VR 参与式设计会议平台</h3>
+            <span class="project-badge">设计 &amp; 开发</span>
+          </div>
           <div class="project-sub">VR 交互设计 · 2022.04—2023.03</div>
           <p>远程办公使设计师团队的协作愈发依赖视频会议，但传统工具难以支撑空间化的创意讨论。通过用户调研明确核心痛点后，主导从 VR 交互规范制定、协作工具设计到 PC 端管理系统的全链路产出，让设计师在虚拟空间中实现自然、高效的远程共创</p>
         </div>
         <div class="project-right">
-          <span class="project-badge">设计 & 开发</span>
           <div class="project-tags">
             <span class="tag">VR</span>
             <span class="tag">参与式设计</span>
@@ -500,12 +540,14 @@
 
       <div class="project-card">
         <div>
-          <h3>基于 AIGC 的齐白石动态国画艺术展</h3>
+          <div class="ptitle-row">
+            <h3>基于 AIGC 的齐白石动态国画艺术展</h3>
+            <span class="project-badge">设计 &amp; 开发</span>
+          </div>
           <div class="project-sub">AIGC 交互展览 · 国家级大创 2w 优秀结题 · 2022.05—2024.05</div>
           <p>传统 AI 图像生成依赖大量训练数据，难以应用于稀缺的传统艺术风格。主动探索小样本生成的可行性，创新性地将 Stable Diffusion + LoRA + ControlNet 组合应用于齐白石国画风格化，将所需训练数据从 1000 张压缩至 15 张，让 AI 得以还原草虫、花木等题材的笔墨意境。生成动效视频受邀参加中国美术家协会展览</p>
         </div>
         <div class="project-right">
-          <span class="project-badge">设计 & 开发</span>
           <div class="project-tags">
             <span class="tag">Stable Diffusion</span>
             <span class="tag">LoRA</span>
@@ -519,12 +561,14 @@
 
       <div class="project-card">
         <div>
-          <h3>L3 自动化汽车应急接管交互设计——变道情境</h3>
+          <div class="ptitle-row">
+            <h3>L3 自动化汽车应急接管交互设计——变道情境</h3>
+            <span class="project-badge">设计</span>
+          </div>
           <div class="project-sub">HMI 设计 · 华为 UCD × 湖南大学校企合作</div>
           <p>L3 自动驾驶在变道情境下需要驾驶员快速接管，但现有 HMI 系统信息传达不足，易引发接管失误。与华为 UCD 部门校企合作，深入调研驾驶员在变道情境下的感知与决策过程，识别关键信息断层后完成 HMI 系统设计，覆盖感知、决策、行为全链路的驾驶员信息传达，提升接管安全性与舒适性</p>
         </div>
         <div class="project-right">
-          <span class="project-badge">设计</span>
           <div class="project-tags">
             <span class="tag">HMI</span>
             <span class="tag">汽车交互</span>
@@ -539,36 +583,66 @@
     </div>
   </section>
 
-  <!-- 联系 -->
+  <!-- CONTACT -->
   <section id="contact">
-    <p class="section-label">保持联系</p>
-    <h2>找到我</h2>
+    <div class="sec-head">
+      <div class="sec-head-text">
+        <div class="sec-n">04 /</div>
+        <div class="sec-sub">保持联系</div>
+        <h2>CONTACT</h2>
+      </div>
+      <div class="sec-line"></div>
+    </div>
     <div class="contact-grid">
       <a href="mailto:feiyuan_qu@zju.edu.cn" class="contact-card">
-        <div class="icon">✉</div>
-        <div class="label">邮箱</div>
-        <div class="value">feiyuan_qu@zju.edu.cn</div>
+        <div class="c-type">// EMAIL</div>
+        <div class="c-label">学术邮箱</div>
+        <div class="c-value">feiyuan_qu@zju.edu.cn</div>
       </a>
       <a href="tel:18996001976" class="contact-card">
-        <div class="icon">T</div>
-        <div class="label">电话</div>
-        <div class="value">189-9600-1976</div>
+        <div class="c-type">// PHONE</div>
+        <div class="c-label">电话</div>
+        <div class="c-value">189-9600-1976</div>
       </a>
       <a href="/feiyuan-qu-cv.pdf" class="contact-card">
-        <div class="icon">↓</div>
-        <div class="label">简历</div>
-        <div class="value">下载 PDF</div>
+        <div class="c-type">// RESUME</div>
+        <div class="c-label">个人简历</div>
+        <div class="c-value">下载 PDF →</div>
       </a>
     </div>
   </section>
 
   <footer>
-    <p>© 2026 屈非塬 · 浙江大学 CAD&CG 实验室</p>
-    <p>Built with <a href="https://astro.build" target="_blank" style="color:var(--accent);text-decoration:none;">Astro</a></p>
+    <span>© 2026 屈非塬 · State Key Lab of CAD&amp;CG, ZJU</span>
+    <span>Built with <a href="https://astro.build" target="_blank">Astro</a></span>
   </footer>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span><span class="status-dot"></span>ONLINE · State Key Lab of CAD&amp;CG</span>
+    <span>屈非塬</span>
+  </div>
 
 </body>
 <script>
+  // 打字标签动画
+  const tags = ['HCI Researcher', 'Designer', 'Developer', 'Agent Builder'];
+  const tagEl = document.getElementById('logo-tag');
+  let ti = 0, ci = 0, deleting = false;
+  function typeTag() {
+    const word = tags[ti];
+    if (!deleting) {
+      tagEl.textContent = word.slice(0, ++ci);
+      if (ci === word.length) { deleting = true; setTimeout(typeTag, 1800); return; }
+      setTimeout(typeTag, 75);
+    } else {
+      tagEl.textContent = word.slice(0, --ci);
+      if (ci === 0) { deleting = false; ti = (ti + 1) % tags.length; setTimeout(typeTag, 300); return; }
+      setTimeout(typeTag, 38);
+    }
+  }
+  setTimeout(typeTag, 800);
+
   const saved = localStorage.getItem('theme') || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
   document.querySelectorAll('.theme-dot').forEach(dot => {
@@ -582,7 +656,6 @@
   });
 
   document.querySelectorAll('.project-card.clickable').forEach(card => {
-    card.style.cursor = 'pointer';
     card.addEventListener('click', e => {
       if (!e.target.closest('a') && !window.getSelection().toString()) {
         window.location.href = card.dataset.href;
