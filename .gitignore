@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Premiere Pro
+*.prproj
+Adobe Premiere Pro Auto-Save/
