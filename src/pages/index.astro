@@ -294,6 +294,7 @@ import '../styles/tokens.css';
       <ul class="nav-links">
         <li><a href="#skills">skills</a></li>
         <li><a href="#education">edu</a></li>
+        <li><a href="#experience">exp</a></li>
         <li><a href="#projects">works</a></li>
         <li><a href="#contact">contact</a></li>
       </ul>
@@ -409,11 +410,36 @@ import '../styles/tokens.css';
     </div>
   </section>
 
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="sec-head">
+      <div class="sec-head-text">
+        <div class="sec-n">03 /</div>
+        <div class="sec-sub">实习经历</div>
+        <h2>EXPERIENCE</h2>
+      </div>
+      <div class="sec-line"></div>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card">
+        <div>
+          <div class="ptitle-row">
+            <h3>阿里巴巴淘天集团 · 实习 AI 设计工程师（AI Design Engineer）</h3>
+          </div>
+          <div class="project-sub">设计部门中台 · 2026.06—至今</div>
+          <p>负责设计部门中台 Agent 能力扩展：团队 Agent 辅助设计师完成设计评审、设计调研等环节，沿 Skill 与 Tool 两个维度扩展 Agent 能力体系。</p>
+          <p style="margin-top:0.7rem">①<b>Skill 入库标准制定与管理</b>：设计师提交的 Skill 源码质量参差：内容堆成“屎山”，或滥用 LLM 执行无法验证的任务（如预测眼动）。主导制定 Skill 入库评价标准，按内容简洁度与执行稳定性评估；并搭建基于 LLM 的自动化修改流水线，将不达标 Skill 修订后入库；②<b>Skill 输出标准制定</b>：Skill 产出的 HTML 页面视觉质量参差不齐，难达团队预期。主导制定 HTML 的设计规范（基于 Radix UI 搭建组件库、定义视觉规范与 design token），以 DOM + CV + LLM 多模态评测检查 Skill 输出质量（是否使用组件、间距是否满足要求、留白是否得当等），让 Agent 以 loop 方式改良其视觉输出；③设计并开发 Agent PPT 制作模式：搭建模板化 PPT 生成工具——AI 基于内置模板生成 PPT 初稿，配套在线编辑器，支持手动调整或指定元素交由 AI 修改。</p>
+          <p style="margin-top:0.7rem"><b>结果</b>　累计入库近 30 个 Skill；上线 PPT 制作功能；Radix UI 组件规范与多模态评测落地为团队验收标准。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- PROJECTS -->
   <section id="projects">
     <div class="sec-head">
       <div class="sec-head-text">
-        <div class="sec-n">03 /</div>
+        <div class="sec-n">04 /</div>
         <div class="sec-sub">项目 &amp; 论文</div>
         <h2>WORKS</h2>
       </div>
@@ -589,7 +615,7 @@ import '../styles/tokens.css';
   <section id="contact">
     <div class="sec-head">
       <div class="sec-head-text">
-        <div class="sec-n">04 /</div>
+        <div class="sec-n">05 /</div>
         <div class="sec-sub">保持联系</div>
         <h2>CONTACT</h2>
       </div>
