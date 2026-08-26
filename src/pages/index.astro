@@ -58,6 +58,11 @@ import '../styles/home.css';
       min-height: 100vh;
       display: flex; align-items: center;
     }
+    /* 字符画向下渐隐：同最初的 mask 做法，终点推到约 5/6 屏 */
+    #hero-ascii {
+      -webkit-mask-image: linear-gradient(180deg, #000 0 0%, transparent 88%);
+      mask-image: linear-gradient(180deg, #000 0 0%, transparent 88%);
+    }
     .hero-inner {
       position: relative; z-index: 1;
       width: 100%; max-width: var(--content-w);
@@ -82,25 +87,31 @@ import '../styles/home.css';
       font-size: var(--text-display);
       font-weight: 500; letter-spacing: 0.06em; color: var(--text);
     }
-    .hero-desc { margin: 2.5rem 0 3rem; }
+    .hero-desc { margin: 2.5rem 0 0; }
     .hero-desc p {
       font-size: var(--text-body); color: var(--text-dim); line-height: 2;
       max-width: 580px;
     }
-    .cta-group { display: flex; gap: 0.875rem; flex-wrap: wrap; }
-    .btn {
-      font-family: var(--font-mono);
-      font-size: var(--text-meta); letter-spacing: 0.07em;
-      padding: 0.6rem 1.4rem; text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: color 0.18s, background 0.18s;
-      display: inline-flex; align-items: center; gap: 0.4rem;
+
+    /* 滚动提示：底部中央，微标 + 细线内 accent 小段循环下落 */
+    .scroll-cue {
+      position: absolute; left: 50%; bottom: 2rem; transform: translateX(-50%);
+      z-index: 1; /* 盖过 ::after 底部渐变 */
+      display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3em;
+      color: var(--text-dimmer);
     }
-    .btn-primary { background: var(--accent); color: var(--bg); }
-    .btn-primary:hover { background: var(--accent-hi); }
-    .btn-ghost { background: none; color: var(--text-dim); padding-left: 0.4rem; padding-right: 0.4rem; }
-    .btn-ghost:hover { color: var(--text); text-decoration: underline; text-underline-offset: 4px; }
+    .scroll-cue-line {
+      width: 1px; height: 32px;
+      background: var(--border-hi);
+      position: relative; overflow: hidden;
+    }
+    .scroll-cue-line::after {
+      content: ''; position: absolute; left: 0; top: -40%;
+      width: 100%; height: 40%; background: var(--accent);
+      animation: cue-drop 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes cue-drop { to { top: 110%; } }
 
     /* fade-up（keyframes fu 复用 tokens.css） */
     .fu { opacity: 0; transform: translateY(18px); animation: fu 0.65s ease forwards; }
@@ -267,8 +278,6 @@ import '../styles/home.css';
     }
     @media (max-width: 480px) {
       .hero-role { letter-spacing: 0.14em; }
-      .cta-group { flex-direction: column; align-items: stretch; }
-      .btn { justify-content: center; }
     }
   </style>
 </head>
@@ -289,12 +298,11 @@ import '../styles/home.css';
         <div class="hero-desc fu fu-3">
           <p>浙江大学 CAD&amp;CG 全国重点实验室硕士研究生，研究方向为人机交互与智能可视化，专注于通过交互创新手段让 LLM 更好地完成数据分析与可视叙事任务（LLM4Vis · Agent4Vis · Chart Generation）</p>
         </div>
-
-        <div class="cta-group fu fu-4">
-          <a href="#projects" class="btn btn-primary">→ 查看项目</a>
-          <a href="mailto:feiyuan_qu@zju.edu.cn" class="btn btn-ghost">联系我</a>
-        </div>
       </div>
+    </div>
+    <div class="scroll-cue fu fu-4" aria-hidden="true">
+      <span>SCROLL</span>
+      <span class="scroll-cue-line"></span>
     </div>
   </div>
 

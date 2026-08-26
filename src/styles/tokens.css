@@ -6,6 +6,24 @@
 /* Fonts */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
 
+/* 自托管苹方（站点字符子集 ~170KB/字重）：本机/Mac 优先 local()，否则下载 woff2 */
+@font-face {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('PingFang SC'), local('PingFangSC-Regular'),
+       url('/fonts/PingFangSC-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('PingFang SC Bold'), local('PingFangSC-Bold'),
+       url('/fonts/PingFangSC-Bold.woff2') format('woff2');
+}
+
 /* Reset */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
