@@ -1,0 +1,404 @@
+---
+import '../styles/tokens.css';
+---
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ToA · 对话式可视分析 · 屈非塬</title>
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')</script>
+  <style>
+    /* ── ToA 页面专有样式 ── */
+    .hero { padding: 8rem 2.5rem 3rem; max-width: 900px; margin: 0 auto; }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4.5vw, 3rem);
+      font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 1rem;
+    }
+    .hero h1 .highlight { color: var(--accent); }
+    .hero .subtitle { font-size: 0.88rem; color: var(--text-dim); margin-bottom: 0.4rem; }
+    .hero .authors { font-size: 0.78rem; color: var(--text-dimmer); margin-bottom: 2rem; letter-spacing: 0.03em; }
+    .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+    /* Query table */
+    .query-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: 0.82rem; }
+    .query-table th {
+      text-align: left; padding: 0.5rem 0.75rem; color: var(--accent2);
+      font-size: var(--text-xs); letter-spacing: 0.1em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .query-table td { padding: 0.65rem 0.75rem; color: var(--text-dim); border-bottom: 1px solid var(--border); vertical-align: top; }
+    .query-table tr:last-child td { border-bottom: none; }
+    .query-table tr:hover td { background: rgba(98,114,255,0.03); }
+    .qname { color: var(--text); font-weight: 500; white-space: nowrap; }
+    .qpct { color: var(--accent); font-weight: 600; white-space: nowrap; }
+    .origin-tag {
+      font-size: 0.64rem; padding: 2px 6px;
+      background: rgba(98,114,255,0.1); border: 1px solid rgba(98,114,255,0.3);
+      color: var(--accent); white-space: nowrap;
+    }
+    .origin-tag.new { background: rgba(0,232,200,0.1); border-color: rgba(0,232,200,0.3); color: var(--accent2); }
+
+    /* Contrast grid */
+    .contrast-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid var(--border); background: var(--border); margin-top: 1.5rem; }
+    .contrast-card { background: var(--surface); padding: 1.25rem; }
+    .contrast-card.weakness { border-top: 2px solid rgba(255,100,120,0.5); }
+    .contrast-card.strength { border-top: 2px solid rgba(0,232,200,0.5); }
+    .ctag { font-size: var(--text-xs); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; font-weight: 600; }
+    .contrast-card.weakness .ctag { color: #ff6478; }
+    .contrast-card.strength .ctag { color: var(--accent2); }
+    .contrast-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .contrast-card li { font-size: 0.8rem; color: var(--text-dim); padding-left: 1rem; position: relative; }
+    .contrast-card li::before { content: '//'; position: absolute; left: 0; color: var(--text-dimmer); font-size: var(--text-xs); top: 2px; }
+
+    /* Rule table */
+    .rule-table { width: 100%; border-collapse: collapse; margin-top: 1.25rem; font-size: 0.8rem; }
+    .rule-table th {
+      text-align: left; padding: 0.5rem 0.75rem; color: var(--accent2);
+      font-size: var(--text-xs); letter-spacing: 0.1em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .rule-table td { padding: 0.6rem 0.75rem; color: var(--text-dim); border-bottom: 1px solid var(--border); vertical-align: top; }
+    .rule-table tr:last-child td { border-bottom: none; }
+    .rule-table tr:hover td { background: rgba(98,114,255,0.03); }
+    .rname { color: var(--text); font-weight: 500; }
+    .rule-table code {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--accent2); background: rgba(0,232,200,0.08);
+      padding: 1px 5px; border: 1px solid rgba(0,232,200,0.2);
+    }
+
+    .img-grid { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
+    .img-item { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .behavior-list { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--border); background: var(--border); margin-top: 1.25rem; }
+    .behavior-item { background: var(--surface); padding: 1.25rem; }
+    .behavior-item h3 { font-size: 0.88rem; margin-bottom: 0.5rem; }
+
+    .video-wrap { width: 100%; aspect-ratio: 16/9; margin-top: 1.5rem; overflow: hidden; border: 1px solid var(--border); background: #000; }
+    .video-wrap video { width: 100%; height: 100%; object-fit: contain; }
+
+    @media (max-width: 700px) { .contrast-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) { .hero { padding: 6.5rem 1.25rem 2.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <nav>
+    <a href="/" class="back-link">← 返回首页</a>
+    <div class="nav-right">
+      <span class="nav-badge">CHI'26 · CCF-A</span>
+      <div class="theme-toggle">
+        <div class="theme-dot dark" data-t="dark" title="暗色"></div>
+        <div class="theme-dot light" data-t="light" title="亮色"></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <span class="conf-badge">CHI 2026 · CCF-A · Accepted · Barcelona</span>
+    <h1>Visualizing <span class="highlight">Tree-of-Analysis</span>:<br />Facilitating CVA for Novices</h1>
+    <div class="subtitle">通过分析树可视化辅助新手开展对话式可视分析</div>
+    <div class="authors">屈非塬, 唐谭, 符泽阳, 陈燕, 贾瀚泽, 高君明, Songela, 吴英才 · State Key Lab of CAD&amp;CG, ZJU</div>
+    <div class="hero-actions">
+      <a href="/papers/toa-chi26.pdf" target="_blank" class="btn-link paper">📄 Paper</a>
+      <a href="/papers/CHI-Presentation.pptx" download class="btn-link">🗂 Slides</a>
+      <a href="/images/toa/usecase.mp4" target="_blank" class="btn-link video">▶ Demo Video</a>
+    </div>
+    <img src="/images/toa/Teaser.png" alt="ToA Teaser" class="screenshot-img" style="margin-top:2rem;" />
+    <p class="img-caption">Fig. 1 — ToA 将线性 CVA 对话（左）结构化为可导航的分析树（右），引导新手逐步深入探索</p>
+  </div>
+
+  <div class="intro-band">
+    <p style="font-size:0.95rem;line-height:1.95;color:var(--text-dim);">
+      这个研究是为<strong style="color:var(--text);">没有数据分析背景的普通人</strong>做的。如果你曾经打开 ChatGPT 上传一份数据，却不知道该问什么、问着问着就迷失了方向——这正是我们想解决的问题。
+    </p>
+    <p style="font-size:0.95rem;line-height:1.95;color:var(--text-dim);margin-top:0.75rem;">
+      ToA 的做法是：把你和 AI 的每一轮对话，实时整理成一棵可视化的<strong style="color:var(--text);">分析树</strong>。你随时能看到自己分析到哪了、探索过哪些方向、下一步可以往哪走——不再是一眼望不到头的聊天记录。
+    </p>
+  </div>
+
+  <section>
+    <p class="sec-label">Research Background</p>
+    <h2>问题从哪里来？</h2>
+    <p>现在用 ChatGPT 分析数据很方便——上传文件，用中文问问题，AI 直接出图。但实际用下来你会发现：问着问着就不知道接下来该问什么了，或者分析了一大堆图，最后却理不清思路。</p>
+    <p>这不是你的问题，是工具本身有个结构性缺陷：<strong>线性的对话界面没有全局视图</strong>，你只能看到当前这轮，完全不知道自己分析到哪了、之前发现了什么。</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">挑战 1</div>
+        <div class="stat-value">不知道该问什么</div>
+        <div class="stat-sub">自然语言的灵活性反而让人无从下手，想问什么都行，反而什么都问不好</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">挑战 2</div>
+        <div class="stat-value">上下文乱成一锅粥</div>
+        <div class="stat-sub">分析信息散在文字、数字、图表里，多轮对话之后完全找不到之前发现了什么</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-label">Formative Study</p>
+    <h2>新手和专家到底差在哪？</h2>
+    <p>在开始设计之前，我们先做了一轮观察研究——找来 12 个人，让他们用 ChatGPT 分析一份约 3 万条的招聘数据集，目标是分析职位特征、给出数据支撑的职位推荐。其中 6 人是有数据分析经验的专家，6 人是完全没有背景的普通用户（新手）。</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">参与者</div>
+        <div class="stat-value">N = 12</div>
+        <div class="stat-sub">5男7女，平均年龄 27.5 岁</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">构成</div>
+        <div class="stat-value">6 专家 + 6 新手</div>
+        <div class="stat-sub">依据数据素养量表评分分组</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">编码分析</div>
+        <div class="stat-value">205 条查询</div>
+        <div class="stat-sub">两名作者独立编码，归纳为 8 种查询类型</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">时长</div>
+        <div class="stat-value">55 分钟</div>
+        <div class="stat-sub">介绍 15min · 任务 25min · 访谈 15min</div>
+      </div>
+    </div>
+
+    <p>结果差别很明显：<strong>4/6 个新手任务失败</strong>（1人超时40分钟、1人解释不足、2人直接放弃），专家 6/6 全部完成。我们对全部 205 条查询进行了编码，发现他们提问的方式截然不同：</p>
+
+    <table class="query-table">
+      <thead>
+        <tr><th>查询类型</th><th>占比</th><th>来源</th><th>是什么意思</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="qname">Start New</td><td class="qpct">27.8%</td><td><span class="origin-tag">文献衍生</span></td><td>跳开去问一个全新的问题，不接着之前的分析</td></tr>
+        <tr><td class="qname">Fumble</td><td class="qpct">19.5%</td><td><span class="origin-tag new">本研究归纳</span></td><td>问了个很模糊的问题，比如"看看有没有什么规律"</td></tr>
+        <tr><td class="qname">Elaborate</td><td class="qpct">13.2%</td><td><span class="origin-tag">文献衍生</span></td><td>在当前图表上加入更多数据维度</td></tr>
+        <tr><td class="qname">Dice</td><td class="qpct">11.7%</td><td><span class="origin-tag">文献衍生</span></td><td>加个筛选条件，只看数据的某个子集</td></tr>
+        <tr><td class="qname">Slice</td><td class="qpct">9.3%</td><td><span class="origin-tag new">本研究归纳</span></td><td>从图表里选一个具体的值深入挖</td></tr>
+        <tr><td class="qname">Contextualize</td><td class="qpct">7.3%</td><td><span class="origin-tag new">本研究归纳</span></td><td>引入自己的背景知识来解读数据</td></tr>
+        <tr><td class="qname">Reshape</td><td class="qpct">5.9%</td><td><span class="origin-tag">文献衍生</span></td><td>换个图表类型，数据本身不变</td></tr>
+        <tr><td class="qname">Clarify</td><td class="qpct">5.4%</td><td><span class="origin-tag new">本研究归纳</span></td><td>追问图表里某个数字或元素是什么意思</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:2rem;">
+      <h3 style="margin-bottom:1rem;">具体差在哪三点</h3>
+      <div class="contrast-grid">
+        <div class="contrast-card weakness">
+          <div class="ctag">新手的问题</div>
+          <ul>
+            <li><strong>W1 看不到"下一步"：</strong>图表里的异常值、趋势、数据堆叠……这些都是"你应该继续挖"的信号，新手基本视而不见</li>
+            <li><strong>W2 问不到点子上：</strong>即使意识到了某个有趣的点，也不知道怎么问，只能说"看看有没有什么规律"</li>
+            <li><strong>W3 分析是碎的：</strong>在工资、学历、城市、经验之间来回跳，最后自己都不知道为什么推荐这个职位</li>
+          </ul>
+        </div>
+        <div class="contrast-card strength">
+          <div class="ctag">专家是怎么做的</div>
+          <ul>
+            <li><strong>S1 对信号敏感：</strong>能从图里识别两类信号——视觉呈现的问题和数据本身的发现（异常值、趋势、相关性）</li>
+            <li><strong>S2 问题很具体：</strong>把信号翻译成精准的问题：只看科技公司的薪资分布、加上经验年限对比</li>
+            <li><strong>S3 分析有树形结构：</strong>虽然界面是线性的，但专家脑子里会把探索整理成树，想回头翻哪个节点就翻</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <img src="/images/toa/FS_Study_Results.png" alt="Formative Study Results" class="screenshot-img" />
+    <p class="img-caption">Fig. 2 — 新手（左上）Fumble 比例高、失败率高；专家（右下）Fumble 比例低、全部成功</p>
+
+    <div style="margin-top:2rem;">
+      <h3 style="margin-bottom:0.75rem;">三个设计目标</h3>
+      <div class="dg-list">
+        <div class="dg-item">
+          <span class="dg-num">DG1</span>
+          <div>
+            <h3>帮新手看到"下一步"的信号</h3>
+            <p>自动从 AI 的回答里识别出那两类信号，显式地展示给用户，对应 W1 / S1</p>
+          </div>
+        </div>
+        <div class="dg-item">
+          <span class="dg-num">DG2</span>
+          <div>
+            <h3>把模糊的想法变成具体的问题</h3>
+            <p>把用户的问题归类为 7 种类型，并给出具体的查询建议，不让人卡在"不知道怎么问"，对应 W2 / S2</p>
+          </div>
+        </div>
+        <div class="dg-item">
+          <span class="dg-num">DG3</span>
+          <div>
+            <h3>让分析过程可见、可导航</h3>
+            <p>把对话整理成一棵树，AI 回答是节点，用户的问题是边，随时能看到全局、随时能跳回任意一步，对应 W3 / S3</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-label">System Design</p>
+    <h2>ToA 是怎么工作的？</h2>
+    <p>打开 ToA，界面分两半：右边是你熟悉的对话框，左边多了一棵实时生长的<strong>分析树</strong>。你每问一个问题，树上就长出一个新节点；问题的类型会标在连接线上。分析到哪、探索过什么，一眼全看到。</p>
+
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">🌲</div>
+        <div>
+          <h3>树导航面板</h3>
+          <p>左侧的树实时更新，展示你的整个探索历史。每个节点显示对应的数据维度和过滤条件。把鼠标悬停在节点上，会弹出浮窗列出这个回答里的所有"信号"——哪些是异常值、哪些是趋势、哪些是数据堆叠问题。点 REC. 按钮，立刻给你生成针对这个信号的具体推荐问题。</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💡</div>
+        <div>
+          <h3>智能推荐系统</h3>
+          <p>每次 AI 回答之后，对话区自动出现 3 张推荐卡片，每张都是"下一步可以问什么"。卡片旁边有个问号图标，点开会解释为什么推荐这个方向。这些推荐会同时在树上以虚线节点预览，让你看到点了之后树会变成什么样。</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔍</div>
+        <div>
+          <h3>过滤 &amp; 跳转工具</h3>
+          <p>树越来越大之后，可以框选几个相关节点开启过滤模式——对话区只显示这几个节点的内容，帮你专注在一条分析线索上。也可以直接点任意一个历史节点，跳回那个分析状态继续提问。</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚙️</div>
+        <div>
+          <h3>自动树构建算法</h3>
+          <p>每来一个新的 AI 回答，系统用 6 条规则自动判断它应该挂在树的哪个位置。前 4 条规则靠比较图表的数据属性和过滤条件来判断；后 2 条调用 LLM 判断语义关系。端到端准确率 <strong>70.73%</strong>（父节点识别 71.37%，类型分类 99.10%）。</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:1rem;font-size:0.78rem;color:var(--text-dimmer);">// 技术栈：前端 Vue3 + TypeScript + Vite · 图表 Vega-Lite · 分析树 G6 · 后端 Django · LLM Google Gemini 2.5 Flash · 编排 LangChain</p>
+
+    <img src="/images/toa/Interface.png" alt="ToA System Interface" class="screenshot-img" />
+    <p class="img-caption">Fig. 5 — 左侧分析树 + 右侧增强对话面板，推荐卡片同时在树上预览</p>
+
+    <div class="img-grid">
+      <div class="img-item">
+        <img src="/images/toa/Tree_Definition.png" alt="Tree Definition" class="screenshot-img" style="margin-top:0" />
+        <p class="img-caption">Fig. 3 — 分析树的数据结构定义</p>
+      </div>
+      <div class="img-item">
+        <img src="/images/toa/Tree_Construction_and_Recommendation.png" alt="Tree Construction and Recommendation" class="screenshot-img" style="margin-top:0" />
+        <p class="img-caption">Fig. 4 — 新节点自动插入 + 推荐生成流程</p>
+      </div>
+    </div>
+
+    <img src="/images/toa/Use_Case.png" alt="Use Case" class="screenshot-img" />
+    <p class="img-caption">Fig. 6 — 场景演示：用户通过 Filter 工具聚焦 Xiaomi 相关节点，深入挖掘处理器选择偏好</p>
+
+    <div class="video-wrap">
+      <video controls preload="metadata">
+        <source src="/images/toa/usecase.mp4" type="video/mp4" />
+        您的浏览器不支持视频播放。
+      </video>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-label">User Study</p>
+    <h2>效果怎么样？</h2>
+    <p>我们做了一个对照实验：招募 <strong>12 名没有数据分析背景的新手</strong>（6男6女，平均年龄 23.1 岁），在组内对照设计下完成两项 CVA 任务（航班价格数据集 / 手机市场数据集），系统顺序跨参与者平衡。基线系统与 ToA 外观和 AI 能力完全相同，仅移除分析树面板。</p>
+
+    <img src="/images/toa/Baseline.png" alt="Baseline" class="screenshot-img" />
+    <p class="img-caption">基线系统对比（外观与 ToA 完全相同，仅移除分析树面板）</p>
+
+    <p>每项任务：5 分钟上手 → 25 分钟自由探索 → 10 分钟整理洞察报告 → 5 分钟问卷，最后 15 分钟访谈。</p>
+
+    <h3 style="margin-top:1.5rem;margin-bottom:1rem;">量化结果</h3>
+    <div class="result-grid">
+      <div class="result-card">
+        <div class="metric">+58.3%</div>
+        <div class="metric-sub">p = 0.002, d = 1.171</div>
+        <div class="metric-label">每轮对话产出的洞察数</div>
+      </div>
+      <div class="result-card">
+        <div class="metric">+17.7%</div>
+        <div class="metric-sub">p = 0.033, d = 0.706</div>
+        <div class="metric-label">每轮思考时间（71.3s vs 60.6s）</div>
+      </div>
+      <div class="result-card">
+        <div class="metric">↓23%</div>
+        <div class="metric-sub">p = 0.003, r = −0.600</div>
+        <div class="metric-label">总对话轮次（14.4 vs 18.8 轮）</div>
+      </div>
+      <div class="result-card">
+        <div class="metric">0 vs 1</div>
+        <div class="metric-sub">ToA vs 基线</div>
+        <div class="metric-label">中途放弃任务次数</div>
+      </div>
+    </div>
+
+    <p>用 ToA 每轮产出的洞察多了 58%，思考时间也多了 18%——这不是坏事，说明用户在认真想、主动决策，而不是随便点推荐。总轮次反而少了，因为每一步都更有目的性，不用来回兜圈子。</p>
+
+    <div class="img-grid">
+      <div class="img-item">
+        <img src="/images/toa/Task_Completion.png" alt="Task Completion" class="screenshot-img" style="margin-top:0" />
+        <p class="img-caption">Fig. 8 — 三项客观指标对比：对话轮次 / 每轮思考时间 / 每轮洞察数</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2rem;margin-bottom:1rem;">主观感受</h3>
+    <p>NASA-TLX 认知负荷量表显示，ToA 下用户的<strong>心理需求</strong>（p = 0.021）、<strong>努力程度</strong>（p = 0.039）、<strong>绩效感知</strong>（p = 0.021）都显著更好。有用性打分里，Q1 全局概览、Q2 关键发现追溯、Q3 步骤间关系理解、Q4 替代视角发现四项均显著提升。9/12 的人觉得树和自己的分析逻辑是对得上的（Q6 均值 5.17 / 7）。</p>
+
+    <div class="img-grid">
+      <div class="img-item">
+        <img src="/images/toa/NASA_TLX.png" alt="NASA TLX" class="screenshot-img" style="margin-top:0" />
+        <p class="img-caption">Fig. 9 — NASA-TLX 认知负荷对比（越低越好）</p>
+      </div>
+      <div class="img-item">
+        <img src="/images/toa/Percived_Usefulness.png" alt="Perceived Usefulness" class="screenshot-img" style="margin-top:0" />
+        <p class="img-caption">Fig. 10 — 有用性感知评分 Q1–Q6</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2rem;margin-bottom:1rem;">用户行为的三个变化</h3>
+    <div class="behavior-list">
+      <div class="behavior-item">
+        <h3>从"随手点点"变成"主动决策"</h3>
+        <p>基线下有 6/12 人描述自己是"先点再想"——推荐看起来还行就点，不管有没有在当前分析里。有了树之后，只有 1/12 人还这么做，因为能直接看出推荐会把分析带向哪里。</p>
+        <div class="quote"><span class="speaker">P7：</span>"我能看到自己在哪条路上，推荐会把我带去哪，所以只有真的相关我才会点。"</div>
+      </div>
+      <div class="behavior-item">
+        <h3>开始主动翻历史记录</h3>
+        <p>基线下 8/12 人从来不往回翻——线性滚动太麻烦了，一长串对话根本找不到之前说了什么。有了树之后只有 2/12 人不翻，甚至有 3 个人直接把树当成主界面用。</p>
+        <div class="quote"><span class="speaker">P9：</span>"我一直担心遗漏了什么，所以不停地在树里找，确认自己没忽略重要的发现。"</div>
+      </div>
+      <div class="behavior-item">
+        <h3>总结时能做跨步骤比较</h3>
+        <p>整理报告阶段，基线下 5/12 人只是从头到尾线性回顾一遍；有了树之后 11/12 人会直接跳转对比不同节点的发现，报告质量明显更高。</p>
+        <div class="quote"><span class="speaker">P11：</span>"看到 Vistara 价格很高时，我隐约记得之前分析过他们的市场规模。用树确认了一下，发现他们市场份额最小——这才明白他们为什么能定这个价。没有树的话我肯定找不回那条记录。"</div>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border);display:flex;gap:0.75rem;flex-wrap:wrap;">
+      <a href="/papers/toa-chi26.pdf" target="_blank" class="btn-link paper">📄 下载论文 PDF</a>
+      <a href="/papers/CHI-Presentation.pptx" download class="btn-link">🗂 下载演讲幻灯片</a>
+      <a href="/images/toa/usecase.mp4" target="_blank" class="btn-link video">▶ 观看演示视频</a>
+      <a href="/" class="btn-link">← 返回首页</a>
+    </div>
+  </section>
+
+  <footer>© 2026 屈非塬 · State Key Lab of CAD&amp;CG, ZJU</footer>
+
+</body>
+<script>
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.querySelectorAll('.theme-dot').forEach(dot => {
+    if (dot.dataset.t === saved) dot.classList.add('active');
+    dot.addEventListener('click', () => {
+      const t = dot.dataset.t;
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.t === t));
+    });
+  });
+</script>
+</html>

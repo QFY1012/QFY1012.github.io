@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>屈非塬 · CV</title>
+<style>
+  /* ============================================================
+     屈非塬 · CV — 忠实还原原版 feiyuan-qu-cv.pdf
+     居中名字+联系方式 → 黑线 → 教育(双栏+竖线)/技能/项目顺排
+     灰线分区，无区块标题。正文 9.25pt、行高 1.7。
+     原版取色：正文#1a1a1a 次#555 线#ddd 链接#185fa5
+               紫签#cecbf6/#3c3489 绿签#c0dd97/#27500a 框#bbb
+     ============================================================ */
+
+  /* 中文字体是 ttc 集合，Chrome PDF 不嵌入系统 ttc → 别的机器打开会换字体。
+     用 @font-face 声明成 web font，PDF 就会子集嵌入，任何机器看着都一样。 */
+  @font-face {
+    font-family: "Noto Sans CJK SC";
+    src: url("file:///home/r/.fonts/sc-sans-400.otf") format("opentype");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "Noto Sans CJK SC";
+    src: url("file:///home/r/.fonts/sc-sans-700.otf") format("opentype");
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: "Noto Serif CJK SC";
+    src: url("file:///home/r/.fonts/sc-serif-400.otf") format("opentype");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "Noto Serif CJK SC";
+    src: url("file:///home/r/.fonts/sc-serif-700.otf") format("opentype");
+    font-weight: 700;
+  }
+
+  :root {
+    --ink:    #1a1a1a;
+    --dim:    #555555;
+    --link:   #185fa5;
+    --line:   #dddddd;
+    --box:    #bbbbbb;
+    --purple: #cecbf6;
+    --purple-t: #3c3489;
+    --green:  #c0dd97;
+    --green-t: #27500a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    /* 全篇无衬线：拉丁=Helvetica 系，中文=黑体系；仅联系方式等宽(亦无衬线) */
+    font-family: "Helvetica Neue", "Arial", "Liberation Sans", "DejaVu Sans",
+                 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+                 "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+    color: var(--ink);
+    background: #eef0f6;
+    font-size: 9.25pt;
+    line-height: 1.4;
+  }
+
+  a { color: var(--link); text-decoration: none; }
+  .lnk { color: var(--link); }
+
+  /* ── 纸张 ─────────────────────────────────────────────── */
+  .sheet {
+    background: #fff;
+    width: 210mm; min-height: 297mm;
+    margin: 0 auto;
+    padding: 7mm 18mm 6mm;   /* 左右 52pt 与原版一致 */
+    box-shadow: 0 4px 40px rgba(0,0,0,0.12);
+  }
+
+  /* ── 页眉 ─────────────────────────────────────────────── */
+  .head {
+    text-align: center;
+    padding-bottom: 2.2mm;
+    border-bottom: 0.6pt solid var(--ink);   /* 原版黑线=内容宽，不出血 */
+  }
+  .name {
+    font-size: 18pt; font-weight: 700;
+    letter-spacing: 0.5em;
+    line-height: 1.0;
+    /* 仅名字用宋体（衬线），其余全篇无衬线 */
+    font-family: "Songti SC", "STSong", "SimSun",
+                 "Noto Serif CJK SC", "Source Han Serif SC", serif;
+  }
+  .contact {
+    margin-top: 1.5mm;
+    font-size: 9pt; color: var(--dim);
+    font-family: "SF Mono", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;  /* 原版仅此行的宽 */
+  }
+  .contact a { color: var(--dim); }
+  .contact .sep { margin: 0 3mm; }
+  .contact .arr { font-size: 7.5pt; color: var(--link); }  /* 顶部箭头与项目标题箭头同款 */
+  .arr { font-family: "DejaVu Sans", sans-serif; }
+
+  /* ── 教育：双栏 + 中间竖线，下灰线 ─────────────────────── */
+  .edu-grid {
+    overflow: hidden;               /* weasyprint 不支持 grid，用 float 双栏 */
+    margin-top: 1.8mm;
+    padding-bottom: 2mm;
+    border-bottom: 1px solid var(--line);
+  }
+  .edu-item { float: left; width: 50%; }
+  .edu-item:first-child { padding-right: 6mm; }
+  .edu-item:last-child  { padding-left: 6mm; border-left: 1px solid var(--line); }
+  .edu-main { font-weight: 600; }
+  .edu-main .school { font-size: 10.5pt; font-weight: 700; }
+  .edu-main .tag { font-size: 8.25pt; font-weight: 400; color: var(--dim); }
+  .edu-main .date {
+    float: right;
+    font-size: 9pt; font-weight: 400; color: var(--dim);
+  }
+  .edu-sub {
+    margin-top: 0.8mm;
+    font-size: 9pt; color: var(--dim);
+  }
+  .edu-sub .sep { color: var(--box); margin: 0 1mm; }
+
+  /* ── 技能：一行灰字，下灰线 ───────────────────────────── */
+  .skills {
+    margin-top: 2mm;
+    padding-bottom: 2mm;
+    border-bottom: 1px solid var(--line);
+    font-size: 8.25pt; color: var(--dim);
+  }
+  .skills .label { margin-right: 2.5mm; }
+  .skill + .skill { margin-left: 3mm; }
+
+  /* ── 项目 ─────────────────────────────────────────────── */
+  .proj { margin-top: 4mm; }
+  .proj + .proj { margin-top: 5mm; padding-top: 5mm; border-top: 1px solid var(--line); }
+  .proj-title { font-size: 10.5pt; font-weight: 700; line-height: 1.3; }
+  .proj-title .date-l { font-size: 10.5pt; color: var(--dim); font-weight: 400; margin-left: 3mm; }
+  .t-link {
+    color: var(--ink);
+    text-decoration: underline;             /* 标题带下划线，看上去像链接 */
+    text-underline-offset: 2px;
+    text-decoration-thickness: 0.75px;
+  }
+  .dot { color: var(--dim); }
+  .t-link .arr {
+    font-size: 7.5pt; font-weight: 400; color: var(--link);  /* 蓝色，和链接同色 */
+    display: inline-block;                  /* 原子inline盒：下划线不蔓延到箭头 */
+  }  /* 箭头保持原来小号的样式 */
+  .p-link { font-size: 7.5pt; margin-left: 3mm; color: var(--dim); font-weight: 400; }
+  .p-tag {
+    display: inline-block;
+    font-size: 7pt; line-height: 1.6; font-weight: 400;
+    border-radius: 3pt;
+    padding: 0 2.5mm; margin-left: 1.5mm;
+    vertical-align: 1px;
+  }
+  .p-tag.box    { border: 0.6pt solid var(--box); color: var(--dim); padding: 0 2mm; }
+  .p-tag.purple { background: var(--purple); color: var(--purple-t); }
+  .p-tag.green  { background: var(--green);  color: var(--green-t); }
+  .proj-right { float: right; margin-left: 2mm; }
+  .proj-title .role { color: var(--dim); }  /* 公司 · 职位：字重统一加粗，职位保留灰字 */
+  .proj-date {
+    margin-top: 0;
+    font-size: 9pt; color: var(--dim);
+  }
+  .star { margin-top: 1.6mm; }
+
+  .star-line {
+    font-size: 9.25pt; line-height: 1.7; color: var(--ink);
+    text-align: justify;
+    padding-left: 8.8mm;
+    text-indent: -8.8mm;
+  }
+  .star-line + .star-line { margin-top: 1.8mm; }
+  .star-line.full { padding-left: 0; text-indent: 0; }  /* 无标签的总括行：不悬挂缩进 */
+  .star-line b { font-weight: 600; }        /* 行动条目内的小标题，如「基座模型选型」 */
+  .star-label { color: var(--dim); margin-right: 2.3mm; }
+  .up { color: var(--link); font-weight: 600; }
+
+  /* ── 打印 ─────────────────────────────────────────────── */
+  @media print {
+    body { background: #fff; }
+    .sheet { width: auto; min-height: auto; margin: 0; padding: 7mm 18mm 6mm; box-shadow: none; }
+    .head, .proj, .edu-item { break-inside: avoid; }
+  }
+  @page { size: A4; margin: 0; }
+</style>
+</head>
+<body>
+
+<main class="sheet">
+
+  <!-- 页眉 -->
+  <header class="head">
+    <div class="name">屈非塬</div>
+    <div class="contact">
+      <a href="tel:18996001976">189-9600-1976</a><span class="sep">　</span>
+      <a href="mailto:feiyuan_qu@zju.edu.cn">feiyuan_qu@zju.edu.cn</a><span class="sep">　</span>
+      <a href="https://qfy1012.github.io" target="_blank">qfy1012.github.io <span class="arr">↗&#xFE0E;</span></a>
+    </div>
+  </header>
+
+  <!-- 教育（浙大左 / 湖大右） -->
+  <div class="edu-grid">
+    <div class="edu-item">
+      <div class="edu-main">
+        <span class="school">浙江大学</span>
+        <span class="tag">导师：唐谈、巫英才</span>
+        <span class="date">2024.09 — 至今</span>
+      </div>
+      <div class="edu-sub">人机交互 · 工学硕士<span class="sep">｜</span>计算机辅助设计国家重点实验室</div>
+    </div>
+    <div class="edu-item">
+      <div class="edu-main">
+        <span class="school">湖南大学</span>
+        <span class="tag">年级第一</span>
+        <span class="date">2020.09 — 2024.06</span>
+      </div>
+      <div class="edu-sub">工业设计 · 工学学士<span class="sep">｜</span>智能设计方法、人机交互设计</div>
+    </div>
+  </div>
+
+  <!-- 技能 -->
+  <div class="skills">
+    <span class="label">技能</span>
+    <span class="skill">Python</span>
+    <span class="skill">PydenticAgent</span>
+    <span class="skill">LangGraph</span>
+    <span class="skill">SQL</span>
+    <span class="skill">Prompt Engineering</span>
+  </div>
+
+  <!-- 实习（与项目共用同一套 .proj / .proj-title / .star 样式） -->
+  <div class="proj">
+    <div class="proj-title">
+      <span class="proj-right"><span class="date-l">2026.06 — 至今</span></span>
+      阿里巴巴淘天集团<span class="dot"> · </span><span class="role">实习 AI 设计工程师（AI Design Engineering）</span>
+    </div>
+    <div class="star">
+      <div class="star-line full">负责设计部门中台 Agent 能力扩展：团队 Agent 辅助设计师完成设计评审、设计调研等环节，沿 Skill 与 Tool 两个维度扩展 Agent 能力体系。</div>
+      <div class="star-line"><span class="star-label">行动</span>①<b>Skill 入库标准制定与管理</b>：设计师提交的 Skill 源码质量参差：内容堆成"屎山"，或滥用 LLM 执行无法验证的任务（如预测眼动）。主导制定 Skill 入库评价标准，按 Token 消耗、运行效率与执行稳定性评估；并搭建基于 LLM 的自动化修改流水线，将不达标 Skill 修订后入库；②<b>Skill 输出标准制定</b>：Skill 产出的 HTML 页面视觉质量参差不齐，难达团队预期。主导制定 HTML 的设计规范（基于 Radix UI 搭建组件库、定义视觉规范与 design token），以 DOM + CV + LLM 多模态评测检查 Skill 输出质量（是否使用组件、间距是否满足要求、留白是否得当等），让 Agent 以 loop 方式改良其视觉输出；③Agent PPT 制作模式设计与研发：为 Agent 提供多套 html PPT 模板，并配套在线 html 编辑器，支持手动调整或指定元素交由 Agent 修改。</div>
+      <div class="star-line"><span class="star-label">结果</span>累计入库近 30 个 Skill；上线 PPT 制作功能；Radix UI 组件规范与多模态评测落地为团队验收标准。</div>
+    </div>
+  </div>
+
+  <!-- 项目 1：ToA -->
+  <div class="proj">
+    <div class="proj-title">
+      <span class="proj-right"><span class="date-l">2025.07 — 2025.11</span></span>
+      <a class="t-link" href="https://qfy1012.github.io/toa" target="_blank">将分析思路可视化<span class="dot"> · </span>对话式可视分析产品设计 <span class="arr">↗&#xFE0E;</span></a>
+      <span class="p-tag purple">第一作者 · CHI26&ensp;CCF-A 顶会收录</span>
+    </div>
+    <div class="star">
+      <div class="star-line full">缺乏分析经验的用户在多轮对话中容易迷失分析方向。将零散对话自动梳理为分析树，让用户随时回溯来路、对比分支。</div>
+      <div class="star-line"><span class="star-label">行动</span>①<b>基座模型选型</b>：系统依赖从图表中读取信息的能力，以公开可视化素养测试（ViT）评测各候选模型的图表理解能力，Gemini 2.5 Flash 表现最强，选为基座模型；②<b>图表描述语言选型</b>：用户每轮提问后需实时生成并渲染可交互图表，对比 Vanilla、ECharts、D3、<span class="lnk">Vega-Lite</span> 等图表描述语言，Vega-Lite 编译通过率最高，据此选定；③<b>图表特征抽取 Prompt 调优</b>：构建分析树需 LLM 先从图表中识别数据特征与值得深挖的分析机会点，基于自建测试集调优 Prompt，采用先还原数据表、再识别特征的方式，识图准确率优于直接判读；④<b>树构建算法选型</b>：依据图表特征判断新节点挂载位置，对 205 条真实用户 Prompt 编码归纳出 7 类查询模式：纯 LLM 生成分析树准确率差，改为规则优先——其中 5 类固化为连接规则，其余 2 类由 LLM 判断，准确率提升至 92%。</div>
+      <div class="star-line"><span class="star-label">结果</span>对照线性对话界面（N=12），用户每轮对话的洞察数量<span class="up">↑58.3%</span>，深度思考时长<span class="up">↑17%</span>。</div>
+    </div>
+  </div>
+
+  <!-- 项目 2：NarraSteer -->
+  <div class="proj">
+    <div class="proj-title">
+      <span class="proj-right"><span class="date-l">2026.01 — 2026.04</span></span>
+      <a class="t-link" href="https://qfy1012.github.io/narrasteer" target="_blank">将执行轨迹重构为故事线<span class="dot"> · </span>数据叙事 Agent 产品设计 <span class="arr">↗&#xFE0E;</span></a>
+      <span class="p-tag purple">第一作者 · CHI'27&ensp;CCF-A 在投</span>
+    </div>
+    <div class="star">
+      <div class="star-line full">LLM Agent 生成数据故事时执行过程不透明，用户看不清构建逻辑。参照专家的数据叙事流程将其轨迹可视化为故事线，使过程可见、可干预。</div>
+      <div class="star-line"><span class="star-label">行动</span>①<b>专家叙事流程拆解</b>：通过专家访谈与文献归纳，发现专家构建数据故事的过程可归结为 12 类数据洞察与 6 种叙事链接（对比、细化、因果等）的组合，以此作为 Agent 工具集与故事线结构的设计依据；②<b>Agent 轨迹可视化</b>：Agent 每推进一步叙事就提交一个节点，而非一次性产出完整报告；节点记录当前的数据洞察、叙事文本与图表，节点间以 6 种叙事链接串联成故事线，让故事的构建过程一目了然；③<b>干预交互设计</b>：将故事线投影至圆盘，节点位置反映其探索的数据维度，空白区域即未探索方向；用户对故事构建进展一目了然，方向有误可随时拖拽干预。</div>
+      <div class="star-line"><span class="star-label">结果</span>比起对照组（N=16），故事洞察数量<span class="up">↑13.2%</span>，心理负荷显著下降（p&lt;.05），可控性显著提升（p&lt;.05）。</div>
+    </div>
+  </div>
+
+  <!-- 项目 3：舆情平台 -->
+  <div class="proj">
+    <div class="proj-title">
+      <span class="proj-right"><span class="date-l">2024.09 — 2025.04</span></span>
+      <a class="t-link" href="https://qfy1012.github.io" target="_blank">跨社交媒体舆情分析与治理平台 · G 端产品设计 <span class="arr">↗&#xFE0E;</span></a>
+      <span class="p-tag green">产品负责人 · 国家重点研发计划&ensp;3000w</span>
+    </div>
+    <div class="star">
+      <div class="star-line full">国家重点研发项目五大技术模块研发完成，需从零将算法能力转化为政府可用的 G 端产品。</div>
+      <div class="star-line"><span class="star-label">行动</span>①对接技术团队，将五大模块的算法能力转化为可落地的业务流程；②定义三层信息架构（大屏/仪表盘/可视化中台），完成高保真原型与设计规范，跟进前端还原与走查。</div>
+      <div class="star-line"><span class="star-label">结果</span>产品完整落地，支撑国家重点研发计划交付节点。</div>
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>

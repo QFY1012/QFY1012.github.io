@@ -1,0 +1,20 @@
+# Feiyuan Qu — Personal Website
+
+Personal academic portfolio of Feiyuan Qu, HCI researcher at Zhejiang University CAD&CG Lab.
+
+## Tech Stack
+
+- [Astro](https://astro.build/) — static site framework
+- Vanilla HTML/CSS — no UI library dependencies
+- GitHub Actions — automated deployment to GitHub Pages
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+## Live
+
+[qfy1012.github.io](https://qfy1012.github.io)

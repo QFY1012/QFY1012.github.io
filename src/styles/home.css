@@ -1,0 +1,95 @@
+/* ============================================================
+   home.css — 首页专用视觉覆盖层（在 tokens.css 之后引入）
+   深色唯一主题 · 克制的排版美学
+   其他页面不受影响（各自仍是独立 HTML 文档）
+   ============================================================ */
+
+/* ── 色板收敛：深色唯一 ───────────────────────────────── */
+:root,
+[data-theme="light"] {
+  --bg:       #0a0c12;
+  --bg2:      #0e1118;
+  --surface:  #11141d;
+  --surface2: #171b26;
+
+  --border:    rgba(255, 255, 255, 0.08);
+  --border-hi: rgba(255, 255, 255, 0.18);
+
+  --text:        #e6eaf3;
+  --text-dim:    #99a2b8;   /* 对 bg ≥ 4.5:1 */
+  --text-dimmer: #626b82;   /* 装饰微标签 ≥ 3:1 */
+
+  --accent:  #00e8c8;       /* 高亮色：编号/链接/按钮 */
+  --accent2: #7d8bff;       /* 辅色：柔靛蓝 */
+  --accent3: transparent;   /* 粉色删除（全站无引用） */
+  --accent-hi: #5cf2e0;     /* 高亮色 hover 提亮 */
+  --hover: rgba(255, 255, 255, 0.03); /* 通用悬停浅底 */
+  --chip: rgba(255, 255, 255, 0.06);        /* 标签软底（无边框方片） */
+  --chip-hover: rgba(255, 255, 255, 0.11);  /* 标签/链接悬停软底 */
+  --chip-accent: rgba(0, 232, 200, 0.12);  /* 高亮软底（一级链接） */
+  --canvas-bg: #0a0c12;     /* 与 --bg 同源：字符画场景底色 */
+
+  --glow-a: transparent;
+  --glow-b: transparent;
+  --grid:   transparent;
+  --scan:   transparent;
+
+  --nav-bg: rgba(10, 12, 18, 0.78);
+
+  /* 字体重新分工：正文摆脱等宽气质 */
+  --font-body: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-display: 'Syne', 'Noto Sans SC', sans-serif;
+  /* mono 栈补无衬线中文兜底：否则中文回退到系统 monospace（Windows=宋体） */
+  --font-mono: 'JetBrains Mono', 'Courier New', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* 全站无圆角 */
+  --radius: 0;
+
+  /* 布局 */
+  --content-w: 1000px;
+
+  /* 字号：全站统一四档（px），禁止其他尺寸 */
+  --text-meta: 12px;                          /* 微标签：编号/日期/徽章/按钮/链接 */
+  --text-body: 14px;                          /* 正文与次级标题 */
+  --text-title: 18px;                         /* 区块与卡片标题 */
+  --text-display: clamp(38px, 6vw, 68px);     /* 首屏名字 */
+}
+
+/* 基础元素字号对齐四档 */
+body { font-size: var(--text-body); }
+p { font-size: var(--text-body); }
+h2, h3 { font-size: var(--text-title); }
+
+/* ── 关掉终端氛围层（网格底纹 / 扫描线 / 光球 / 十字光标） ── */
+body::before,
+body::after { content: none; }
+body { cursor: auto; line-height: 1.9; }
+.orb { display: none; }
+
+/* ── 布局统一（消解 900/960 冲突）；区块间不留分割线，留白即分隔 ── */
+section {
+  max-width: var(--content-w);
+  padding: clamp(4rem, 8vw, 6rem) var(--sp-10);
+  border-top: none;
+}
+
+/* ── 首屏字符画画布 ───────────────────────────────────── */
+.hero { position: relative; overflow: hidden; }
+#hero-ascii {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%;
+  opacity: 0; transition: opacity 0.8s ease;
+  /* 从顶部即开始渐隐，至字符画底部（约 3/4 处）完全消失 */
+  -webkit-mask-image: linear-gradient(180deg, #000 0 0%, transparent 75%);
+  mask-image: linear-gradient(180deg, #000 0 0%, transparent 75%);
+}
+#hero-ascii.is-ready { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
