@@ -2,7 +2,7 @@
  * hero-shapes.ts — 四个造型的实例矩阵生成器
  * 每个生成器返回恰好 M 个 InstancePose；用不满的实例 scale→0。
  * 造型语义：莫比乌斯 → AI 设计工程；分析树 → ToA；
- *          螺旋 → NarraSteer；星群网罩 → 舆情传播与治理
+ *          螺旋 → NarraSteer；中心放射 → 舆情传播与治理
  * ============================================================ */
 import { Matrix4, Quaternion, Vector3 } from 'three';
 
@@ -208,100 +208,60 @@ export function buildHelix(m: number): Shape {
       r2 * Math.sin(t * THETA + a * 0.2),
     ), null, s, s, s));
   }
-  // 绕 X 轴倾躺 45°：螺旋轴前后倾斜，盘旋的纵深可读（顶部出画不处理）
-  tiltShape(out, 1, 0, 0, 0.785);
+  // 绕 X 轴倾躺 ~58° + 脊柱 z 向呼吸：盘旋探入纵深但保留竖向可读性（出画不处理）
+  for (const p of out) p.pz += Math.sin(p.py * 0.018) * 26;
+  tiltShape(out, 1, 0, 0, 1.0);
   return pad(out, m);
 }
 
-/* ---------- ④ 星群爆发+网罩（舆情传播与治理） ---------- */
+/* ---------- ④ 中心放射（一源多传：舆情传播与治理） ---------- */
 
-export function buildOutbreak(m: number): Shape {
-  const rand = rng(20260717);
-  const out: Shape = [];
-  const YS = 0.62; // 竖向压扁，避免网罩顶底出画
+/* builder 与驻留期射线动画共用同一份参数，防止两处漂移 */
+const BC = {
+  RC: 45,
+  RFAR_D: 210, RFAR_M: 310, // 外端恒在画面外（⇒ 无限延长），且不触相机（余量 ≥73 世界单位）
+  THICK_D: 4.5, THICK_M: 7.5, // ≥1 个光栅行高：细于一个像素行必被栅格化成虚线（连续性的物理下限）
+  TILES_D: 188, TILES_M: 102, RAYS_D: 12, RAYS_M: 8,
+} as const;
+
+/** 中心放射的实例布局：前 tiles 个是球体瓦片，其后 rays 个是射线槽位（静止态隐藏，驻留期由动画驱动） */
+export function broadcastRayInfo(m: number) {
   const big = m > 150;
-  const n1 = big ? 8 : 6, n2 = big ? 14 : 10, n3 = big ? 18 : 12;
-  const crossN = big ? 3 : 2, extN = big ? 6 : 4;
+  return {
+    tiles: big ? BC.TILES_D : BC.TILES_M,
+    rays: big ? BC.RAYS_D : BC.RAYS_M,
+    R0: BC.RC + 3,
+    RFAR: big ? BC.RFAR_D : BC.RFAR_M,
+    thick: big ? BC.THICK_D : BC.THICK_M,
+  };
+}
 
-  const P = (v: Vector3) => new Vector3(v.x, v.y * YS, v.z);
-  // 斐波那契球面均布 + 径向抖动
-  const spherePt = (i: number, n: number, r: number, jit: number) => {
-    const y = 1 - (2 * (i + 0.5)) / n;
+export function buildBroadcast(m: number): Shape {
+  const out: Shape = [];
+  const big = m > 150;
+  const SPOKES = big ? BC.RAYS_D : BC.RAYS_M;
+  const RC = BC.RC;
+
+  // 核心：切向瓦片实心球（信源）——瓦片多而小，明暗梯度才连续成球；
+  // 瓦片少而大时朗伯光照按面片量化，球面会读成一块块补丁
+  const TILES = big ? BC.TILES_D : BC.TILES_M;
+  const tile = Math.sqrt((4 * Math.PI * RC * RC) / TILES) * 1.15; // 互叠 15%：方瓦片铺满球面不留缝
+  for (let i = 0; i < TILES; i++) {
+    const y = 1 - (2 * (i + 0.5)) / TILES;
     const rr = Math.sqrt(1 - y * y);
     const th = i * 2.399963;
-    return new Vector3(rr * Math.cos(th), y, rr * Math.sin(th))
-      .multiplyScalar(r + (rand() - 0.5) * jit);
-  };
-  const edge = (a: Vector3, b: Vector3, thick: number) => {
-    const mid = a.clone().add(b).multiplyScalar(0.5);
-    const d = b.clone().sub(a);
-    return pose(mid, d, thick, d.length(), thick);
-  };
-  const nearest = (p: Vector3, set: Vector3[]) => {
-    let bi = 0, bd = Infinity;
-    for (let k = 0; k < set.length; k++) {
-      const d = p.distanceToSquared(set[k]);
-      if (d < bd) { bd = d; bi = k; }
-    }
-    return set[bi];
-  };
+    const nrm = new Vector3(rr * Math.cos(th), y, rr * Math.sin(th));
+    const T = new Vector3(-Math.sin(th), 0, Math.cos(th));
+    const C = new Vector3().crossVectors(T, nrm);
+    out.push(poseBasis(nrm.clone().multiplyScalar(RC), T, C, tile, tile, 7));
+  }
 
-  // 信源 → 内环（辐条先亮）
-  out.push(pose(new Vector3(0, 0, 0), null, 11, 11, 11));
-  const w1: Vector3[] = [];
-  for (let i = 0; i < n1; i++) {
-    const p = spherePt(i, n1, 48, 10);
-    w1.push(p);
-    out.push(edge(new Vector3(0, 0, 0), P(p), 1.6));
-    out.push(pose(P(p), null, 5.5, 5.5, 5.5));
-  }
-  // 中环：连最近内环 + 少量横向交叉（网状感）
-  const w2: Vector3[] = [];
-  for (let i = 0; i < n2; i++) {
-    const p = spherePt(i, n2, 88, 10);
-    w2.push(p);
-    out.push(edge(P(nearest(p, w1)), P(p), 1.5));
-    out.push(pose(P(p), null, 4.5, 4.5, 4.5));
-  }
-  for (let i = 0; i < crossN; i++) {
-    const a = w2[(i * 2) % n2], b = w2[(i * 2 + 7) % n2];
-    out.push(edge(P(a), P(b), 1.3));
-  }
-  // 外环：混沌扩散，稀疏连线
-  for (let i = 0; i < n3; i++) {
-    const p = spherePt(i, n3, 126, 14);
-    if (i < extN) {
-      out.push(edge(P(nearest(p, w2)), P(p), 1.4));
-    }
-    out.push(pose(P(p), null, 4, 4, 4));
-  }
-  // 治理网罩：二十面体顶点 + 棱，先传播后治理
-  const PHI = (1 + Math.sqrt(5)) / 2;
-  const raw: Vector3[] = [];
-  for (const s1 of [-1, 1]) {
-    for (const s2 of [-1, 1]) {
-      raw.push(new Vector3(0, s1, s2 * PHI));
-      raw.push(new Vector3(s1, s2 * PHI, 0));
-      raw.push(new Vector3(s1 * PHI, 0, s2));
-    }
-  }
-  const cage = raw.map((v) => P(v.normalize().multiplyScalar(150)));
-  cage.forEach((v) => {
-    out.push(pose(v, null, 4.5, 4.5, 4.5));
-  });
-  // 棱 = 距离最短的 30 对顶点（压扁后仍恒小于非棱对）
-  const pairs: [number, number, number][] = [];
-  for (let i = 0; i < cage.length; i++) {
-    for (let j = i + 1; j < cage.length; j++) {
-      pairs.push([i, j, cage[i].distanceToSquared(cage[j])]);
-    }
-  }
-  pairs.sort((a, b) => a[2] - b[2]);
-  const edgeCount = big ? 30 : 15;
-  pairs.slice(0, edgeCount).forEach(([i, j]) => {
-    out.push(edge(cage[i], cage[j], 1.4));
-  });
-  return pad(out, m); // 不撒尘埃：剩余实例 HIDDEN，剪影干净
+  // 射线槽位：全部隐藏（scale 0，收于球心）。射线是一次性发射物，不属于形变系统——
+  // 叙事次序 = 形变先长出球体，驻留期再由动画逐条发射（hero-particles tickRays）；
+  // 槽位收于球心 ⇒ 形变经过这些实例时它们没入核心，不外露
+  for (let i = 0; i < SPOKES; i++) out.push(HIDDEN());
+
+  return pad(out, m);
 }
 
 /** 入场初始态：弥散星尘（从四面八方飞向第一个造型） */
@@ -320,4 +280,9 @@ export function buildScatter(m: number): Shape {
   return out;
 }
 
-export const SHAPE_BUILDERS = [buildMobius, buildTree, buildHelix, buildOutbreak];
+export const SHAPE_BUILDERS = [buildMobius, buildTree, buildHelix, buildBroadcast];
+
+/* 在各向同性（已修正）相机下设计、无需宽高补偿的造型。
+ * 其余三个造型的比例是在旧的横向拉伸投影（aspect 恒为 1）下调出来的，
+ * 由 hero-particles 在 rebuild 时按世界 X 拉伸还原。 */
+export const ISOTROPIC_BUILDERS: ReadonlySet<unknown> = new Set([buildBroadcast]);

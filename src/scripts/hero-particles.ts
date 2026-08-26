@@ -1,6 +1,6 @@
 /* ============================================================
  * hero-particles.ts — 首屏 3D 字符画
- * 四个实体造型（莫比乌斯/分析树/螺旋故事线/星群网罩）依次形变、自转，
+ * 四个实体造型（莫比乌斯/分析树/螺旋故事线/中心放射）依次形变、自转，
  * 离屏渲染后按灰度映射为字符画；字符内容来自用户文本池。
  * ============================================================ */
 import {
@@ -10,15 +10,16 @@ import {
 } from 'three';
 import { animate } from 'animejs';
 import { TEXT_STREAM, isCJK } from './hero-text';
-import { SHAPE_BUILDERS, buildScatter, type Shape } from './hero-shapes';
+import { SHAPE_BUILDERS, ISOTROPIC_BUILDERS, buildScatter, buildBroadcast, broadcastRayInfo, type Shape } from './hero-shapes';
 
 /* ---------- 参数 ---------- */
 const CFG = {
   camFov: 40, camDist: 430, mCamDist: 505,
   spinSpeed: 0.08, basePitch: -0.18,
-  // 光即青色：打光处字符染青成形，渐晕为光晕，暗处铺灰墙
+  // 光即青色：打光处字符染青成形，渐晕为光晕，暗处铺灰墙（四档亮度）
   lumLit: 0.45,    // 高于此亮度 → 形状本体（亮青）
-  lumEdge: 0.06,   // 介于两者 → 光晕（暗青）；低于 → 字符墙（灰）
+  lumMid: 0.2,     // 高于此亮度 → 中间调（中青）
+  lumEdge: 0.06,   // 高于此亮度 → 光晕（暗青）；低于 → 字符墙（灰）
   hyst: 0.03,
   dwellMs: 7000,
   // 过渡：出发与到达都按目标造型的生长方向错峰（先长出的先出发、先到达）
@@ -31,6 +32,7 @@ const CFG = {
   desktop: { cellW: 7.8, cellH: 14, fontPx: 13, m: 200 },
   mobile: { cellW: 9, cellH: 16, fontPx: 15, m: 110 },
   litColor: [0, 232, 200, 0.72],     // 形状本体：受光面（亮青）
+  midColor: [0, 214, 190, 0.6],      // 中间调：次亮面（中青）
   haloColor: [0, 232, 200, 0.5],     // 光晕：受光面外圈渐晕（暗青）
   wallColor: [153, 162, 184, 0.32],  // 字符墙：暗处铺满
 };
@@ -48,6 +50,10 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   if (new URLSearchParams(location.search).has('herofast')) {
     Object.assign(CFG, { dwellMs: 1200, morphMs: 700 });
   }
+  // ?heroOnly=N：只循环第 N 个造型，调试单造型用。
+  // 注意 Number(null)=0：参数缺失时必须显式判空，否则全场只轮播第一个造型
+  const heroOnlyRaw = new URLSearchParams(location.search).get('heroOnly');
+  const heroOnly = heroOnlyRaw === null ? -1 : Number(heroOnlyRaw);
 
   let cols = 0, rows = 0, cssW = 0, cssH = 0, m = P().m;
   let ctx: CanvasRenderingContext2D | null = null;
@@ -69,8 +75,15 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   dir.position.set(0.85, 0.55, 0.5); // 侧前方扫光：拉出形体明暗，莫比乌斯扭转可读
   scene.add(dir, new AmbientLight('#ffffff', 0.4)); // 背景光：/π 后 ≈0.13，暗面稳过 lumEdge、只比纯黑亮一点
 
+  // 三层嵌套：平移 → X 拉伸 → 自转。
+  // 拉伸必须在自转外层：对世界 X 轴的固定拉伸（后于旋转施加）才等价于
+  // 旧投影的屏幕空间拉伸；直接缩放几何体会把相邻方块拉开、造型散架
+  const groupPos = new Group();
+  const groupStretch = new Group();
   const group = new Group();
-  scene.add(group);
+  groupPos.add(groupStretch);
+  groupStretch.add(group);
+  scene.add(groupPos);
   let mesh: InstancedMesh | null = null;
 
   /* ---- 实例状态 ---- */
@@ -78,6 +91,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   let currentShape: Shape = [];
   let currentIdx = 0;               // currentShape 在 shapes 中的下标（几何已置中，靠它取质心）
   let shapeSched: { dep: Float32Array; arr: Float32Array }[] = []; // 每个造型一张出发/到达时刻表
+  let shapeStretch: number[] = []; // 每个造型的世界 X 拉伸系数（旧投影观感还原；球体为 1）
   const shapeCenters: Vector3[] = [];    // 每个造型的几何中心（整体平移量）
   const center = new Vector3();          // 当前造型的中心
   let bufRef = new Uint8Array(0);
@@ -109,7 +123,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     (p) => p.px,                           // 莫比乌斯：左 → 右
     (p) => p.py,                           // 分析树：下 → 上
     (p) => p.py,                           // 螺旋：下 → 上
-    (_p, i) => i,                          // 星群网罩：构造次序 = 信源 → 环层 → 网罩，严格中心 → 边缘
+    (_p, i) => i,                          // 中心放射：构造次序 = 核心 → 辐条
   ];
 
   /* 由方向键生成出发/到达时刻表（同向波次：先长出来的先出发；隐藏实例不参与归一化） */
@@ -163,6 +177,98 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     mesh.instanceMatrix.needsUpdate = true;
   }
 
+  /* ---- 中心放射：驻留期一次性射线持续随机发射 ----
+   * 射线不属于形变系统：造型数组里射线槽位恒隐藏，只有这里的动画写这些实例。
+   * 模型 = 泊松过程：每个空槽每一帧都有概率射出一条新射线（全程随机、无波次）；
+   * 每根射线锚定球面长出（0-0.4）→ 满行程驻留（-0.75，外端恒在画面外 ⇒ 无限长观感）→
+   * 变细消散（-1，长度不动 ⇒ 不截断、不突然消失）→ 槽位转空，等待下一次随机发射。
+   * 形变开始后不再发射新射线，活射线盖在形变之上自然飞完 ⇒ 边界无跳变 */
+  interface RayState { dir: Vector3; t0: number; period: number; } // t0<0 = 空槽
+  interface RayAnim {
+    slots: RayState[]; rays: number; tiles: number; R0: number; RFAR: number; thick: number;
+  }
+  let rayAnim: RayAnim | null = null;
+  let shapesAreRay: boolean[] = [];
+  const Y_UP = new Vector3(0, 1, 0);
+  const GROW_END = 0.4, HOLD_END = 0.75; // 包络相位：长出 → 满行程驻留 → 变细消散
+
+  const randomUnitVec = (out: Vector3) => {
+    const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2;
+    const rr = Math.sqrt(1 - u * u);
+    return out.set(rr * Math.cos(th), u, rr * Math.sin(th));
+  };
+
+  /* 随机射线方向：排除 ±相机轴 40° 锥——正对/背对相机的射线在屏幕上缩成点/短桩，
+   * 读作「截断」；自转一周 78s ≫ 射线寿命，锥排除在寿命内持续有效 */
+  const randomRayDir = (out: Vector3) => {
+    do randomUnitVec(out); while (Math.abs(out.z) > 0.766); // cos40°
+    return out;
+  };
+
+  /** 相位 p → 内/外端半径 + 粗细系数 mul：
+   * 长度只增不减（永不回缩 ⇒ 不「截断」）；消散只变细（mul→0 ⇒ 不突然消失） */
+  const raySpan = (p: number, R0: number, RFAR: number) => {
+    if (p < GROW_END) {
+      const outer = R0 + (RFAR - R0) * easeInOutCubic(p / GROW_END);
+      return { inner: R0, outer, mul: Math.min(1, p / 0.08) };
+    }
+    if (p < HOLD_END) return { inner: R0, outer: RFAR, mul: 1 };
+    return { inner: R0, outer: RFAR, mul: 1 - (p - HOLD_END) / (1 - HOLD_END) };
+  };
+
+  const RAY_MS = () => 3400 + Math.random() * 1400; // 一次性脉冲：单发寿命 3.4-4.8s（速度在此调）
+  const SPAWN_RATE = 0.55; // 每个空槽每秒的发射概率（泊松强度；并发数 ≈ 12·λT/(1+λT) ≈ 8）
+
+  function makeRayAnim(): RayAnim {
+    const info = broadcastRayInfo(m);
+    return {
+      ...info,
+      slots: Array.from({ length: info.rays }, () => ({ dir: new Vector3(0, 1, 0), t0: -1, period: 0 })),
+    };
+  }
+
+  /* allowSpawn=false（形变期）：不再发射新射线，活射线自然飞完；
+   * 死槽位不写矩阵 —— 归还给 composeFromTo（本帧已写） */
+  function tickRays(now: number, dt: number, allowSpawn = true) {
+    if (!mesh || !rayAnim) return;
+    const { slots, tiles, R0, RFAR, thick } = rayAnim;
+    const cOff = shapeCenters[currentIdx] ?? center; // 形状数组已按质心置中，射线同步
+    for (let i = 0; i < slots.length; i++) {
+      const r = slots[i];
+      if (r.t0 < 0) { // 空槽：每个时刻都有概率发射
+        if (allowSpawn && Math.random() < SPAWN_RATE * dt) {
+          randomRayDir(r.dir);
+          r.t0 = now;
+          r.period = RAY_MS();
+        } else {
+          continue; // 驻留期保持隐藏（转空时已写过）；形变期归还槽位
+        }
+      }
+      const p = (now - r.t0) / r.period;
+      if (p >= 1) { // 死亡：槽位转空
+        r.t0 = -1;
+        if (allowSpawn) { // 驻留期必须写隐藏；形变期归 composeFromTo
+          _m.makeScale(0, 0, 0);
+          mesh.setMatrixAt(tiles + i, _m);
+        }
+        continue;
+      }
+      const { inner, outer, mul } = raySpan(p, R0, RFAR);
+      const len = outer - inner;
+      const th = thick * mul;
+      if (len < 1 || th < 0.05) {
+        _m.makeScale(0, 0, 0);
+      } else {
+        _v.copy(r.dir).multiplyScalar((inner + outer) / 2).sub(cOff);
+        _qa.setFromUnitVectors(Y_UP, r.dir);
+        _s.set(th, len, th);
+        _m.compose(_v, _qa, _s);
+      }
+      mesh.setMatrixAt(tiles + i, _m);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+  }
+
   /* ---- 尺寸/网格重建 ---- */
   function rebuild() {
     cssW = hero!.clientWidth; cssH = hero!.clientHeight;
@@ -179,7 +285,11 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     renderer.setSize(cols, rows, false);
     rt?.dispose();
     rt = new WebGLRenderTarget(cols, rows);
-    camera.aspect = cols / rows;
+    // 宽高比按显示尺寸算：rt 一像素会画成 cellW×cellH 的竖长字符格，
+    // 直接用 cols/rows 会把球拉成椭球（竖向拉伸 cellH/cellW 倍）；
+    // 改完必须 updateProjectionMatrix，否则投影矩阵仍是构造时的 aspect=1
+    camera.aspect = (cols * p.cellW) / (rows * p.cellH);
+    camera.updateProjectionMatrix();
     camera.position.set(0, 0, isMobile() ? CFG.mCamDist : CFG.camDist);
     camera.lookAt(isMobile() ? 0 : CFG.offsetX * 0.55, 0, 0);
     group.scale.setScalar(isMobile() ? CFG.scaleMobile : CFG.scaleDesktop);
@@ -198,7 +308,18 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     mesh.instanceMatrix.setUsage(DynamicDrawUsage);
     group.add(mesh);
 
-    shapes = SHAPE_BUILDERS.map((b) => b(m));
+    const builders = heroOnly >= 0 && heroOnly < SHAPE_BUILDERS.length
+      ? [SHAPE_BUILDERS[heroOnly]]
+      : SHAPE_BUILDERS;
+    shapes = builders.map((b) => b(m));
+    // 前三个造型是在旧的横向拉伸投影（aspect 恒为 1）下调好的观感：
+    // 世界 X 拉伸 = 显示宽高比，且拉伸组在自转组外层 ⇒ NDC 与旧渲染逐像素一致；
+    // 球体造型（ISOTROPIC_BUILDERS）拉伸为 1，保证它是正圆
+    shapeStretch = builders.map((b) =>
+      ISOTROPIC_BUILDERS.has(b) ? 1 : (cols * p.cellW) / (rows * p.cellH));
+    groupStretch.scale.x = shapeStretch[currentIdx] ?? 1;
+    shapesAreRay = builders.map((b) => b === buildBroadcast);
+    rayAnim = shapesAreRay[currentIdx] ? makeRayAnim() : null;
     // 几何预置中：质心移到本地原点、存入 shapeCenters 作为整体平移量。
     // 自转轴因此固定为本地原点，center 插值只是平移，与旋转彻底解耦
     shapeCenters.length = 0;
@@ -231,10 +352,10 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     return n ? c.multiplyScalar(1 / n) : c;
   }
 
-  /* 造型几何已绕本地原点置中：group 平移 = 版面偏移 + 质心，旋转轴恒为质心 */
+  /* 造型几何已绕本地原点置中：平移在最外层组（不被拉伸影响），旋转轴恒为质心 */
   function applyCenter() {
     const baseX = isMobile() ? 0 : CFG.offsetX;
-    group.position.set(baseX + center.x, center.y, center.z);
+    groupPos.position.set(baseX + center.x, center.y, center.z);
   }
 
   /* ---- ASCII 采样与绘制 ---- */
@@ -252,25 +373,25 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     const rgba = (c: number[]) =>
       `rgba(${c[0]},${c[1]},${c[2]},${(c[3] * alphaMul).toFixed(3)})`;
     const litFill = rgba(CFG.litColor);    // 形状本体（亮青）
+    const midFill = rgba(CFG.midColor);    // 中间调（中青）
     const haloFill = rgba(CFG.haloColor);  // 光晕渐晕（暗青）
     const wallFill = rgba(CFG.wallColor);  // 字符墙（暗处铺满）
     const x0 = (cssW - cols * p.cellW) / 2;
 
-    // 第一遍：亮度 → 分层（迟滞对比上一帧，防闪烁）
+    // 第一遍：亮度 → 四档分层（迟滞对比上一帧，防闪烁）
     for (let r = 0; r < rows; r++) {
       const bufRow = rows - 1 - r; // WebGL 原点在左下
       for (let c = 0; c < cols; c++) {
         const cellIdx = r * cols + c;
         const lum = bufRef[(bufRow * cols + c) * 4] / 255;
-        let tier = lum > CFG.lumLit ? 0 : lum > CFG.lumEdge ? 1 : 2;
+        let tier = lum > CFG.lumLit ? 0 : lum > CFG.lumMid ? 1 : lum > CFG.lumEdge ? 2 : 3;
         const prev = tiersPrev[cellIdx];
-        if (prev === 0 && lum > CFG.lumLit - CFG.hyst) tier = 0;
-        else if (prev === 2 && lum < CFG.lumEdge + CFG.hyst) tier = 2;
+        if (prev < tier && lum > [CFG.lumLit, CFG.lumMid, CFG.lumEdge][prev] - CFG.hyst) tier = prev;
         tiersCurr[cellIdx] = tier;
       }
     }
 
-    // 第二遍：拼行绘制——受光面亮青、渐晕暗青、暗处灰墙
+    // 第二遍：拼行绘制——受光面亮青、次亮中青、渐晕暗青、暗处灰墙
     ctx.clearRect(0, 0, cssW, cssH);
     ctx.font = `${p.fontPx}px "JetBrains Mono", "Courier New", monospace`;
     ctx.textBaseline = 'top';
@@ -279,7 +400,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     const streamLen = TEXT_STREAM.length;
 
     for (let r = 0; r < rows; r++) {
-      let litStr = '', haloStr = '', wallStr = '';
+      let litStr = '', midStr = '', haloStr = '', wallStr = '';
       let skipNext = false;
       for (let c = 0; c < cols; c++) {
         const cellIdx = r * cols + c;
@@ -288,18 +409,20 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
         let ch = ' ';
         if (!skipNext) {
           ch = TEXT_STREAM[(cellIdx + flow) % streamLen];
-          if (tier < 2 && (ch === ' ' || ch === '·')) ch = '+'; // 受光面不断线
+          if (tier < 3 && (ch === ' ' || ch === '·')) ch = '+'; // 受光面不断线
           if (isCJK(ch)) skipNext = true;
         } else {
           skipNext = false;
         }
         litStr += tier === 0 ? ch : ' ';
-        haloStr += tier === 1 ? ch : ' ';
-        wallStr += tier === 2 ? ch : ' ';
+        midStr += tier === 1 ? ch : ' ';
+        haloStr += tier === 2 ? ch : ' ';
+        wallStr += tier === 3 ? ch : ' ';
       }
       const y = r * p.cellH + 2;
       if (wallStr.trim()) { ctx.fillStyle = wallFill; ctx.fillText(wallStr, x0, y); }
       if (haloStr.trim()) { ctx.fillStyle = haloFill; ctx.fillText(haloStr, x0, y); }
+      if (midStr.trim()) { ctx.fillStyle = midFill; ctx.fillText(midStr, x0, y); }
       if (litStr.trim()) { ctx.fillStyle = litFill; ctx.fillText(litStr, x0, y); }
     }
 
@@ -328,6 +451,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     group.rotation.x = CFG.basePitch;
     flowOffset += (morphing ? CFG.flowMorph : CFG.flowDwell) * dt;
 
+    if (rayAnim && !morphing) tickRays(now, dt); // 形变期间实例归 composeFromTo 管
     drawAscii();
   }
 
@@ -343,26 +467,33 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   /* 过渡：出发与到达都错峰，波次方向 = 目标造型的生长方向 */
   async function morphTo(to: Shape, sched: { dep: Float32Array; arr: Float32Array }, idx: number) {
     if (!mesh) return;
+    // 射线不经过形变系统：槽位恒隐藏 + 宽限期内自然死透 ⇒ 过渡起点天然无跳变
     const from = currentShape;
     morphing = true;
     const cFrom = center.clone();
     const cTo = (shapeCenters[idx] ?? center).clone(); // 自转轴平滑切换到目标造型中心
+    const sFrom = groupStretch.scale.x, sTo = shapeStretch[idx] ?? 1;
     const clock = { t: 0 };
     await animate(clock, {
       t: 1,
       duration: CFG.morphMs,
       ease: 'linear', // 缓动在 composeFromTo 里按实例施加
       onUpdate: () => {
-        center.lerpVectors(cFrom, cTo, easeInOutCubic(clock.t)); // 纯平移，与恒速自转解耦
+        const e = easeInOutCubic(clock.t);
+        center.lerpVectors(cFrom, cTo, e); // 纯平移，与恒速自转解耦
+        groupStretch.scale.x = sFrom + (sTo - sFrom) * e; // 拉伸随形态过渡
         applyCenter();
         composeFromTo(from, to, clock.t, sched.dep, sched.arr);
+        if (rayAnim) tickRays(performance.now(), 0, false); // 形变期：活射线盖在上面自然飞完
       },
     }).then(() => undefined).catch(() => undefined);
     center.copy(cTo);
+    groupStretch.scale.x = sTo;
     applyCenter();
     composeShape(to); // 精确终态（浮点累计归零）
     currentShape = to;
     currentIdx = idx;
+    rayAnim = shapesAreRay[idx] ? makeRayAnim() : null; // 驻留期射线动画
     morphing = false;
   }
 
