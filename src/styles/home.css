@@ -36,11 +36,11 @@
 
   --nav-bg: rgba(10, 12, 18, 0.78);
 
-  /* 字体重新分工：正文摆脱等宽气质 */
-  --font-body: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --font-display: 'Syne', 'Noto Sans SC', sans-serif;
+  /* 字体重新分工：正文摆脱等宽气质；苹方（本机/Mac）优先，思源黑体 webfont 兜底 */
+  --font-body: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-display: 'Syne', 'PingFang SC', 'Noto Sans SC', sans-serif;
   /* mono 栈补无衬线中文兜底：否则中文回退到系统 monospace（Windows=宋体） */
-  --font-mono: 'JetBrains Mono', 'Courier New', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
 
   /* 全站无圆角 */
   --radius: 0;
@@ -79,9 +79,6 @@ section {
   position: absolute; inset: 0; z-index: 0;
   width: 100%; height: 100%;
   opacity: 0; transition: opacity 0.8s ease;
-  /* 从顶部即开始渐隐，至字符画底部（约 3/4 处）完全消失 */
-  -webkit-mask-image: linear-gradient(180deg, #000 0 0%, transparent 75%);
-  mask-image: linear-gradient(180deg, #000 0 0%, transparent 75%);
 }
 #hero-ascii.is-ready { opacity: 1; }
 

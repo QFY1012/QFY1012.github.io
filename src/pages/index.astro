@@ -58,6 +58,11 @@ import '../styles/home.css';
       min-height: 100vh;
       display: flex; align-items: center;
     }
+    /* 字符画向下渐隐：同最初的 mask 做法，终点推到约 5/6 屏 */
+    #hero-ascii {
+      -webkit-mask-image: linear-gradient(180deg, #000 0 0%, transparent 88%);
+      mask-image: linear-gradient(180deg, #000 0 0%, transparent 88%);
+    }
     .hero-inner {
       position: relative; z-index: 1;
       width: 100%; max-width: var(--content-w);
@@ -91,6 +96,7 @@ import '../styles/home.css';
     /* 滚动提示：底部中央，微标 + 细线内 accent 小段循环下落 */
     .scroll-cue {
       position: absolute; left: 50%; bottom: 2rem; transform: translateX(-50%);
+      z-index: 1; /* 盖过 ::after 底部渐变 */
       display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
       font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3em;
       color: var(--text-dimmer);
