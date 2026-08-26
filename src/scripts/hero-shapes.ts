@@ -130,46 +130,41 @@ export function buildMobius(m: number): Shape {
 export function buildTree(m: number): Shape {
   const rand = rng(20260521);
   const out: Shape = [];
-  const segBudget = Math.floor(m * 0.78); // 枝繁叶茂：预算大头给枝干
+  const segBudget = m; // 无叶：全部实例都是枝干
 
   const origin = new Vector3(0, -115, 0);
-  const tips: Vector3[] = [];
+  const UP = new Vector3(0, 1, 0);
+  // 各向异性拉伸（x 1.5 / y 0.95 / z 1.35）：在步长上施加，段长与位置同步拉伸、枝干不断开
+  const STRETCH = new Vector3(1.5, 0.95, 1.35);
 
   const branch = (o: Vector3, dir: Vector3, len: number, thick: number, depth: number) => {
-    if (out.length >= segBudget || depth > 6) { tips.push(o.clone()); return; }
-    const mid = o.clone().addScaledVector(dir, len / 2);
-    out.push(pose(mid, dir, thick, len, thick));
-    const end = o.clone().addScaledVector(dir, len);
-    const n = depth < 2 ? 3 : (rand() < 0.5 ? 2 : 3);
+    if (out.length >= segBudget || depth > 6 || thick < 1.2) return;
+    const step = dir.clone().multiplyScalar(len).multiply(STRETCH);
+    const mid = o.clone().addScaledVector(step, 0.5);
+    out.push(pose(mid, step, thick, step.length(), thick));
+    const end = o.clone().add(step);
+    // 主干先续一段，再三叉起步、深层二叉为主（偶有独枝，左右略不对称）
+    const n = depth === 0 ? 1 : depth === 1 ? 3 : (rand() < 0.12 ? 1 : 2);
     for (let k = 0; k < n; k++) {
-      const phi = (k / n) * Math.PI * 2 + rand() * 1.1 + depth * 0.7;
-      const theta = 0.34 + depth * 0.07 + rand() * 0.3; // 近主干聚拢，树冠张开
+      const phi = (k / n) * Math.PI * 2 + (rand() - 0.5) * 1.6 + depth * 0.5; // 大致对开 + 强抖动
+      const theta = depth === 0
+        ? 0.08 + rand() * 0.08               // 主干延续：近乎笔直
+        : 0.62 + depth * 0.1 + rand() * 0.4; // 开张随深度渐大，树冠横向铺开
       // 绕父方向构造子方向：先取与 dir 正交的基
       const tangent = new Vector3(Math.cos(phi), 0, Math.sin(phi));
       const side = new Vector3().crossVectors(dir, tangent).normalize();
       if (side.lengthSq() < 1e-4) side.set(1, 0, 0);
       const child = dir.clone()
         .multiplyScalar(Math.cos(theta))
-        .addScaledVector(side, Math.sin(theta))
-        .normalize();
-      branch(end, child, len * 0.72, thick * 0.70, depth + 1);
+        .addScaledVector(side, Math.sin(theta));
+      child.lerp(UP, 0.07).normalize(); // 极弱向光性：枝尖略上翘，横向展开优先
+      const vigor = k === 0 ? 1 : 0.72 + rand() * 0.2; // 同层强弱枝：一强一弱（弱在长度）
+      branch(end, child, len * 0.82 * vigor, thick * (k === 0 ? 0.8 : 0.74), depth + 1);
     }
-    if (depth >= 3) tips.push(end);
   };
-  branch(origin, new Vector3(0, 1, 0), 56, 9.5, 0);
+  branch(origin, UP, 62, 10, 0);
 
-  // 剩余实例 → 树冠悬浮叶点
-  const crownC = new Vector3(0, 18, 0);
-  let i = 0;
-  while (out.length < m) {
-    const base = tips.length ? tips[(i * 7) % tips.length] : crownC;
-    const s = 2.8 + rand() * 2.8;
-    const p = base.clone().add(new Vector3(
-      (rand() - 0.5) * 64, (rand() - 0.5) * 34, (rand() - 0.5) * 64,
-    ));
-    out.push(pose(p, null, s, s, s));
-    i++;
-  }
+  for (const p of out) { p.px += 22; p.py -= 10; p.pz -= 35; } // 轻微右移下移、稍离镜头，避开版面中线
   return pad(out, m);
 }
 
@@ -177,7 +172,7 @@ export function buildTree(m: number): Shape {
 
 export function buildHelix(m: number): Shape {
   const out: Shape = [];
-  const TURNS = 2.4, R = 55, RISE = 144, Y0 = -72;
+  const TURNS = 4.2, R = 55, RISE = 236, Y0 = -RISE / 2;
   const THETA = TURNS * Math.PI * 2;
   const NODES = 5;
   const segCount = m - NODES - Math.floor(m * 0.08); // 少量卫星点
@@ -213,12 +208,8 @@ export function buildHelix(m: number): Shape {
       r2 * Math.sin(t * THETA + a * 0.2),
     ), null, s, s, s));
   }
-  // 整体侧倾 ~34°：摆脱笔直竖轴，螺旋的盘旋感更强
-  tiltShape(out, 0, 0, 1, 0.6);
-  for (const p of out) { // 偶发越界的卫星点压回画面
-    if (p.py > 88) p.py = 88;
-    else if (p.py < -88) p.py = -88;
-  }
+  // 绕 X 轴倾躺 45°：螺旋轴前后倾斜，盘旋的纵深可读（顶部出画不处理）
+  tiltShape(out, 1, 0, 0, 0.785);
   return pad(out, m);
 }
 

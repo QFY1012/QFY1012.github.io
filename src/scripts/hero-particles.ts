@@ -21,9 +21,9 @@ const CFG = {
   lumEdge: 0.06,   // 介于两者 → 光晕（暗青）；低于 → 字符墙（灰）
   hyst: 0.03,
   dwellMs: 7000,
-  // 过渡：所有实例同时从 A 出发，按构造次序先后到达 B（生长感）
-  morphMs: 2600,
-  arriveMin: 0.2, // 最早到达时刻占总时长的比例，最晚为 1
+  // 过渡：出发与到达都按目标造型的生长方向错峰（先长出的先出发、先到达）
+  morphMs: 7200,
+  flyFrac: 0.45,   // 所有粒子飞行时长统一 = 过渡总时长 × 45%；出发波 [0, 0.55]，到达波 [0.45, 1]
   // 字符墙完全静止：唯一会动的是被光照亮的造型本身
   flowDwell: 0, flowMorph: 0,
   offsetX: 40,
@@ -76,13 +76,16 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   /* ---- 实例状态 ---- */
   let shapes: Shape[] = [];
   let currentShape: Shape = [];
-  let shapeArrive: Float32Array[] = []; // 每个造型一张到达时刻表（值∈[arriveMin,1]）
+  let currentIdx = 0;               // currentShape 在 shapes 中的下标（几何已置中，靠它取质心）
+  let shapeSched: { dep: Float32Array; arr: Float32Array }[] = []; // 每个造型一张出发/到达时刻表
+  const shapeCenters: Vector3[] = [];    // 每个造型的几何中心（整体平移量）
+  const center = new Vector3();          // 当前造型的中心
   let bufRef = new Uint8Array(0);
   let tiersPrev = new Uint8Array(0);
   let tiersCurr = new Uint8Array(0);
 
   const _v = new Vector3(), _s = new Vector3();
-  const _qa = new Quaternion(), _qb = new Quaternion();
+  const _qa = new Quaternion();
   const _m = new Matrix4();
 
   function composeShape(shape: Shape) {
@@ -100,18 +103,6 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
 
   const easeInOutCubic = (x: number) =>
     (x < 0.5 ? 4 * x * x * x : 1 - ((-2 * x + 2) ** 3) / 2);
-  const easeOutBack = (x: number) =>
-    1 + 2.70158 * ((x - 1) ** 3) + 1.70158 * ((x - 1) ** 2);
-
-  /* 各造型过渡方式：true = 目标处弹入式生长（先收缩离场、途中隐形、到点弹入） */
-  const GROW_IN = [false, false, false, true]; // 星群网罩：从中心层层生长
-
-  /* 生长缩放曲线：前 18% 收缩离开旧位，中段隐形飞行，后 40% 在新位弹入 */
-  function growScale(e: number): number {
-    if (e < 0.18) return 1 - e / 0.18;
-    if (e > 0.6) return easeOutBack(Math.min(1, (e - 0.6) / 0.4));
-    return 0;
-  }
 
   /* 生长方向键：值小的先到达。与 SHAPE_BUILDERS 一一对应 */
   const ARRIVE_KEYS: ((p: Shape[number], i: number) => number)[] = [
@@ -121,8 +112,8 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     (_p, i) => i,                          // 星群网罩：构造次序 = 信源 → 环层 → 网罩，严格中心 → 边缘
   ];
 
-  /* 由方向键生成到达时刻表（略加抖动避免过于机械；隐藏实例不参与归一化） */
-  function buildArrive(shape: Shape, keyFn: (p: Shape[number], i: number) => number): Float32Array {
+  /* 由方向键生成出发/到达时刻表（同向波次：先长出来的先出发；隐藏实例不参与归一化） */
+  function buildSchedule(shape: Shape, keyFn: (p: Shape[number], i: number) => number) {
     const keys = new Float64Array(m);
     let mn = Infinity, mx = -Infinity;
     for (let i = 0; i < m; i++) {
@@ -131,6 +122,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       if (keys[i] < mn) mn = keys[i];
       if (keys[i] > mx) mx = keys[i];
     }
+    const dep = new Float32Array(m);
     const arr = new Float32Array(m).fill(1);
     const span = mx - mn;
     for (let i = 0; i < m; i++) {
@@ -138,23 +130,33 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       const order = span > 0 ? (keys[i] - mn) / span : 0;
       const jit = Math.sin(i * 12.9898) * 43758.5453;
       const o = Math.min(1, Math.max(0, order + (jit - Math.floor(jit) - 0.5) * 0.08));
-      arr[i] = CFG.arriveMin + (1 - CFG.arriveMin) * o;
+      dep[i] = (1 - CFG.flyFrac) * o;          // 出发波：[0, 1-flyFrac]
+      arr[i] = dep[i] + CFG.flyFrac;           // 到达 = 出发 + 统一飞行时长
     }
-    return arr;
+    return { dep, arr };
   }
 
-  /* 全体同时出发（t 为全局线性进度），实例 i 在 arr[i] 时刻到达 */
-  function composeFromTo(from: Shape, to: Shape, t: number, arr: Float32Array, growIn: boolean) {
+  /* 实例 i 在自己的 [dep[i], arr[i]] 时间窗内从 A 飞到 B：出发与到达都按生长方向错开 */
+  function composeFromTo(from: Shape, to: Shape, t: number, dep: Float32Array, arr: Float32Array) {
     if (!mesh) return;
     for (let i = 0; i < m; i++) {
-      const e = easeInOutCubic(Math.min(1, t / arr[i]));
+      const span = Math.max(1e-4, arr[i] - dep[i]);
+      const local = Math.min(1, Math.max(0, (t - dep[i]) / span));
+      const e = easeInOutCubic(local);
       const a = from[i], b = to[i];
       _v.set(a.px + (b.px - a.px) * e, a.py + (b.py - a.py) * e, a.pz + (b.pz - a.pz) * e);
-      _qa.set(a.qx, a.qy, a.qz, a.qw);
-      _qb.set(b.qx, b.qy, b.qz, b.qw);
-      _qa.slerp(_qb, e);
-      const g = growIn ? growScale(e) : 1;
-      _s.set((a.sx + (b.sx - a.sx) * e) * g, (a.sy + (b.sy - a.sy) * e) * g, (a.sz + (b.sz - a.sz) * e) * g);
+      // 姿态在中点切换：此刻粒子是对称立方体，怎么转都不可见
+      if (e < 0.5) _qa.set(a.qx, a.qy, a.qz, a.qw);
+      else _qa.set(b.qx, b.qy, b.qz, b.qw);
+      // 尺寸中途收成对称立方体（k: 0→1→0），细长条只在两端出现
+      const cA = Math.min(a.sx, a.sy, a.sz), cB = Math.min(b.sx, b.sy, b.sz);
+      const k = Math.sin(Math.PI * e);
+      const cu = cA + (cB - cA) * e;
+      _s.set(
+        (a.sx + (b.sx - a.sx) * e) * (1 - k) + cu * k,
+        (a.sy + (b.sy - a.sy) * e) * (1 - k) + cu * k,
+        (a.sz + (b.sz - a.sz) * e) * (1 - k) + cu * k,
+      );
       _m.compose(_v, _qa, _s);
       mesh.setMatrixAt(i, _m);
     }
@@ -180,7 +182,6 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     camera.aspect = cols / rows;
     camera.position.set(0, 0, isMobile() ? CFG.mCamDist : CFG.camDist);
     camera.lookAt(isMobile() ? 0 : CFG.offsetX * 0.55, 0, 0);
-    group.position.x = isMobile() ? 0 : CFG.offsetX;
     group.scale.setScalar(isMobile() ? CFG.scaleMobile : CFG.scaleDesktop);
 
     bufRef = new Uint8Array(cols * rows * 4);
@@ -198,10 +199,42 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     group.add(mesh);
 
     shapes = SHAPE_BUILDERS.map((b) => b(m));
-    if (currentShape.length !== m) currentShape = buildScatter(m);
-    // 每个造型按自身生长方向铺到达时刻
-    shapeArrive = shapes.map((s, k) => buildArrive(s, ARRIVE_KEYS[k] ?? ARRIVE_KEYS[0]));
+    // 几何预置中：质心移到本地原点、存入 shapeCenters 作为整体平移量。
+    // 自转轴因此固定为本地原点，center 插值只是平移，与旋转彻底解耦
+    shapeCenters.length = 0;
+    for (const s of shapes) {
+      const c = centroid(s);
+      shapeCenters.push(c);
+      for (const p of s) { p.px -= c.x; p.py -= c.y; p.pz -= c.z; }
+    }
+    if (currentShape.length !== m) {
+      currentShape = buildScatter(m);
+      const cc = centroid(currentShape);
+      for (const p of currentShape) { p.px -= cc.x; p.py -= cc.y; p.pz -= cc.z; }
+      center.copy(cc);
+    } else {
+      center.copy(shapeCenters[currentIdx] ?? shapeCenters[0]);
+    }
+    // 每个造型按自身生长方向铺出发/到达时刻（置中不影响方向键的归一化次序）
+    shapeSched = shapes.map((s, k) => buildSchedule(s, ARRIVE_KEYS[k] ?? ARRIVE_KEYS[0]));
+    applyCenter();
     composeShape(currentShape);
+  }
+
+  /* 造型的可见实例几何中心 */
+  function centroid(shape: Shape): Vector3 {
+    let n = 0; const c = new Vector3();
+    for (const p of shape) {
+      if (p.sx <= 0) continue;
+      c.x += p.px; c.y += p.py; c.z += p.pz; n++;
+    }
+    return n ? c.multiplyScalar(1 / n) : c;
+  }
+
+  /* 造型几何已绕本地原点置中：group 平移 = 版面偏移 + 质心，旋转轴恒为质心 */
+  function applyCenter() {
+    const baseX = isMobile() ? 0 : CFG.offsetX;
+    group.position.set(baseX + center.x, center.y, center.z);
   }
 
   /* ---- ASCII 采样与绘制 ---- */
@@ -290,7 +323,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       accum = 0;
     }
 
-    spinAngle += CFG.spinSpeed * dt * (morphing ? 0.5 : 1);
+    spinAngle += CFG.spinSpeed * dt;
     group.rotation.y = spinAngle;
     group.rotation.x = CFG.basePitch;
     flowOffset += (morphing ? CFG.flowMorph : CFG.flowDwell) * dt;
@@ -307,29 +340,38 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       .then(() => undefined).catch(() => undefined);
   }
 
-  /* 过渡：所有实例同时出发，按目标造型的生长方向先后落定 */
-  async function morphTo(to: Shape, arr: Float32Array, growIn: boolean) {
+  /* 过渡：出发与到达都错峰，波次方向 = 目标造型的生长方向 */
+  async function morphTo(to: Shape, sched: { dep: Float32Array; arr: Float32Array }, idx: number) {
     if (!mesh) return;
     const from = currentShape;
     morphing = true;
+    const cFrom = center.clone();
+    const cTo = (shapeCenters[idx] ?? center).clone(); // 自转轴平滑切换到目标造型中心
     const clock = { t: 0 };
     await animate(clock, {
       t: 1,
       duration: CFG.morphMs,
       ease: 'linear', // 缓动在 composeFromTo 里按实例施加
-      onUpdate: () => composeFromTo(from, to, clock.t, arr, growIn),
+      onUpdate: () => {
+        center.lerpVectors(cFrom, cTo, easeInOutCubic(clock.t)); // 纯平移，与恒速自转解耦
+        applyCenter();
+        composeFromTo(from, to, clock.t, sched.dep, sched.arr);
+      },
     }).then(() => undefined).catch(() => undefined);
+    center.copy(cTo);
+    applyCenter();
     composeShape(to); // 精确终态（浮点累计归零）
     currentShape = to;
+    currentIdx = idx;
     morphing = false;
   }
 
   async function cycle() {
-    let idx = 0;
+    let idx = 0; // 入场已是 shapes[0]：先驻留，再向下一造型形变
     while (!disposed) {
-      await morphTo(shapes[idx], shapeArrive[idx], GROW_IN[idx] ?? false);
       await dwell(CFG.dwellMs);
       idx = (idx + 1) % shapes.length;
+      await morphTo(shapes[idx], shapeSched[idx], idx);
     }
   }
 
@@ -356,6 +398,9 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     setStatic() {
       rebuild();
       currentShape = shapes[0]; // 莫比乌斯
+      currentIdx = 0;
+      center.copy(shapeCenters[0]);
+      applyCenter();
       composeShape(currentShape);
       spinAngle = -0.45;
       group.rotation.y = spinAngle;
@@ -364,6 +409,9 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     },
     start() {
       rebuild();
+      currentShape = shapes[0]; // 与 setStatic 展示的造型一致（重建后的新实例）
+      currentIdx = 0;
+      composeShape(currentShape);
       io.observe(canvas);
       document.addEventListener('visibilitychange', onVis);
       window.addEventListener('resize', onResize);
