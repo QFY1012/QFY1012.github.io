@@ -5,10 +5,10 @@
  *   ② 分析树   = ToA（CHI'26）
  *   ③ 螺旋     = NarraSteer（CHI'27 在投）
  *   ④ 星群网罩 = Public Opinion Analysis & Governance（国家重点研发计划）
- * 词条均取自站内已有项目描述，统一英文；新增论文/项目/标签只改这个文件。
+ * 词条统一为抽象英文关键词；新增/调整词条只改这个文件。
  * ============================================================ */
 
-/** 官方论文标题（权威来源） */
+/** 官方论文标题（权威来源，必须出现在词流里） */
 const OFFICIAL_TITLES = {
   toa: "Visualizing Tree-of-Analysis: Facilitating Conversational Visual Analytics for Novices",
   narrasteer: "Reconstructing Trajectories as Storylines: Steering LLM Agents in Narrative Space",
@@ -17,51 +17,38 @@ const OFFICIAL_TITLES = {
 /** Title */
 const TITLE = "AI Design Engineering";
 
-/** ① 莫比乌斯 · AI Design Engineering：四档颜色映射呈现连续环面；字符只承载项目内容 */
+/** ① 莫比乌斯 · AI Design Engineering：抽象词，只写 design+engineering 的交汇 */
 const POOL_DESIGN_ENGINEERING = [
   TITLE,
-  "Taobao Design Counselor",
-  "Skill Onboarding Standards · Token Cost · Efficiency · Stability",
-  "LLM Automated Revision Pipeline",
-  "Skill Output Standards · HTML Design Guidelines",
-  "Radix UI Components · Design Tokens",
-  "DOM + CV + LLM Multimodal Evaluation",
-  "Agent PPT Authoring Mode",
+  "Design + Engineering",
+  "Form + Function",
+  "Aesthetics + Logic",
 ];
 
 /** ② 分析树 · ToA：对话式可视分析（官方标题打头） */
 const POOL_TOA = [
   OFFICIAL_TITLES.toa,
-  "ToA · Tree-of-Analysis",
+  "Tree-of-Analysis",
   "Conversational Visual Analytics",
-  "Analysis Tree · Branching · Backtracking",
-  "LangChain · LLM Workflow",
-  "Multi-turn Dialogue · Cognitive Load",
-  "Insights +58.3%",
-  "Deep Thinking Time +17%",
+  "Branching + Backtracking",
+  "Dialogue + Insight",
 ];
 
-/** ③ 螺旋 · NarraSteer：面向数据叙事的 Agent 交互（官方标题打头） */
+/** ③ 螺旋 · NarraSteer：数据叙事（官方标题打头） */
 const POOL_NARRASTEER = [
   OFFICIAL_TITLES.narrasteer,
-  "NarraSteer · Data Storytelling",
-  "Storylines · Draggable Narrative Nodes",
-  "ReAct Agent · LangGraph",
-  "Reasoning-Acting Trajectories",
-  "Insight Density +13%",
-  "Lower Mental Workload · Higher Perceived Control",
+  "Data Storytelling",
+  "Narrative Space",
+  "Storylines + Agents",
+  "Exploration + Steering",
 ];
 
-/** ④ 星群网罩 · Public Opinion Analysis & Governance：跨社交媒体舆情分析与治理平台 */
+/** ④ 星群网罩 · 舆情分析与治理 */
 const POOL_PUBLIC_OPINION = [
-  "Cross-platform Public Opinion Analysis & Governance",
-  "Opinion Monitoring · Analysis · Response",
-  "Large-screen Visualization",
-  "Workbench Dashboard",
-  "Visualization Middle Platform",
-  "Three-layer Information Architecture",
-  "National Key R&D Program",
-  "Government Product Design · 0 to 1",
+  "Public Opinion Analysis & Governance",
+  "Monitoring + Analysis + Response",
+  "Cross-platform + Large-screen",
+  "Insight + Governance",
 ];
 
 /** 词条以 · 连接成一条循环长串；整体重复 2 次降低接缝感 */
