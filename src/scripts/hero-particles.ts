@@ -9,23 +9,23 @@ import {
   Quaternion, Scene, Vector3, WebGLRenderer, WebGLRenderTarget,
 } from 'three';
 import { animate } from 'animejs';
-import { TEXT_STREAM, isCJK } from './hero-text';
+import { SHAPE_STREAMS, isCJK } from './hero-text';
 import { SHAPE_BUILDERS, ISOTROPIC_BUILDERS, buildScatter, buildBroadcast, broadcastRayInfo, type Shape } from './hero-shapes';
 
 /* ---------- 参数 ---------- */
 const CFG = {
   camFov: 40, camDist: 430, mCamDist: 505,
   spinSpeed: 0.08, basePitch: -0.18,
-  // 光即青色：打光处字符染青成形，渐晕为光晕，暗处铺灰墙（四档亮度）
+  // 光即青色：打光处字符染青成形，渐晕为光晕，暗处为纯色背景（四档亮度）
   lumLit: 0.45,    // 高于此亮度 → 形状本体（亮青）
   lumMid: 0.2,     // 高于此亮度 → 中间调（中青）
-  lumEdge: 0.06,   // 高于此亮度 → 光晕（暗青）；低于 → 字符墙（灰）
+  lumEdge: 0.06,   // 高于此亮度 → 光晕（暗青）；低于 → 纯色背景（不画字符）
   hyst: 0.03,
   dwellMs: 7000,
   // 过渡：出发与到达都按目标造型的生长方向错峰（先长出的先出发、先到达）
   morphMs: 7200,
   flyFrac: 0.45,   // 所有粒子飞行时长统一 = 过渡总时长 × 45%；出发波 [0, 0.55]，到达波 [0.45, 1]
-  // 字符墙完全静止：唯一会动的是被光照亮的造型本身
+  // 背景为纯色：唯一会动的是被光照亮的造型本身
   flowDwell: 0, flowMorph: 0,
   offsetX: 40,
   scaleDesktop: 1.7, scaleMobile: 1.35,
@@ -34,7 +34,7 @@ const CFG = {
   litColor: [0, 232, 200, 0.72],     // 形状本体：受光面（亮青）
   midColor: [0, 214, 190, 0.6],      // 中间调：次亮面（中青）
   haloColor: [0, 232, 200, 0.5],     // 光晕：受光面外圈渐晕（暗青）
-  wallColor: [153, 162, 184, 0.32],  // 字符墙：暗处铺满
+  bgColor: '#0a0c12',                // 背景：纯色深底（替代字符墙，与页面 --bg 同源）
 };
 
 interface HeroApi { setStatic(): void; start(): void; dispose(): void; }
@@ -88,6 +88,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
 
   /* ---- 实例状态 ---- */
   let shapes: Shape[] = [];
+  let shapeStreams: string[] = []; // 与 shapes 平行的关键词库（下标 = currentIdx）
   let currentShape: Shape = [];
   let currentIdx = 0;               // currentShape 在 shapes 中的下标（几何已置中，靠它取质心）
   let shapeSched: { dep: Float32Array; arr: Float32Array }[] = []; // 每个造型一张出发/到达时刻表
@@ -311,6 +312,10 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     const builders = heroOnly >= 0 && heroOnly < SHAPE_BUILDERS.length
       ? [SHAPE_BUILDERS[heroOnly]]
       : SHAPE_BUILDERS;
+    // 词库与 SHAPE_BUILDERS 同序；heroOnly 过滤时下标同步对齐
+    shapeStreams = heroOnly >= 0 && heroOnly < SHAPE_STREAMS.length
+      ? [SHAPE_STREAMS[heroOnly]]
+      : SHAPE_STREAMS.slice();
     shapes = builders.map((b) => b(m));
     // 前三个造型是在旧的横向拉伸投影（aspect 恒为 1）下调好的观感：
     // 世界 X 拉伸 = 显示宽高比，且拉伸组在自转组外层 ⇒ NDC 与旧渲染逐像素一致；
@@ -375,7 +380,6 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     const litFill = rgba(CFG.litColor);    // 形状本体（亮青）
     const midFill = rgba(CFG.midColor);    // 中间调（中青）
     const haloFill = rgba(CFG.haloColor);  // 光晕渐晕（暗青）
-    const wallFill = rgba(CFG.wallColor);  // 字符墙（暗处铺满）
     const x0 = (cssW - cols * p.cellW) / 2;
 
     // 第一遍：亮度 → 四档分层（迟滞对比上一帧，防闪烁）
@@ -391,16 +395,20 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       }
     }
 
-    // 第二遍：拼行绘制——受光面亮青、次亮中青、渐晕暗青、暗处灰墙
+    // 第二遍：拼行绘制——受光面亮青、次亮中青、渐晕暗青，暗处留纯色背景
     ctx.clearRect(0, 0, cssW, cssH);
+    ctx.fillStyle = CFG.bgColor; // 纯色背景铺满画布，替代灰色字符墙
+    ctx.fillRect(0, 0, cssW, cssH);
     ctx.font = `${p.fontPx}px "JetBrains Mono", "Courier New", monospace`;
     ctx.textBaseline = 'top';
 
     const flow = Math.floor(flowOffset);
-    const streamLen = TEXT_STREAM.length;
+    // 当前造型对应的关键词库：轮换到位即换词（heroOnly 时下标已在 rebuild 对齐）
+    const stream = shapeStreams[currentIdx] ?? SHAPE_STREAMS[0];
+    const streamLen = stream.length;
 
     for (let r = 0; r < rows; r++) {
-      let litStr = '', midStr = '', haloStr = '', wallStr = '';
+      let litStr = '', midStr = '', haloStr = '';
       let skipNext = false;
       for (let c = 0; c < cols; c++) {
         const cellIdx = r * cols + c;
@@ -408,19 +416,18 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
 
         let ch = ' ';
         if (!skipNext) {
-          ch = TEXT_STREAM[(cellIdx + flow) % streamLen];
+          ch = stream[(cellIdx + flow) % streamLen];
           if (tier < 3 && (ch === ' ' || ch === '·')) ch = '+'; // 受光面不断线
           if (isCJK(ch)) skipNext = true;
         } else {
           skipNext = false;
         }
+        // 背景档（tier 3）仍参与字符流走位，只是不落笔：纯色已铺底
         litStr += tier === 0 ? ch : ' ';
         midStr += tier === 1 ? ch : ' ';
         haloStr += tier === 2 ? ch : ' ';
-        wallStr += tier === 3 ? ch : ' ';
       }
       const y = r * p.cellH + 2;
-      if (wallStr.trim()) { ctx.fillStyle = wallFill; ctx.fillText(wallStr, x0, y); }
       if (haloStr.trim()) { ctx.fillStyle = haloFill; ctx.fillText(haloStr, x0, y); }
       if (midStr.trim()) { ctx.fillStyle = midFill; ctx.fillText(midStr, x0, y); }
       if (litStr.trim()) { ctx.fillStyle = litFill; ctx.fillText(litStr, x0, y); }

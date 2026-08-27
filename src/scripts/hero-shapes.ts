@@ -2,7 +2,7 @@
  * hero-shapes.ts — 四个造型的实例矩阵生成器
  * 每个生成器返回恰好 M 个 InstancePose；用不满的实例 scale→0。
  * 造型语义：莫比乌斯 → AI 设计工程；分析树 → ToA；
- *          螺旋 → NarraSteer；中心放射 → 舆情传播与治理
+ *          螺旋 → NarraSteer；星群网罩 → 舆情传播与治理
  * ============================================================ */
 import { Matrix4, Quaternion, Vector3 } from 'three';
 
@@ -214,7 +214,98 @@ export function buildHelix(m: number): Shape {
   return pad(out, m);
 }
 
-/* ---------- ④ 中心放射（一源多传：舆情传播与治理） ---------- */
+/* ---------- ④ 星群爆发+网罩（舆情传播与治理） ---------- */
+
+export function buildOutbreak(m: number): Shape {
+  const rand = rng(20260717);
+  const out: Shape = [];
+  const YS = 0.62; // 竖向压扁，避免网罩顶底出画
+  const big = m > 150;
+  const n1 = big ? 8 : 6, n2 = big ? 14 : 10, n3 = big ? 18 : 12;
+  const crossN = big ? 3 : 2, extN = big ? 6 : 4;
+
+  const P = (v: Vector3) => new Vector3(v.x, v.y * YS, v.z);
+  // 斐波那契球面均布 + 径向抖动
+  const spherePt = (i: number, n: number, r: number, jit: number) => {
+    const y = 1 - (2 * (i + 0.5)) / n;
+    const rr = Math.sqrt(1 - y * y);
+    const th = i * 2.399963;
+    return new Vector3(rr * Math.cos(th), y, rr * Math.sin(th))
+      .multiplyScalar(r + (rand() - 0.5) * jit);
+  };
+  const edge = (a: Vector3, b: Vector3, thick: number) => {
+    const mid = a.clone().add(b).multiplyScalar(0.5);
+    const d = b.clone().sub(a);
+    return pose(mid, d, thick, d.length(), thick);
+  };
+  const nearest = (p: Vector3, set: Vector3[]) => {
+    let bi = 0, bd = Infinity;
+    for (let k = 0; k < set.length; k++) {
+      const d = p.distanceToSquared(set[k]);
+      if (d < bd) { bd = d; bi = k; }
+    }
+    return set[bi];
+  };
+
+  // 信源 → 内环（辐条先亮）
+  out.push(pose(new Vector3(0, 0, 0), null, 11, 11, 11));
+  const w1: Vector3[] = [];
+  for (let i = 0; i < n1; i++) {
+    const p = spherePt(i, n1, 48, 10);
+    w1.push(p);
+    out.push(edge(new Vector3(0, 0, 0), P(p), 1.6));
+    out.push(pose(P(p), null, 5.5, 5.5, 5.5));
+  }
+  // 中环：连最近内环 + 少量横向交叉（网状感）
+  const w2: Vector3[] = [];
+  for (let i = 0; i < n2; i++) {
+    const p = spherePt(i, n2, 88, 10);
+    w2.push(p);
+    out.push(edge(P(nearest(p, w1)), P(p), 1.5));
+    out.push(pose(P(p), null, 4.5, 4.5, 4.5));
+  }
+  for (let i = 0; i < crossN; i++) {
+    const a = w2[(i * 2) % n2], b = w2[(i * 2 + 7) % n2];
+    out.push(edge(P(a), P(b), 1.3));
+  }
+  // 外环：混沌扩散，稀疏连线
+  for (let i = 0; i < n3; i++) {
+    const p = spherePt(i, n3, 126, 14);
+    if (i < extN) {
+      out.push(edge(P(nearest(p, w2)), P(p), 1.4));
+    }
+    out.push(pose(P(p), null, 4, 4, 4));
+  }
+  // 治理网罩：二十面体顶点 + 棱，先传播后治理
+  const PHI = (1 + Math.sqrt(5)) / 2;
+  const raw: Vector3[] = [];
+  for (const s1 of [-1, 1]) {
+    for (const s2 of [-1, 1]) {
+      raw.push(new Vector3(0, s1, s2 * PHI));
+      raw.push(new Vector3(s1, s2 * PHI, 0));
+      raw.push(new Vector3(s1 * PHI, 0, s2));
+    }
+  }
+  const cage = raw.map((v) => P(v.normalize().multiplyScalar(150)));
+  cage.forEach((v) => {
+    out.push(pose(v, null, 4.5, 4.5, 4.5));
+  });
+  // 棱 = 距离最短的 30 对顶点（压扁后仍恒小于非棱对）
+  const pairs: [number, number, number][] = [];
+  for (let i = 0; i < cage.length; i++) {
+    for (let j = i + 1; j < cage.length; j++) {
+      pairs.push([i, j, cage[i].distanceToSquared(cage[j])]);
+    }
+  }
+  pairs.sort((a, b) => a[2] - b[2]);
+  const edgeCount = big ? 30 : 15;
+  pairs.slice(0, edgeCount).forEach(([i, j]) => {
+    out.push(edge(cage[i], cage[j], 1.4));
+  });
+  return pad(out, m); // 不撒尘埃：剩余实例 HIDDEN，剪影干净
+}
+
+/* ---------- 中心放射（已回退出轮播，保留导出供 hero-particles 射线动画引用） ---------- */
 
 /* builder 与驻留期射线动画共用同一份参数，防止两处漂移 */
 const BC = {
@@ -280,7 +371,7 @@ export function buildScatter(m: number): Shape {
   return out;
 }
 
-export const SHAPE_BUILDERS = [buildMobius, buildTree, buildHelix, buildBroadcast];
+export const SHAPE_BUILDERS = [buildMobius, buildTree, buildHelix, buildOutbreak];
 
 /* 在各向同性（已修正）相机下设计、无需宽高补偿的造型。
  * 其余三个造型的比例是在旧的横向拉伸投影（aspect 恒为 1）下调出来的，

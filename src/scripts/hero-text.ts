@@ -1,6 +1,11 @@
 /* ============================================================
  * hero-text.ts — 首屏字符画文本池（唯一维护点）
- * 新增论文/项目/标签只改这个文件。
+ * 四组关键词库与轮播造型一一对应（顺序 = SHAPE_BUILDERS）：
+ *   ① 莫比乌斯 = AI Design Engineering（淘天实习）
+ *   ② 分析树   = ToA（CHI'26）
+ *   ③ 螺旋     = NarraSteer（CHI'27 在投）
+ *   ④ 星群网罩 = Public Opinion Analysis & Governance（国家重点研发计划）
+ * 词条均取自站内已有项目描述，统一英文；新增论文/项目/标签只改这个文件。
  * ============================================================ */
 
 /** 官方论文标题（权威来源） */
@@ -12,20 +17,66 @@ const OFFICIAL_TITLES = {
 /** Title */
 const TITLE = "AI Design Engineering";
 
-/**
- * 字符墙内容 = 两篇论文官方标题 + 本人 title，交替排布形成节奏。
- * 日后想掺入其他词条（技能/中文词），加进 WALL 即可。
- */
-const WALL = [
+/** ① 莫比乌斯 · AI Design Engineering：四档颜色映射呈现连续环面；字符只承载项目内容 */
+const POOL_DESIGN_ENGINEERING = [
+  TITLE,
+  "Taobao Design Counselor",
+  "Skill Onboarding Standards · Token Cost · Efficiency · Stability",
+  "LLM Automated Revision Pipeline",
+  "Skill Output Standards · HTML Design Guidelines",
+  "Radix UI Components · Design Tokens",
+  "DOM + CV + LLM Multimodal Evaluation",
+  "Agent PPT Authoring Mode",
+];
+
+/** ② 分析树 · ToA：对话式可视分析（官方标题打头） */
+const POOL_TOA = [
   OFFICIAL_TITLES.toa,
-  TITLE,
+  "ToA · Tree-of-Analysis",
+  "Conversational Visual Analytics",
+  "Analysis Tree · Branching · Backtracking",
+  "LangChain · LLM Workflow",
+  "Multi-turn Dialogue · Cognitive Load",
+  "Insights +58.3%",
+  "Deep Thinking Time +17%",
+];
+
+/** ③ 螺旋 · NarraSteer：面向数据叙事的 Agent 交互（官方标题打头） */
+const POOL_NARRASTEER = [
   OFFICIAL_TITLES.narrasteer,
-  TITLE,
+  "NarraSteer · Data Storytelling",
+  "Storylines · Draggable Narrative Nodes",
+  "ReAct Agent · LangGraph",
+  "Reasoning-Acting Trajectories",
+  "Insight Density +13%",
+  "Lower Mental Workload · Higher Perceived Control",
+];
+
+/** ④ 星群网罩 · Public Opinion Analysis & Governance：跨社交媒体舆情分析与治理平台 */
+const POOL_PUBLIC_OPINION = [
+  "Cross-platform Public Opinion Analysis & Governance",
+  "Opinion Monitoring · Analysis · Response",
+  "Large-screen Visualization",
+  "Workbench Dashboard",
+  "Visualization Middle Platform",
+  "Three-layer Information Architecture",
+  "National Key R&D Program",
+  "Government Product Design · 0 to 1",
 ];
 
 /** 词条以 · 连接成一条循环长串；整体重复 2 次降低接缝感 */
-const core = WALL.join("  ·  ");
-export const TEXT_STREAM = `${core}  ·  ${core}  ·  `;
+const buildStream = (pool: string[]) => {
+  const core = pool.join("  ·  ");
+  return `${core}  ·  ${core}  ·  `;
+};
+
+/** 四组造型关键词库，下标与 SHAPE_BUILDERS 一致 */
+export const SHAPE_STREAMS = [
+  POOL_DESIGN_ENGINEERING,
+  POOL_TOA,
+  POOL_NARRASTEER,
+  POOL_PUBLIC_OPINION,
+].map(buildStream);
 
 /** CJK 判断：中日韩统一表意文字（含扩展 A 与兼容区） */
 export function isCJK(ch: string): boolean {
