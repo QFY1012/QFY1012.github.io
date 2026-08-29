@@ -1,6 +1,7 @@
 ---
 import '../styles/tokens.css';
 import '../styles/home.css';
+import '../styles/featured-projects.css';
 ---
 
 <html lang="zh">
@@ -318,6 +319,44 @@ import '../styles/home.css';
       <span class="scroll-cue-line"></span>
     </div>
   </div>
+
+  <!-- FEATURED WORK：首屏之后的粒子项目舞台 -->
+  <section id="featured" class="featured" aria-labelledby="featured-title">
+    <div class="featured-head">
+      <div><div class="featured-kicker">SELECTED WORK · 2022—2026</div><h2 id="featured-title">FEATURED PROJECTS</h2></div>
+      <div class="featured-progress" aria-live="polite"><span data-featured-page>01</span> / 02</div>
+    </div>
+    <div class="featured-viewport">
+      <div class="featured-track" data-featured-track>
+        <div class="featured-panel featured-panel--primary">
+          <a class="feature-card" href="/toa" data-project-shape="tree">
+            <div class="feature-card__top"><span class="feature-card__title">TOA</span><span class="feature-card__index">01</span></div>
+            <canvas class="feature-card__canvas" aria-hidden="true"></canvas>
+            <div class="feature-card__copy"><span class="feature-card__type">Conversational visual analysis</span><p>将线性分析对话重组为可分支、可回溯的分析树。</p></div>
+          </a>
+          <a class="feature-card" href="/narrasteer" data-project-shape="helix">
+            <div class="feature-card__top"><span class="feature-card__title">NARRASTEER</span><span class="feature-card__index">02</span></div>
+            <canvas class="feature-card__canvas" aria-hidden="true"></canvas>
+            <div class="feature-card__copy"><span class="feature-card__type">Agentic data storytelling</span><p>把 Agent 的执行轨迹映射为可介入、可拖拽的故事线。</p></div>
+          </a>
+          <button class="feature-card feature-card--more" type="button" data-featured-next data-project-shape="arrow" aria-label="查看其余五个项目">
+            <div class="feature-card__top"><span class="feature-card__title">MORE PROJECTS</span><span class="feature-card__index">03—07</span></div>
+            <canvas class="feature-card__canvas" aria-hidden="true"></canvas>
+            <div class="feature-card__copy"><span class="feature-card__type">Explore the archive</span><p>1 graduate research · 4 undergraduate works</p></div>
+          </button>
+        </div>
+        <div class="featured-panel featured-panel--archive">
+          <button class="featured-back" type="button" data-featured-back aria-label="返回精选项目">← <span>BACK</span></button>
+          <article class="feature-card" data-project-shape="network"><div class="feature-card__top"><span class="feature-card__title">PUBLIC OPINION</span><span class="feature-card__index">03</span></div><canvas class="feature-card__canvas" aria-hidden="true"></canvas><div class="feature-card__copy"><span class="feature-card__type">Graduate · Governance platform</span><p>跨社交媒体舆情分析与治理平台。</p></div></article>
+          <a class="feature-card" href="https://pinwall.cn/project/52857" target="_blank" rel="noreferrer" data-project-shape="pavilion"><div class="feature-card__top"><span class="feature-card__title">TENGWANG PAVILION</span><span class="feature-card__index">04</span></div><canvas class="feature-card__canvas" aria-hidden="true"></canvas><div class="feature-card__copy"><span class="feature-card__type">Undergraduate · XR</span><p>沉浸式展厅开发与交互设计。</p></div></a>
+          <a class="feature-card" href="/videos/coco.mp4" target="_blank" data-project-shape="rings"><div class="feature-card__top"><span class="feature-card__title">COCOCREATE</span><span class="feature-card__index">05</span></div><canvas class="feature-card__canvas" aria-hidden="true"></canvas><div class="feature-card__copy"><span class="feature-card__type">Undergraduate · VR</span><p>VR 参与式设计会议平台。</p></div></a>
+          <a class="feature-card" href="/videos/qibaishi-demo.mp4" target="_blank" data-project-shape="ink"><div class="feature-card__top"><span class="feature-card__title">QIBAISHI AIGC</span><span class="feature-card__index">06</span></div><canvas class="feature-card__canvas" aria-hidden="true"></canvas><div class="feature-card__copy"><span class="feature-card__type">Undergraduate · AIGC</span><p>动态国画艺术展与生成式体验。</p></div></a>
+          <a class="feature-card" href="/videos/jieguan.mp4" target="_blank" data-project-shape="lanes"><div class="feature-card__top"><span class="feature-card__title">L3 TAKEOVER</span><span class="feature-card__index">07</span></div><canvas class="feature-card__canvas" aria-hidden="true"></canvas><div class="feature-card__copy"><span class="feature-card__type">Undergraduate · Automotive HMI</span><p>自动驾驶应急接管与变道交互。</p></div></a>
+        </div>
+      </div>
+    </div>
+    <div class="featured-swipe" aria-hidden="true">SWIPE <span>→</span></div>
+  </section>
 
   <!-- NAV：首屏之后出现，滚过首屏吸顶 -->
   <nav>
@@ -639,6 +678,13 @@ import '../styles/home.css';
       }
     });
   });
+</script>
+<script>
+  const featured = document.getElementById('featured');
+  if (featured) {
+    const m = await import('../scripts/featured-projects');
+    m.initFeaturedProjects(featured);
+  }
 </script>
 <script>
   // 首屏莫比乌斯景深点染（动态加载，不进首屏关键路径）
