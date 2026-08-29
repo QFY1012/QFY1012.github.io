@@ -15,10 +15,11 @@ import { animate, type JSAnimation } from 'animejs';
 /* ---------- 参数 ---------- */
 const CFG = {
   camFov: 50, camDist: 330, mCamDist: 385,
-  spinSpeed: 0.02, rotZSpeed: 0, basePitch: -0.18, // spin：绕环面法向自转；rotZSpeed：绕 Z 缓慢翻滚
+  spinSpeed: 0.02, rotXSpeed: 0, rotZSpeed: 0.02, basePitch: -0.18, // spin：绕环面法向自转；rotXSpeed/rotZSpeed：绕 X/Z 缓慢翻滚
   rotX: 0, rotY: -1.86, rotZ: -0.71, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
   offsetX: 40, offsetY: 0,
   scaleX: 1.7, scaleY: 1.7, scaleZ: 1.7, // 三轴缩放（桌面值；移动端整体 ×1.35/1.7）
+  thick: 0,       // 环带厚度（世界单位）：点吸附在 ±thick 两个壳面上，空心截面；0 = 回到扁带
   focus: 245,     // 对焦深度：距相机此远处的点最凝聚（前排环缘）
   coc: 0.008,     // 散开强度 m：离焦位移半径 r = coc·|focus−d|^exp
   cocExp: 1.5,    // 散开分布指数 e：>1 让近焦更锐利、远焦更快解体
@@ -41,22 +42,54 @@ function surf(u: number, v: number, o: number[]) {
   o[2] = rr * Math.sin(u);
 }
 
-/* 预采样点云：均匀撒满整个环面（几何内烘入 TILT 倾倒，自转轴因此是环面本地法向）。
+/* 预采样点云：均匀撒满整个环面，并吸附到空心截面的闭合周线上
+ * （截面为最大圆角矩形——圆角半径 = min(W, thick)，即成胶囊形；
+ * 按弧长比例分配密度；几何内烘入 TILT 倾倒，自转轴因此是环面本地法向）。
  * 每个点附带一个各向同性随机单位向量，作为离焦时的散开方向 */
 function buildPoints(n: number): { pos: Float32Array; dir: Float32Array } {
   const pos = new Float32Array(n * 3);
   const dir = new Float32Array(n * 3);
   const c = Math.cos(TILT), s = Math.sin(TILT);
-  const o = [0, 0, 0];
+  const o = [0, 0, 0], ou = [0, 0, 0], ov = [0, 0, 0];
+  const TH = CFG.thick;
+  const rc = Math.min(W, TH);            // 最大圆角半径
+  const faceLen = 2 * (W - rc);          // 单个面直边长
+  const wallLen = 2 * (TH - rc);         // 单个侧壁直边长（最大圆角时为 0）
+  const perim = 2 * faceLen + 2 * wallLen + 2 * Math.PI * rc;
   for (let i = 0; i < n; i++) {
-    surf(Math.random() * 2 * Math.PI, (Math.random() * 2 - 1) * W, o);
-    pos[i * 3] = o[0];
-    pos[i * 3 + 1] = o[1] * c - o[2] * s;
-    pos[i * 3 + 2] = o[1] * s + o[2] * c;
-    const z = Math.random() * 2 - 1, t = Math.random() * 2 * Math.PI;
+    const u = Math.random() * 2 * Math.PI;
+    let v: number, t: number;
+    const x = Math.random() * perim;
+    if (x < 2 * faceLen) {
+      v = (Math.random() * 2 - 1) * (W - rc);   // 上/下面直边
+      t = (x < faceLen ? 1 : -1) * TH;
+    } else if (x < 2 * faceLen + 2 * wallLen) {
+      v = (x < 2 * faceLen + wallLen ? 1 : -1) * W; // 侧壁直边
+      t = (Math.random() * 2 - 1) * (TH - rc);
+    } else {
+      // 四个角弧合并成一个整圆采样：象限符号定位角心，弧上密度均匀
+      const phi = Math.random() * 2 * Math.PI;
+      const cvv = Math.cos(phi), ctt = Math.sin(phi);
+      v = Math.sign(cvv) * (W - rc) + cvv * rc;
+      t = Math.sign(ctt) * (TH - rc) + ctt * rc;
+    }
+    surf(u, v, o);
+    // 数值法向 n = ∂u × ∂v，点只落在闭合壳面上 → 空心截面
+    surf(u + 1e-3, v, ou);
+    surf(u, v + 1e-3, ov);
+    const ax = ou[0] - o[0], ay = ou[1] - o[1], az = ou[2] - o[2];
+    const bx = ov[0] - o[0], by = ov[1] - o[1], bz = ov[2] - o[2];
+    const nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx;
+    const nl = Math.hypot(nx, ny, nz) || 1;
+    const tn = t / nl;
+    const px = o[0] + nx * tn, py = o[1] + ny * tn, pz = o[2] + nz * tn;
+    pos[i * 3] = px;
+    pos[i * 3 + 1] = py * c - pz * s;
+    pos[i * 3 + 2] = py * s + pz * c;
+    const z = Math.random() * 2 - 1, tt = Math.random() * 2 * Math.PI;
     const q = Math.sqrt(1 - z * z);
-    dir[i * 3] = q * Math.cos(t);
-    dir[i * 3 + 1] = q * Math.sin(t);
+    dir[i * 3] = q * Math.cos(tt);
+    dir[i * 3 + 1] = q * Math.sin(tt);
     dir[i * 3 + 2] = z;
   }
   return { pos, dir };
@@ -153,6 +186,13 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   points.frustumCulled = false;
   group.add(points);
 
+  function rebuildPoints() {
+    const resampled = buildPoints(isMobile() ? CFG.mCount : CFG.count);
+    geometry.setAttribute('position', new Float32BufferAttribute(resampled.pos, 3));
+    geometry.setAttribute('aDir', new Float32BufferAttribute(resampled.dir, 3));
+    if (!running) renderOnce(state.spin);
+  }
+
   // 自转轴 = 环面本地法向；姿态合成：rot(调参) · 俯仰 · 绕法向自转
   const RING_AXIS = new Vector3(0, Math.cos(TILT), Math.sin(TILT));
   const _spinQ = new Quaternion();
@@ -161,7 +201,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   const _pitchQ = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), CFG.basePitch);
   function applySpin(angle: number) {
     _spinQ.setFromAxisAngle(RING_AXIS, angle);
-    _rotQ.setFromEuler(_euler.set(CFG.rotX, CFG.rotY, CFG.rotZ + state.rotZ)); // 静态偏移 + 缓慢翻滚
+    _rotQ.setFromEuler(_euler.set(CFG.rotX + state.rotX, CFG.rotY, CFG.rotZ + state.rotZ)); // 静态偏移 + 缓慢翻滚
     group.quaternion.copy(_rotQ).multiply(_pitchQ).multiply(_spinQ);
   }
 
@@ -202,8 +242,9 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   }
 
   /* ---- anime.js 驱动自转：无限线性补间，每 tick 渲染 ---- */
-  const state = { spin: -0.45, rotZ: 0 };
+  const state = { spin: -0.45, rotX: 0, rotZ: 0 };
   let spinAnim: JSAnimation | null = null;
+  let rotXAnim: JSAnimation | null = null;
   let rotZAnim: JSAnimation | null = null;
   let lastDraw = 0;
 
@@ -224,6 +265,20 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       duration: ((2 * Math.PI) / speed) * 1000,
       ease: 'linear',
       loop: true, // 每圈回绕 ±2π：姿态等价，无跳变
+      autoplay: running,
+      onUpdate: renderTick,
+    });
+  }
+
+  function makeRotX() {
+    rotXAnim?.pause();
+    const speed = Math.abs(CFG.rotXSpeed);
+    if (speed < 1e-4) { rotXAnim = null; return; }
+    rotXAnim = animate(state, {
+      rotX: [state.rotX, state.rotX + Math.sign(CFG.rotXSpeed) * 2 * Math.PI],
+      duration: ((2 * Math.PI) / speed) * 1000,
+      ease: 'linear',
+      loop: true,
       autoplay: running,
       onUpdate: renderTick,
     });
@@ -296,6 +351,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     mkRow('scaleX', 0.1, 6, 0.05, CFG.scaleX, (v) => { CFG.scaleX = v; applyView(); });
     mkRow('scaleY', 0.1, 6, 0.05, CFG.scaleY, (v) => { CFG.scaleY = v; applyView(); });
     mkRow('scaleZ', 0.1, 6, 0.05, CFG.scaleZ, (v) => { CFG.scaleZ = v; applyView(); });
+    mkRow('thick', 0, 30, 0.5, CFG.thick, (v) => { CFG.thick = v; rebuildPoints(); });
     mkRow('rotX', -3.14, 3.14, 0.01, CFG.rotX, (v) => { CFG.rotX = v; refresh(); });
     mkRow('rotY', -3.14, 3.14, 0.01, CFG.rotY, (v) => { CFG.rotY = v; refresh(); });
     mkRow('rotZ', -3.14, 3.14, 0.01, CFG.rotZ, (v) => { CFG.rotZ = v; refresh(); });
@@ -308,6 +364,10 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       CFG.spinSpeed = v;
       makeSpin(); // 重建补间以变速/换向，角度连续
     }); // 负值 = 反向
+    mkRow('rotXV', -0.2, 0.2, 0.002, CFG.rotXSpeed, (v) => {
+      CFG.rotXSpeed = v;
+      makeRotX();
+    }); // 绕 X 翻滚速度，负值 = 反向
     mkRow('rotZV', -0.2, 0.2, 0.002, CFG.rotZSpeed, (v) => {
       CFG.rotZSpeed = v;
       makeRotZ();
@@ -325,6 +385,10 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     if (spinAnim) {
       if (running) spinAnim.play();
       else spinAnim.pause();
+    }
+    if (rotXAnim) {
+      if (running) rotXAnim.play();
+      else rotXAnim.pause();
     }
     if (rotZAnim) {
       if (running) rotZAnim.play();
@@ -356,6 +420,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       document.addEventListener('visibilitychange', onVis);
       window.addEventListener('resize', onResize);
       makeSpin();
+      makeRotX();
       makeRotZ();
       updateRunning();
       renderOnce(state.spin);
@@ -363,6 +428,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     dispose() {
       disposed = true;
       spinAnim?.pause();
+      rotXAnim?.pause();
       rotZAnim?.pause();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
