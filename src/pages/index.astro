@@ -132,7 +132,7 @@ import '../styles/home.css';
     .skills-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
     }
-    .skill-card { padding: 0.25rem 1.75rem; }
+    .skill-card { padding: 0 1.75rem; }
     .skill-card:first-child { padding-left: 0; }
     .skill-card + .skill-card { border-left: 1px solid var(--border); }
     .skill-card h3 { font-family: var(--font-body); font-size: var(--text-body); font-weight: 500; margin-bottom: 1rem; }
@@ -184,7 +184,7 @@ import '../styles/home.css';
       border-bottom: 1px solid var(--border); margin-top: 1.75rem;
       display: flex; justify-content: space-between; align-items: center;
     }
-    .pg-label:first-child { margin-top: 0; }
+    .pg-label:first-child { margin-top: 0; padding-top: 0; }
     .project-card {
       border-bottom: 1px solid var(--border); padding: 1.6rem 0.75rem 1.6rem 0;
       display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start;
@@ -230,12 +230,12 @@ import '../styles/home.css';
       display: grid; grid-template-columns: repeat(3, 1fr);
     }
     .contact-card {
-      padding: 0.25rem 1.75rem;
+      padding: 0 1.75rem;
       text-decoration: none; color: var(--text);
     }
     .contact-card:first-child { padding-left: 0; }
     .contact-card + .contact-card { border-left: 1px solid var(--border); }
-    .c-type { font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.14em; color: var(--text-dimmer); text-transform: uppercase; margin-bottom: 0.7rem; }
+    .c-type { font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.14em; color: var(--text-dimmer); text-transform: uppercase; margin-bottom: 0.5rem; }
     .c-value { font-size: var(--text-body); color: var(--text); transition: color 0.18s; }
     .contact-card:hover .c-value { color: var(--accent); }
 
@@ -256,10 +256,17 @@ import '../styles/home.css';
       section { padding-left: 2rem; padding-right: 2rem; }
     }
     @media (max-width: 860px) {
+      /* 两栏堆叠成一条流：grid 不再额外加 gap，条目间距全由 tl-item 的 padding 决定 */
       .timeline { grid-template-columns: 1fr; gap: 0; }
+      .exp-col:last-child { justify-content: flex-start; } /* space-between 仅桌面双栏生效 */
+      /* 堆叠后“每列首/末”≠“整体首/末”：补回被清零的 padding，保证三段经历间距一致 */
+      .exp-col:first-child .tl-item:last-child { padding-bottom: 1.75rem; }
+      .exp-col:last-child .tl-item:first-child { padding-top: 1.75rem; }
       .skills-grid, .contact-grid { grid-template-columns: 1fr; }
-      .skill-card, .contact-card { padding-left: 0; padding-right: 0; }
-      .skill-card + .skill-card, .contact-card + .contact-card { border-left: none; border-top: 1px solid var(--border); }
+      .skill-card, .contact-card { padding: 1.2rem 0; }
+      /* 各板块首个内容元素一律贴 sec-head：标题到内容的距离 = sec-head margin，处处相同 */
+      .skill-card:first-child, .contact-card:first-child { padding-top: 0; }
+      .skill-card + .skill-card, .contact-card + .contact-card { border-left: none; }
       .project-card { grid-template-columns: 1fr; padding-right: 0; }
       .project-right { align-items: flex-start; }
       .project-links { justify-content: flex-start; }
@@ -272,7 +279,6 @@ import '../styles/home.css';
       nav { padding: 0.75rem 1.25rem; }
       .hero-inner { padding: 6.5rem 1.25rem 4rem; }
       section { padding: clamp(3rem, 7vw, 4rem) 1.25rem; }
-      .sec-head { gap: 1rem; margin-bottom: 2rem; }
       .tl-item { grid-template-columns: 1fr; gap: 0.3rem; }
       .pg-label { flex-wrap: wrap; gap: 0.5rem; }
       footer { padding: 1.5rem 1.25rem 3.5rem; flex-direction: column; align-items: flex-start; }
