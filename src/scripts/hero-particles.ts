@@ -15,7 +15,7 @@ import { animate, type JSAnimation } from 'animejs';
 /* ---------- 参数 ---------- */
 const CFG = {
   camFov: 50, camDist: 330, mCamDist: 385,
-  spinSpeed: 0.08, rotZSpeed: 0.02, basePitch: -0.18, // spin：绕环面法向自转；rotZSpeed：绕 Z 缓慢翻滚
+  spinSpeed: 0.02, rotZSpeed: 0, basePitch: -0.18, // spin：绕环面法向自转；rotZSpeed：绕 Z 缓慢翻滚
   rotX: 0, rotY: -1.86, rotZ: 0, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
   offsetX: 40, offsetY: 0,
   scaleX: 1.7, scaleY: 1.7, scaleZ: 1.7, // 三轴缩放（桌面值；移动端整体 ×1.35/1.7）
@@ -26,6 +26,8 @@ const CFG = {
   alpha: 0.38,    // 单点透明度（常值；散开后密度自然摊薄）
   count: 420000, mCount: 150000, // 点云规模（桌面/移动端）：铺满环面成连续点带
   color: '#00e8c8',
+  colorFar: '#00e8c8',  // 离焦端颜色：与近焦一致 = 无渐变；r 超过 colorRamp 后完全过渡到此色
+  colorRamp: 8,         // 颜色映射区间（世界单位）：r 从 0 → colorRamp 完成 近色→远色
   bgColor: '#0a0c12',           // 与页面 --bg 同源
 };
 
@@ -62,9 +64,11 @@ function buildPoints(n: number): { pos: Float32Array; dir: Float32Array } {
 
 /* ---------- 着色器 ---------- */
 const VERT = /* glsl */ `
-uniform float uFocus, uCoc, uCocExp, uPixK, uDot, uAlpha;
+uniform float uFocus, uCoc, uCocExp, uPixK, uDot, uAlpha, uRamp;
+uniform vec3 uColor, uColorFar;
 attribute vec3 aDir;
 varying float vAlpha;
+varying vec3 vColor;
 void main() {
   vec4 mv0 = modelViewMatrix * vec4(position, 1.0);
   float depth0 = max(1.0, -mv0.z);
@@ -72,18 +76,19 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(position + aDir * r, 1.0);
   float depth = max(1.0, -mv.z);
   vAlpha = uAlpha;
+  vColor = mix(uColor, uColorFar, clamp(r / uRamp, 0.0, 1.0)); // 近焦色 → 离焦色
   gl_PointSize = clamp(uDot * uPixK / depth, 1.0, 96.0);
   gl_Position = projectionMatrix * mv;
 }
 `;
 const FRAG = /* glsl */ `
-uniform vec3 uColor;
 varying float vAlpha;
+varying vec3 vColor;
 void main() {
   float d = length(gl_PointCoord - 0.5);
   float a = smoothstep(0.5, 0.12, d) * vAlpha; // 软边小圆点
   if (a < 0.002) discard;
-  gl_FragColor = vec4(uColor, a);
+  gl_FragColor = vec4(vColor, a);
 }
 `;
 
@@ -129,6 +134,8 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       uDot: { value: CFG.dotWorld },
       uAlpha: { value: CFG.alpha },
       uColor: { value: new Color(CFG.color) },
+      uColorFar: { value: new Color(CFG.colorFar) },
+      uRamp: { value: CFG.colorRamp },
     },
     transparent: true,
     depthWrite: false,
@@ -184,7 +191,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     if (isMobile()) camera.clearViewOffset();
     else camera.setViewOffset(refW, cssH, (refW - cssW) / 2, 0, cssW, cssH);
     camera.updateProjectionMatrix();
-    groupStretch.scale.x = camera.aspect;
+    groupStretch.scale.x = isMobile() ? 3425 / 900 : camera.aspect; // 移动端也按桌面基准宽高比拉伸，不随竖屏压缩
     // 点精灵尺寸系数：世界尺寸 → 设备像素（纵向焦距 × dpr）
     material.uniforms.uPixK.value =
       (cssH * dpr) / (2 * Math.tan((CFG.camFov * Math.PI) / 360));
@@ -260,6 +267,26 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       panel.appendChild(row);
     };
     const refresh = () => { if (!running) renderOnce(state.spin); };
+    const mkColor = (label: string, val: string, onInput: (v: string) => void) => {
+      const row = document.createElement('label');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px';
+      const name = document.createElement('span');
+      name.textContent = label;
+      name.style.cssText = 'width:44px;color:#e6eaf3';
+      const picker = document.createElement('input');
+      picker.type = 'color';
+      picker.value = val;
+      picker.style.cssText = 'flex:1;height:20px;border:none;background:none;padding:0;cursor:pointer';
+      const out = document.createElement('span');
+      out.textContent = val;
+      out.style.cssText = 'width:60px;text-align:right;color:#00e8c8';
+      picker.addEventListener('input', () => {
+        out.textContent = picker.value;
+        onInput(picker.value);
+      });
+      row.append(name, picker, out);
+      panel.appendChild(row);
+    };
     mkRow('posX', -1000, 1000, 1, CFG.offsetX, (v) => { CFG.offsetX = v; applyView(); });
     mkRow('posY', -500, 500, 1, CFG.offsetY, (v) => { CFG.offsetY = v; applyView(); });
     mkRow('posZ', 50, 1500, 1, CFG.camDist, (v) => { CFG.camDist = v; applyView(); });
@@ -271,6 +298,9 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     mkRow('rotZ', -3.14, 3.14, 0.01, CFG.rotZ, (v) => { CFG.rotZ = v; refresh(); });
     mkRow('focus', 0, 800, 5, CFG.focus, (v) => { material.uniforms.uFocus.value = v; CFG.focus = v; refresh(); });
     mkRow('blur', 0, 0.02, 0.0002, CFG.coc, (v) => { material.uniforms.uCoc.value = v; CFG.coc = v; refresh(); });
+    mkColor('colorN', CFG.color, (v) => { material.uniforms.uColor.value.set(v); CFG.color = v; refresh(); });
+    mkColor('colorF', CFG.colorFar, (v) => { material.uniforms.uColorFar.value.set(v); CFG.colorFar = v; refresh(); });
+    mkRow('ramp', 0.5, 30, 0.5, CFG.colorRamp, (v) => { material.uniforms.uRamp.value = v; CFG.colorRamp = v; refresh(); });
     mkRow('spin', -1, 1, 0.005, CFG.spinSpeed, (v) => {
       CFG.spinSpeed = v;
       makeSpin(); // 重建补间以变速/换向，角度连续
