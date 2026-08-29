@@ -16,17 +16,17 @@ import { animate, type JSAnimation } from 'animejs';
 const CFG = {
   camFov: 50, camDist: 330, mCamDist: 385,
   spinSpeed: 0.02, rotZSpeed: 0, basePitch: -0.18, // spin：绕环面法向自转；rotZSpeed：绕 Z 缓慢翻滚
-  rotX: 0, rotY: -1.86, rotZ: 0, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
+  rotX: 0, rotY: -1.86, rotZ: -0.71, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
   offsetX: 40, offsetY: 0,
   scaleX: 1.7, scaleY: 1.7, scaleZ: 1.7, // 三轴缩放（桌面值；移动端整体 ×1.35/1.7）
-  focus: 150,     // 对焦深度：距相机此远处的点最凝聚（前排环缘）
-  coc: 0.0016,    // 散开强度 m：离焦位移半径 r = coc·|focus−d|^exp
+  focus: 245,     // 对焦深度：距相机此远处的点最凝聚（前排环缘）
+  coc: 0.008,     // 散开强度 m：离焦位移半径 r = coc·|focus−d|^exp
   cocExp: 1.5,    // 散开分布指数 e：>1 让近焦更锐利、远焦更快解体
   dotWorld: 0.5,  // 点半径（世界单位，恒定——模糊靠散开而非放大）
-  alpha: 0.38,    // 单点透明度（常值；散开后密度自然摊薄）
+  alpha: 0.5,     // 单点透明度（常值；散开后密度自然摊薄，亚像素点另有能量补偿）
   count: 420000, mCount: 150000, // 点云规模（桌面/移动端）：铺满环面成连续点带
   color: '#00e8c8',
-  colorFar: '#00e8c8',  // 离焦端颜色：与近焦一致 = 无渐变；r 超过 colorRamp 后完全过渡到此色
+  colorFar: '#1291ab',  // 离焦端颜色：r 超过 colorRamp 后完全过渡到此色
   colorRamp: 8,         // 颜色映射区间（世界单位）：r 从 0 → colorRamp 完成 近色→远色
   bgColor: '#0a0c12',           // 与页面 --bg 同源
 };
@@ -77,7 +77,10 @@ void main() {
   float depth = max(1.0, -mv.z);
   vAlpha = uAlpha;
   vColor = mix(uColor, uColorFar, clamp(r / uRamp, 0.0, 1.0)); // 近焦色 → 离焦色
-  gl_PointSize = clamp(uDot * uPixK / depth, 1.0, 96.0);
+  float px = uDot * uPixK / depth;
+  const float MINPX = 3.0; // 最小足迹 3px：软边覆盖更多像素，亚像素移动平滑淡出
+  vAlpha *= pow(clamp(px / MINPX, 0.0, 1.0), 1.5); // 能量补偿：被钳大放大的点变暗
+  gl_PointSize = clamp(px, MINPX, 96.0);
   gl_Position = projectionMatrix * mv;
 }
 `;
