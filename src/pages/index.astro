@@ -58,10 +58,10 @@ import '../styles/home.css';
       min-height: 100vh;
       display: flex; align-items: center;
     }
-    /* 字符画向下渐隐：同最初的 mask 做法，终点推到约 5/6 屏 */
+    /* 点染画面向下渐隐：55% 高度内全实，92% 处隐没 */
     #hero-ascii {
-      -webkit-mask-image: linear-gradient(180deg, #000 0 0%, transparent 88%);
-      mask-image: linear-gradient(180deg, #000 0 0%, transparent 88%);
+      -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 92%);
+      mask-image: linear-gradient(180deg, #000 55%, transparent 92%);
     }
     .hero-inner {
       position: relative; z-index: 1;
@@ -629,7 +629,7 @@ import '../styles/home.css';
   });
 </script>
 <script>
-  // 首屏 3D 字符画（动态加载，不进首屏关键路径）
+  // 首屏莫比乌斯景深点染（动态加载，不进首屏关键路径）
   const canvas = document.getElementById('hero-ascii') as HTMLCanvasElement | null;
   if (canvas) {
     const m = await import('../scripts/hero-particles');

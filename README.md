@@ -6,17 +6,15 @@ Personal academic portfolio of Feiyuan Qu, HCI researcher at Zhejiang University
 
 - [Astro 6](https://astro.build/) — static site framework
 - TypeScript — typed site scripts
-- [Three.js](https://threejs.org/) + [animejs](https://animejs.com/) — hero visual
-- Vanilla CSS — no UI library dependencies
+- Vanilla CSS — no UI framework
+- [three.js](https://threejs.org/) + [anime.js](https://animejs.com/) — WebGL point-sprite hero with anime-driven spin
 - GitHub Actions — automated deployment to GitHub Pages
 
-## Hero: 3D ASCII Artwork
+## Hero: Depth-of-Field Point Rendering
 
-The homepage hero renders morphing 3D shapes offscreen with Three.js, then maps luminance to a four-tier ASCII grid drawn on a 2D canvas.
+The homepage hero renders a slowly spinning Möbius band as a depth-of-field point cloud (inconvergent-style): ~420k points are uniformly sampled across the band's surface, each carrying a random unit direction. A vertex shader displaces every point along its direction by a circle-of-confusion radius `r = coc·|focus − depth|^e` — in-focus regions stay crisp while out-of-focus regions scatter apart and the shape dissolves into haze. Sprites themselves stay tiny; additive blending accumulates density into brightness. anime.js drives the constant-speed spin.
 
-- Four shapes cycle with staggered morph transitions: Möbius band, analysis tree, helix, and a radiating broadcast core (rays are one-shot Poisson emissions, decoupled from the morph system).
-- Each shape carries its own themed word stream (`src/scripts/hero-text.ts`, the single place to edit).
-- Debug params: `?heroOnly=N` loops a single shape; `?herofast=1` compresses timings for headless screenshots.
+- All visual parameters live in `src/scripts/hero-particles.ts` (`CFG`); append `?debug=1` to the URL for a live tuning panel (position / scale / rotation / focus / blur / spin).
 
 ## Local Development
 
