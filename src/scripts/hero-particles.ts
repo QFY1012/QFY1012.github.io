@@ -16,7 +16,7 @@ import { animate, type JSAnimation } from 'animejs';
 const CFG = {
   camFov: 50, camDist: 330, mCamDist: 385,
   spinSpeed: 0.02, rotXSpeed: 0, rotZSpeed: 0, basePitch: -0.18, // spin：绕环面法向自转；rotXSpeed/rotZSpeed：绕 X/Z 缓慢翻滚
-  rotX: 0, rotY: -1.86, rotZ: -0.2, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
+  rotX: 0, rotY: -1.86, rotZ: -0.06, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
   offsetX: 40, offsetY: 0,
   scaleX: 1.7, scaleY: 1.7, scaleZ: 1.7, // 三轴缩放（桌面值；移动端整体 ×1.35/1.7）
   thick: 0,       // 环带厚度（世界单位）：点吸附在 ±thick 两个壳面上，空心截面；0 = 回到扁带
