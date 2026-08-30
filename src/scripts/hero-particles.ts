@@ -7,6 +7,7 @@
  * ============================================================ */
 import {
   AdditiveBlending, BufferGeometry, Color, Float32BufferAttribute, Group,
+  NormalBlending,
   PerspectiveCamera, Points, Quaternion, Scene, ShaderMaterial, Vector3, WebGLRenderer,
   Euler,
 } from 'three';
@@ -186,6 +187,28 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   points.frustumCulled = false;
   group.add(points);
 
+  /* 明暗主题：浅底上加法混合会溶进白色，换普通混合 + 黑墨粒子 */
+  const THEME_GFX: Record<'dark' | 'light', { color: string; colorFar: string; bg: string; additive: boolean }> = {
+    dark:  { color: CFG.color, colorFar: CFG.colorFar, bg: CFG.bgColor, additive: true },
+    light: { color: '#171b26', colorFar: '#f6f7f9', bg: '#f6f7f9', additive: false },
+  };
+  let activeTheme: 'dark' | 'light' = 'dark';
+  function applyThemeGfx(name: string | null) {
+    activeTheme = name === 'light' ? 'light' : 'dark';
+    const t = THEME_GFX[activeTheme];
+    material.uniforms.uColor.value.set(t.color);
+    material.uniforms.uColorFar.value.set(t.colorFar);
+    material.blending = t.additive ? AdditiveBlending : NormalBlending;
+    material.needsUpdate = true;
+    (scene.background as Color).set(t.bg);
+    renderer.setClearColor(new Color(t.bg), 1);
+  }
+  applyThemeGfx(document.documentElement.getAttribute('data-theme'));
+  window.addEventListener('themechange', (e) => {
+    applyThemeGfx((e as CustomEvent).detail);
+    if (!running) renderOnce(state.spin);
+  });
+
   function rebuildPoints() {
     const resampled = buildPoints(isMobile() ? CFG.mCount : CFG.count);
     geometry.setAttribute('position', new Float32BufferAttribute(resampled.pos, 3));
@@ -325,7 +348,8 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       panel.appendChild(row);
     };
     const refresh = () => { if (!running) renderOnce(state.spin); };
-    const mkColor = (label: string, val: string, onInput: (v: string) => void) => {
+    const colorSyncs: Array<() => void> = [];
+    const mkColor = (label: string, get: () => string, onInput: (v: string) => void) => {
       const row = document.createElement('label');
       row.style.cssText = 'display:flex;align-items:center;gap:8px';
       const name = document.createElement('span');
@@ -333,15 +357,16 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       name.style.cssText = 'width:44px;color:#e6eaf3';
       const picker = document.createElement('input');
       picker.type = 'color';
-      picker.value = val;
+      picker.value = get();
       picker.style.cssText = 'flex:1;height:20px;border:none;background:none;padding:0;cursor:pointer';
       const out = document.createElement('span');
-      out.textContent = val;
+      out.textContent = picker.value;
       out.style.cssText = 'width:60px;text-align:right;color:#00e8c8';
       picker.addEventListener('input', () => {
         out.textContent = picker.value;
         onInput(picker.value);
       });
+      colorSyncs.push(() => { picker.value = get(); out.textContent = get(); });
       row.append(name, picker, out);
       panel.appendChild(row);
     };
@@ -357,8 +382,8 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     mkRow('rotZ', -3.14, 3.14, 0.01, CFG.rotZ, (v) => { CFG.rotZ = v; refresh(); });
     mkRow('focus', 0, 800, 5, CFG.focus, (v) => { material.uniforms.uFocus.value = v; CFG.focus = v; refresh(); });
     mkRow('blur', 0, 0.02, 0.0002, CFG.coc, (v) => { material.uniforms.uCoc.value = v; CFG.coc = v; refresh(); });
-    mkColor('colorN', CFG.color, (v) => { material.uniforms.uColor.value.set(v); CFG.color = v; refresh(); });
-    mkColor('colorF', CFG.colorFar, (v) => { material.uniforms.uColorFar.value.set(v); CFG.colorFar = v; refresh(); });
+    mkColor('colorN', () => THEME_GFX[activeTheme].color, (v) => { THEME_GFX[activeTheme].color = v; material.uniforms.uColor.value.set(v); refresh(); });
+    mkColor('colorF', () => THEME_GFX[activeTheme].colorFar, (v) => { THEME_GFX[activeTheme].colorFar = v; material.uniforms.uColorFar.value.set(v); refresh(); });
     mkRow('ramp', 0.5, 30, 0.5, CFG.colorRamp, (v) => { material.uniforms.uRamp.value = v; CFG.colorRamp = v; refresh(); });
     mkRow('spin', -1, 1, 0.005, CFG.spinSpeed, (v) => {
       CFG.spinSpeed = v;
@@ -372,6 +397,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       CFG.rotZSpeed = v;
       makeRotZ();
     }); // 绕 Z 翻滚速度，负值 = 反向
+    window.addEventListener('themechange', () => colorSyncs.forEach((sync) => sync()));
     document.body.appendChild(panel);
   }
   if (new URLSearchParams(location.search).has('debug')) mountDebugPanel();

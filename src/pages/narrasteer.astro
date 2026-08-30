@@ -1,51 +1,67 @@
 ---
 import '../styles/tokens.css';
+import '../styles/home.css'; // 与主页统一 token：深色唯一主题
+import icFile from 'lucide-static/icons/file-text.svg?raw';
+import icPlay from 'lucide-static/icons/play.svg?raw';
+import icLayers from 'lucide-static/icons/layers.svg?raw';
+import icOrbit from 'lucide-static/icons/orbit.svg?raw';
+import icHand from 'lucide-static/icons/hand.svg?raw';
+import icLink from 'lucide-static/icons/link.svg?raw';
 ---
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NarraSteer · 数据叙事 Agent 交互 · 屈非塬</title>
-  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')</script>
+  <script is:inline>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light')</script>
   <style>
-    /* ── NarraSteer 页面专有样式 ── */
-    .hero { padding: 8rem 2.5rem 3rem; max-width: 900px; margin: 0 auto; }
+    /* ── NarraSteer 页面专有样式（字号/颜色全部取自 tokens + home 统一层）── */
+    :global(html) { scroll-snap-type: none !important; } /* 长文页不要首屏吸附 */
+    .hero { padding: 8rem 2.5rem 3rem; max-width: var(--content-w); margin: 0 auto; }
     .hero h1 {
       font-family: var(--font-display);
       font-size: clamp(1.8rem, 4.5vw, 3rem);
       font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 1rem;
     }
     .hero h1 .highlight { color: var(--accent); }
-    .hero .subtitle { font-size: 0.88rem; color: var(--text-dim); margin-bottom: 0.4rem; }
-    .hero .authors { font-size: 0.78rem; color: var(--text-dimmer); margin-bottom: 2rem; letter-spacing: 0.03em; }
+    .hero .subtitle { font-size: var(--text-body); color: var(--text-dim); margin-bottom: 0.4rem; }
+    .hero .authors { font-size: var(--text-meta); color: var(--text-dimmer); margin-bottom: 2rem; letter-spacing: 0.03em; }
     .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
-    /* Obs list */
-    .obs-list { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--border); background: var(--border); margin: 1.5rem 0; }
-    .obs-item { display: flex; gap: 1rem; align-items: flex-start; background: var(--surface); padding: 1rem 1.25rem; transition: background var(--transition); }
-    .obs-item:hover { background: var(--surface2); }
+    /* Obs list — 无框行，细分隔线 */
+    .obs-list { display: flex; flex-direction: column; margin: 1.5rem 0; }
+    .obs-item { display: flex; gap: 1rem; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid var(--border); transition: background var(--transition); }
+    .obs-item:last-child { border-bottom: none; }
+    .obs-item:hover { background: var(--hover); }
     .obs-num {
-      font-size: 0.68rem; font-weight: 700; color: var(--accent2);
-      background: rgba(0,232,200,0.1); border: 1px solid rgba(0,232,200,0.3);
+      font-size: var(--text-meta); font-weight: 700; color: var(--accent);
+      background: var(--chip-accent);
       padding: 2px 8px; white-space: nowrap; margin-top: 2px; flex-shrink: 0;
     }
-    .obs-item h3 { font-size: 0.88rem; margin-bottom: 0.2rem; }
-    .obs-item p { font-size: var(--text-md); margin: 0; }
+    .obs-item h3 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .obs-item p { font-size: var(--text-body); margin: 0; }
 
     /* Transition tags */
     .trans-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
     .ttag {
-      font-size: 0.75rem; padding: 4px 10px;
-      background: rgba(0,232,200,0.07); border: 1px solid rgba(0,232,200,0.25);
-      color: var(--accent2);
+      font-size: var(--text-meta); padding: 4px 10px;
+      background: var(--chip-accent);
+      color: var(--accent);
     }
 
     .img-grid { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
     .img-item { display: flex; flex-direction: column; gap: 0.4rem; }
 
-    .behavior-list { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--border); background: var(--border); margin-top: 1.25rem; }
-    .behavior-item { background: var(--surface); padding: 1.25rem; }
-    .behavior-item h3 { font-size: 0.88rem; margin-bottom: 0.5rem; }
+    /* 评估区 — 左文字/指标、右图 */
+    .eval-split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2.5rem; align-items: center; margin-top: 1.5rem; }
+    .eval-split .result-grid { grid-template-columns: 1fr 1fr; margin: 0 0 1.25rem; }
+    .eval-split .screenshot-img { margin-top: 0; }
+    @media (max-width: 900px) { .eval-split { grid-template-columns: 1fr; } }
+
+    .behavior-list { display: flex; flex-direction: column; margin-top: 1.25rem; }
+    .behavior-item { padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
+    .behavior-item:last-child { border-bottom: none; }
+    .behavior-item h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
 
     .video-wrap { width: 100%; aspect-ratio: 16/9; margin-top: 1.5rem; overflow: hidden; border: 1px solid var(--border); background: #000; }
     .video-wrap video { width: 100%; height: 100%; object-fit: contain; }
@@ -54,38 +70,35 @@ import '../styles/tokens.css';
   </style>
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-
   <nav>
     <a href="/" class="back-link">← 返回首页</a>
     <div class="nav-right">
       <span class="nav-badge">CHI'27 · CCF-A</span>
-      <div class="theme-toggle">
-        <div class="theme-dot dark" data-t="dark" title="暗色"></div>
-        <div class="theme-dot light" data-t="light" title="亮色"></div>
+      <div class="theme-dots" role="group" aria-label="切换明暗主题">
+        <button class="theme-dot" type="button" data-set-theme="dark" aria-label="深色主题"></button>
+        <button class="theme-dot" type="button" data-set-theme="light" aria-label="浅色主题"></button>
       </div>
     </div>
   </nav>
 
   <div class="hero">
     <span class="conf-badge">CHI 2027 · CCF-A · Under Review</span>
-    <h1>NarraSteer：在<span class="highlight">叙事空间</span>里<br />引导数据 Agent</h1>
-    <div class="subtitle">Reconstructing Trajectories as Storylines: Steering LLM Agents in Narrative Space</div>
+    <h1>Reconstructing Trajectories as Storylines:<br />Steering LLM Agents in <span class="highlight">Narrative Space</span></h1>
+    <div class="subtitle">NarraSteer：在叙事空间里引导数据 Agent</div>
     <div class="authors">屈非塬 · 独立一作 · State Key Lab of CAD&amp;CG, ZJU · 2026.01—2026.04</div>
     <div class="hero-actions">
-      <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper">📄 Paper</a>
-      <a href="/images/narrasteer/usecase.mp4" target="_blank" class="btn-link video">▶ Demo Video</a>
+      <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper"><Fragment set:html={icFile} /> Paper</a>
+      <a href="/images/narrasteer/usecase.mp4" target="_blank" class="btn-link video"><Fragment set:html={icPlay} /> Demo Video</a>
     </div>
     <img src="/images/narrasteer/Teaser.png" alt="NarraSteer Teaser" class="screenshot-img" style="margin-top:2rem;" />
     <p class="img-caption">Fig. 1 — NarraSteer 把 Agent 的执行轨迹（左：线性动作流）重构为叙事故事线（右：圆盘状叙事空间），用户可以直接拖拽引导 Agent 下一步要探索的方向</p>
   </div>
 
   <div class="intro-band">
-    <p style="font-size:0.95rem;line-height:1.95;color:var(--text-dim);">
+    <p>
       这个研究是关于<strong style="color:var(--text);">怎么跟 AI Agent 一起做数据分析</strong>的。如果你用过 Manus 这类 AI 自动分析工具，你可能会有这种感觉：给 AI 一份数据，让它帮你找故事，结果只能干坐着等——等它跑完代码、生成图表，然后发现它做的方向完全不是你想要的。
     </p>
-    <p style="font-size:0.95rem;line-height:1.95;color:var(--text-dim);margin-top:0.75rem;">
+    <p style="margin-top:0.75rem;">
       NarraSteer 的解决方案是：把 Agent 每一步的行动，重新整理成你能看懂的<strong style="color:var(--text);">叙事节点</strong>，并且布局在一个圆盘状的<strong style="color:var(--text);">叙事空间</strong>里。你不用读代码，只要看节点落在圆盘的哪个位置，就知道 Agent 在探索什么——然后直接拖拽，告诉它往哪走。
     </p>
   </div>
@@ -189,28 +202,28 @@ import '../styles/tokens.css';
 
     <div class="feature-list">
       <div class="feature-item">
-        <div class="feature-icon">🗂️</div>
+        <div class="feature-icon" set:html={icLayers}></div>
         <div>
           <h3>叙事节点四元组</h3>
           <p>NarraSteer 不让 Agent 直接调用通用代码，而是把所有行动重新定义为叙事动作。每个叙事节点由四个要素构成：<strong>叙事意图</strong>（这步要说明什么）、<strong>使用工具</strong>（数据过滤 / 图表生成 / 统计分析）、<strong>生成内容</strong>（具体的洞察文字和图表）、<strong>过渡关系</strong>（这个节点和上一个是什么关系）。这样用户看每个节点，能直接读懂 Agent 在做什么，不需要看代码。</p>
         </div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon">⭕</div>
+        <div class="feature-icon" set:html={icOrbit}></div>
         <div>
           <h3>叙事空间圆盘</h3>
           <p>这是 NarraSteer 最核心的设计。圆盘外圈是所有数据属性（价格、品牌、销量……），Agent 每生成一个叙事节点，系统根据它探索的数据属性，把这个节点自动摆放到圆盘的对应位置。整个叙事历史一眼可见，空白区域代表还没被探索的方向——用户不用靠记忆，看圆盘就知道"哪里还没挖"。</p>
         </div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon">✋</div>
+        <div class="feature-icon" set:html={icHand}></div>
         <div>
           <h3>拖拽引导 Agent</h3>
           <p>想让 Agent 往某个方向探索？直接把圆盘上的节点往那个数据属性拖过去。NarraSteer 会把你的拖拽意图翻译成具体的叙事过渡类型（比如"深入细化"还是"换个对比角度"），然后生成对应的 prompt 发给 Agent——不需要你手写任何文字，Agent 就会按你拖的方向继续跑。</p>
         </div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon">🔗</div>
+        <div class="feature-icon" set:html={icLink}></div>
         <div>
           <h3>6 种叙事过渡关系</h3>
           <p>Agent 每往前走一步，都要标注和上一步之间的关系类型：展开细化（Elaboration）、对比转折（Contrast）、因果推断（Causation）、时序推进（Sequence）、主题切换（Topic Shift）、结论总结（Summary）。这 6 种关系覆盖了数据叙事里绝大多数的逻辑结构，用户拖拽时可以直接选择目标关系类型。</p>
@@ -219,7 +232,7 @@ import '../styles/tokens.css';
     </div>
 
     <div style="margin-top:1.25rem;">
-      <p style="margin-bottom:0.5rem;font-size:0.8rem;color:var(--text-dim);">// 6 种叙事过渡关系</p>
+      <p style="margin-bottom:0.5rem;font-size:var(--text-meta);color:var(--text-dim);">// 6 种叙事过渡关系</p>
       <div class="trans-tags">
         <span class="ttag">展开细化 (Elaboration)</span>
         <span class="ttag">对比转折 (Contrast)</span>
@@ -230,7 +243,7 @@ import '../styles/tokens.css';
       </div>
     </div>
 
-    <p style="margin-top:1rem;font-size:0.78rem;color:var(--text-dimmer);">// 技术栈：前端 Vue3 + TypeScript + Vite · 图表 Vega-Lite · 后端 FastAPI · LLM Google Gemini Flash · 编排 LangChain + LangGraph · Agent 架构 ReAct</p>
+    <p style="margin-top:1rem;font-size:var(--text-meta);color:var(--text-dimmer);">// 技术栈：前端 Vue3 + TypeScript + Vite · 图表 Vega-Lite · 后端 FastAPI · LLM Google Gemini Flash · 编排 LangChain + LangGraph · Agent 架构 ReAct</p>
 
     <img src="/images/narrasteer/Interface_and_Case.png" alt="NarraSteer Interface" class="screenshot-img" />
     <p class="img-caption">Fig. 3 — 左：数据概览面板；中：叙事空间圆盘（外圈=数据属性，节点=叙事历史）；右：节点详情面板。用户将节点向"价格"属性拖动，Agent 随即深入探索价格相关维度。</p>
@@ -252,57 +265,57 @@ import '../styles/tokens.css';
     <img src="/images/narrasteer/Baseline.png" alt="Baseline" class="screenshot-img" />
     <p class="img-caption">基线系统：树状轨迹展示，节点位置与数据内容无关</p>
 
-    <h3 style="margin-top:1.5rem;margin-bottom:1rem;">量化结果</h3>
-    <div class="result-grid">
-      <div class="result-card">
-        <div class="metric">+13.2%</div>
-        <div class="metric-sub">p = 0.035, d = 0.581</div>
-        <div class="metric-label">叙事洞察数（6.4 vs 5.7 个）</div>
+    <h3 style="margin-top:1.5rem;margin-bottom:1rem;">任务表现</h3>
+    <div class="eval-split" style="margin-top:0;">
+      <div>
+        <div class="result-grid">
+          <div class="result-card">
+            <div class="metric">+13.2%</div>
+            <div class="metric-sub">p = 0.035, d = 0.581</div>
+            <div class="metric-label">叙事洞察数（6.4 vs 5.7 个）</div>
+          </div>
+          <div class="result-card">
+            <div class="metric">15/16</div>
+            <div class="metric-sub">vs 9/16（基线）</div>
+            <div class="metric-label">主动使用拖拽引导 Agent</div>
+          </div>
+          <div class="result-card">
+            <div class="metric">10/16</div>
+            <div class="metric-sub">vs 5/16（基线）</div>
+            <div class="metric-label">在 Agent 执行中途主动介入</div>
+          </div>
+          <div class="result-card">
+            <div class="metric">↓心理负荷</div>
+            <div class="metric-sub">p = 0.046, r = 0.499</div>
+            <div class="metric-label">NASA-TLX 心理需求显著降低</div>
+          </div>
+        </div>
+        <p>洞察数多了 13%——不只是数量，用户发现的角度更广了。更关键的是行为变化：基线里 7/16 人几乎不用拖拽，NarraSteer 里 15/16 人都主动在拖。这说明叙事空间圆盘真的让"往哪走"变得直观了，用户愿意去引导，而不是被动等待。</p>
       </div>
-      <div class="result-card">
-        <div class="metric">15/16</div>
-        <div class="metric-sub">vs 9/16（基线）</div>
-        <div class="metric-label">主动使用拖拽引导 Agent</div>
-      </div>
-      <div class="result-card">
-        <div class="metric">10/16</div>
-        <div class="metric-sub">vs 5/16（基线）</div>
-        <div class="metric-label">在 Agent 执行中途主动介入</div>
-      </div>
-      <div class="result-card">
-        <div class="metric">↓心理负荷</div>
-        <div class="metric-sub">p = 0.046, r = 0.499</div>
-        <div class="metric-label">NASA-TLX 心理需求显著降低</div>
-      </div>
-    </div>
-
-    <p>洞察数多了 13%——不只是数量，用户发现的角度更广了。更关键的是行为变化：基线里 7/16 人几乎不用拖拽，NarraSteer 里 15/16 人都主动在拖。这说明叙事空间圆盘真的让"往哪走"变得直观了，用户愿意去引导，而不是被动等待。</p>
-
-    <div class="img-grid">
-      <div class="img-item">
-        <img src="/images/narrasteer/Insights.png" alt="Insight Count Results" class="screenshot-img" style="margin-top:0" />
+      <div>
+        <img src="/images/narrasteer/Insights.png" alt="Insight Count Results" class="screenshot-img" />
         <p class="img-caption">Fig. 4 — 叙事洞察数、洞察唯一性、故事逻辑性三项指标对比（NarraSteer vs 基线）</p>
       </div>
     </div>
 
     <h3 style="margin-top:2rem;margin-bottom:1rem;">主观感受</h3>
-    <p>NASA-TLX 认知负荷量表显示，NarraSteer 下用户的<strong>心理需求</strong>（p = 0.046）显著更低、<strong>绩效感知</strong>（p = 0.049）显著更高。感知可控性量表（4 题 7 分制）里，NarraSteer 在三项上都显著胜出：</p>
-    <ul style="list-style:none;display:flex;flex-direction:column;gap:0.4rem;margin:1rem 0;padding-left:1rem;">
-      <li style="font-size:0.82rem;color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q1 识别已探索完的方向</strong>（p = 0.004, r = 0.724）</li>
-      <li style="font-size:0.82rem;color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q2 判断哪些叙事角度还没被覆盖</strong>（p = 0.024, r = 0.565）</li>
-      <li style="font-size:0.82rem;color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q3 主动决定下一步探索哪个方向</strong>（p = 0.020, r = 0.582）</li>
-    </ul>
 
-    <div class="img-grid">
-      <div class="img-item">
-        <img src="/images/narrasteer/NASA.png" alt="NASA TLX" class="screenshot-img" style="margin-top:0" />
-        <p class="img-caption">Fig. 5 — NASA-TLX 认知负荷对比（心理需求和绩效感知两项显著）</p>
-      </div>
-      <div class="img-item">
-        <img src="/images/narrasteer/Control.png" alt="Perceived Control" class="screenshot-img" style="margin-top:0" />
+    <div class="eval-split" style="margin-top:0;">
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:0.4rem;margin:0;padding-left:1rem;">
+        <li style="font-size:var(--text-body);color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q1 识别已探索完的方向</strong>（p = 0.004, r = 0.724）</li>
+        <li style="font-size:var(--text-body);color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q2 判断哪些叙事角度还没被覆盖</strong>（p = 0.024, r = 0.565）</li>
+        <li style="font-size:var(--text-body);color:var(--text-dim);position:relative;"><span style="position:absolute;left:-1rem;color:var(--accent);">//</span><strong>Q3 主动决定下一步探索哪个方向</strong>（p = 0.020, r = 0.582）</li>
+      </ul>
+      <div>
+        <img src="/images/narrasteer/Control.png" alt="Perceived Control" class="screenshot-img" />
         <p class="img-caption">Fig. 6 — 感知可控性四题对比（Q1–Q3 显著，Q4 边缘显著）</p>
       </div>
     </div>
+
+    <img src="/images/narrasteer/NASA.png" alt="NASA TLX" class="screenshot-img" />
+    <p class="img-caption">Fig. 5 — NASA-TLX 认知负荷对比（心理需求和绩效感知两项显著）</p>
+
+    <p style="margin-top:1rem;">NASA-TLX 认知负荷量表显示，NarraSteer 下用户的<strong>心理需求</strong>（p = 0.046）显著更低、<strong>绩效感知</strong>（p = 0.049）显著更高。感知可控性量表（4 题 7 分制）里，NarraSteer 在三项上都显著胜出。</p>
 
     <h3 style="margin-top:2rem;margin-bottom:1rem;">用户行为的两个变化</h3>
     <div class="behavior-list">
@@ -320,8 +333,8 @@ import '../styles/tokens.css';
     </div>
 
     <div style="margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border);display:flex;gap:0.75rem;flex-wrap:wrap;">
-      <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper">📄 下载论文 PDF</a>
-      <a href="/images/narrasteer/usecase.mp4" target="_blank" class="btn-link video">▶ 观看演示视频</a>
+      <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper"><Fragment set:html={icFile} /> 下载论文 PDF</a>
+      <a href="/images/narrasteer/usecase.mp4" target="_blank" class="btn-link video"><Fragment set:html={icPlay} /> 观看演示视频</a>
       <a href="/" class="btn-link">← 返回首页</a>
     </div>
   </section>
@@ -330,16 +343,18 @@ import '../styles/tokens.css';
 
 </body>
 <script>
-  const saved = localStorage.getItem('theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  document.querySelectorAll('.theme-dot').forEach(dot => {
-    if (dot.dataset.t === saved) dot.classList.add('active');
-    dot.addEventListener('click', () => {
-      const t = dot.dataset.t;
-      document.documentElement.setAttribute('data-theme', t);
+  const themeDots = document.querySelectorAll('.theme-dot');
+  if (themeDots.length) {
+    const rootEl = document.documentElement;
+    const syncDots = () => themeDots.forEach((d) => d.classList.toggle('active', d.dataset.setTheme === rootEl.getAttribute('data-theme')));
+    themeDots.forEach((d) => d.addEventListener('click', () => {
+      const t = d.dataset.setTheme;
+      rootEl.setAttribute('data-theme', t);
       localStorage.setItem('theme', t);
-      document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.t === t));
-    });
-  });
+      window.dispatchEvent(new CustomEvent('themechange', { detail: t }));
+      syncDots();
+    }));
+    syncDots();
+  }
 </script>
 </html>

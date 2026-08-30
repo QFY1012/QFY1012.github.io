@@ -2,6 +2,10 @@
 import '../styles/tokens.css';
 import '../styles/home.css';
 import '../styles/featured-projects.css';
+import icFile from 'lucide-static/icons/file-text.svg?raw';
+import icSlides from 'lucide-static/icons/presentation.svg?raw';
+import icPlay from 'lucide-static/icons/play.svg?raw';
+import icDownload from 'lucide-static/icons/download.svg?raw';
 ---
 
 <html lang="zh">
@@ -9,6 +13,7 @@ import '../styles/featured-projects.css';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>屈非塬 · HCI Researcher</title>
+  <script is:inline>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light')</script>
   <style>
     /* ── index 专有样式（新视觉语言：克制 · 深色唯一） ── */
 
@@ -44,15 +49,6 @@ import '../styles/featured-projects.css';
       border-bottom: 1px solid transparent;
     }
     .nav-links a:hover { color: var(--text); border-bottom-color: var(--text-dimmer); }
-    .nav-resume {
-      font-family: var(--font-mono);
-      font-size: var(--text-meta); letter-spacing: 0.08em;
-      color: var(--text-dim); text-decoration: none;
-      border: none; background: none;
-      padding: 0.35rem 0;
-      transition: color 0.18s;
-    }
-    .nav-resume:hover { color: var(--text); text-decoration: underline; text-underline-offset: 4px; }
 
     /* HERO */
     .hero {
@@ -84,7 +80,7 @@ import '../styles/featured-projects.css';
     }
     /* 每排字一块填充矩形：inline + clone 让折行的每一段都带自己的底色 */
     .hero-role, .hero h1 .en, .hero h1 .zh, .hero-desc p {
-      background: rgba(10, 12, 18, 0.55); /* --bg 同色 + 透明度 */
+      background: var(--strip-bg);
       padding: 0.3rem 0.6rem 0.3rem 0; /* 固定值而非 em：各排字号不同，字形左缘才能对齐 */
     }
     .hero-desc { margin: 2.5rem 0 0; max-width: 580px; }
@@ -133,7 +129,7 @@ import '../styles/featured-projects.css';
        使条与条的视觉间距与无填充的 sec-head 行距一致 */
     .featured-head > div:first-child { display: flex; flex-direction: column; align-items: flex-start; }
     .featured-head .sec-n, .featured-kicker, .featured-head h2 {
-      background: rgba(10, 12, 18, 0.55);
+      background: var(--strip-bg);
       padding: 0.15rem 0.6rem 0.15rem 0;
     }
     .featured-head .sec-n, .featured-kicker { margin-bottom: 0; }
@@ -376,7 +372,10 @@ import '../styles/featured-projects.css';
       </ul>
     </div>
     <div class="nav-right">
-      <a href="/resume.html" target="_blank" class="nav-resume">简历</a>
+      <div class="theme-dots" role="group" aria-label="切换明暗主题">
+        <button class="theme-dot" type="button" data-set-theme="dark" aria-label="深色主题"></button>
+        <button class="theme-dot" type="button" data-set-theme="light" aria-label="浅色主题"></button>
+      </div>
     </div>
   </nav>
 
@@ -469,7 +468,7 @@ import '../styles/featured-projects.css';
           <h3>湖南大学 · 设计学院</h3>
           <div class="tl-major">
             工业设计 · 工学学士
-            <a href="/papers/gpa.pdf" target="_blank" class="btn-link">📄 成绩单</a>
+            <a href="/papers/gpa.pdf" target="_blank" class="btn-link"><Fragment set:html={icFile} /> 成绩单</a>
           </div>
           <p>年级第一　主修课程：智能设计方法 · 人机交互设计</p>
         </div>
@@ -505,9 +504,9 @@ import '../styles/featured-projects.css';
         <div class="project-right">
           <div class="project-links">
             <a href="/toa" class="btn-link detail">详情</a>
-            <a href="/papers/toa-chi26.pdf" target="_blank" class="btn-link">📄 Paper</a>
-            <a href="/papers/CHI-Presentation.pptx" download class="btn-link">🗂 Slides</a>
-            <a href="/videos/toa-demo.mp4" target="_blank" class="btn-link">▶ Video</a>
+            <a href="/papers/toa-chi26.pdf" target="_blank" class="btn-link"><Fragment set:html={icFile} /> Paper</a>
+            <a href="/papers/CHI-Presentation.pptx" download class="btn-link"><Fragment set:html={icSlides} /> Slides</a>
+            <a href="/videos/toa-demo.mp4" target="_blank" class="btn-link"><Fragment set:html={icPlay} /> Video</a>
           </div>
         </div>
       </div>
@@ -524,8 +523,8 @@ import '../styles/featured-projects.css';
         <div class="project-right">
           <div class="project-links">
             <a href="/narrasteer" class="btn-link detail">详情</a>
-            <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link">📄 Paper</a>
-            <a href="/videos/narrasteer-demo.mp4" target="_blank" class="btn-link">▶ Video</a>
+            <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link"><Fragment set:html={icFile} /> Paper</a>
+            <a href="/videos/narrasteer-demo.mp4" target="_blank" class="btn-link"><Fragment set:html={icPlay} /> Video</a>
           </div>
         </div>
       </div>
@@ -540,14 +539,14 @@ import '../styles/featured-projects.css';
         </div>
         <div class="project-right">
           <div class="project-links">
-            <a href="/videos/yuqing-demo.mp4" target="_blank" class="btn-link">▶ Video</a>
+            <a href="/videos/yuqing-demo.mp4" target="_blank" class="btn-link"><Fragment set:html={icPlay} /> Video</a>
           </div>
         </div>
       </div>
 
       <div class="pg-label">
         <span>本科</span>
-        <a href="/papers/portfolio.pdf" target="_blank" class="btn-link" style="text-transform:none;letter-spacing:0">📥 下载本科阶段作品集</a>
+        <a href="/papers/portfolio.pdf" target="_blank" class="btn-link" style="text-transform:none;letter-spacing:0"><Fragment set:html={icDownload} /> 下载本科阶段作品集</a>
       </div>
 
       <div class="project-card">
@@ -560,7 +559,7 @@ import '../styles/featured-projects.css';
         </div>
         <div class="project-right">
           <div class="project-links">
-            <a href="https://pinwall.cn/project/52857" target="_blank" class="btn-link">📄 项目介绍</a>
+            <a href="https://pinwall.cn/project/52857" target="_blank" class="btn-link"><Fragment set:html={icFile} /> 项目介绍</a>
           </div>
         </div>
       </div>
@@ -575,7 +574,7 @@ import '../styles/featured-projects.css';
         </div>
         <div class="project-right">
           <div class="project-links">
-            <a href="/videos/coco.mp4" target="_blank" class="btn-link">▶ Video</a>
+            <a href="/videos/coco.mp4" target="_blank" class="btn-link"><Fragment set:html={icPlay} /> Video</a>
           </div>
         </div>
       </div>
@@ -590,7 +589,7 @@ import '../styles/featured-projects.css';
         </div>
         <div class="project-right">
           <div class="project-links">
-            <a href="/videos/qibaishi-demo.mp4" target="_blank" class="btn-link">▶ Video</a>
+            <a href="/videos/qibaishi-demo.mp4" target="_blank" class="btn-link"><Fragment set:html={icPlay} /> Video</a>
           </div>
         </div>
       </div>
@@ -605,7 +604,7 @@ import '../styles/featured-projects.css';
         </div>
         <div class="project-right">
           <div class="project-links">
-            <a href="/videos/jieguan.mp4" target="_blank" class="btn-link">▶ Video</a>
+            <a href="/videos/jieguan.mp4" target="_blank" class="btn-link"><Fragment set:html={icPlay} /> Video</a>
           </div>
         </div>
       </div>
@@ -700,6 +699,22 @@ import '../styles/featured-projects.css';
     } else {
       await m.initHeroScene(canvas);
     }
+  }
+</script>
+<script>
+  // 明暗切换：双色圆点，持久化 + 通知 hero 画布换色
+  const themeDots = document.querySelectorAll('.theme-dot');
+  if (themeDots.length) {
+    const rootEl = document.documentElement;
+    const syncDots = () => themeDots.forEach((d) => d.classList.toggle('active', d.dataset.setTheme === rootEl.getAttribute('data-theme')));
+    themeDots.forEach((d) => d.addEventListener('click', () => {
+      const t = d.dataset.setTheme;
+      rootEl.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      window.dispatchEvent(new CustomEvent('themechange', { detail: t }));
+      syncDots();
+    }));
+    syncDots();
   }
 </script>
 </html>

@@ -4,35 +4,24 @@
    其他页面不受影响（各自仍是独立 HTML 文档）
    ============================================================ */
 
-/* ── 色板收敛：深色唯一 ───────────────────────────────── */
-:root,
-[data-theme="light"] {
+/* ── 深色主题（默认）───────────────────────────────── */
+:root {
   --bg:       #0a0c12;
-  --bg2:      #0e1118;
-  --surface:  #11141d;
-  --surface2: #171b26;
 
   --border:    rgba(255, 255, 255, 0.08);
   --border-hi: rgba(255, 255, 255, 0.18);
 
   --text:        #e6eaf3;
-  --text-dim:    #99a2b8;   /* 对 bg ≥ 4.5:1 */
+  --text-dim:    #848c9f;   /* 正文次要色，降低透明度 */
   --text-dimmer: #626b82;   /* 装饰微标签 ≥ 3:1 */
 
   --accent:  #00e8c8;       /* 高亮色：编号/链接/按钮 */
-  --accent2: #7d8bff;       /* 辅色：柔靛蓝 */
-  --accent3: transparent;   /* 粉色删除（全站无引用） */
   --accent-hi: #5cf2e0;     /* 高亮色 hover 提亮 */
   --hover: rgba(255, 255, 255, 0.03); /* 通用悬停浅底 */
   --chip: rgba(255, 255, 255, 0.06);        /* 标签软底（无边框方片） */
   --chip-hover: rgba(255, 255, 255, 0.11);  /* 标签/链接悬停软底 */
   --chip-accent: rgba(0, 232, 200, 0.12);  /* 高亮软底（一级链接） */
-  --canvas-bg: #0a0c12;     /* 与 --bg 同源：字符画场景底色 */
-
-  --glow-a: transparent;
-  --glow-b: transparent;
-  --grid:   transparent;
-  --scan:   transparent;
+  --strip-bg: rgba(10, 12, 18, 0.55); /* hero/featured 文字条底色：--bg 同色 + 透明度 */
 
   --nav-bg: rgba(10, 12, 18, 0.78);
 
@@ -42,9 +31,6 @@
   /* mono 栈补无衬线中文兜底：否则中文回退到系统 monospace（Windows=宋体） */
   --font-mono: 'JetBrains Mono', 'Courier New', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
 
-  /* 全站无圆角 */
-  --radius: 0;
-
   /* 布局 */
   --content-w: 1000px;
 
@@ -53,6 +39,28 @@
   --text-body: 14px;                          /* 正文与次级标题 */
   --text-title: 18px;                         /* 区块与卡片标题 */
   --text-display: clamp(38px, 6vw, 68px);     /* 首屏名字 */
+}
+
+/* ── 白天主题：与深色同结构的浅色映射 ──────────────────── */
+[data-theme="light"] {
+  --bg:       #f6f7f9;
+
+  --border:    rgba(10, 12, 18, 0.1);
+  --border-hi: rgba(10, 12, 18, 0.22);
+
+  --text:        #171b26;
+  --text-dim:    #666d7e;   /* 正文次要色，降低透明度 */
+  --text-dimmer: #8a92a6;   /* 装饰微标签 ≥ 3:1 */
+
+  --accent:  #c2410c;       /* 朱橙：浅底高亮 */
+  --accent-hi: #9a350a;     /* 浅底 hover 加深 */
+  --hover: rgba(10, 12, 18, 0.035);
+  --chip: rgba(10, 12, 18, 0.05);
+  --chip-hover: rgba(10, 12, 18, 0.1);
+  --chip-accent: rgba(194, 65, 12, 0.1);
+  --strip-bg: rgba(246, 247, 249, 0.6);
+
+  --nav-bg: rgba(246, 247, 249, 0.78);
 }
 
 /* 基础元素字号对齐四档 */
@@ -96,3 +104,46 @@ section {
   }
   html { scroll-behavior: auto; }
 }
+
+/* ── 共享组件收敛：tokens.css 组件 → 四档字号 + 主页色板 ──────────────
+   仅对引入了 home.css 的页面生效（主页自身有 scoped 覆盖，不受影响） */
+.intro-band,
+footer { max-width: var(--content-w); border-top: none; }
+footer { font-size: var(--text-meta); }
+
+.sec-label, .nav-badge, .conf-badge, .back-link,
+.stat-label, .stat-sub, .metric-sub, .metric-label,
+.dg-num, .img-caption, .quote .speaker { font-size: var(--text-meta); }
+
+.stat-value, .metric { font-size: var(--text-title); }
+
+.dg-item p, .feature-item p, .quote { font-size: var(--text-body); }
+
+/* 旧靛蓝/青色硬编码 → 主页色板（单高亮色，无辅色） */
+.conf-badge { color: var(--accent); }
+.dg-num { background: var(--chip-accent); border: none; }
+.metric { color: var(--accent); }
+.metric-sub { color: var(--text-dim); }
+.stat-label, .feature-icon { color: var(--accent); }
+.back-link:hover { color: var(--text); }
+
+/* 按钮 = 软底方片（与主页一致）；paper/video 变体并入一级高亮软底 */
+.btn-link { font-size: var(--text-meta); border: none; background: var(--chip); color: var(--text-dim); }
+.btn-link:hover { color: var(--text); background: var(--chip-hover); }
+.btn-link.paper, .btn-link.video { color: var(--accent); background: var(--chip-accent); }
+.btn-link.paper:hover, .btn-link.video:hover { color: var(--accent-hi); background: var(--chip-accent); }
+
+/* 明暗切换：两颗圆形色块（深色块 / 浅色块），当前主题套高亮环 */
+.theme-dots { display: flex; align-items: center; gap: 8px; }
+.theme-dot {
+  width: 14px; height: 14px; border-radius: 50%; border: none; padding: 0; cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.theme-dot[data-set-theme="dark"] { background: #0a0c12; box-shadow: inset 0 0 0 1px rgba(128, 136, 150, 0.55); }
+.theme-dot[data-set-theme="light"] { background: #f6f7f9; box-shadow: inset 0 0 0 1px rgba(10, 12, 18, 0.25); }
+.theme-dot:hover { transform: scale(1.2); }
+.theme-dot.active { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--accent); }
+
+/* lucide 内联图标：随文字色，按钮内 11px、feature 方块内 16px */
+.btn-link svg { width: 11px; height: 11px; vertical-align: -1.5px; margin-right: 5px; }
+.feature-icon svg { width: 16px; height: 16px; }
