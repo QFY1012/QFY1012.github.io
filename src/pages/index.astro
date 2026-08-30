@@ -86,7 +86,7 @@ import '../styles/featured-projects.css';
     .hero-role, .hero h1 .en, .hero h1 .zh, .hero-desc p {
       background: rgba(10, 12, 18, 0.55); /* --bg 同色 + 透明度 */
       backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-      padding: 0.3rem 0.6rem 0.3rem 0; /* 固定值而非 em：各排字号不同，字形左缘才能对齐 */
+      padding: 0.3rem 0.6rem; margin-left: -0.6rem; /* 负 margin 抵消左 padding：文字不动，底色条向左撑出 */
     }
     .hero-desc { margin: 2.5rem 0 0; max-width: 580px; }
     .hero-desc p {
@@ -136,7 +136,7 @@ import '../styles/featured-projects.css';
     .featured-head .sec-n, .featured-kicker, .featured-head h2 {
       background: rgba(10, 12, 18, 0.55);
       backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-      padding: 0.15rem 0.6rem 0.15rem 0;
+      padding: 0.15rem 0.6rem; margin-left: -0.6rem; /* 负 margin 抵消左 padding：文字不动，底色条向左撑出 */
     }
     .featured-head .sec-n, .featured-kicker { margin-bottom: 0; }
     .featured-head h2 { margin-bottom: 0; }
