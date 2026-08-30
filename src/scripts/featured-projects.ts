@@ -32,8 +32,8 @@ function mountParticles(card: HTMLElement) {
 }
 export function initFeaturedProjects(root: HTMLElement) {
   const track = root.querySelector<HTMLElement>('[data-featured-track]'), page = root.querySelector<HTMLElement>('[data-featured-page]'), next = root.querySelector<HTMLButtonElement>('[data-featured-next]'), back = root.querySelector<HTMLButtonElement>('[data-featured-back]');
-  if (!track || !page || !next || !back) return; root.querySelectorAll<HTMLElement>('[data-project-shape]').forEach(mountParticles);
+  if (!track || !next || !back) return; root.querySelectorAll<HTMLElement>('[data-project-shape]').forEach(mountParticles);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const go = (index: 0 | 1) => { page.textContent = index ? '02' : '01'; if (reduced) track.style.transform = `translateX(-${index * 50}%)`; else animate(track, { translateX: `${index * -50}%`, duration: 900, ease: 'inOutExpo' }); if (index) back.focus({ preventScroll: true }); };
+  const go = (index: 0 | 1) => { if (page) page.textContent = index ? '02' : '01'; if (reduced) track.style.transform = `translateX(-${index * 50}%)`; else animate(track, { translateX: `${index * -50}%`, duration: 900, ease: 'inOutExpo' }); if (index) back.focus({ preventScroll: true }); };
   next.addEventListener('click', () => go(1)); back.addEventListener('click', () => go(0));
 }

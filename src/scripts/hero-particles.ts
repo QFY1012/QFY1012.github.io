@@ -16,7 +16,7 @@ import { animate, type JSAnimation } from 'animejs';
 const CFG = {
   camFov: 50, camDist: 330, mCamDist: 385,
   spinSpeed: 0.02, rotXSpeed: 0, rotZSpeed: 0.02, basePitch: -0.18, // spin：绕环面法向自转；rotXSpeed/rotZSpeed：绕 X/Z 缓慢翻滚
-  rotX: 0, rotY: -1.86, rotZ: -0.71, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
+  rotX: 0, rotY: -1.86, rotZ: -0.2, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
   offsetX: 40, offsetY: 0,
   scaleX: 1.7, scaleY: 1.7, scaleZ: 1.7, // 三轴缩放（桌面值；移动端整体 ×1.35/1.7）
   thick: 0,       // 环带厚度（世界单位）：点吸附在 ±thick 两个壳面上，空心截面；0 = 回到扁带
@@ -25,7 +25,7 @@ const CFG = {
   cocExp: 1.5,    // 散开分布指数 e：>1 让近焦更锐利、远焦更快解体
   dotWorld: 0.5,  // 点半径（世界单位，恒定——模糊靠散开而非放大）
   alpha: 0.5,     // 单点透明度（常值；散开后密度自然摊薄，亚像素点另有能量补偿）
-  count: 420000, mCount: 150000, // 点云规模（桌面/移动端）：铺满环面成连续点带
+  count: 105000, mCount: 38000, // 点云规模（桌面/移动端）：铺满环面成连续点带
   color: '#00e8c8',
   colorFar: '#1291ab',  // 离焦端颜色：r 超过 colorRamp 后完全过渡到此色
   colorRamp: 8,         // 颜色映射区间（世界单位）：r 从 0 → colorRamp 完成 近色→远色
@@ -223,7 +223,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   }
 
   function rebuild() {
-    cssW = hero!.clientWidth; cssH = hero!.clientHeight;
+    cssW = canvas.clientWidth; cssH = canvas.clientHeight; // 画布可高于 hero（渗出首屏），按画布取尺寸避免拉伸
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     renderer.setPixelRatio(dpr);
     renderer.setSize(cssW, cssH, false);

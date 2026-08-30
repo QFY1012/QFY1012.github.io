@@ -59,44 +59,40 @@ import '../styles/featured-projects.css';
       min-height: 100vh;
       display: flex; align-items: center;
     }
-    /* 点染画面向下渐隐：55% 高度内全实，92% 处隐没 */
-    #hero-ascii {
-      -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 92%);
-      mask-image: linear-gradient(180deg, #000 55%, transparent 92%);
-    }
     .hero-inner {
       position: relative; z-index: 1;
       width: 100%; max-width: var(--content-w);
       margin: 0 auto; padding: 8rem 2.5rem 5rem;
     }
-    .hero-copy {
-      max-width: 620px;
-      padding: 2rem; margin: -2rem;
-      backdrop-filter: blur(1px);
-      -webkit-backdrop-filter: blur(1px);
-    }
+    .hero-copy { max-width: 620px; }
     .hero-role {
+      display: inline-block;
       font-family: var(--font-mono);
       font-size: var(--text-meta); letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 1.75rem;
     }
-    .hero h1 { line-height: 1.1; }
+    .hero h1 { line-height: 1.1; display: flex; flex-direction: column; align-items: flex-start; }
     .hero h1 .en {
-      display: block;
       font-family: var(--font-mono);
       font-size: var(--text-meta); font-weight: 400; letter-spacing: 0.3em;
       color: var(--text-dimmer); margin-bottom: 0.9rem;
     }
     .hero h1 .zh {
-      display: block;
       font-family: var(--font-body);
       font-size: var(--text-display);
       font-weight: 500; letter-spacing: 0.06em; color: var(--text);
     }
-    .hero-desc { margin: 2.5rem 0 0; }
+    /* 每排字一块填充矩形：inline + clone 让折行的每一段都带自己的底色 */
+    .hero-role, .hero h1 .en, .hero h1 .zh, .hero-desc p {
+      background: rgba(10, 12, 18, 0.55); /* --bg 同色 + 透明度 */
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      padding: 0.3rem 0.6rem 0.3rem 0; /* 固定值而非 em：各排字号不同，字形左缘才能对齐 */
+    }
+    .hero-desc { margin: 2.5rem 0 0; max-width: 580px; }
     .hero-desc p {
+      display: inline;
+      box-decoration-break: clone; -webkit-box-decoration-break: clone;
       font-size: var(--text-body); color: var(--text-dim); line-height: 2;
-      max-width: 580px;
     }
 
     /* 滚动提示：底部中央，微标 + 细线内 accent 小段循环下落 */
@@ -133,6 +129,17 @@ import '../styles/featured-projects.css';
     .sec-n { font-family: var(--font-mono); font-size: 10px; color: var(--text-dimmer); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
     .sec-sub { font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem; }
     h2 { font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
+
+    /* featured 头部：hero 同款填充条；竖向 padding 减半 + 行 margin 清零，
+       使条与条的视觉间距与无填充的 sec-head 行距一致 */
+    .featured-head > div:first-child { display: flex; flex-direction: column; align-items: flex-start; }
+    .featured-head .sec-n, .featured-kicker, .featured-head h2 {
+      background: rgba(10, 12, 18, 0.55);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      padding: 0.15rem 0.6rem 0.15rem 0;
+    }
+    .featured-head .sec-n, .featured-kicker { margin-bottom: 0; }
+    .featured-head h2 { margin-bottom: 0; }
 
     /* SKILLS —— 无框，竖向发丝线分隔 */
     .skills-grid {
@@ -284,7 +291,6 @@ import '../styles/featured-projects.css';
     @media (max-width: 640px) {
       nav { padding: 0.75rem 1.25rem; }
       .hero-inner { padding: 6.5rem 1.25rem 4rem; }
-      .hero-copy { padding: 1.25rem; margin: -1.25rem; }
       section { padding: clamp(3rem, 7vw, 4rem) 1.25rem; }
       .tl-item { grid-template-columns: 1fr; gap: 0.3rem; }
       .pg-label { flex-wrap: wrap; gap: 0.5rem; }
@@ -323,8 +329,7 @@ import '../styles/featured-projects.css';
   <!-- FEATURED WORK：首屏之后的粒子项目舞台 -->
   <section id="featured" class="featured" aria-labelledby="featured-title">
     <div class="featured-head">
-      <div><div class="featured-kicker">SELECTED WORK · 2022—2026</div><h2 id="featured-title">FEATURED PROJECTS</h2></div>
-      <div class="featured-progress" aria-live="polite"><span data-featured-page>01</span> / 02</div>
+      <div><div class="sec-n">00 /</div><div class="featured-kicker">精选项目</div><h2 id="featured-title">SELECTED PROJECT</h2></div>
     </div>
     <div class="featured-viewport">
       <div class="featured-track" data-featured-track>
@@ -355,7 +360,6 @@ import '../styles/featured-projects.css';
         </div>
       </div>
     </div>
-    <div class="featured-swipe" aria-hidden="true">SWIPE <span>→</span></div>
   </section>
 
   <!-- NAV：首屏之后出现，滚过首屏吸顶 -->
@@ -430,7 +434,7 @@ import '../styles/featured-projects.css';
       <div class="tl-item">
         <div class="tl-date">2026.06 — 至今</div>
         <div class="tl-content">
-          <h3>实习 AI 设计工程师（AI Design Engineering）</h3>
+          <h3>实习 AI 设计工程师（AI Design Engineer）</h3>
           <div class="company">阿里巴巴 · 淘天集团</div>
           <p>沿 Skill 与 Tool 两个维度扩展 Taobao Design Counselor 其能力边界。</p>
           <div class="xp-list">
@@ -661,13 +665,13 @@ import '../styles/featured-projects.css';
     setTimeout(typeTag, 800);
   }
 
-  // 导航：滚出首屏时从顶部滑入，回到首屏收起
+  // 导航：滚过二屏（featured）时从顶部滑入，回到前两屏收起
   const navEl = document.querySelector('nav');
-  const heroEl = document.querySelector('.hero');
-  if (navEl && heroEl) {
+  const featuredEl = document.getElementById('featured');
+  if (navEl && featuredEl) {
     new IntersectionObserver(([entry]) => {
-      navEl.classList.toggle('is-visible', !entry.isIntersecting);
-    }, { threshold: 0 }).observe(heroEl);
+      navEl.classList.toggle('is-visible', entry.boundingClientRect.bottom < 0);
+    }, { threshold: 0 }).observe(featuredEl);
   }
 
   // 项目卡整卡点击跳转
