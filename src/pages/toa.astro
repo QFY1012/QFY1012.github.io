@@ -30,16 +30,18 @@ import icGear from 'lucide-static/icons/settings.svg?raw';
     .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
     /* Query table */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .query-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: var(--text-body); }
+    @media (max-width: 700px) { .query-table { min-width: 600px; } }
     .query-table th {
       text-align: left; padding: 0.5rem 0.75rem; color: var(--accent);
       font-size: var(--text-meta); letter-spacing: 0.1em; text-transform: uppercase;
       border-bottom: 1px solid var(--border);
     }
-    .query-table td { padding: 0.65rem 0.75rem; color: var(--text-dim); border-bottom: 1px solid var(--border); vertical-align: top; }
+    .query-table td { padding: 0.65rem 0.5rem; color: var(--text-dim); border-bottom: 1px solid var(--border); vertical-align: top; }
     .query-table tr:last-child td { border-bottom: none; }
     .query-table tr:hover td { background: var(--hover); }
-    .qname { color: var(--text); font-weight: 500; white-space: nowrap; }
+    .qname { color: var(--text); font-weight: 500; }
     .qpct { color: var(--accent); font-weight: 600; white-space: nowrap; }
     .origin-tag {
       font-size: var(--text-meta); padding: 2px 6px;
@@ -158,9 +160,10 @@ import icGear from 'lucide-static/icons/settings.svg?raw';
 
     <p>结果差别很明显：<strong>4/6 个新手任务失败</strong>（1人超时40分钟、1人解释不足、2人直接放弃），专家 6/6 全部完成。我们对全部 205 条查询进行了编码，发现他们提问的方式截然不同：</p>
 
-    <table class="query-table">
+    <div class="table-scroll">
+      <table class="query-table">
       <thead>
-        <tr><th>查询类型</th><th>新手占比</th><th>专家占比</th><th>来源</th><th>是什么意思</th></tr>
+        <tr><th>查询类型</th><th>新手</th><th>专家</th><th>来源</th><th>是什么意思</th></tr>
       </thead>
       <tbody>
         <tr><td class="qname">Start New</td><td class="qpct">30.8%</td><td class="qpct">25.4%</td><td><span class="origin-tag">文献衍生</span></td><td>跳开去问一个全新的问题，不接着之前的分析</td></tr>
@@ -172,7 +175,8 @@ import icGear from 'lucide-static/icons/settings.svg?raw';
         <tr><td class="qname">Reshape</td><td class="qpct">4.4%</td><td class="qpct">7.0%</td><td><span class="origin-tag">文献衍生</span></td><td>换个图表类型，数据本身不变</td></tr>
         <tr><td class="qname">Clarify</td><td class="qpct">4.4%</td><td class="qpct">6.1%</td><td><span class="origin-tag new">本研究归纳</span></td><td>追问图表里某个数字或元素是什么意思</td></tr>
       </tbody>
-    </table>
+      </table>
+    </div>
 
     <div style="margin-top:2rem;">
       <h3 style="margin-bottom:1rem;">具体差在哪三点</h3>

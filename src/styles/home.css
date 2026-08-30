@@ -80,6 +80,10 @@ section {
   padding: clamp(4rem, 8vw, 6rem) var(--sp-10);
   border-top: none;
 }
+@media (max-width: 600px) {
+  section { padding: 3rem 1.25rem; }
+  footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+}
 
 /* ── 首屏字符画画布 ───────────────────────────────────── */
 .hero { position: relative; overflow: visible; z-index: 0; }

@@ -197,6 +197,7 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
       display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start;
       position: relative; transition: background 0.18s;
     }
+    .project-card:has(+ .pg-label), .project-card:last-child { border-bottom: none; }
     .project-card.clickable { cursor: pointer; }
     .project-card:hover { background: var(--hover); }
     /* 悬停箭头：右下角，与 WORKS 标题同字体同字号 */
