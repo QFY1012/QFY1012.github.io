@@ -19,6 +19,14 @@
 @font-face {
   font-family: 'PingFang SC';
   font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('PingFang SC Medium'), local('PingFangSC-Medium'),
+       url('/fonts/PingFangSC-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'PingFang SC';
+  font-style: normal;
   font-weight: 700;
   font-display: swap;
   src: local('PingFang SC Bold'), local('PingFangSC-Bold'),
@@ -114,7 +122,7 @@ strong { color: var(--text); }
 }
 .stat-card { padding: 0; }
 .stat-label { font-size: var(--text-meta); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.35rem; }
-.stat-value { font-size: var(--text-title); color: var(--text); font-weight: 600; font-family: var(--font-display); }
+.stat-value { font-size: var(--text-title); color: var(--text); font-weight: 700; font-family: var(--font-display); }
 .stat-sub { font-size: var(--text-meta); color: var(--text-dimmer); margin-top: 0.2rem; }
 
 /* Result cards — 无框平面网格 */
@@ -159,7 +167,7 @@ strong { color: var(--text); }
   border-left: 2px solid var(--accent); padding-left: 0.75rem;
   margin-top: var(--sp-2); font-style: italic;
 }
-.quote .speaker { color: var(--accent); font-style: normal; font-weight: 600; font-size: var(--text-meta); }
+.quote .speaker { color: var(--accent); font-style: normal; font-weight: 700; font-size: var(--text-meta); }
 
 /* Buttons */
 .btn-link {
