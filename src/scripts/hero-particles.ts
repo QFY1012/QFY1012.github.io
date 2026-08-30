@@ -15,11 +15,11 @@ import { animate, type JSAnimation } from 'animejs';
 
 /* ---------- 参数 ---------- */
 const CFG = {
-  camFov: 50, camDist: 330, mCamDist: 385,
+  camFov: 50, camDist: 330,
   spinSpeed: 0.02, rotXSpeed: 0, rotZSpeed: 0, basePitch: -0.18, // spin：绕环面法向自转；rotXSpeed/rotZSpeed：绕 X/Z 缓慢翻滚
   rotX: 0, rotY: -1.86, rotZ: -0.06, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
   offsetX: 40, offsetY: 0,
-  scaleX: 1.7, scaleY: 1.7, scaleZ: 1.7, // 三轴缩放（桌面值；移动端整体 ×1.35/1.7）
+  scaleX: 1.7, scaleY: 1.7, scaleZ: 1.7, // 三轴缩放
   thick: 0,       // 环带厚度（世界单位）：点吸附在 ±thick 两个壳面上，空心截面；0 = 回到扁带
   focus: 245,     // 对焦深度：距相机此远处的点最凝聚（前排环缘）
   coc: 0.008,     // 散开强度 m：离焦位移半径 r = coc·|focus−d|^exp
@@ -228,8 +228,6 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     group.quaternion.copy(_rotQ).multiply(_pitchQ).multiply(_spinQ);
   }
 
-  const camDist = () => (isMobile() ? CFG.mCamDist : CFG.camDist);
-
   let cssW = 0, cssH = 0;
 
   function renderOnce(angle: number) {
@@ -238,10 +236,9 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   }
 
   function applyView() {
-    const k = isMobile() ? 1.35 / 1.7 : 1; // 移动端等比缩小，三轴比例不变
-    camera.position.set(0, 0, camDist());
-    groupPos.position.set(isMobile() ? 0 : CFG.offsetX, CFG.offsetY, 0);
-    group.scale.set(CFG.scaleX * k, CFG.scaleY * k, CFG.scaleZ * k);
+    camera.position.set(0, 0, CFG.camDist);
+    groupPos.position.set(CFG.offsetX, CFG.offsetY, 0);
+    group.scale.set(CFG.scaleX, CFG.scaleY, CFG.scaleZ);
     if (!running) renderOnce(state.spin);
   }
 
@@ -250,14 +247,13 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     renderer.setPixelRatio(dpr);
     renderer.setSize(cssW, cssH, false);
-    // 桌面端锁定 3425px 虚拟宽度取景：相机按虚拟幅面投影，实际窗口
+    // 锁定 3425px 虚拟宽度取景：相机按虚拟幅面投影，实际窗口
     // 用 setViewOffset 居中裁切——窗口只改变可见范围，不改焦距/比例
-    const refW = isMobile() ? cssW : 3425;
+    const refW = 3425;
     camera.aspect = refW / cssH;
-    if (isMobile()) camera.clearViewOffset();
-    else camera.setViewOffset(refW, cssH, (refW - cssW) / 2, 0, cssW, cssH);
+    camera.setViewOffset(refW, cssH, (refW - cssW) / 2, 0, cssW, cssH);
     camera.updateProjectionMatrix();
-    groupStretch.scale.x = isMobile() ? 3425 / 900 : camera.aspect; // 移动端也按桌面基准宽高比拉伸，不随竖屏压缩
+    groupStretch.scale.x = camera.aspect;
     // 点精灵尺寸系数：世界尺寸 → 设备像素（纵向焦距 × dpr）
     material.uniforms.uPixK.value =
       (cssH * dpr) / (2 * Math.tan((CFG.camFov * Math.PI) / 360));
@@ -269,13 +265,8 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   let spinAnim: JSAnimation | null = null;
   let rotXAnim: JSAnimation | null = null;
   let rotZAnim: JSAnimation | null = null;
-  let lastDraw = 0;
-
   function renderTick() {
     if (!running) return;
-    const now = performance.now();
-    if (isMobile() && now - lastDraw < 33) return; // 移动端 30fps 节流
-    lastDraw = now;
     renderOnce(state.spin);
   }
 
