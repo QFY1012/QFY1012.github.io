@@ -94,12 +94,6 @@ section {
 }
 #hero-ascii.is-ready { opacity: 1; }
 
-/* 首屏↔二屏原生吸附：proximity 只在滚停位置靠近边界时吸合，不锁死后续滚动 */
-@media (prefers-reduced-motion: no-preference) {
-  html { scroll-snap-type: y proximity; }
-  .hero, .featured { scroll-snap-align: start; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

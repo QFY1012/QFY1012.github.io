@@ -12,6 +12,7 @@ import {
   Euler,
 } from 'three';
 import { animate, type JSAnimation } from 'animejs';
+import { sampleTree, sampleHelix, sampleOutbreak, mulberry32 } from './hero-shapes';
 
 /* ---------- 参数 ---------- */
 const CFG = {
@@ -31,6 +32,16 @@ const CFG = {
   colorFar: '#1291ab',  // 离焦端颜色：r 超过 colorRamp 后完全过渡到此色
   colorRamp: 8,         // 颜色映射区间（世界单位）：r 从 0 → colorRamp 完成 近色→远色
   bgColor: '#0a0c12',           // 与页面 --bg 同源
+  /* ---- 形变状态机：环 → 作品造型 → 环（角度驱动） ---- */
+  badZones: [[1.15, 5.3]] as Array<[number, number]>, // 丑角区（spin 弧度，mod 2π）：扫角度截图标定，环在此区间弥散无形
+  morphMs: 6000,        // 单程形变时长
+  spinMargin: 0.05,     // 提前量余量（弧度）：形变完成时环刚好转进丑区
+  shapeDwellMinMs: 6000,// 造型最短驻留（出丑区后才允许回环）
+  shapeSpinBoost: 3,    // 造型期自转加速倍数：更快穿过丑区、控制驻留时长
+  ringDwellMs: 14000,   // 时钟降级模式的环驻留（badZones 为空或停转时）
+  flyFrac: 0.45,        // 错峰时刻表：单粒子飞行占全程比例
+  schedJit: 0.08,       // 出发时刻确定性抖动 ±
+  caption: true,        // 关键词浮层开关
 };
 
 /* ---------- 莫比乌斯参数面 · 面采样 ---------- */
@@ -47,9 +58,10 @@ function surf(u: number, v: number, o: number[]) {
  * （截面为最大圆角矩形——圆角半径 = min(W, thick)，即成胶囊形；
  * 按弧长比例分配密度；几何内烘入 TILT 倾倒，自转轴因此是环面本地法向）。
  * 每个点附带一个各向同性随机单位向量，作为离焦时的散开方向 */
-function buildPoints(n: number): { pos: Float32Array; dir: Float32Array } {
+function buildPoints(n: number): { pos: Float32Array; dir: Float32Array; key: Float32Array } {
   const pos = new Float32Array(n * 3);
   const dir = new Float32Array(n * 3);
+  const key = new Float32Array(n); // 接缝角 u/2π：回程错峰时刻表的出发次序
   const c = Math.cos(TILT), s = Math.sin(TILT);
   const o = [0, 0, 0], ou = [0, 0, 0], ov = [0, 0, 0];
   const TH = CFG.thick;
@@ -59,6 +71,7 @@ function buildPoints(n: number): { pos: Float32Array; dir: Float32Array } {
   const perim = 2 * faceLen + 2 * wallLen + 2 * Math.PI * rc;
   for (let i = 0; i < n; i++) {
     const u = Math.random() * 2 * Math.PI;
+    key[i] = u / (2 * Math.PI);
     let v: number, t: number;
     const x = Math.random() * perim;
     if (x < 2 * faceLen) {
@@ -93,21 +106,31 @@ function buildPoints(n: number): { pos: Float32Array; dir: Float32Array } {
     dir[i * 3 + 1] = q * Math.sin(tt);
     dir[i * 3 + 2] = z;
   }
-  return { pos, dir };
+  return { pos, dir, key };
 }
 
 /* ---------- 着色器 ---------- */
 const VERT = /* glsl */ `
-uniform float uFocus, uCoc, uCocExp, uPixK, uDot, uAlpha, uRamp;
+uniform float uFocus, uCoc, uCocExp, uPixK, uDot, uAlpha, uRamp, uT, uMorphDir;
 uniform vec3 uColor, uColorFar;
 attribute vec3 aDir;
+attribute vec3 aTarget;    // 目标造型上的家
+attribute vec3 aTargetDir; // 目标造型上的散开方向
+attribute vec4 aSched;     // 错峰时刻表：(去程 start/dur, 回程 start/dur)
 varying float vAlpha;
 varying vec3 vColor;
 void main() {
-  vec4 mv0 = modelViewMatrix * vec4(position, 1.0);
+  // 每粒子错峰：uT 是全体总进度，lt 是本粒子的局部进度
+  vec2 sched = uMorphDir < 0.5 ? aSched.xy : aSched.zw;
+  float lt = clamp((uT - sched.x) / max(sched.y, 1e-4), 0.0, 1.0);
+  float e = lt * lt * (3.0 - 2.0 * lt); // smoothstep：起飞/落地缓动
+  vec3 p = mix(position, aTarget, e);
+  vec3 d = normalize(mix(aDir, aTargetDir, e));
+  // 先形变后模糊：离焦按形变后的位置计算，中途无鬼影
+  vec4 mv0 = modelViewMatrix * vec4(p, 1.0);
   float depth0 = max(1.0, -mv0.z);
   float r = uCoc * pow(abs(uFocus - depth0), uCocExp); // 散开半径（世界单位）
-  vec4 mv = modelViewMatrix * vec4(position + aDir * r, 1.0);
+  vec4 mv = modelViewMatrix * vec4(p + d * r, 1.0);
   float depth = max(1.0, -mv.z);
   vAlpha = uAlpha;
   vColor = mix(uColor, uColorFar, clamp(r / uRamp, 0.0, 1.0)); // 近焦色 → 离焦色
@@ -173,6 +196,8 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       uColor: { value: new Color(CFG.color) },
       uColorFar: { value: new Color(CFG.colorFar) },
       uRamp: { value: CFG.colorRamp },
+      uT: { value: 0 },        // 形变总进度 0=环 1=造型
+      uMorphDir: { value: 0 }, // 0 去程（环→造型）/ 1 回程
     },
     transparent: true,
     depthWrite: false,
@@ -183,6 +208,12 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   const sampled = buildPoints(isMobile() ? CFG.mCount : CFG.count);
   geometry.setAttribute('position', new Float32BufferAttribute(sampled.pos, 3));
   geometry.setAttribute('aDir', new Float32BufferAttribute(sampled.dir, 3));
+  // 形变 attribute 初始为环自身（uT=0 时着色器不读，仅占位保语法）
+  geometry.setAttribute('aTarget', new Float32BufferAttribute(sampled.pos.slice(), 3));
+  geometry.setAttribute('aTargetDir', new Float32BufferAttribute(sampled.dir.slice(), 3));
+  const sched0 = new Float32Array(sampled.key.length * 4);
+  for (let i = 0; i < sampled.key.length; i++) { sched0[i * 4 + 1] = 1; sched0[i * 4 + 3] = 1; }
+  geometry.setAttribute('aSched', new Float32BufferAttribute(sched0, 4));
   const points = new Points(geometry, material);
   points.frustumCulled = false;
   group.add(points);
@@ -265,17 +296,22 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
   let spinAnim: JSAnimation | null = null;
   let rotXAnim: JSAnimation | null = null;
   let rotZAnim: JSAnimation | null = null;
+  let frameHook: (() => void) | null = null; // 调试面板的角度读数，每帧同步
   function renderTick() {
     if (!running) return;
+    morphTick();
     renderOnce(state.spin);
+    frameHook?.();
   }
 
+  let spinBoostCur = 1; // 造型期自转加速倍数（1 = 常速）
   function makeSpin() {
     spinAnim?.pause();
-    const speed = Math.abs(CFG.spinSpeed);
+    const eff = CFG.spinSpeed * spinBoostCur;
+    const speed = Math.abs(eff);
     if (speed < 1e-4) { spinAnim = null; return; }
     spinAnim = animate(state, {
-      spin: [state.spin, state.spin + Math.sign(CFG.spinSpeed) * 2 * Math.PI],
+      spin: [state.spin, state.spin + Math.sign(eff) * 2 * Math.PI],
       duration: ((2 * Math.PI) / speed) * 1000,
       ease: 'linear',
       loop: true, // 每圈回绕 ±2π：姿态等价，无跳变
@@ -310,6 +346,173 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       autoplay: running,
       onUpdate: renderTick,
     });
+  }
+
+  /* ---- 形变状态机：环 ⇄ 作品造型，由自转角度驱动 ----
+   * 环只在好看的角窗里驻留；逼近丑区入口就形变成造型（顺便隐喻作品），
+   * 转过丑区后变回环——环永远以最好看的角度示人。 */
+  const TAU = Math.PI * 2;
+  const modTau = (a: number) => ((a % TAU) + TAU) % TAU;
+  const inZone = (a: number, z: [number, number]) => modTau(a - z[0]) < modTau(z[1] - z[0]);
+
+  const urlParams = new URLSearchParams(location.search);
+  if (urlParams.has('herofast')) { // 测试用：压缩时序
+    CFG.morphMs = 1500; CFG.shapeDwellMinMs = 2000; CFG.ringDwellMs = 2000;
+    CFG.spinSpeed *= 8;
+  }
+  const onlyShape = urlParams.get('heroOnly'); // tree|helix|outbreak 锁单造型
+
+  interface BakedShape {
+    id: string;
+    pos: Float32BufferAttribute;
+    dir: Float32BufferAttribute;
+    sched: Float32BufferAttribute;
+  }
+  let shapes: BakedShape[] | null = null;
+  let shapeIdx = 0;
+
+  // 造型朝向 bake：采样器输出的点云预旋 Q(spinMid)⁻¹，
+  // 使造型转到丑区中段时正好正对镜头（翻滚通道开启时朝向会漂移，可接受）
+  function orientationAt(a: number, out: Quaternion): Quaternion {
+    _spinQ.setFromAxisAngle(RING_AXIS, a);
+    _rotQ.setFromEuler(_euler.set(CFG.rotX, CFG.rotY, CFG.rotZ));
+    return out.copy(_rotQ).multiply(_pitchQ).multiply(_spinQ);
+  }
+
+  function bakeShapes() {
+    const defs = [
+      { id: 'tree', fn: sampleTree, seed: 20260521 },
+      { id: 'helix', fn: sampleHelix, seed: 20260522 },
+      { id: 'outbreak', fn: sampleOutbreak, seed: 20260717 },
+    ].filter((d) => !onlyShape || d.id === onlyShape);
+    const zones = CFG.badZones;
+    const n = sampled.key.length;
+    const squash = cssH ? cssH / 3425 : 0.26; // 补偿 groupStretch.x=aspect 的横向拉伸（3425 = 虚拟取景宽）
+    // 造型落位（本地坐标）：画布 200vh，可视区是画布上半 → 本地 y ∈ [0, halfH/1.7]；
+    // 横向桌面放右 1/3（避开左侧文案），移动端居中（可视横窗太窄）
+    const halfH = CFG.camDist * Math.tan((CFG.camFov * Math.PI) / 360);
+    const aspect = cssH ? 3425 / cssH : 3.85;
+    const stretchX = CFG.scaleX * aspect;
+    const ndcX = cssW >= 768 ? 0.18 : 0;
+    const offX = (ndcX * halfH * aspect - CFG.offsetX) / stretchX;
+    const offY = (0.46 * halfH) / CFG.scaleY;
+    const offZ = (CFG.camDist - CFG.focus) / CFG.scaleZ; // 坐到对焦平面上：正对镜头时造型是清晰的
+    shapes = defs.map((d, i) => {
+      const zone = zones.length ? zones[i % zones.length] : [0, 0] as [number, number];
+      const spinMid = (zone[0] + zone[1]) / 2;
+      const unwind = orientationAt(spinMid, new Quaternion()).invert();
+      const s = d.fn(n, d.seed, unwind, squash, offX, offY, offZ);
+      // 错峰时刻表：去程按造型生长键（树根先动、梢后动），回程按环接缝角
+      const sched = new Float32Array(n * 4);
+      const r = mulberry32(9100 + i);
+      for (let j = 0; j < n; j++) {
+        const so = Math.min(1 - CFG.flyFrac, Math.max(0, s.key[j] * (1 - CFG.flyFrac) + (r() * 2 - 1) * CFG.schedJit));
+        const sb = Math.min(1 - CFG.flyFrac, Math.max(0, sampled.key[j] * (1 - CFG.flyFrac) + (r() * 2 - 1) * CFG.schedJit));
+        sched[j * 4] = so; sched[j * 4 + 1] = CFG.flyFrac;
+        sched[j * 4 + 2] = sb; sched[j * 4 + 3] = CFG.flyFrac;
+      }
+      return {
+        id: d.id,
+        pos: new Float32BufferAttribute(s.pos, 3),
+        dir: new Float32BufferAttribute(s.dir, 3),
+        sched: new Float32BufferAttribute(sched, 4),
+      };
+    });
+  }
+
+  type Phase = 'ring' | 'morphOut' | 'shape' | 'morphBack';
+  let phase: Phase = 'ring';
+  let manualMorph = false; // 调试面板接管 uT 时暂停状态机
+  let dwellStart = 0;
+  const morph = { t: 0 };
+  let morphAnim: JSAnimation | null = null;
+
+  function dispatchShape(phaseName: 'arrived' | 'leaving') {
+    if (!CFG.caption || !shapes || !shapes.length) return;
+    hero.dispatchEvent(new CustomEvent('heroshape', {
+      detail: { phase: phaseName, shape: shapes[shapeIdx].id },
+    }));
+  }
+
+  function setSpinBoost(b: number) {
+    if (b === spinBoostCur) return;
+    spinBoostCur = b;
+    makeSpin(); // 重建补间以变速，角度连续
+  }
+
+  function setTarget(shape: BakedShape) {
+    geometry.setAttribute('aTarget', shape.pos);
+    geometry.setAttribute('aTargetDir', shape.dir);
+    geometry.setAttribute('aSched', shape.sched);
+  }
+
+  function runMorph(to: 0 | 1, onDone: () => void) {
+    morphAnim?.pause();
+    const dist = Math.abs(to - morph.t);
+    if (dist < 1e-4) { morph.t = to; material.uniforms.uT.value = to; onDone(); return; }
+    morphAnim = animate(morph, {
+      t: [morph.t, to],
+      duration: CFG.morphMs * dist,
+      ease: 'linear',
+      autoplay: running,
+      onUpdate: () => {
+        material.uniforms.uT.value = morph.t;
+        if (!spinAnim && !rotXAnim && !rotZAnim) renderTick(); // 停转时由形变驱动渲染
+      },
+      onComplete: onDone,
+    });
+  }
+
+  function beginMorphOut() {
+    if (!shapes || !shapes.length) return;
+    phase = 'morphOut';
+    setTarget(shapes[shapeIdx]);
+    material.uniforms.uMorphDir.value = 0;
+    runMorph(1, () => {
+      phase = 'shape';
+      dwellStart = performance.now();
+      setSpinBoost(CFG.shapeSpinBoost);
+      dispatchShape('arrived');
+    });
+  }
+
+  function beginMorphBack() {
+    phase = 'morphBack';
+    setSpinBoost(1);
+    dispatchShape('leaving'); // 词先走、形后散
+    material.uniforms.uMorphDir.value = 1;
+    runMorph(0, () => {
+      phase = 'ring';
+      dwellStart = performance.now();
+      shapeIdx = (shapeIdx + 1) % (shapes?.length || 1);
+    });
+  }
+
+  function morphTick() {
+    if (manualMorph || !shapes || !shapes.length) return;
+    const spin = CFG.spinSpeed * spinBoostCur;
+    const dir = Math.sign(spin) || 1;
+    const angleMode = CFG.badZones.length > 0 && Math.abs(CFG.spinSpeed) > 1e-4;
+    const a = modTau(state.spin);
+    if (phase === 'ring') {
+      if (angleMode) {
+        const zone = CFG.badZones[shapeIdx % CFG.badZones.length];
+        const entry = dir > 0 ? zone[0] : zone[1];
+        const fwd = dir > 0 ? modTau(entry - a) : modTau(a - entry);
+        const lead = (CFG.morphMs / 1000) * Math.abs(spin) + CFG.spinMargin;
+        if (fwd <= lead || inZone(a, zone)) beginMorphOut(); // 已在丑区内则立即触发（兜底）
+      } else if (performance.now() - dwellStart >= CFG.ringDwellMs) {
+        beginMorphOut();
+      }
+    } else if (phase === 'shape') {
+      if (performance.now() - dwellStart < CFG.shapeDwellMinMs) return;
+      if (angleMode) {
+        const zone = CFG.badZones[shapeIdx % CFG.badZones.length];
+        if (!inZone(a, zone)) beginMorphBack(); // 已转出丑区（不能用角距 < π 判断：丑区比 π 宽会误判）
+      } else {
+        beginMorphBack();
+      }
+    }
   }
 
   /* ---- 临时调参面板（?debug=1 启用；调参完整块删除） ---- */
@@ -388,10 +591,105 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       CFG.rotZSpeed = v;
       makeRotZ();
     }); // 绕 Z 翻滚速度，负值 = 反向
+    // spinPos：暂停自转、直接把环拖到指定角度，用于标定丑角区
+    const spinReadout = document.createElement('span');
+    const TAU = Math.PI * 2;
+    frameHook = () => {
+      const a = ((state.spin % TAU) + TAU) % TAU;
+      spinReadout.textContent = `spin=${a.toFixed(2)}`;
+    };
+    mkRow('spinPos', 0, TAU, 0.01, ((state.spin % TAU) + TAU) % TAU, (v) => {
+      spinAnim?.pause();
+      state.spin = v;
+      renderOnce(state.spin);
+    });
+    spinReadout.style.cssText = 'color:#00e8c8';
+    panel.appendChild(spinReadout);
+
+    /* ---- MORPH 分区 ---- */
+    const sep = document.createElement('div');
+    sep.style.cssText = 'border-top:1px solid rgba(255,255,255,.14);margin:4px 0 2px;color:#e6eaf3';
+    sep.textContent = 'MORPH';
+    panel.appendChild(sep);
+    mkRow('morphT', 0, 1, 0.01, 0, (v) => {
+      manualMorph = true; // 拖杆即接管，状态机暂停
+      morphAnim?.pause();
+      morph.t = v;
+      material.uniforms.uT.value = v;
+      renderOnce(state.spin); // spinPos 会暂停自转循环，这里直接渲（refresh 只在 !running 时渲）
+    });
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap';
+    const mkBtn = (label: string, onClick: () => void) => {
+      const b = document.createElement('button');
+      b.textContent = label;
+      b.style.cssText = 'flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#e6eaf3;font:inherit;padding:2px 0;cursor:pointer';
+      b.addEventListener('click', onClick);
+      btnRow.appendChild(b);
+    };
+    mkBtn('ring', () => {
+      manualMorph = true; morphAnim?.pause();
+      morph.t = 0; material.uniforms.uT.value = 0; renderOnce(state.spin);
+    });
+    for (const id of ['tree', 'helix', 'outbreak']) {
+      mkBtn(id, () => {
+        if (!shapes) bakeShapes();
+        const s = shapes?.find((x) => x.id === id);
+        if (!s) return;
+        manualMorph = true; morphAnim?.pause();
+        setTarget(s);
+        morph.t = 1; material.uniforms.uT.value = 1; renderOnce(state.spin);
+      });
+    }
+    mkBtn('▶auto', () => {
+      manualMorph = false;
+      phase = 'ring';
+      dwellStart = performance.now();
+      morph.t = 0; material.uniforms.uT.value = 0;
+      setSpinBoost(1);
+      renderOnce(state.spin);
+    });
+    panel.appendChild(btnRow);
+    const zoneRow = document.createElement('label');
+    zoneRow.style.cssText = 'display:flex;align-items:center;gap:8px';
+    const zoneName = document.createElement('span');
+    zoneName.textContent = 'zones';
+    zoneName.style.cssText = 'width:44px;color:#e6eaf3';
+    const zoneInput = document.createElement('input');
+    zoneInput.type = 'text';
+    zoneInput.value = CFG.badZones.map(([a, b]) => `${a}-${b}`).join(';');
+    zoneInput.style.cssText = 'flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#00e8c8;font:inherit;padding:2px 4px';
+    zoneInput.addEventListener('change', () => {
+      const parsed = zoneInput.value.split(';').map((p) => p.split('-').map(Number))
+        .filter((z): z is [number, number] => z.length === 2 && z.every(Number.isFinite));
+      CFG.badZones = parsed;
+      bakeShapes(); // spinMid 变了，造型朝向需要重 bake
+      refresh();
+    });
+    zoneRow.append(zoneName, zoneInput);
+    panel.appendChild(zoneRow);
+    mkRow('morphMs', 500, 15000, 100, CFG.morphMs, (v) => { CFG.morphMs = v; });
+    mkRow('dwellMn', 0, 20000, 500, CFG.shapeDwellMinMs, (v) => { CFG.shapeDwellMinMs = v; });
+    mkRow('margin', 0, 0.5, 0.01, CFG.spinMargin, (v) => { CFG.spinMargin = v; });
+    mkRow('boost', 1, 6, 0.5, CFG.shapeSpinBoost, (v) => { CFG.shapeSpinBoost = v; });
+    const capRow = document.createElement('label');
+    capRow.style.cssText = 'display:flex;align-items:center;gap:8px;color:#e6eaf3';
+    const capBox = document.createElement('input');
+    capBox.type = 'checkbox';
+    capBox.checked = CFG.caption;
+    capBox.addEventListener('change', () => {
+      CFG.caption = capBox.checked;
+      window.dispatchEvent(new CustomEvent('herocaption', { detail: CFG.caption }));
+    });
+    capRow.append(capBox, document.createTextNode('caption'));
+    panel.appendChild(capRow);
     window.addEventListener('themechange', () => colorSyncs.forEach((sync) => sync()));
     document.body.appendChild(panel);
   }
-  if (new URLSearchParams(location.search).has('debug')) mountDebugPanel();
+  if (new URLSearchParams(location.search).has('debug')) {
+    mountDebugPanel();
+    (window as any).__heroDbg = () => ({ phase, shape: shapes?.[shapeIdx]?.id, t: morph.t, spin: modTau(state.spin) });
+  }
 
   /* ---- 可见性 / 视口 ---- */
   let disposed = false;
@@ -410,6 +708,10 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     if (rotZAnim) {
       if (running) rotZAnim.play();
       else rotZAnim.pause();
+    }
+    if (morphAnim) {
+      if (running) morphAnim.play();
+      else morphAnim.pause();
     }
     if (running) renderTick();
   }
@@ -439,6 +741,8 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       makeSpin();
       makeRotX();
       makeRotZ();
+      bakeShapes(); // 造型采样 ~30–60ms，静帧已渲染，不阻塞首帧
+      dwellStart = performance.now();
       updateRunning();
       renderOnce(state.spin);
     },
@@ -447,6 +751,7 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       spinAnim?.pause();
       rotXAnim?.pause();
       rotZAnim?.pause();
+      morphAnim?.pause();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
       window.removeEventListener('resize', onResize);
