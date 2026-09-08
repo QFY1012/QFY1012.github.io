@@ -17,7 +17,8 @@ import { sampleTree, sampleHelix, sampleOutbreak, mulberry32 } from './hero-shap
 /* ---------- 参数 ---------- */
 const CFG = {
   camFov: 50, camDist: 330,
-  spinSpeed: 0.02, rotXSpeed: 0, rotZSpeed: 0, basePitch: -0.18, // spin：绕环面法向自转；rotXSpeed/rotZSpeed：绕 X/Z 缓慢翻滚
+  refW: 3425, refH: 2880, // 虚拟取景幅面（css px）：焦距/比例锁定于此幅面，窗口只做居中裁切；refH ≈ 3440×1440 全窗口的 200vh 画布高
+  spinSpeed: 0.01, rotXSpeed: 0, rotZSpeed: 0, basePitch: -0.18, // spin：绕环面法向自转；rotXSpeed/rotZSpeed：绕 X/Z 缓慢翻滚
   rotX: 0, rotY: -1.86, rotZ: -0.06, // 静态朝向偏移（调参用）：叠在俯仰与自转之外
   offsetX: 40, offsetY: 0,
   scaleX: 1.7, scaleY: 1.7, scaleZ: 1.7, // 三轴缩放
@@ -25,7 +26,7 @@ const CFG = {
   focus: 245,     // 对焦深度：距相机此远处的点最凝聚（前排环缘）
   coc: 0.008,     // 散开强度 m：离焦位移半径 r = coc·|focus−d|^exp
   cocExp: 1.5,    // 散开分布指数 e：>1 让近焦更锐利、远焦更快解体
-  dotWorld: 0.5,  // 点半径（世界单位，恒定——模糊靠散开而非放大）
+  dotWorld: 0.3,  // 点半径（世界单位，恒定——模糊靠散开而非放大）
   alpha: 0.5,     // 单点透明度（常值；散开后密度自然摊薄，亚像素点另有能量补偿）
   count: 105000, mCount: 38000, // 点云规模（桌面/移动端）：铺满环面成连续点带
   color: '#00e8c8',
@@ -278,16 +279,15 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     renderer.setPixelRatio(dpr);
     renderer.setSize(cssW, cssH, false);
-    // 锁定 3425px 虚拟宽度取景：相机按虚拟幅面投影，实际窗口
+    // 锁定虚拟幅面取景：相机按 CFG.refW×CFG.refH 投影，实际窗口
     // 用 setViewOffset 居中裁切——窗口只改变可见范围，不改焦距/比例
-    const refW = 3425;
-    camera.aspect = refW / cssH;
-    camera.setViewOffset(refW, cssH, (refW - cssW) / 2, 0, cssW, cssH);
+    camera.aspect = CFG.refW / CFG.refH;
+    camera.setViewOffset(CFG.refW, CFG.refH, (CFG.refW - cssW) / 2, (CFG.refH - cssH) / 2, cssW, cssH);
     camera.updateProjectionMatrix();
     groupStretch.scale.x = camera.aspect;
-    // 点精灵尺寸系数：世界尺寸 → 设备像素（纵向焦距 × dpr）
+    // 点精灵尺寸系数：世界尺寸 → 设备像素（虚拟幅面纵向焦距 × dpr，与屏幕无关）
     material.uniforms.uPixK.value =
-      (cssH * dpr) / (2 * Math.tan((CFG.camFov * Math.PI) / 360));
+      (CFG.refH * dpr) / (2 * Math.tan((CFG.camFov * Math.PI) / 360));
     applyView();
   }
 
@@ -387,11 +387,11 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
     ].filter((d) => !onlyShape || d.id === onlyShape);
     const zones = CFG.badZones;
     const n = sampled.key.length;
-    const squash = cssH ? cssH / 3425 : 0.26; // 补偿 groupStretch.x=aspect 的横向拉伸（3425 = 虚拟取景宽）
+    const squash = CFG.refH / CFG.refW; // 补偿 groupStretch.x=aspect 的横向拉伸（固定虚拟幅面，不随窗口变化）
     // 造型落位（本地坐标）：画布 200vh，可视区是画布上半 → 本地 y ∈ [0, halfH/1.7]；
     // 横向桌面放右 1/3（避开左侧文案），移动端居中（可视横窗太窄）
     const halfH = CFG.camDist * Math.tan((CFG.camFov * Math.PI) / 360);
-    const aspect = cssH ? 3425 / cssH : 3.85;
+    const aspect = CFG.refW / CFG.refH;
     const stretchX = CFG.scaleX * aspect;
     const ndcX = cssW >= 768 ? 0.18 : 0;
     const offX = (ndcX * halfH * aspect - CFG.offsetX) / stretchX;
@@ -741,7 +741,8 @@ export function createHero(canvas: HTMLCanvasElement): HeroApi | null {
       makeSpin();
       makeRotX();
       makeRotZ();
-      bakeShapes(); // 造型采样 ~30–60ms，静帧已渲染，不阻塞首帧
+      // 造型轮播已停用：不 bakeShapes，环恒为环（morphTick 遇 shapes 为空即短路；
+      // 调试面板的造型按钮仍会按需 bake）
       dwellStart = performance.now();
       updateRunning();
       renderOnce(state.spin);

@@ -32,6 +32,7 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
     .logo-tag {
       font-family: var(--font-mono);
       font-size: 13px; font-weight: 400; letter-spacing: 0.1em;
+      line-height: 1; /* 不继承 body 的 1.7：行盒 ≈ 光标高，打字时 nav 高度不跳 */
       color: var(--accent); text-transform: uppercase;
     }
     .logo-cur {
@@ -323,7 +324,7 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
 
   <!-- HERO -->
   <div class="hero">
-    <canvas id="hero-ascii" aria-hidden="true"></canvas>
+    <canvas id="hero-particles" aria-hidden="true"></canvas>
     <div class="hero-inner">
       <div class="hero-copy">
         <div class="hero-role fu fu-1">HCI Researcher · Designer · Developer</div>
@@ -720,7 +721,7 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
 </script>
 <script>
   // 首屏莫比乌斯景深点染（动态加载，不进首屏关键路径）
-  const canvas = document.getElementById('hero-ascii') as HTMLCanvasElement | null;
+  const canvas = document.getElementById('hero-particles') as HTMLCanvasElement | null;
   if (canvas) {
     const m = await import('../scripts/hero-particles');
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
