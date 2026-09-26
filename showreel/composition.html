@@ -262,6 +262,7 @@ const COPY = {
     steps: ['Agent 过程不透明，用户只能被动等待：<br><em>74%</em> 的时间在等，<em>5/8</em> 的人最后才发现跑偏',
             '把执行轨迹重构为叙事空间中的故事线：<br>位置即数据维度，拖拽节点即可引导 Agent'],
     metrics: [['+13.2%', '叙事洞察数'], ['15/16', '主动拖拽引导 Agent'], ['p<.05', '心理负荷显著下降']],
+    look: [0, 2.5, 0],
     toc: ['NarraSteer', '数据叙事 Agent · CHI\'27 在投', '2026'], hud: 'NARRASTEER',
   },
   p5: {
@@ -925,7 +926,8 @@ const P3 = (() => {
 
 /* ============================================================ 04 · NARRASTEER
    背景: the agent works opaquely; users idle 74% of the time, 5/8 only saw the drift at the end
-   → 解法: trajectory → storyline in a narrative-space disc; drag a node to steer
+   → 解法: the trace, a line of steps in time, maps into the narrative-space disc — each step flies to the attribute
+           it analyses and the storyline is drawn through them; then a drag steers the agent
    → 结果: N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run */
 const P4 = (() => {
   const sc = Scene(T.p4);
@@ -981,6 +983,23 @@ const P4 = (() => {
   pop.innerHTML = '<div class="cols"><div class="col"><b>GDP</b><div class="fl">Year ≤ 2008<br>Country = Israel</div></div><div style="color:var(--dimmer)">→</div><div class="col"><b>Unemployment</b><div class="fl">Year ≤ 2008<br>Country = Israel</div></div></div><div class="btns"><div class="btn">Cancel</div><div class="btn go">Explore →</div></div>';
   at(pop, 1392, 356);
   const go = pop.querySelector('.go');
+  // 解法 · the mapping: the agent's trace is a line of steps in time; each step moves to where its data dimension sits on
+  // the disc (angle = the attribute it analyses), and the storyline is drawn through them as they land
+  const MAPI = [6, 8, 9, 0, 1, 2];                                    // Oil Price, FDI, Exports, GDP, Country, Unemployment
+  const tl = $('div', 'layer', pn);
+  const tsvg = S('svg', { class: 'full' }, tl);
+  const TLY = 214, tx0 = 924, tdx = 146;
+  const tlLab = box(tl, 'abs cap', 860, 170, 0, 0, 'AGENT 执行轨迹 · 按时间排列');
+  const tlLine = S('path', { d: `M${tx0 - 60},${TLY} L${tx0 + 5 * tdx + 70},${TLY}`, stroke: 'rgba(23,27,38,0.22)', 'stroke-width': 1.2, fill: 'none', 'marker-end': 'url(#arr)' }, tsvg);
+  const chips = MAPI.map((ai, i) => { const g = S('g', { transform: `translate(${tx0 + i * tdx},${TLY})` }, tsvg); const w = 124;
+    const r = S('rect', { x: -w / 2, y: -13, width: w, height: 26, rx: 13, fill: '#fff', stroke: 'rgba(23,27,38,0.22)' }, g);
+    const tx = S('text', { x: 0, y: 4, 'text-anchor': 'middle', style: 'font: 400 11px JetBrains Mono', fill: '#171b26' }, g);
+    tx.innerHTML = `<tspan fill="#c2410c">0${i + 1}</tspan>  ${ATTR[ai]}`; return { g, r, tx }; });
+  const flyers = MAPI.map((ai, i) => { const g = S('g', {}, tsvg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: '#171b26', 'stroke-width': 2, transform: 'rotate(45)' }, g);
+    const lab = S('text', { x: 14, y: 4, style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); lab.textContent = ATTR[ai]; return { g, lab }; });
+  const rays = MAPI.map((ai, i) => S('line', { x1: qN[i].x, y1: qN[i].y, x2: pills[ai].x, y2: pills[ai].y, stroke: '#c2410c', 'stroke-width': 1.1, 'stroke-dasharray': '3 3' }, svg));
+  const nsLab = box(tl, 'abs cap', 860, 880, 0, 0, '<span style="color:var(--accent)">叙事空间</span> · 位置 = 数据维度 · 连线 = 叙事关系');
+  const FLY = i => [.75 + i * .28, 1.3 + i * .28];                   // seconds into 解法: a step leaves the line, lands
   // 结果: controlled study
   const cmp = Compare(pn, 1330, 300, 'NarraSteer', [
     { label: '叙事洞察数', delta: '+13.2%', a: 6.4, b: 5.7, max: 7, at: '6.4', bt: '5.7' },
@@ -1005,31 +1024,53 @@ const P4 = (() => {
       who.style.opacity = rise(who, u, .8, .5, 14) * bgOut;
       wait.style.opacity = rise(wait, u, 1.0, .5, 14) * bgOut;
       const wp = oQ(P(u, 1.2, 2.0)); w1.setAttribute('width', 822 * .741 * wp); w2.setAttribute('x', 822 * .741 * wp + 3); w2.setAttribute('width', Math.max(0, 822 * .259 * P(u, 1.7, 2.1) - 3));
-      // 解法: disc builds, storylines grow, then a drag steers the agent
+      // 解法: runs on real seconds (sr) — the mapping needs more time than the compact clock gives
+      const sr = t - t0 - PLAN.p4.steps[1];
+      const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
       const shift = ioC(P(u, s2, s2 + .6));
-      st(disc, { opacity: P(u, s1, s1 + .3), transform: `translate(${-shift * 230}px, 0) scale(${1 - shift * .12})`, transformOrigin: `${C.x}px ${C.y}px` });
-      face.setAttribute('r', R * oQ(P(u, s1, s1 + .5)));
-      spokes.forEach((s, i) => s.style.opacity = P(u, s1 + .15 + i * .02, s1 + .4 + i * .02));
-      st(hub, { opacity: P(u, s1 + .1, s1 + .3) });
-      pills.forEach((p, i) => { const k = oB(P(u, s1 + .2 + i * .03, s1 + .5 + i * .03)); p.g.style.opacity = Math.min(1, k * 2); p.g.setAttribute('transform', `translate(${p.x},${p.y}) scale(${Math.max(0, k)})`); });
-      const pq = ioC(P(u, s1 + .35, s1 + .95)); draw(qLine, pq); draw(qBand, pq);
-      qN.forEach((n, i) => { const k = oB(P(u, s1 + .35 + i * .1, s1 + .55 + i * .1)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
-      const pi = ioC(P(u, s1 + .75, s1 + 1.2)); draw(iLine, pi); draw(iBand, pi);
-      iN.forEach((n, i) => { const k = i === 3 ? 0 : oB(P(u, s1 + .75 + i * .12, s1 + .95 + i * .12)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
-      linkLab.forEach(l => { const s = l.w === 'q' ? s1 + .5 + l.k * .1 : s1 + .85 + l.k * .12; l.e.style.opacity = P(u, s, s + .2); });
-      // drag toward Unemployment, then Explore (all inside 解法)
-      const d0 = s1 + .85, d = ioC(P(u, d0 + .2, d0 + .6));
+      st(disc, { opacity: P(sr, 0, .35), transform: `translate(${-shift * 230}px, 0) scale(${1 - shift * .12})`, transformOrigin: `${C.x}px ${C.y}px` });
+      face.setAttribute('r', R * oQ(P(sr, 0, .6)));
+      spokes.forEach((s, i) => s.style.opacity = P(sr, .15 + i * .02, .45 + i * .02));
+      st(hub, { opacity: P(sr, .1, .35) });
+      // the trace, in time order
+      st(tl, { opacity: pOut });
+      rise(tlLab, sr, .1, .4, 6); draw(tlLine, oQ(P(sr, .1, .55)));
+      const flash = MAPI.map(() => 0);
+      chips.forEach((c, i) => { const k = oB(P(sr, .2 + i * .06, .5 + i * .06)); const [f0] = FLY(i); const gone = P(sr, f0, f0 + .15);
+        c.g.setAttribute('transform', `translate(${tx0 + i * tdx},${TLY}) scale(${Math.max(0, k)})`); c.g.style.opacity = Math.min(1, k * 2) * (1 - .6 * gone);
+        c.r.setAttribute('stroke-dasharray', gone > .5 ? '3 3' : ''); });
+      // each step flies to its place on the disc
+      let pq = 0;
+      flyers.forEach((f, i) => { const [f0, f1] = FLY(i), p = ioC(P(sr, f0, f1)), n = qN[i];
+        const x0 = tx0 + i * tdx, y0 = TLY, cx = (x0 + n.x) / 2 + (n.x < x0 ? -40 : 40), cy = (y0 + n.y) / 2 - 70;
+        const x = (1 - p) ** 2 * x0 + 2 * (1 - p) * p * cx + p * p * n.x, y = (1 - p) ** 2 * y0 + 2 * (1 - p) * p * cy + p * p * n.y;
+        f.g.setAttribute('transform', `translate(${x},${y})`); f.g.style.opacity = sr > f0 && sr < f1 + .05 ? 1 : 0; f.lab.style.opacity = 1 - P(p, .6, 1);
+        const k = oB(P(sr, f1 - .05, f1 + .2)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`);
+        flash[i] = P(sr, f1, f1 + .12) * (1 - P(sr, f1 + .6, f1 + .9));
+        rays[i].style.opacity = flash[i];
+        if (i > 0) pq += P(sr, f1 - .35, f1) / 5; });
+      draw(qLine, pq); draw(qBand, pq);
+      // dimension labels on the rim light up as their step lands (and Unemployment again when the drag reaches it)
+      const d0 = 3.5, d = ioC(P(sr, d0 + .25, d0 + .75));
+      const hlDrag = P(sr, d0 + .7, d0 + .75);
+      pills.forEach((p, i) => { const k = oB(P(sr, .2 + i * .03, .5 + i * .03)); p.g.style.opacity = Math.min(1, k * 2); p.g.setAttribute('transform', `translate(${p.x},${p.y}) scale(${Math.max(0, k)})`);
+        const j = MAPI.indexOf(i), on = Math.max(j >= 0 ? flash[j] : 0, p === tgt ? hlDrag : 0) > .5;
+        p.r.setAttribute('stroke', on ? '#c2410c' : 'rgba(23,27,38,0.2)'); p.tx.setAttribute('fill', on ? '#c2410c' : '#666d7e'); });
+      linkLab.forEach(l => { const s = l.w === 'q' ? FLY(l.k + 1)[1] : 3.1 + l.k * .14; l.e.style.opacity = P(sr, s, s + .2); });
+      rise(nsLab, sr, 2.75, .4, 6);
+      // the second storyline, then a drag steers the agent toward Unemployment and Explore
+      const pi = ioC(P(sr, 2.9, 3.4)); draw(iLine, pi); draw(iBand, pi);
+      iN.forEach((n, i) => { const k = i === 3 ? 0 : oB(P(sr, 2.9 + i * .14, 3.15 + i * .14)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
       const tx = lerp(from.x, tgt.x - 30, d), ty = lerp(from.y, tgt.y + 32, d) - Math.sin(d * Math.PI) * 40;
-      dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(u, d0, d0 + .15))})`); dragN.style.opacity = P(u, d0, d0 + .05);
-      ghost.style.opacity = P(u, d0 + .22, d0 + .3);
-      trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2 + 30},${Math.min(from.y, ty) - 50} ${tx},${ty}`); trail.style.opacity = P(u, d0 + .25, d0 + .3);
-      let cx = lerp(1620, from.x + 3, oC(P(u, d0 - .15, d0 + .15))), cy = lerp(760, from.y + 3, oC(P(u, d0 - .15, d0 + .15)));
-      if (u > d0 + .2) { cx = tx + 3; cy = ty + 3; }
-      const toB = ioC(P(u, d0 + .7, d0 + .9)); cx = lerp(cx, BTN.x - 4, toB); cy = lerp(cy, BTN.y - 2, toB);
-      cursor.setAttribute('transform', `translate(${cx},${cy})`); cursor.style.opacity = P(u, d0 - .15, d0 - .05) * (1 - P(u, s2 + .05, s2 + .15));
-      const hl = P(u, d0 + .55, d0 + .6); tgt.r.setAttribute('stroke', hl ? '#c2410c' : 'rgba(23,27,38,0.2)'); tgt.tx.setAttribute('fill', hl ? '#c2410c' : '#666d7e');
-      st(pop, { opacity: P(u, d0 + .6, d0 + .7) * (1 - P(u, s2 + .1, s2 + .3)), transform: `translateY(${(1 - oQ(P(u, d0 + .6, d0 + .9))) * 10}px)` });
-      go.style.background = u > d0 + .92 && u < d0 + 1.05 ? 'var(--accent)' : ''; go.style.borderColor = go.style.background ? 'var(--accent)' : '';
+      dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(sr, d0, d0 + .2))})`); dragN.style.opacity = P(sr, d0, d0 + .07);
+      ghost.style.opacity = P(sr, d0 + .28, d0 + .38);
+      trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2 + 30},${Math.min(from.y, ty) - 50} ${tx},${ty}`); trail.style.opacity = P(sr, d0 + .3, d0 + .38);
+      let cx = lerp(1620, from.x + 3, oC(P(sr, d0 - .2, d0 + .2))), cy = lerp(760, from.y + 3, oC(P(sr, d0 - .2, d0 + .2)));
+      if (sr > d0 + .25) { cx = tx + 3; cy = ty + 3; }
+      const toB = ioC(P(sr, d0 + .9, d0 + 1.15)); cx = lerp(cx, BTN.x - 4, toB); cy = lerp(cy, BTN.y - 2, toB);
+      cursor.setAttribute('transform', `translate(${cx},${cy})`); cursor.style.opacity = P(sr, d0 - .2, d0 - .07) * (1 - P(u, s2 + .05, s2 + .15));
+      st(pop, { opacity: P(sr, d0 + .75, d0 + .88) * (1 - P(u, s2 + .1, s2 + .3)), transform: `translateY(${(1 - oQ(P(sr, d0 + .75, d0 + 1.1))) * 10}px)` });
+      go.style.background = sr > d0 + 1.18 && sr < d0 + 1.4 ? 'var(--accent)' : ''; go.style.borderColor = go.style.background ? 'var(--accent)' : '';
       // 结果
       cmp.render(u, s2 + .15);
     },
