@@ -1,19 +1,20 @@
 # Showreel
 
-A 30-second opener for the résumé: white, restrained, and built entirely from the site's own content.
+A 60-second opener for the résumé: white, restrained, and built entirely from the site's own content.
 Every visual is redrawn in `composition.html` — no screenshots. Output: `public/videos/showreel.mp4`
 (1920×1080, 60 fps, H.264 + AAC).
 
-Each project is told the same way — **背景 → 解法 → 结果** — with earlier steps kept on screen so there is time to read.
+Each project is told the same way — **背景 → 解法 → 结果** — with earlier steps kept on screen so there is time to read. Each project gets 12.5 s; motion inside runs at about half speed
+(see `PROJECT_CLOCK` in `composition.html`).
 
 | Time | Chapter | 背景 | 解法 | 结果 |
 | --- | --- | --- | --- | --- |
-| 0–2.5 | Intro: name, role, the four projects | | | |
-| 2.5–8.75 | 01 阿里巴巴淘天 · 设计 Agent 的 Skill 标准化 | skills keep growing; admission and output need one standard | 4-dimension test platform + auto-revise loop; Radix UI components + DOM/CV/LLM checks | ~30 skills admitted · 1000+ team uses · became the team's acceptance standard |
-| 8.75–15 | 02 NarraSteer | opaque agent; 74% idle, 5/8 saw drift only at the end | trajectory → storyline in a narrative-space disc; drag to steer | N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run |
-| 15–21.25 | 03 ToA | novices get lost in linear chat; 4/6 failed | chat → analysis tree; chart signals suggest next queries | N=12 · +58.3% insights/turn · +17.7% thinking time · −23% turns |
-| 21.25–27.5 | 04 跨社交媒体舆情分析与治理平台 | monitoring / assessment / handling fragmented | 3-layer IA (大屏 / 仪表盘 / 中台), 5 tech teams | delivered 0 → 1, supporting the National Key R&D Program |
-| 27.5–30 | Outro: name and contact | | | |
+| 0–5 | Intro: name, role, the four projects | | | |
+| 5–17.5 | 01 阿里巴巴淘天 · 设计 Agent 的 Skill 标准化 | skills keep growing; admission and output need one standard | 4-dimension test platform + auto-revise loop; Radix UI components + DOM/CV/LLM checks | ~30 skills admitted · 1000+ team uses · became the team's acceptance standard |
+| 17.5–30 | 02 NarraSteer | opaque agent; 74% idle, 5/8 saw drift only at the end | trajectory → storyline in a narrative-space disc; drag to steer | N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run |
+| 30–42.5 | 03 ToA | novices get lost in linear chat; 4/6 failed | chat → analysis tree; chart signals suggest next queries | N=12 · +58.3% insights/turn · +17.7% thinking time · −23% turns |
+| 42.5–55 | 04 跨社交媒体舆情分析与治理平台 | monitoring / assessment / handling fragmented | 3-layer IA (大屏 / 仪表盘 / 中台), 5 tech teams | delivered 0 → 1, supporting the National Key R&D Program |
+| 55–60 | Outro: name and contact | | | |
 
 ## Build
 

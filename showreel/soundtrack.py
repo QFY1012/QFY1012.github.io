@@ -1,4 +1,4 @@
-"""Synthesises the showreel's 30 s score (96 BPM) so its cues line up with composition.html.
+"""Synthesises the showreel's 60 s score (96 BPM) so its cues line up with composition.html.
 
     python3 showreel/soundtrack.py [out.wav]      (needs numpy + scipy)
 
@@ -12,17 +12,17 @@ import numpy as np
 from scipy.signal import butter, sosfilt
 
 SR = 48000
-DUR = 30.0
+DUR = 60.0
 N = int(SR * DUR)
 BEAT = 0.625                                   # 96 BPM
 rng = np.random.default_rng(1012)
 L = np.zeros(N)
 R = np.zeros(N)
 
-# mirrored from composition.html: T = { intro, p1..p4, outro }, STEP = beats 1 / 4 / 7 of each project
-PROJECTS = [2.5, 8.75, 15.0, 21.25]
-OUTRO = 27.5
-STEPS = [p + b * BEAT for p in PROJECTS for b in (1, 4, 7)]
+# mirrored from composition.html: T = { intro, p1..p4, outro }; 背景 / 解法 / 结果 on beats 2 / 7 / 13 of each project
+PROJECTS = [5.0, 17.5, 30.0, 42.5]
+OUTRO = 55.0
+STEPS = [p + b * BEAT for p in PROJECTS for b in (2, 7, 13)]
 
 
 def midi(n):
@@ -104,12 +104,12 @@ def pad(notes, d, attack=0.7, release=0.9, cutoff=1500):
 
 # ---------- arrangement ----------
 CHORDS = [  # (start, end, pad voicing, arpeggio notes)
-    (0.0, 2.5, [50, 57, 61, 64], [74, 78, 81, 76]),        # Dmaj9
-    (2.5, 8.75, [47, 54, 57, 62], [71, 74, 78, 73]),       # Bm(add9)
-    (8.75, 15.0, [43, 50, 54, 59], [67, 71, 74, 69]),      # Gmaj7(add9)
-    (15.0, 21.25, [40, 47, 55, 62], [67, 71, 74, 66]),     # Em9
-    (21.25, 27.5, [45, 52, 57, 61], [69, 73, 76, 71]),     # A(add9)
-    (27.5, 30.0, [38, 50, 57, 61, 64], [74, 78, 81, 85]),  # Dmaj9
+    (0.0, 5.0, [50, 57, 61, 64], [74, 78, 81, 76]),         # Dmaj9
+    (5.0, 17.5, [47, 54, 57, 62], [71, 74, 78, 73]),        # Bm(add9)
+    (17.5, 30.0, [43, 50, 54, 59], [67, 71, 74, 69]),       # Gmaj7(add9)
+    (30.0, 42.5, [40, 47, 55, 62], [67, 71, 74, 66]),       # Em9
+    (42.5, 55.0, [45, 52, 57, 61], [69, 73, 76, 71]),       # A(add9)
+    (55.0, 60.0, [38, 50, 57, 61, 64], [74, 78, 81, 85]),   # Dmaj9
 ]
 for s0, e0, voicing, arp in CHORDS:
     pl, pr = pad(voicing, e0 - s0 + 0.6)
@@ -119,9 +119,11 @@ for s0, e0, voicing, arp in CHORDS:
     R[i:i + n] += pr[:n] * 0.10
     # eighth-note mallet arpeggio, lighter on the off-beats
     k, t0 = 0, s0
-    while t0 < e0 - 0.01 and t0 < OUTRO + 1.25:
-        vel = 0.075 if k % 2 == 0 else 0.045
-        add(mallet(arp[k % len(arp)]), t0, vel, pan=-0.35 if k % 2 else 0.35)
+    while t0 < e0 - 0.01 and t0 < OUTRO + 2.5:
+        busy = s0 in PROJECTS and t0 - s0 >= 7 * BEAT - 1e-6      # from 解法 onward
+        if k % 2 == 0 or busy:
+            vel = 0.075 if k % 2 == 0 else 0.045
+            add(mallet(arp[(k // (1 if busy else 2)) % len(arp)]), t0, vel, pan=-0.35 if k % 2 else 0.35)
         k, t0 = k + 1, t0 + BEAT / 2
 
 # gentle pulse on beats 1 and 3 through the projects

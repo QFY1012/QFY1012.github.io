@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>屈非塬 · Showreel</title>
 <!--
-  30-second showreel. Everything is drawn here (no screenshots) and driven by window.renderFrame(t),
+  60-second showreel. Everything is drawn here (no screenshots) and driven by window.renderFrame(t),
   so render.mjs can step it frame by frame. Open with ?play for a realtime preview, ?t=12 to freeze.
   Four projects, each told as 背景 → 解法 → 结果; every fact comes from the site (index / toa / narrasteer / resume).
 -->
@@ -177,13 +177,22 @@ const rise = (e, t, t0, d = .5, dy = 14) => { const p = oQ(P(t, t0, t0 + d)); st
 const draw = (el, p) => { const L = el.getTotalLength(); st(el, { strokeDasharray: `${L} ${L}`, strokeDashoffset: L * (1 - p) }); };
 
 /* ============================================================ timeline
-   96 BPM → one beat = 0.625 s. Each project gets 10 beats (6.25 s):
-   header on beat 0, 背景 on beat 1, 解法 on beat 4, 结果 on beat 7. */
+   96 BPM → one beat = 0.625 s. Each project gets 20 beats (12.5 s): title alone for 2 beats,
+   背景 on beat 2, 解法 on beat 7, 结果 on beat 13, hand-off at 12.1 s.
+   Scene code is written against a compact "animation clock" (STEP / OUT below); warp() maps real
+   time onto it so every step plays at about half speed and the result gets the longest hold. */
 const BEAT = 0.625;
-const T = { intro: [0, 2.5], p1: [2.5, 8.75], p2: [8.75, 15.0], p3: [15.0, 21.25], p4: [21.25, 27.5], outro: [27.5, 30.0] };
-const STEP = [BEAT, 4 * BEAT, 7 * BEAT];   // local start of 背景 / 解法 / 结果
-const OUT = 6.0;                            // local start of the hand-off to the next project
-const DUR = 30.0;
+const T = { intro: [0, 5], p1: [5, 17.5], p2: [17.5, 30], p3: [30, 42.5], p4: [42.5, 55], outro: [55, 60] };
+const STEP = [0.625, 2.5, 4.375];           // animation-clock start of 背景 / 解法 / 结果
+const OUT = 6.0;                            // animation-clock start of the hand-off to the next project
+const DUR = 60.0;
+// [real seconds into the project, animation-clock seconds]
+const PROJECT_CLOCK = [[0, 0], [2 * BEAT, 0.625], [7 * BEAT, 2.5], [13 * BEAT, 4.375], [12.1, 6.0], [20 * BEAT, 6.25]];
+function warp(x, map) {
+  for (let i = 1; i < map.length; i++) if (x <= map[i][0]) return lerp(map[i - 1][1], map[i][1], (x - map[i - 1][0]) / (map[i][0] - map[i - 1][0]));
+  return map[map.length - 1][1] + (x - map[map.length - 1][0]);
+}
+const INTRO_CLOCK = [[0, 0], [5, 2.5]], OUTRO_CLOCK = [[0, 0], [5, 2.5]];
 
 const world = document.getElementById('world');
 const panelBg = document.getElementById('panel');
@@ -278,8 +287,9 @@ const INTRO = (() => {
     ['04', '跨社交媒体舆情分析与治理平台', 'G 端产品负责人', '2024'],
   ].map(([i, n, d, y]) => $('div', 'rw', toc, `<span class="i">${i}</span><span class="n">${n}</span><span class="d">${d}</span><span class="y">${y}</span>`));
   return {
-    render(t) {
-      if (!sc.on(t)) return;
+    render(tr) {
+      if (!sc.on(tr)) return;
+      const t = warp(tr, INTRO_CLOCK);
       const out = oC(P(t, 2.2, 2.5));
       st(r, { opacity: 1 - out, transform: `translateY(${-out * 16}px)` });
       const p = oQ(P(t, .05, .7)); st(name, { transform: `translateY(${(1 - p) * 105}%)` });
@@ -340,11 +350,11 @@ const P1 = (() => {
   const use = S('path', { d: 'M1566,560 C1566,610 1450,600 1450,648', fill: 'none', stroke: '#c2410c', 'stroke-width': 1.4, 'marker-end': 'url(#arrA)' }, svg);
   const useLab = $('div', 'abs', pn, '<span class="mono" style="color:var(--accent);font-size:15px">1000+</span>&nbsp; 团队内使用'); at(useLab, 1590, 596); st(useLab, { fontSize: '13px', color: 'var(--dim)', whiteSpace: 'nowrap' });
 
-  const t0 = T.p1[0];
+  const t0 = T.p1[0];  // real start; scene code below runs on warp(t - t0)
   return {
     render(t) {
       if (!sc.on(t)) return;
-      const u = t - t0;
+      const u = warp(t - t0, PROJECT_CLOCK);
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
@@ -372,7 +382,7 @@ const P1 = (() => {
                    borderColor: settled > 0 ? 'var(--accent-mid)' : 'var(--line2)', color: settled > 0 ? 'var(--accent)' : 'var(--dimmer)' });
       });
       stN.forEach((e, i) => rise(e, u, s1 + .05 + i * .1, .5, 10));
-      [a1, a2].forEach((a, i) => draw(a, oQ(P(u, s1 + .25 + i * .1, s1 + .6 + i * .1))));
+      [a1, a2].forEach((a, i) => { const p = oQ(P(u, s1 + .25 + i * .1, s1 + .6 + i * .1)); draw(a, p); a.style.opacity = p > .02 ? 1 : 0; }); // markers ignore dashing
       draw(a3, oQ(P(u, s1 + .5, s1 + .95))); a3.style.opacity = P(u, s1 + .5, s1 + .55);
       rise(loopLab, u, s1 + .8, .4, 6);
       rise(meters, u, s1 + .25, .5, 12);
@@ -460,13 +470,13 @@ const P2 = (() => {
     { label: '执行中途主动介入', delta: '10/16', a: 10, b: 5, max: 16, at: '10/16', bt: '5/16' },
   ]);
 
-  const t0 = T.p2[0];
+  const t0 = T.p2[0];  // real start; scene code below runs on warp(t - t0)
   let BTN = { x: 1640, y: 470 };
   return {
     layout() { const r = go.getBoundingClientRect(), s0 = document.getElementById('stage').getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 }; },
     render(t) {
       if (!sc.on(t)) return;
-      const u = t - t0;
+      const u = warp(t - t0, PROJECT_CLOCK);
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
@@ -490,7 +500,7 @@ const P2 = (() => {
       iN.forEach((n, i) => { const k = i === 3 ? 0 : oB(P(u, s1 + .75 + i * .12, s1 + .95 + i * .12)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
       linkLab.forEach(l => { const s = l.w === 'q' ? s1 + .5 + l.k * .1 : s1 + .85 + l.k * .12; l.e.style.opacity = P(u, s, s + .2); });
       // drag toward Unemployment, then Explore
-      const d0 = s1 + 1.15, d = ioC(P(u, d0 + .2, d0 + .6));
+      const d0 = s1 + .85, d = ioC(P(u, d0 + .2, d0 + .6));
       const tx = lerp(from.x, tgt.x - 30, d), ty = lerp(from.y, tgt.y + 32, d) - Math.sin(d * Math.PI) * 40;
       dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(u, d0, d0 + .15))})`); dragN.style.opacity = P(u, d0, d0 + .05);
       ghost.style.opacity = P(u, d0 + .22, d0 + .3);
@@ -498,9 +508,9 @@ const P2 = (() => {
       let cx = lerp(1620, from.x + 3, oC(P(u, d0 - .15, d0 + .15))), cy = lerp(760, from.y + 3, oC(P(u, d0 - .15, d0 + .15)));
       if (u > d0 + .2) { cx = tx + 3; cy = ty + 3; }
       const toB = ioC(P(u, d0 + .7, d0 + .9)); cx = lerp(cx, BTN.x - 4, toB); cy = lerp(cy, BTN.y - 2, toB);
-      cursor.setAttribute('transform', `translate(${cx},${cy})`); cursor.style.opacity = P(u, d0 - .15, d0 - .05) * (1 - P(u, s2 - .1, s2));
+      cursor.setAttribute('transform', `translate(${cx},${cy})`); cursor.style.opacity = P(u, d0 - .15, d0 - .05) * (1 - P(u, s2 + .05, s2 + .15));
       const hl = P(u, d0 + .55, d0 + .6); tgt.r.setAttribute('stroke', hl ? '#c2410c' : 'rgba(23,27,38,0.2)'); tgt.tx.setAttribute('fill', hl ? '#c2410c' : '#666d7e');
-      st(pop, { opacity: P(u, d0 + .6, d0 + .7) * (1 - P(u, s2 - .05, s2 + .15)), transform: `translateY(${(1 - oQ(P(u, d0 + .6, d0 + .9))) * 10}px)` });
+      st(pop, { opacity: P(u, d0 + .6, d0 + .7) * (1 - P(u, s2 + .1, s2 + .3)), transform: `translateY(${(1 - oQ(P(u, d0 + .6, d0 + .9))) * 10}px)` });
       go.style.background = u > d0 + .92 && u < d0 + 1.05 ? 'var(--accent)' : ''; go.style.borderColor = go.style.background ? 'var(--accent)' : '';
       // 结果
       cmp.render(u, s2 + .15);
@@ -562,7 +572,7 @@ const P3 = (() => {
     { label: '总对话轮次', delta: '−23%', a: 14.4, b: 18.8, max: 20, at: '14.4', bt: '18.8' },
   ]);
 
-  const t0 = T.p3[0];
+  const t0 = T.p3[0];  // real start; scene code below runs on warp(t - t0)
   return {
     layout() {
       NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.hh = b.height; at(n.el, n.x - 88, n.y - n.hh / 2); byId[n.id] = { x: n.x, y: n.y, h: n.hh }; });
@@ -575,7 +585,7 @@ const P3 = (() => {
     },
     render(t) {
       if (!sc.on(t)) return;
-      const u = t - t0;
+      const u = warp(t - t0, PROJECT_CLOCK);
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
@@ -648,11 +658,11 @@ const P4 = (() => {
   });
   const done = $('div', 'abs', pn, '<span style="font-family:var(--mono);font-size:22px;color:var(--accent)">✓</span>&nbsp; 完整落地 · 支撑国家重点研发计划交付'); at(done, 1120, 830); st(done, { fontSize: '15px', whiteSpace: 'nowrap' });
 
-  const t0 = T.p4[0];
+  const t0 = T.p4[0];  // real start; scene code below runs on warp(t - t0)
   return {
     render(t) {
       if (!sc.on(t)) return;
-      const u = t - t0;
+      const u = warp(t - t0, PROJECT_CLOCK);
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
@@ -696,7 +706,7 @@ const OUTRO = (() => {
     layout() { vis(r, true); center(nm, 424); center(en, 508); center(role, 574); center(ct, 626); vis(r, false); },
     render(t) {
       if (!sc.on(t)) return;
-      const u = t - T.outro[0];
+      const u = warp(t - T.outro[0], OUTRO_CLOCK);
       const p = oQ(P(u, .1, .8)); st(name, { transform: `translateY(${(1 - p) * 105}%)` });
       rise(en, u, .35, .5, 8);
       const w = 48 * oQ(P(u, .45, .9)); st(hl, { width: w + 'px', left: (W - w) / 2 + 'px' });
@@ -715,7 +725,7 @@ const HUD = (() => {
   const segs = chaps.map(([i, n, r], k) => { const s = $('div', 'seg', h); st(s, { left: 120 + k * (w + gap) + 'px', width: w + 'px' }); const l = $('div', 'l', s, `${i}&nbsp;&nbsp;${n}`); $('div', 't', s); const f = $('div', 'f', s); return { l, f, r }; });
   return {
     render(t) {
-      h.style.opacity = P(t, 2.3, 2.7) * (1 - P(t, 27.3, 27.7));
+      h.style.opacity = P(t, T.p1[0] - .2, T.p1[0] + .25) * (1 - P(t, T.outro[0] - .25, T.outro[0] + .2));
       const cur = chaps.findIndex(c => t >= c[2][0] && t < c[2][1]);
       tr.innerHTML = cur >= 0 ? `<b style="color:var(--accent);font-weight:500">0${cur + 1}</b> &nbsp;/&nbsp; 04` : '';
       segs.forEach(s => {
@@ -730,7 +740,7 @@ const HUD = (() => {
 /* ============================================================ frame */
 function renderFrame(t) {
   t = clamp(t, 0, DUR - 1e-6);
-  st(panelBg, { opacity: P(t, 2.25, 2.75) * (1 - P(t, 27.25, 27.75)), transform: `translateY(${(1 - oQ(P(t, 2.25, 2.75))) * 20}px)` });
+  st(panelBg, { opacity: P(t, T.p1[0] - .3, T.p1[0] + .3) * (1 - P(t, T.outro[0] - .3, T.outro[0] + .2)), transform: `translateY(${(1 - oQ(P(t, T.p1[0] - .3, T.p1[0] + .3))) * 20}px)` });
   INTRO.render(t); P1.render(t); P2.render(t); P3.render(t); P4.render(t); OUTRO.render(t);
   HUD.render(t);
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One command: render 1800 frames → synthesise the score → mux into public/videos/showreel.mp4
+# One command: render 3600 frames → synthesise the score → mux into public/videos/showreel.mp4
 # Requires: node (repo deps installed), python3 with numpy + scipy, ffmpeg (or FFMPEG=/path/to/ffmpeg).
 set -euo pipefail
 cd "$(dirname "$0")"
