@@ -158,6 +158,17 @@
   .tnode .c.f { color: var(--accent); background: var(--accent-soft); }
   .troot { position: absolute; width: 110px; height: 34px; line-height: 34px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2);
            font-family: var(--mono); font-size: 13px; color: var(--ink); }
+  /* 05 · each question-answer pair and the tree share a number */
+  .qb { display: inline-block; width: 16px; height: 16px; border-radius: 8px; background: var(--accent); color: #fff; font: 500 10px/16px var(--mono); text-align: center; vertical-align: 1px; }
+  .qa { position: relative; margin: 0 -8px 10px; padding: 6px 8px 6px 32px; border-radius: 6px; }
+  .qa .qb { position: absolute; left: 8px; top: 9px; }
+  .qa .qq { font-family: var(--mono); font-size: 11px; line-height: 1.45; color: var(--ink); background: var(--panel); border-radius: 8px; padding: 5px 9px; }
+  .qa .qc { margin-top: 6px; width: 96px; padding: 5px 7px; border-radius: 6px; box-shadow: 0 0 0 1px var(--line); }
+  .mbars { display: flex; align-items: flex-end; gap: 3px; height: 22px; }
+  .mbars i { display: block; width: 8px; background: #d5d9e1; border-radius: 1px 1px 0 0; }
+  .mbars i.hi { background: var(--accent); }
+  .elab { position: absolute; font: italic 11px var(--mono); color: var(--dimmer); white-space: nowrap; background: var(--panel); padding: 1px 5px; border-radius: 9px; }
+  .elab .qb { font-style: normal; margin-right: 5px; }
   .msgq { margin: 0 0 12px auto; width: fit-content; max-width: 330px; padding: 8px 12px; background: var(--panel); border-radius: 8px; font-size: 13px; line-height: 1.45; color: var(--ink); font-family: var(--mono); }
   .msga { margin: 0 0 16px; padding: 12px; border-radius: 8px; box-shadow: 0 0 0 1px var(--line); font-size: 12px; color: var(--dim); line-height: 1.5; font-family: var(--mono); }
   .bars { display: flex; align-items: flex-end; gap: 8px; height: 60px; margin-top: 8px; border-bottom: 1px solid var(--line2); }
@@ -281,6 +292,7 @@ const COPY = {
     steps: ['新手在多轮可视分析对话中容易迷路：<br>线性对话难回溯，<em>4/6</em> 名新手任务失败',
             '把对话重组为分析树：回答是节点，提问是边；<br>识别图表信号，推荐下一步提问'],
     metrics: [['+58.3%', '每轮洞察数'], ['+17.7%', '每轮深度思考时间'], ['−23%', '总对话轮次']],
+    look: [0, 2.5, 0],
     toc: ['ToA', '对话式可视分析 · CHI\'26 收录', '2025'], hud: 'TOA',
   },
   p6: {
@@ -1107,7 +1119,9 @@ const P4 = (() => {
 
 /* ============================================================ 05 · TOA
    背景: novices lose their way in linear multi-turn chat; 4/6 novices failed in the formative study
-   → 解法: the conversation becomes an analysis tree (answers = nodes, queries = edges) + next-step suggestions
+   → 解法: the conversation, numbered, is re-laid out as an analysis tree: each answer's chart flies into a node and each
+           question's number onto the edge into it (answers = nodes, queries = edges); chat order 1–5 lands on different
+           branches. Then chart signals recommend next queries
    → 结果: N=12 · +58.3% insights per turn · +17.7% thinking time · −23% turns */
 const P5 = (() => {
   const sc = Scene(T.p5);
@@ -1126,26 +1140,36 @@ const P5 = (() => {
   fs.innerHTML = '<div class="cap" style="margin-bottom:16px">形成性研究 · N = 12</div>' +
     `<div class="zh13" style="margin-bottom:8px">新手</div><div>${dots(6, 4)}</div><div class="zh13" style="margin:14px 0 8px">专家</div><div>${dots(6, 0)}</div>` +
     '<div class="zh13" style="margin-top:16px"><span style="color:var(--accent)">○</span> 任务失败 &nbsp; <span>●</span> 完成</div>';
-  // 解法: the analysis tree (node contents from the paper's figure)
+  // 解法: the same conversation, numbered — each answer becomes a node, each question the edge into it
+  const bars = (v, hi) => `<div class="mbars">${v.map((h, i) => `<i style="height:${Math.max(8, h)}%"${i === hi ? ' class="hi"' : ''}></i>`).join('')}</div>`;
+  const qaCard = box(pn, 'card', 852, 206, 316, 0); st(qaCard, { padding: '18px 18px 8px' });
+  qaCard.innerHTML = '<div class="cap" style="margin-bottom:12px">对话 · 按时间线性排列</div>' +
+    Q.slice(0, 5).map(([q, v, hi], i) => `<div class="qa"><span class="qb">${i + 1}</span><div class="qq">${q}</div><div class="qc">${bars(v, hi)}</div></div>`).join('');
+  const qas = [...qaCard.querySelectorAll('.qa')];
+  // the analysis tree (node contents from the paper's figure)
   const tree = $('div', 'layer', pn);
   const tsvg = S('svg', { class: 'full' }, tree);
-  const root = $('div', 'troot', tree, 'Root'); const RX = 1290, RY = 250; at(root, RX - 55, RY - 17);
+  const root = $('div', 'troot', tree, 'Root'); const RX = 1510, RY = 238; at(root, RX - 55, RY - 17);
   const chip = (s, f) => `<span class="c${f ? ' f' : ''}">${s}</span>`;
   const mk = (a, f) => `<div class="row">Attr: ${a.map(x => chip(x)).join('')}</div><div class="row">Filter: ${f ? chip(f, 1) : 'none'}</div>`;
-  const NODES = [
-    { id: 'A', p: 'root', x: 1060, y: 390, e: 'Start new', h: mk(['discount_percent', 'num_of_ratings']) },
-    { id: 'B', p: 'root', x: 1290, y: 390, e: 'Start new', h: mk(['brand', 'num_of_sales']), c: 'focus' },
-    { id: 'C', p: 'root', x: 1520, y: 390, e: 'Start new', h: mk(['sales_price', 'battery_capacity']) },
-    { id: 'A1', p: 'A', x: 1060, y: 560, e: 'Elaborate', h: mk(['screen_size', 'sales_price'], null) },
-    { id: 'B1', p: 'B', x: 1290, y: 560, e: 'Slice', h: mk(['models', 'num_of_sales'], "brand='Poco'") },
-    { id: 'B2', p: 'B1', x: 1290, y: 730, e: 'Elaborate', h: mk(['models', 'processor'], "brand='Poco'"), c: 'dash', rec: 1 },
-    { id: 'B3', p: 'B1', x: 1520, y: 730, e: 'Dice', h: mk(['models', 'num_of_sales'], 'sales_price<=20000'), c: 'dash', rec: 1 },
+  const NODES = [   // q: which question-answer pair it comes from
+    { id: 'B', p: 'root', x: 1400, y: 360, e: 'Start new', q: 0, h: mk(['brand', 'num_of_sales']) },
+    { id: 'B1', p: 'B', x: 1400, y: 510, e: 'Slice', q: 1, h: mk(['models', 'num_of_sales'], "brand='Poco'") },
+    { id: 'C', p: 'root', x: 1650, y: 360, e: 'Start new', q: 2, h: mk(['sales_price', 'battery_capacity']) },
+    { id: 'B2', p: 'B1', x: 1292, y: 672, e: 'Elaborate', q: 3, h: mk(['models', 'processor'], "brand='Poco'") },
+    { id: 'B3', p: 'B1', x: 1512, y: 672, e: 'Dice', q: 4, h: mk(['models', 'num_of_sales'], 'sales_price<=20000') },
   ];
   const byId = { root: { x: RX, y: RY, h: 34 } };
-  NODES.forEach((n, i) => { n.el = $('div', 'tnode ' + (n.c || ''), tree, n.h); n.i = i; });
+  NODES.forEach((n, i) => { n.i = i; n.el = $('div', 'tnode', tree, n.h); st(n.el, { width: '196px', paddingRight: '48px' });
+    const [, v, hi] = Q[n.q]; const g = $('div', '', n.el, bars(v, hi)); st(g, { position: 'absolute', right: '8px', top: '8px', transform: 'scale(.72)', transformOrigin: 'right top' }); });
   const edges = [];
-  const sig = $('div', 'sigp', tree); at(sig, 1392, 270);
-  sig.innerHTML = '<div class="cap" style="margin:2px 2px 6px">图表信号</div><div class="sig"><b>Extreme</b>Realme slice occupies 32.1% of markets<span class="rec">REC.</span></div><div class="sig"><b>Majority</b>Budget brands dominate with 72% market share<span class="rec">REC.</span></div>';
+  // what travels: the question's number to its edge, the answer's chart to its node
+  const qFly = NODES.map(n => box(tree, 'abs', 0, 0, 0, 0, `<span class="qb">${n.q + 1}</span>`));
+  const aFly = NODES.map(n => { const [, v, hi] = Q[n.q]; const e = box(tree, 'abs', 0, 0, 0, 0, bars(v, hi)); st(e, { background: '#fff', padding: '5px 7px', borderRadius: '6px', boxShadow: '0 4px 14px rgba(23,27,38,0.14)' }); return e; });
+  let qaAt = NODES.map(() => ({ q: { x: 870, y: 260 }, a: { x: 900, y: 300 } }));
+  const MAP = i => .6 + i * .6;                                          // seconds into 解法 when pair i starts mapping
+  const sig = $('div', 'sigp', tree); at(sig, 1548, 752);
+  sig.innerHTML = '<div class="cap" style="margin:2px 2px 6px">图表信号 · 推荐下一步提问</div><div class="sig"><b>Extreme</b>Realme slice occupies 32.1% of markets<span class="rec">REC.</span></div><div class="sig"><b>Majority</b>Budget brands dominate with 72% market share<span class="rec">REC.</span></div>';
   // 结果
   const cmp = Compare(pn, 1350, 330, 'ToA', [
     { label: '每轮洞察数', delta: '+58.3%', a: 1.583, b: 1, max: 1.7, at: '', bt: '' },
@@ -1156,13 +1180,19 @@ const P5 = (() => {
   const t0 = T.p5[0];
   return {
     layout() {
-      NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.hh = b.height; at(n.el, n.x - 88, n.y - n.hh / 2); byId[n.id] = { x: n.x, y: n.y, h: n.hh }; });
+      vis(sc.root, true);
+      const s0 = document.getElementById('stage').getBoundingClientRect();
+      NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.hh = b.height; at(n.el, n.x - 98, n.y - n.hh / 2); byId[n.id] = { x: n.x, y: n.y, h: n.hh }; });
       NODES.forEach(n => {
         const p = byId[n.p]; const y0 = p.y + p.h / 2, y1 = n.y - n.hh / 2, my = (y0 + y1) / 2;
-        const path = S('path', { d: `M${p.x},${y0} C${p.x},${my} ${n.x},${my} ${n.x},${y1}`, fill: 'none', stroke: 'rgba(23,27,38,0.35)', 'stroke-width': 1.2, 'stroke-dasharray': n.rec ? '4 4' : 'none' }, tsvg);
-        const lab = S('text', { x: (p.x + n.x) / 2 + (p.x === n.x ? 8 : 0), y: my + 4, 'text-anchor': p.x === n.x ? 'start' : 'middle', style: 'font: italic 11px JetBrains Mono', fill: '#8a92a6' }, tsvg); lab.textContent = n.e;
-        edges.push({ n, path, lab });
+        const path = S('path', { d: `M${p.x},${y0} C${p.x},${my} ${n.x},${my} ${n.x},${y1}`, fill: 'none', stroke: 'rgba(23,27,38,0.35)', 'stroke-width': 1.2 }, tsvg);
+        const lab = box(tree, 'elab', 0, 0, 0, 0, `<span class="qb">${n.q + 1}</span>${n.e}`);
+        const w = lab.getBoundingClientRect().width, lx = p.x === n.x ? n.x + 10 : (p.x + n.x) / 2 - w / 2;
+        at(lab, lx, my - 10); edges.push({ n, path, lab, lx: lx + 8, ly: my - 1 });
       });
+      qaAt = NODES.map(n => { const e = qas[n.q], q = e.querySelector('.qb').getBoundingClientRect(), a = e.querySelector('.qc').getBoundingClientRect();
+        return { q: { x: q.left - s0.left, y: q.top - s0.top }, a: { x: a.left - s0.left, y: a.top - s0.top } }; });
+      vis(sc.root, false);
     },
     render(t) {
       if (!sc.on(t)) return;
@@ -1175,17 +1205,27 @@ const P5 = (() => {
       chatCard.style.opacity = rise(chatCard, u, .55, .5, 14) * bgOut;
       st(chat, { transform: `translateY(${-Math.max(0, u - .6) * 150}px)` });
       fs.style.opacity = rise(fs, u, 1.0, .5, 14) * bgOut;
-      // 解法
+      // 解法 · on real seconds: each pair lights up, its number flies to the edge and its chart to the node
+      const sr = t - t0 - PLAN.p5.steps[1];
+      const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
+      qaCard.style.opacity = rise(qaCard, sr, 0, .45, 12) * pOut;
       const shift = ioC(P(u, s2, s2 + .6));
-      st(tree, { opacity: P(u, s1, s1 + .2), transform: `translate(${-shift * 215}px, ${shift * 90}px) scale(${1 - shift * .24})`, transformOrigin: `${RX}px 250px` });
-      const rp = oB(P(u, s1, s1 + .25)); st(root, { transform: `scale(${Math.max(0, rp)})` });
-      edges.forEach(({ n, path, lab }) => {
-        const k0 = n.rec ? s1 + 1.05 + (n.i - 5) * .1 : s1 + .2 + n.i * .1; const p = oC(P(u, k0, k0 + .25));
-        if (n.rec) path.style.opacity = p; else draw(path, p);
-        lab.style.opacity = P(u, k0 + .1, k0 + .25);
-        const k = oB(P(u, k0 + .12, k0 + .35)); st(n.el, { transform: `scale(${Math.max(0, k)})`, opacity: Math.min(1, k * 2) });
+      st(tree, { opacity: P(sr, 0, .25), transform: `translate(${-shift * 380}px, ${shift * 90}px) scale(${1 - shift * .24})`, transformOrigin: `${RX}px 250px` });
+      const rp = oB(P(sr, .1, .4)); st(root, { transform: `scale(${Math.max(0, rp)})` });
+      const bez = (a, b, p, lift) => { const cx = (a.x + b.x) / 2, cy = Math.min(a.y, b.y) - lift; return [(1 - p) ** 2 * a.x + 2 * (1 - p) * p * cx + p * p * b.x, (1 - p) ** 2 * a.y + 2 * (1 - p) * p * cy + p * p * b.y]; };
+      edges.forEach(({ n, path, lab, lx, ly }) => {
+        const f0 = MAP(n.i), from = qaAt[n.i];
+        const on = P(sr, f0 - .05, f0 + .1) * (1 - P(sr, f0 + .8, f0 + 1.0)); qas[n.q].style.background = on > .01 ? `rgba(194,65,12,${.1 * on})` : '';
+        const pq = ioC(P(sr, f0, f0 + .5)), [qx, qy] = bez(from.q, { x: lx, y: ly }, pq, 60);
+        st(qFly[n.i], { left: qx + 'px', top: qy + 'px', opacity: sr > f0 && sr < f0 + .52 ? 1 : 0 });
+        const nodeAt = { x: n.x + 98 - 48, y: n.y - n.hh / 2 + 4 };
+        const pa = ioC(P(sr, f0 + .1, f0 + .6)), [ax, ay] = bez(from.a, nodeAt, pa, 40);
+        st(aFly[n.i], { left: ax + 'px', top: ay + 'px', opacity: sr > f0 + .1 && sr < f0 + .62 ? 1 : 0, transform: `scale(${1 - .3 * pa})`, transformOrigin: 'left top' });
+        draw(path, oC(P(sr, f0 + .2, f0 + .5)));
+        lab.style.opacity = P(sr, f0 + .48, f0 + .6);
+        const k = oB(P(sr, f0 + .5, f0 + .75)); st(n.el, { transform: `scale(${Math.max(0, k)})`, opacity: Math.min(1, k * 2) });
       });
-      st(sig, { opacity: P(u, s1 + .75, s1 + .85) * (1 - P(u, s2 - .05, s2 + .15)), transform: `translateX(${(1 - oQ(P(u, s1 + .75, s1 + 1.05))) * 16}px)` });
+      st(sig, { opacity: P(sr, 3.9, 4.1) * (1 - P(u, s2 - .05, s2 + .15)), transform: `translateX(${(1 - oQ(P(sr, 3.9, 4.3))) * 16}px)` });
       // 结果
       cmp.render(u, s2 + .15);
     },

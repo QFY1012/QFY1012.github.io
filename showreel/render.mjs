@@ -36,6 +36,7 @@ try { browser = await chromium.launch(); }
 catch { browser = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' }); }
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
 page.on('console', m => { if (m.type() === 'warning' || m.type() === 'error') console.log('[page]', m.text()); });
+page.on('pageerror', e => console.log('[page error]', e.message));
 await page.goto(url);
 await page.waitForFunction(() => window.__ready === true, null, { timeout: 60000 });
 const reel = await page.evaluate(() => window.SHOWREEL);
