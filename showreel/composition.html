@@ -135,6 +135,7 @@
   .trow .ta { color: var(--dim); }
   .trow .tr { position: relative; padding-left: 16px; color: var(--dimmer); }
   .trow .tr::before { content: ''; position: absolute; left: 3px; top: 1px; width: 7px; height: 8px; border-left: 1px solid var(--faint); border-bottom: 1px solid var(--faint); }
+  .trow.tnew { overflow: hidden; }
   .twork { position: relative; padding-left: 16px; font-family: var(--mono); font-size: 12px; color: var(--accent); }
   .twork i { position: absolute; left: 1px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
   .logl { font-family: var(--mono); font-size: 13px; color: var(--dim); margin: 0 0 13px; white-space: nowrap; }
@@ -271,7 +272,7 @@ const COPY = {
     steps: ['Agent 过程不透明，用户只能被动等待：<br><em>74%</em> 的时间在等，<em>5/8</em> 的人最后才发现跑偏',
             '把执行轨迹重构为叙事空间中的故事线：<br>位置即数据维度，拖拽节点即可引导 Agent'],
     metrics: [['+13.2%', '叙事洞察数'], ['15/16', '主动拖拽引导 Agent'], ['p<.05', '心理负荷显著下降']],
-    look: [0, 2.5, 0],
+    look: [0, 3.5, 0],
     toc: ['NarraSteer', '数据叙事 Agent · CHI\'27 在投', '2026'], hud: 'NARRASTEER',
   },
   p5: {
@@ -1001,9 +1002,14 @@ const P4 = (() => {
   const tcard = box(tl, 'card', 860, 290, 272, 0); st(tcard, { padding: '16px 18px 14px' });
   tcard.innerHTML = '<div class="cap" style="margin-bottom:10px">AGENT 执行轨迹</div>' +
     TRACE.map(([f, a, r]) => `<div class="trow"><i class="td"></i><b>${f}</b><span class="ta">(${a})</span><div class="tr">${r}</div></div>`).join('') +
+    // what the drag writes back: the user's steer, then the agent carrying on from it
+    '<div class="trow tnew"><i class="td" style="background:var(--accent)"></i><b style="color:var(--accent)">用户引导</b><span class="ta"> GDP → Unemployment</span><div class="tr">Year ≤ 2008 · Israel</div></div>' +
+    '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(Unemployment)</span><div class="tr">line chart</div></div>' +
     '<div class="twork"><i></i>Analyzing…</div>';
-  const rows = [...tcard.querySelectorAll('.trow')], work = tcard.querySelector('.twork'), workDot = work.querySelector('i');
+  const rows = [...tcard.querySelectorAll('.trow:not(.tnew)')], news = [...tcard.querySelectorAll('.tnew')], work = tcard.querySelector('.twork'), workDot = work.querySelector('i');
+  let newAt = { x: 884, y: 640 };
   const tsvg = S('svg', { class: 'full' }, tl);
+  const back = S('g', {}, tsvg); S('rect', { x: -8, y: -8, width: 16, height: 16, fill: '#fff', stroke: '#c2410c', 'stroke-width': 2.5, transform: 'rotate(45)' }, back);
   let rowAt = rows.map(() => ({ x: 884, y: 340 }));                   // each row's status dot, measured in layout()
   const flyers = MAPI.map((ai, i) => { const g = S('g', {}, tsvg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: '#171b26', 'stroke-width': 2, transform: 'rotate(45)' }, g);
     const lab = S('text', { x: 14, y: 4, style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); lab.textContent = ATTR[ai]; return { g, lab }; });
@@ -1021,7 +1027,8 @@ const P4 = (() => {
   let BTN = { x: 1640, y: 470 };
   return {
     layout() { vis(sc.root, true); const s0 = document.getElementById('stage').getBoundingClientRect(), r = go.getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 };
-      rowAt = rows.map(e => { const d = e.querySelector('.td').getBoundingClientRect(); return { x: d.left - s0.left + d.width / 2, y: d.top - s0.top + d.height / 2 }; }); vis(sc.root, false); },
+      rowAt = rows.map(e => { const d = e.querySelector('.td').getBoundingClientRect(); return { x: d.left - s0.left + d.width / 2, y: d.top - s0.top + d.height / 2 }; });
+      const dn = news[0].querySelector('.td').getBoundingClientRect(); newAt = { x: dn.left - s0.left + dn.width / 2, y: dn.top - s0.top + dn.height / 2 }; vis(sc.root, false); },
     render(t) {
       if (!sc.on(t)) return;
       const u = warp(t - t0, PLAN.p4.map);
@@ -1079,9 +1086,18 @@ const P4 = (() => {
       let cx = lerp(1620, from.x + 3, oC(P(sr, d0 - .2, d0 + .2))), cy = lerp(760, from.y + 3, oC(P(sr, d0 - .2, d0 + .2)));
       if (sr > d0 + .25) { cx = tx + 3; cy = ty + 3; }
       const toB = ioC(P(sr, d0 + .9, d0 + 1.15)); cx = lerp(cx, BTN.x - 4, toB); cy = lerp(cy, BTN.y - 2, toB);
-      cursor.setAttribute('transform', `translate(${cx},${cy})`); cursor.style.opacity = P(sr, d0 - .2, d0 - .07) * (1 - P(u, s2 + .05, s2 + .15));
-      st(pop, { opacity: P(sr, d0 + .75, d0 + .88) * (1 - P(u, s2 + .1, s2 + .3)), transform: `translateY(${(1 - oQ(P(sr, d0 + .75, d0 + 1.1))) * 10}px)` });
+      cursor.setAttribute('transform', `translate(${cx},${cy})`); cursor.style.opacity = P(sr, d0 - .2, d0 - .07) * (1 - P(sr, d0 + 1.45, d0 + 1.6));
+      st(pop, { opacity: P(sr, d0 + .75, d0 + .88) * (1 - P(sr, d0 + 1.45, d0 + 1.65)), transform: `translateY(${(1 - oQ(P(sr, d0 + .75, d0 + 1.1))) * 10}px)` });
       go.style.background = sr > d0 + 1.18 && sr < d0 + 1.4 ? 'var(--accent)' : ''; go.style.borderColor = go.style.background ? 'var(--accent)' : '';
+      // …and acts back on the trace: the steer flies from the dragged node into the transcript as a user turn,
+      // and the agent carries on from it
+      const b0 = d0 + 1.45, b1 = b0 + .6, bp = ioC(P(sr, b0, b1));
+      const bx0 = tgt.x - 30, by0 = tgt.y + 32, bcx = (bx0 + newAt.x) / 2, bcy = Math.min(by0, newAt.y) - 90;
+      back.setAttribute('transform', `translate(${(1 - bp) ** 2 * bx0 + 2 * (1 - bp) * bp * bcx + bp * bp * newAt.x},${(1 - bp) ** 2 * by0 + 2 * (1 - bp) * bp * bcy + bp * bp * newAt.y})`);
+      back.style.opacity = sr > b0 && sr < b1 + .05 ? 1 : 0;
+      news.forEach((e, i) => { const a = b1 - .05 + i * .5, p = oQ(P(sr, a, a + .35));
+        st(e, { maxHeight: p * 48 + 'px', paddingTop: 4 * p + 'px', paddingBottom: 4 * p + 'px', marginBottom: 6 * p + 'px', opacity: P(sr, a + .1, a + .35),
+                background: i === 0 ? `rgba(194,65,12,${.1 * p})` : '' }); });
       // 结果
       cmp.render(u, s2 + .15);
     },
