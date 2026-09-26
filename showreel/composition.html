@@ -295,15 +295,16 @@ const readLoad = html => { const s = html.replace(/<[^>]+>/g, ' ').replace(/&[a-
 const beats = (sec, min) => Math.max(min, Math.ceil(sec / BEAT - 1e-6)) * BEAT;
 function plan(c) {
   const look = c.look || [0, 0, 0];  // extra seconds for denser drawings
-  const r = [3 * BEAT,
+  const r = [2 * BEAT,
     beats(LEAD + look[0] + readLoad(c.steps[0]) / READ_CPS, 7),
     beats(LEAD + look[1] + readLoad(c.steps[1]) / READ_CPS, 8),
     beats(LEAD + look[2] + 1.0 + readLoad(c.metrics ? c.metrics.flat().join(' ') : c.result) / READ_CPS, 8)];
   const segs = [[0, STEP[0], r[0]], [STEP[0], STEP[1], r[1]], [STEP[1], STEP[2], r[2]], [STEP[2], OUT, r[3] - HANDOFF]];
   const map = [[0, 0]]; let x = 0;
-  // play at SPEED, then hold the clock still (not creeping, or the next step's fade-outs would start early)
-  segs.forEach(([a0, a1, R]) => { const act = Math.min(R, (a1 - a0) / SPEED), h = a0 + (a1 - a0) * .97;
-    if (act < R - .15) map.push([x + act, h], [x + R - .1, h]); x += R; map.push([x, a1]); });
+  // play at SPEED, then hold the clock still (not creeping, or the next step's fade-outs would start early).
+  // The title beat never holds: 背景's drawing starts fading in before it ends, and a hold would freeze it half-drawn.
+  segs.forEach(([a0, a1, R], i) => { const act = Math.min(R, (a1 - a0) / SPEED), h = a0 + (a1 - a0) * .97;
+    if (i > 0 && act < R - .15) map.push([x + act, h], [x + R - .1, h]); x += R; map.push([x, a1]); });
   x += HANDOFF; map.push([x, END]);
   return { map, dur: x, steps: [r[0], r[0] + r[1], r[0] + r[1] + r[2]] };
 }
