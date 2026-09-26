@@ -235,7 +235,7 @@ const COPY = {
     steps: ['设计师各自开发的技能接入设计 Agent：<br>体量大、功能重叠，调用耗时且难以维护',
             '拆成基座 / 业务双层原子技能，按需组合调用；<br>与设计师共定过程检查点与理想输出，让技能并发评测、自我迭代'],
     metrics: [['30+', '完成治理的 Skill'], ['1000+', '团队内使用量'], ['−21%', '典型技能耗时']],
-    look: [0, 1.5, 0],
+    look: [0, 2, 0],
     toc: ['Skill 的治理、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'SKILL 治理',
   },
   p2: {
@@ -426,7 +426,8 @@ const INTRO = (() => {
    背景: designer-made skills plugged into the design agent arrive bloated, overlapping and slow
    → 解法: 治理 — 基座 / 业务 atomic skills, combined on demand; 评测 · 优化 — the concurrent test platform (redrawn from the
            write-up's figure): test prompts × checks agreed with designers (process checkpoints, ideal outputs), a checker
-           that reads the execution trace, and a revisor that edits the skill — which then runs again
+           that reads the execution trace, and a revisor that proposes a change — kept, and the version bumped, only
+           when the re-run beats the previous version
    → 结果: 30+ skills governed, 1000+ team uses; typical skills: Token −20.47%, time −21.21% */
 const P1 = (() => {
   const c = COPY.p1, sc = Scene(T.p1);
@@ -454,51 +455,75 @@ const P1 = (() => {
   const fatCap = box(pn, 'abs zh13', 1300, 862, 0, 0, '<span class="x">✕</span>体量大 · 调用耗时 · 难以维护');
   // 解法 · 治理: two layers of atomic skills, combined on demand
   const govLab = box(pn, 'abs cap', 860, 170, 0, 0, '<span style="color:var(--accent)">治理</span> · 双层原子技能');
-  const biz = box(pn, 'lay', 860, 196, 860, 96); $('div', 'lt', biz, '业务技能 · 提供设计判断');
-  const base = box(pn, 'lay', 860, 322, 860, 96); $('div', 'lt', base, '基座技能 · 支撑底层能力');
-  const bizSk = ['视觉热力预测', 'CTR 预测', '字号规范检测', '方案对比', '信息密度分析', '……'].map((n, i) => box(pn, 'sk', 876 + i * 138, 240, 0, 0, n));
-  const baseSk = ['界面标注', '元素识别', '坐标提取', '……'].map((n, i) => box(pn, 'sk', 876 + i * 138, 366, 0, 0, n));
-  const holds = [1007, 1283, 1559].map(x => arrow(`M${x},320 L${x},297`));
-  const holdLab = box(pn, 'abs', 1015, 300, 0, 0, '支撑'); st(holdLab, { fontSize: '12px', color: 'var(--dim)' });
-  // 解法 · 评测 · 优化: the concurrent test platform (redrawn)
-  const loopLab = box(pn, 'abs cap', 860, 452, 0, 0, '<span style="color:var(--accent)">评测 · 优化</span> · 技能并发测试平台');
-  const frame = S('rect', { x: 866, y: 482, width: 696, height: 384, rx: 6, fill: 'none', stroke: '#8a92a6', 'stroke-width': 1, 'stroke-dasharray': '4 4' }, svg);
-  const agent = box(pn, 'dk', 884, 500, 170, 0, '中台设计 Agent');
-  const skill = box(pn, 'abar', 1094, 500, 446, 40, '字号规范检测');
-  const ver = box(skill, 'abs mono', 0, 11, 0, 0, 'v1'); st(ver, { left: 'auto', right: '12px', fontSize: '11px', lineHeight: '18px', padding: '0 7px', borderRadius: '9px', color: 'var(--accent)', background: 'var(--accent-soft)' });
-  const revisor = box(pn, 'dk', 1580, 500, 140, 0, 'Revisor');
-  const revCap = box(pn, 'abs', 1580, 548, 0, 0, '修改技能'); st(revCap, { fontSize: '12px', color: 'var(--accent)' });
-  const suite = box(pn, 'lay', 1094, 562, 446, 222); $('div', 'lt', suite, '测试集 · 与设计师共定');
-  const prompts = box(pn, 'tgroup', 1110, 594, 172, 176);
+  const biz = box(pn, 'lay', 860, 196, 860, 80); $('div', 'lt', biz, '业务技能 · 提供设计判断');
+  const base = box(pn, 'lay', 860, 300, 860, 80); $('div', 'lt', base, '基座技能 · 支撑底层能力');
+  const bizSk = ['视觉热力预测', 'CTR 预测', '字号规范检测', '方案对比', '信息密度分析', '……'].map((n, i) => box(pn, 'sk', 876 + i * 138, 228, 0, 0, n));
+  const baseSk = ['界面标注', '元素识别', '坐标提取', '……'].map((n, i) => box(pn, 'sk', 876 + i * 138, 332, 0, 0, n));
+  const holds = [1007, 1283, 1559].map(x => arrow(`M${x},298 L${x},279`));
+  const holdLab = box(pn, 'abs', 1015, 280, 0, 0, '支撑'); st(holdLab, { fontSize: '12px', color: 'var(--dim)' });
+  // 解法 · 评测 · 优化: the concurrent test platform (redrawn). The Revisor only proposes a candidate change; it is
+  // re-tested, and the version number moves only if the result beats the previous version.
+  const loopLab = box(pn, 'abs cap', 860, 404, 0, 0, '<span style="color:var(--accent)">评测 · 优化</span> · 技能并发测试平台');
+  const frame = S('rect', { x: 866, y: 430, width: 854, height: 462, rx: 6, fill: 'none', stroke: '#8a92a6', 'stroke-width': 1, 'stroke-dasharray': '4 4' }, svg);
+  const agent = box(pn, 'dk', 884, 450, 170, 0, '中台设计 Agent');
+  const skill = box(pn, 'abar', 1094, 450, 446, 40, '字号规范检测');
+  const ver = box(skill, 'abs mono', 0, 11, 0, 0, 'v2'); st(ver, { left: 'auto', right: '12px', fontSize: '11px', lineHeight: '18px', padding: '0 7px', borderRadius: '9px', color: 'var(--accent)', background: 'var(--accent-soft)' });
+  const cand = box(skill, 'abs', 0, 10, 0, 0, '候选修改'); st(cand, { left: 'auto', right: '52px', fontSize: '11px', lineHeight: '17px', padding: '0 8px', borderRadius: '9px', color: 'var(--accent)', border: '1px dashed var(--accent)', background: '#fff', opacity: 0 });
+  const revisor = box(pn, 'dk', 1580, 450, 122, 0, 'Revisor');
+  const revCap = box(pn, 'abs', 1560, 498, 0, 0, '提出候选修改'); st(revCap, { fontSize: '12px', color: 'var(--accent)' });
+  const suite = box(pn, 'lay', 1094, 510, 446, 214); $('div', 'lt', suite, '测试集 · 与设计师共定');
+  const prompts = box(pn, 'tgroup', 1110, 540, 172, 170);
   st(prompts, { padding: '12px 14px', lineHeight: '1' });
   prompts.innerHTML = '<div class="cap" style="margin-bottom:16px">PROMPT 1…N</div>' +
     [['1', '检测下字号…'], ['', '…'], ['N', '字号合适吗…']].map(([k, q]) => `<div class="zh13" style="margin-bottom:16px;color:var(--ink)"><span class="mono" style="display:inline-block;width:18px;font-size:11px;color:var(--dimmer)">${k}</span>${q}</div>`).join('');
-  const times = box(pn, 'abs mono', 1290, 670, 0, 0, '×'); st(times, { fontSize: '16px', color: 'var(--dim)' });
-  const checks = box(pn, 'tgroup', 1312, 594, 212, 176);
-  st(checks, { padding: '12px 14px' });
-  const chk = (q) => `<div class="zh13" style="margin:6px 0 0 10px;color:var(--ink)"><span style="color:var(--accent);margin-right:6px">·</span>${q}</div>`;
-  checks.innerHTML = '<div class="cap" style="margin-bottom:10px">检测项 1…N</div>' +
+  const times = box(pn, 'abs mono', 1290, 616, 0, 0, '×'); st(times, { fontSize: '16px', color: 'var(--dim)' });
+  const checks = box(pn, 'tgroup', 1312, 540, 212, 170);
+  st(checks, { padding: '11px 14px' });
+  const chk = (q) => `<div class="zh13" style="margin:5px 0 0 10px;color:var(--ink)"><span style="color:var(--accent);margin-right:6px">·</span>${q}</div>`;
+  checks.innerHTML = '<div class="cap" style="margin-bottom:9px">检测项 1…N</div>' +
     '<div style="font-size:12px;color:var(--dim)">过程 · 关键检查点</div>' + chk('按流程执行？') + chk('有多余步骤？') +
-    '<div style="font-size:12px;color:var(--dim);margin-top:12px">结果 · 理想输出</div>' + chk('与理想输出一致？');
-  const trace = box(pn, 'abar', 884, 698, 170, 40, '执行轨迹与结果');
-  const conc = box(pn, 'abs mono', 980, 606, 0, 0, '并发执行 ×N'); st(conc, { fontSize: '11px', color: 'var(--dimmer)' });
-  const checker = box(pn, 'dk', 1184, 808, 220, 0, 'Checker');
-  const issues = box(pn, 'abar', 1580, 742, 140, 40, '运行时问题');
+    '<div style="font-size:12px;color:var(--dim);margin-top:10px">结果 · 理想输出</div>' + chk('与理想输出一致？');
+  const trace = box(pn, 'abar', 884, 610, 170, 40, '执行轨迹与结果');
+  const conc = box(pn, 'abs mono', 980, 540, 0, 0, '并发执行 ×N'); st(conc, { fontSize: '11px', color: 'var(--dimmer)' });
+  const checker = box(pn, 'dk', 1094, 748, 200, 0, 'Checker');
+  const gate = box(pn, 'abs', 1340, 748, 170, 40, '比上一版更好？');
+  st(gate, { boxSizing: 'border-box', border: '1.5px solid var(--accent)', borderRadius: '20px', background: '#fff', color: 'var(--accent)', fontSize: '14px', lineHeight: '37px', textAlign: 'center', whiteSpace: 'nowrap' });
+  const issues = box(pn, 'abar', 1580, 748, 122, 40, '运行时问题');
   const A = {
-    skill2agent: arrow('M1092,520 L1057,520'),
-    prompt2agent: arrow('M1108,682 L1074,682 L1074,520', '#171b26', false),
-    agent2trace: arrow('M969,540 L969,695'),
-    trace2checker: arrow('M969,738 L969,828 L1181,828'),
-    checks2checker: arrow('M1418,770 L1418,790 L1294,790 L1294,805'),
-    checker2issues: arrow('M1404,828 L1650,828 L1650,785'),
-    issues2revisor: arrow('M1650,742 L1650,543'),
-    revisor2skill: arrow('M1578,520 L1543,520', '#c2410c'),
+    skill2agent: arrow('M1092,470 L1057,470'),
+    prompt2agent: arrow('M1108,625 L1074,625 L1074,470', '#171b26', false),
+    agent2trace: arrow('M969,490 L969,607'),
+    trace2checker: arrow('M969,650 L969,768 L1091,768'),
+    checks2checker: arrow('M1418,710 L1418,732 L1194,732 L1194,745'),
+    checker2gate: arrow('M1294,768 L1337,768'),
+    gate2issues: arrow('M1510,768 L1577,768'),
+    issues2revisor: arrow('M1641,748 L1641,493'),
+    revisor2skill: arrow('M1578,470 L1543,470', '#c2410c'),
+    gate2log: arrow('M1425,788 L1425,829', '#c2410c'),
   };
-  // a pulse that keeps travelling the loop while the step is read: skill → agent → trace → checker → issues → revisor → skill
-  const orbit = S('path', { d: 'M1317,520 L969,520 L969,828 L1650,828 L1650,520 L1317,520', fill: 'none', stroke: 'none' }, svg);
+  // the iteration log: every round is judged, only an improvement moves the version (round 1 is already in)
+  const logLab = box(pn, 'abs cap', 884, 806, 0, 0, '迭代记录 · 结果变好才更新版本号');
+  const ROUNDS = [['第 1 轮', true, 'v1 → v2'], ['第 2 轮', false, '仍为 v2'], ['第 3 轮', true, 'v2 → v3']];
+  const logs = ROUNDS.map(([n, ok, v], i) => {
+    const e = box(pn, 'abs', 884 + i * 230, 834, 216, 40);
+    st(e, { boxSizing: 'border-box', borderRadius: '6px', fontSize: '13px', lineHeight: '38px', padding: '0 12px', whiteSpace: 'nowrap' });
+    const full = `<span style="color:var(--dim)">${n}</span><span style="margin:0 10px;color:${ok ? 'var(--accent)' : 'var(--dimmer)'}">${ok ? '✓ 变好' : '✕ 未变好'}</span><span class="mono" style="font-size:12px;color:${ok ? 'var(--ink)' : 'var(--dimmer)'}">${v}</span>`;
+    const empty = `<span style="color:var(--dimmer)">${n}</span>`;
+    let cur = null;
+    const set = filled => { if (filled === cur) return; cur = filled; e.innerHTML = filled ? full : empty;
+      st(e, { background: filled ? '#fff' : 'transparent', border: filled ? `1px solid ${ok ? 'var(--accent)' : 'var(--line2)'}` : '1px dashed var(--faint)' }); };
+    set(i === 0);
+    return { e, set };
+  });
+  const more = box(pn, 'abs', 884 + 3 * 230, 834, 128, 40, '…');
+  st(more, { boxSizing: 'border-box', borderRadius: '6px', border: '1px dashed var(--faint)', color: 'var(--dimmer)', textAlign: 'center', lineHeight: '38px' });
+  // a pulse keeps travelling the loop while the step is read: Revisor → skill (candidate) → agent → trace → checker → gate → issues → Revisor
+  const orbit = S('path', { d: 'M1580,470 L969,470 L969,768 L1641,768 L1641,470 L1580,470', fill: 'none', stroke: 'none' }, svg);
   const glow = S('circle', { r: 11, fill: 'rgba(194,65,12,0.16)' }, svg);
   const dot = S('circle', { r: 4.5, fill: '#c2410c', stroke: '#fff', 'stroke-width': 1.5 }, svg);
-  const LAP = 3.2;
+  const LAP = 2.6;
+  const CAND = 1580 - 1540, VERDICT = (1580 - 969) + (768 - 470) + (1510 - 969);  // distances along the loop: candidate lands, gate decides
+  const VERD = [false, true, true, false, true];  // rounds 2, 3, …: kept only when better
   // 结果 · typical skills, before vs after the refactor
   const cost = box(pn, 'card cost', 860, 486, 0, 0);
   const SEGC = ['#171b26', '#8a92a6', '#d5d9e1'], SEGT = ['#fff', '#fff', '#171b26'];
@@ -560,22 +585,32 @@ const P1 = (() => {
       line(A.prompt2agent, s1 + 1.0, s1 + 1.15);
       line(A.agent2trace, s1 + 1.0, s1 + 1.15); fade(conc, s1 + 1.1, .3, 4);
       fade(trace, s1 + 1.1, .35, 6);
-      line(A.trace2checker, s1 + 1.2, s1 + 1.4); line(A.checks2checker, s1 + 1.2, s1 + 1.35);
-      fade(checker, s1 + 1.3, .35, 6);
-      line(A.checker2issues, s1 + 1.4, s1 + 1.55); fade(issues, s1 + 1.45, .3, 6);
+      line(A.trace2checker, s1 + 1.2, s1 + 1.35); line(A.checks2checker, s1 + 1.2, s1 + 1.35);
+      fade(checker, s1 + 1.25, .35, 6);
+      line(A.checker2gate, s1 + 1.35, s1 + 1.45); fade(gate, s1 + 1.38, .35, 6);
+      line(A.gate2issues, s1 + 1.45, s1 + 1.55); fade(issues, s1 + 1.48, .3, 6);
       line(A.issues2revisor, s1 + 1.5, s1 + 1.62); fade(revCap, s1 + 1.55, .25, 4);
       line(A.revisor2skill, s1 + 1.6, s1 + 1.72);
-      // the pulse runs on real time, so it keeps moving while the clock holds for reading
+      fade(logLab, s1 + 1.4, .3, 4); line(A.gate2log, s1 + 1.45, s1 + 1.6);
+      [...logs.map(l => l.e), more].forEach((e, i) => fade(e, s1 + 1.4 + i * .04, .3, 6));
+      // the pulse and the rounds run on real time, so they keep going while the clock holds for reading
       const run = t - t0 - dot0;
-      const len = orbit.getTotalLength(), back = len - 223;  // `back`: where the pulse re-enters the skill (its right edge)
-      const on = run > 0 ? Math.min(1, run / .3) * pOut : 0;
+      const len = orbit.getTotalLength();
       const d = Math.max(0, run) / LAP * len;
       const pt = orbit.getPointAtLength(d % len);
+      const on = run > 0 ? Math.min(1, run / .3) * pOut : 0;
       [dot, glow].forEach(e => { e.setAttribute('cx', pt.x); e.setAttribute('cy', pt.y); e.style.opacity = on; });
-      const laps = run > 0 ? Math.floor((d + len - back) / len) : 0;
-      ver.textContent = 'v' + (1 + laps);
-      const since = (d + len - back) % len / len * LAP;  // seconds since the skill was last revised
-      st(ver, { transform: `scale(${laps > 0 ? 1 + .25 * Math.max(0, 1 - since / .35) : 1})` });
+      const judged = run > 0 && d >= VERDICT ? Math.floor((d - VERDICT) / len) + 1 : 0;  // rounds decided since the pulse set off
+      const last = judged ? VERD[(judged - 1) % VERD.length] : null;
+      const since = judged ? (d - VERDICT - (judged - 1) * len) / len * LAP : 99;   // seconds since the last decision
+      ver.textContent = 'v' + (2 + VERD.slice(0, judged).filter(Boolean).length);
+      st(ver, { transform: `scale(${last ? 1 + .3 * Math.max(0, 1 - since / .4) : 1})` });
+      const inLap = d % len, pending = run > 0 && inLap >= CAND && inLap < VERDICT;
+      st(cand, { opacity: pending ? 1 : last === false ? Math.max(0, 1 - since / .35) : 0 });
+      const flash = since < .9;
+      gate.textContent = flash ? (last ? '✓ 变好 · 采纳' : '✕ 未变好 · 丢弃') : '比上一版更好？';
+      st(gate, { background: flash && last ? 'var(--accent)' : '#fff', color: flash ? (last ? '#fff' : 'var(--dim)') : 'var(--accent)', borderColor: flash && !last ? 'var(--line2)' : 'var(--accent)' });
+      logs.forEach((l, i) => l.set(i === 0 || judged >= i));
       // 结果
       rise(cost, u, s2 + .1, .5, 16);
       groups.forEach((g, gi) => {
