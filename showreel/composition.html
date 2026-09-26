@@ -1079,10 +1079,11 @@ const P4 = (() => {
       // the second storyline, then a drag steers the agent toward Unemployment and Explore
       const pi = ioC(P(sr, 2.9, 3.4)); draw(iLine, pi); draw(iBand, pi);
       iN.forEach((n, i) => { const k = i === 3 ? 0 : oB(P(sr, 2.9 + i * .14, 3.15 + i * .14)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
-      const tx = lerp(from.x, tgt.x - 30, d), ty = lerp(from.y, tgt.y + 32, d) - Math.sin(d * Math.PI) * 40;
+      // the drag stays on the inner orbit (inside the black storyline) so the two never cross; the rim label shows the direction
+      const [ex, ey] = pol(-32, .6 * R), tx = lerp(from.x, ex, d), ty = lerp(from.y, ey, d) - Math.sin(d * Math.PI) * 12;
       dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(sr, d0, d0 + .2))})`); dragN.style.opacity = P(sr, d0, d0 + .07);
       ghost.style.opacity = P(sr, d0 + .28, d0 + .38);
-      trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2 + 30},${Math.min(from.y, ty) - 50} ${tx},${ty}`); trail.style.opacity = P(sr, d0 + .3, d0 + .38);
+      trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2},${Math.min(from.y, ty) - 22} ${tx},${ty}`); trail.style.opacity = P(sr, d0 + .3, d0 + .38);
       let cx = lerp(1620, from.x + 3, oC(P(sr, d0 - .2, d0 + .2))), cy = lerp(760, from.y + 3, oC(P(sr, d0 - .2, d0 + .2)));
       if (sr > d0 + .25) { cx = tx + 3; cy = ty + 3; }
       const toB = ioC(P(sr, d0 + .9, d0 + 1.15)); cx = lerp(cx, BTN.x - 4, toB); cy = lerp(cy, BTN.y - 2, toB);
@@ -1092,7 +1093,7 @@ const P4 = (() => {
       // …and acts back on the trace: the steer flies from the dragged node into the transcript as a user turn,
       // and the agent carries on from it
       const b0 = d0 + 1.45, b1 = b0 + .6, bp = ioC(P(sr, b0, b1));
-      const bx0 = tgt.x - 30, by0 = tgt.y + 32, bcx = (bx0 + newAt.x) / 2, bcy = Math.min(by0, newAt.y) - 90;
+      const bx0 = ex, by0 = ey, bcx = (bx0 + newAt.x) / 2, bcy = Math.min(by0, newAt.y) - 90;
       back.setAttribute('transform', `translate(${(1 - bp) ** 2 * bx0 + 2 * (1 - bp) * bp * bcx + bp * bp * newAt.x},${(1 - bp) ** 2 * by0 + 2 * (1 - bp) * bp * bcy + bp * bp * newAt.y})`);
       back.style.opacity = sr > b0 && sr < b1 + .05 ? 1 : 0;
       news.forEach((e, i) => { const a = b1 - .05 + i * .5, p = oQ(P(sr, a, a + .35));
