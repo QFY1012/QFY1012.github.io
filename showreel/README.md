@@ -1,20 +1,28 @@
 # Showreel
 
-A 60-second opener for the résumé: white, restrained, and built entirely from the site's own content.
-Every visual is redrawn in `composition.html` — no screenshots. Output: `public/videos/showreel.mp4`
-(1920×1080, 60 fps, H.264 + AAC).
+The opener for the résumé: white, restrained, and built entirely from the site's content and the internship
+write-up. Every visual is redrawn in `composition.html` (no screenshots). Output: `public/videos/showreel.mp4`
+(1920×1080, 60 fps, H.264 + AAC, about two minutes).
 
-Each project is told the same way — **背景 → 解法 → 结果** — with earlier steps kept on screen so there is time to read. Each project gets 12.5 s; motion inside runs at about half speed
-(see `PROJECT_CLOCK` in `composition.html`).
+Each chapter is told the same way — **背景 → 解法 → 结果** — with earlier steps kept on screen.
 
-| Time | Chapter | 背景 | 解法 | 结果 |
-| --- | --- | --- | --- | --- |
-| 0–5 | Intro: name, role, the four projects | | | |
-| 5–17.5 | 01 阿里巴巴淘天 · 设计 Agent 的 Skill 标准化 | skills keep growing; admission and output need one standard | 4-dimension test platform + auto-revise loop; Radix UI components + DOM/CV/LLM checks | ~30 skills admitted · 1000+ team uses · became the team's acceptance standard |
-| 17.5–30 | 02 NarraSteer | opaque agent; 74% idle, 5/8 saw drift only at the end | trajectory → storyline in a narrative-space disc; drag to steer | N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run |
-| 30–42.5 | 03 ToA | novices get lost in linear chat; 4/6 failed | chat → analysis tree; chart signals suggest next queries | N=12 · +58.3% insights/turn · +17.7% thinking time · −23% turns |
-| 42.5–55 | 04 跨社交媒体舆情分析与治理平台 | monitoring / assessment / handling fragmented | 3-layer IA (大屏 / 仪表盘 / 中台), 5 tech teams | delivered 0 → 1, supporting the National Key R&D Program |
-| 55–60 | Outro: name and contact | | | |
+| Chapter | 背景 | 解法 | 结果 |
+| --- | --- | --- | --- |
+| Intro | name, role, the five projects | | |
+| 01 TDA 技能体系 | designer-made skills: messy output, bloated and overlapping | shadcn/ui component library; 基座 / 业务 two-layer atomic skills; concurrent test platform (test → diagnose → iterate) | 13 of 17 atomic skills live · 1000+ team uses · three skills: Token −20.47%, time −21.21% |
+| 02 TDA 文档美化小工具 | output only lives in chat; every platform keeps its own skin | edit-first editor with limited editable units; template / DSL generator / skin renderer as separate modules, one skin library | built 0 → 1: React + GrapesJS, TDA-based PPT agent, FastAPI + MySQL / OSS |
+| 03 NarraSteer | opaque agent; 74% idle, 5/8 saw drift only at the end | trajectory → storyline in a narrative-space disc; drag to steer | N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run |
+| 04 ToA | novices get lost in linear chat; 4/6 failed | chat → analysis tree; chart signals suggest next queries | N=12 · +58.3% insights/turn · +17.7% thinking time · −23% turns |
+| 05 跨社交媒体舆情分析与治理平台 | monitoring / assessment / handling fragmented | 3-layer IA (大屏 / 仪表盘 / 中台), 5 tech teams | delivered 0 → 1, supporting the National Key R&D Program |
+| Outro | name and contact | | |
+
+## Pacing
+
+On-screen time follows reading speed rather than a fixed length (`plan()` in `composition.html`): each step gets
+`LEAD + characters / READ_CPS` seconds (1.25 s + 6 characters a second), rounded up to whole beats of the 96 BPM
+score. Scenes are authored on a compact animation clock; `warp()` plays them at 60% speed and then holds until the
+step has been read. Editing the copy re-times the whole reel; the composition exports its cue sheet
+(`out/timeline.json`) and the score is synthesised from it, so music and picture stay in sync.
 
 ## Build
 
@@ -27,8 +35,12 @@ FFMPEG=ffmpeg ./showreel/build.sh
 - `composition.html` — the whole animation as `renderFrame(t)`. Serve the repo root with any static server and open
   `showreel/composition.html?play` for a realtime preview, or `?t=12` to freeze a moment.
 - `render.mjs` — steps every frame in headless Chromium and pipes it to ffmpeg (`--stills 4.2,12.6` for spot checks,
-  `--shutter 2` for motion blur). If Playwright's bundled browser is missing, set `CHROMIUM=/path/to/chrome`.
-- `soundtrack.py` — synthesises the 96 BPM score; chapter chimes and step ticks line up with the timeline above.
+  `--shutter 2` for motion blur, `--timeline-only` to just export the cue sheet). If Playwright's bundled browser is
+  missing, set `CHROMIUM=/path/to/chrome`.
+- `soundtrack.py` — synthesises the score from `out/timeline.json`: chapter chimes, step ticks, an arpeggio that fills
+  in from each 解法.
+- `subset-fonts.py` — the reel is set in the site's PingFang (`public/fonts`), which only covers the site's characters.
+  This builds a few-KB Noto Sans SC fallback for the characters it lacks (热, 皮肤, 诊断 …). Re-run it after changing
+  the Chinese copy.
 
-Chinese copy only uses characters present in the site's PingFang subset (`public/fonts`), so it renders without fallback.
-Fonts: Syne and JetBrains Mono (SIL OFL, licences in `fonts/`).
+Fonts: Syne, JetBrains Mono and Noto Sans SC are SIL OFL (licences in `fonts/`).

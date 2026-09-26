@@ -1,28 +1,32 @@
-"""Synthesises the showreel's 60 s score (96 BPM) so its cues line up with composition.html.
+"""Synthesises the showreel's score (96 BPM) from the cue sheet the composition exports.
 
-    python3 showreel/soundtrack.py [out.wav]      (needs numpy + scipy)
+    node showreel/render.mjs --timeline-only        → showreel/out/timeline.json
+    python3 showreel/soundtrack.py [out.wav] [timeline.json]      (needs numpy + scipy)
 
-Quiet and sparse to match the white, restrained picture: a soft pad, a light mallet arpeggio,
-a gentle pulse, and a small chime on every project and every 背景 / 解法 / 结果 step.
-Harmony per chapter: D (intro) → Bm (01) → G (02) → Em (03) → A (04) → D (outro).
+Quiet and sparse to match the white, restrained picture: a soft pad, a light mallet arpeggio that
+fills in from each chapter's 解法 step, a gentle pulse, and a small chime on every chapter and a
+tick on every 背景 / 解法 / 结果 step. Harmony: D (intro) → Bm → G → Em → F#m → A → D (outro).
 """
+import json
 import sys
 import wave
 import numpy as np
 from scipy.signal import butter, sosfilt
 
+OUT = sys.argv[1] if len(sys.argv) > 1 else 'showreel/out/soundtrack.wav'
+CUES = json.load(open(sys.argv[2] if len(sys.argv) > 2 else 'showreel/out/timeline.json'))
 SR = 48000
-DUR = 60.0
+DUR = CUES['duration']
 N = int(SR * DUR)
-BEAT = 0.625                                   # 96 BPM
+BEAT = CUES['beat']                                     # 96 BPM; every cue sits on this grid
 rng = np.random.default_rng(1012)
 L = np.zeros(N)
 R = np.zeros(N)
 
-# mirrored from composition.html: T = { intro, p1..p4, outro }; 背景 / 解法 / 结果 on beats 2 / 7 / 13 of each project
-PROJECTS = [5.0, 17.5, 30.0, 42.5]
-OUTRO = 55.0
-STEPS = [p + b * BEAT for p in PROJECTS for b in (2, 7, 13)]
+PROJECTS = [c['start'] for c in CUES['chapters']]
+SOLUTION = {c['start']: c['steps'][1] for c in CUES['chapters']}   # arpeggio fills in from 解法
+STEPS = [s for c in CUES['chapters'] for s in c['steps']]
+OUTRO = CUES['outro'][0]
 
 
 def midi(n):
@@ -103,14 +107,18 @@ def pad(notes, d, attack=0.7, release=0.9, cutoff=1500):
 
 
 # ---------- arrangement ----------
-CHORDS = [  # (start, end, pad voicing, arpeggio notes)
-    (0.0, 5.0, [50, 57, 61, 64], [74, 78, 81, 76]),         # Dmaj9
-    (5.0, 17.5, [47, 54, 57, 62], [71, 74, 78, 73]),        # Bm(add9)
-    (17.5, 30.0, [43, 50, 54, 59], [67, 71, 74, 69]),       # Gmaj7(add9)
-    (30.0, 42.5, [40, 47, 55, 62], [67, 71, 74, 66]),       # Em9
-    (42.5, 55.0, [45, 52, 57, 61], [69, 73, 76, 71]),       # A(add9)
-    (55.0, 60.0, [38, 50, 57, 61, 64], [74, 78, 81, 85]),   # Dmaj9
+PROGRESSION = [  # (pad voicing, arpeggio notes) per chapter
+    ([47, 54, 57, 62], [71, 74, 78, 73]),       # Bm(add9)
+    ([43, 50, 54, 59], [67, 71, 74, 69]),       # Gmaj7(add9)
+    ([40, 47, 55, 62], [67, 71, 74, 66]),       # Em9
+    ([42, 52, 57, 61], [66, 69, 73, 76]),       # F#m7
+    ([45, 52, 57, 61], [69, 73, 76, 71]),       # A(add9)
 ]
+DMAJ9 = ([50, 57, 61, 64], [74, 78, 81, 76])
+CHORDS = [(0.0, PROJECTS[0], *DMAJ9)]
+for i, c in enumerate(CUES['chapters']):
+    CHORDS.append((c['start'], c['end'], *PROGRESSION[i % len(PROGRESSION)]))
+CHORDS.append((OUTRO, DUR, [38, 50, 57, 61, 64], [74, 78, 81, 85]))
 for s0, e0, voicing, arp in CHORDS:
     pl, pr = pad(voicing, e0 - s0 + 0.6)
     i = int(s0 * SR)
@@ -120,7 +128,7 @@ for s0, e0, voicing, arp in CHORDS:
     # eighth-note mallet arpeggio, lighter on the off-beats
     k, t0 = 0, s0
     while t0 < e0 - 0.01 and t0 < OUTRO + 2.5:
-        busy = s0 in PROJECTS and t0 - s0 >= 7 * BEAT - 1e-6      # from 解法 onward
+        busy = s0 in SOLUTION and t0 >= SOLUTION[s0] - 1e-6        # from 解法 onward
         if k % 2 == 0 or busy:
             vel = 0.075 if k % 2 == 0 else 0.045
             add(mallet(arp[(k // (1 if busy else 2)) % len(arp)]), t0, vel, pan=-0.35 if k % 2 else 0.35)
@@ -164,10 +172,9 @@ mix = np.stack([L * fade, R * fade], 1)
 mix = np.tanh(mix * 1.05) / np.tanh(1.05)
 mix *= 0.8 / np.max(np.abs(mix))
 
-out = sys.argv[1] if len(sys.argv) > 1 else 'showreel/out/soundtrack.wav'
-with wave.open(out, 'wb') as w:
+with wave.open(OUT, 'wb') as w:
     w.setnchannels(2)
     w.setsampwidth(2)
     w.setframerate(SR)
     w.writeframes((mix * 32767).astype('<i2').tobytes())
-print('soundtrack →', out)
+print(f'soundtrack → {OUT} ({DUR:.2f} s)')

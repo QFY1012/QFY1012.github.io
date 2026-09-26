@@ -3,11 +3,12 @@
 //   node showreel/render.mjs                       → showreel/out/video.mp4 (silent, 1920×1080, 60 fps)
 //   node showreel/render.mjs --stills 1.2,6.8 --out dir   → PNG stills at those times (for checking)
 //   --shutter 2   → render 2 sub-frames per frame and average them (180° motion blur)
+//   --timeline-only → just write out/timeline.json (the cue sheet soundtrack.py reads)
 //
 // Env: FFMPEG (ffmpeg binary), CHROMIUM (browser executable, if Playwright's bundled one is absent).
 import { chromium } from 'playwright';
 import { createServer } from 'node:http';
-import { readFile, mkdir } from 'node:fs/promises';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { extname, join, normalize, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,7 +38,9 @@ const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, de
 page.on('console', m => { if (m.type() === 'warning' || m.type() === 'error') console.log('[page]', m.text()); });
 await page.goto(url);
 await page.waitForFunction(() => window.__ready === true, null, { timeout: 60000 });
-const { duration, fps } = await page.evaluate(() => window.SHOWREEL);
+const reel = await page.evaluate(() => window.SHOWREEL);
+const { duration, fps } = reel;
+const writeTimeline = async dir => { await mkdir(dir, { recursive: true }); await writeFile(join(dir, 'timeline.json'), JSON.stringify(reel, null, 2)); };
 const stage = page.locator('#stage');
 
 const shot = async (t, type = 'png') => {
@@ -46,18 +49,22 @@ const shot = async (t, type = 'png') => {
 };
 
 const stills = opt('--stills');
-if (stills) {
+if (args.includes('--timeline-only')) {
+  await writeTimeline(join(here, 'out'));
+  console.log(`timeline → showreel/out/timeline.json (${duration.toFixed(2)} s)`);
+} else if (stills) {
   const out = opt('--out', join(here, 'out', 'stills'));
   await mkdir(out, { recursive: true });
   for (const s of stills.split(',')) {
     const t = parseFloat(s);
     const buf = await shot(t);
-    await (await import('node:fs/promises')).writeFile(join(out, `t${t.toFixed(2)}.png`), buf);
+    await writeFile(join(out, `t${t.toFixed(2)}.png`), buf);
   }
   console.log(`wrote ${stills.split(',').length} stills → ${out}`);
 } else {
   const out = opt('--out', join(here, 'out', 'video.mp4'));
   await mkdir(dirname(out), { recursive: true });
+  await writeTimeline(dirname(out));
   const total = Math.round(duration * fps);
   const sub = Math.max(1, parseInt(opt('--shutter', '1'), 10));
   // sub-frames are spread across half a frame interval and averaged back down to `fps` by ffmpeg's tmix
