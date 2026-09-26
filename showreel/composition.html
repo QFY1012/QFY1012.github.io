@@ -128,6 +128,15 @@
   /* 03 · NarraSteer, 04 · ToA, 05 · public opinion */
   .tile { position: absolute; width: 58px; height: 36px; border-radius: 6px; background: var(--card); border: 1px solid var(--line2); box-sizing: border-box;
           font-family: var(--mono); font-size: 10px; color: var(--dimmer); text-align: center; line-height: 34px; }
+  /* agent trace, drawn like today's agent transcripts: a status dot, the tool call, its result on an elbow */
+  .trow { position: relative; margin: 0 -8px 6px; padding: 4px 8px 4px 24px; border-radius: 5px; font-family: var(--mono); font-size: 12px; line-height: 18px; white-space: nowrap; color: var(--ink); }
+  .trow .td { position: absolute; left: 9px; top: 10px; width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
+  .trow b { font-weight: 500; }
+  .trow .ta { color: var(--dim); }
+  .trow .tr { position: relative; padding-left: 16px; color: var(--dimmer); }
+  .trow .tr::before { content: ''; position: absolute; left: 3px; top: 1px; width: 7px; height: 8px; border-left: 1px solid var(--faint); border-bottom: 1px solid var(--faint); }
+  .twork { position: relative; padding-left: 16px; font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .twork i { position: absolute; left: 1px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
   .logl { font-family: var(--mono); font-size: 13px; color: var(--dim); margin: 0 0 13px; white-space: nowrap; }
   .logl i { display: inline-block; width: 15px; height: 15px; border-radius: 50%; background: var(--panel); color: var(--dimmer); font-style: normal; font-size: 10px; line-height: 15px; text-align: center; margin-right: 10px; vertical-align: 1px; }
   .pdot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 7px; background: var(--faint); }
@@ -936,8 +945,8 @@ const P4 = (() => {
   // 背景: an opaque execution log + the waiting time
   const log = $('div', 'card', pn); st(log, { width: '470px', padding: '22px 24px' }); at(log, 852, 220);
   const LOG = ['Reading CSV with 1,031 rows…', 'Computing sales statistics by brand…', 'Writing script to rank brands by sales…', 'Generating bar chart for brand sales…', 'Filtering data for Xiaomi models…', 'Sorting Xiaomi models by average sales…'];
-  log.innerHTML = '<div class="cap" style="margin-bottom:14px">AGENT 执行日志</div>' + LOG.map(s => `<div class="logl"><i>✓</i>${s}</div>`).join('');
-  const logLines = [...log.querySelectorAll('.logl')];
+  log.innerHTML = '<div class="cap" style="margin-bottom:12px">AGENT 执行日志</div>' + LOG.map(s => `<div class="trow"><i class="td"></i>${s}</div>`).join('');
+  const logLines = [...log.querySelectorAll('.trow')];
   const who = $('div', 'card', pn); st(who, { width: '330px', padding: '22px 24px' }); at(who, 1392, 220);
   who.innerHTML = '<div class="cap" style="margin-bottom:14px">形成性研究 · N = 8</div><div>' + Array.from({ length: 8 }, (_, i) => `<span class="pdot"${i < 5 ? ' style="background:var(--accent)"' : ''}></span>`).join('') + '</div><div class="zh13" style="margin-top:12px">5 / 8 的人到最后才发现方向跑偏</div>';
   const wait = $('div', 'card', pn); st(wait, { width: '870px', padding: '22px 24px' }); at(wait, 852, 560);
@@ -948,7 +957,7 @@ const P4 = (() => {
   // 解法: the narrative-space disc (attribute labels and link types from the real system)
   const disc = $('div', 'layer', pn);
   const svg = S('svg', { class: 'full' }, disc);
-  const C = { x: 1290, y: 548 }, R = 262;
+  const C = { x: 1440, y: 548 }, R = 262;
   const pol = (a, r) => [C.x + Math.cos(a * Math.PI / 180) * r, C.y + Math.sin(a * Math.PI / 180) * r];
   const face = S('circle', { cx: C.x, cy: C.y, r: R, fill: '#fff', stroke: 'rgba(23,27,38,0.16)', 'stroke-width': 1.2 }, svg);
   const ATTR = ['GDP', 'Country', 'Unemployment', 'Inflation', 'Country code', 'GDP per Capita', 'Oil Price', 'Life Expectancy', 'FDI', 'Exports', 'GDP Growth'];
@@ -981,24 +990,25 @@ const P4 = (() => {
   const cursor = S('path', { d: 'M0,0 L0,20 L5.5,15 L9.5,23.5 L13,22 L9,13.5 L16,13.5 Z', fill: '#171b26', stroke: '#fff', 'stroke-width': 1.2 }, svg);
   const pop = $('div', 'npop', disc);
   pop.innerHTML = '<div class="cols"><div class="col"><b>GDP</b><div class="fl">Year ≤ 2008<br>Country = Israel</div></div><div style="color:var(--dimmer)">→</div><div class="col"><b>Unemployment</b><div class="fl">Year ≤ 2008<br>Country = Israel</div></div></div><div class="btns"><div class="btn">Cancel</div><div class="btn go">Explore →</div></div>';
-  at(pop, 1392, 356);
+  at(pop, 1350, 608);
   const go = pop.querySelector('.go');
   // 解法 · the mapping: the agent's trace is a line of steps in time; each step moves to where its data dimension sits on
   // the disc (angle = the attribute it analyses), and the storyline is drawn through them as they land
   const MAPI = [6, 8, 9, 0, 1, 2];                                    // Oil Price, FDI, Exports, GDP, Country, Unemployment
   const tl = $('div', 'layer', pn);
+  const TRACE = [['Analyze', 'Oil Price', 'line chart'], ['Analyze', 'FDI', 'bar chart'], ['Compare', 'Exports, FDI', 'scatter plot'],
+                 ['Analyze', 'GDP', 'line chart'], ['Filter', 'Country = Israel', 'table'], ['Analyze', 'Unemployment', 'line chart']];
+  const tcard = box(tl, 'card', 860, 290, 272, 0); st(tcard, { padding: '16px 18px 14px' });
+  tcard.innerHTML = '<div class="cap" style="margin-bottom:10px">AGENT 执行轨迹</div>' +
+    TRACE.map(([f, a, r]) => `<div class="trow"><i class="td"></i><b>${f}</b><span class="ta">(${a})</span><div class="tr">${r}</div></div>`).join('') +
+    '<div class="twork"><i></i>Analyzing…</div>';
+  const rows = [...tcard.querySelectorAll('.trow')], work = tcard.querySelector('.twork'), workDot = work.querySelector('i');
   const tsvg = S('svg', { class: 'full' }, tl);
-  const TLY = 214, tx0 = 924, tdx = 146;
-  const tlLab = box(tl, 'abs cap', 860, 170, 0, 0, 'AGENT 执行轨迹 · 按时间排列');
-  const tlLine = S('path', { d: `M${tx0 - 60},${TLY} L${tx0 + 5 * tdx + 70},${TLY}`, stroke: 'rgba(23,27,38,0.22)', 'stroke-width': 1.2, fill: 'none', 'marker-end': 'url(#arr)' }, tsvg);
-  const chips = MAPI.map((ai, i) => { const g = S('g', { transform: `translate(${tx0 + i * tdx},${TLY})` }, tsvg); const w = 124;
-    const r = S('rect', { x: -w / 2, y: -13, width: w, height: 26, rx: 13, fill: '#fff', stroke: 'rgba(23,27,38,0.22)' }, g);
-    const tx = S('text', { x: 0, y: 4, 'text-anchor': 'middle', style: 'font: 400 11px JetBrains Mono', fill: '#171b26' }, g);
-    tx.innerHTML = `<tspan fill="#c2410c">0${i + 1}</tspan>  ${ATTR[ai]}`; return { g, r, tx }; });
+  let rowAt = rows.map(() => ({ x: 884, y: 340 }));                   // each row's status dot, measured in layout()
   const flyers = MAPI.map((ai, i) => { const g = S('g', {}, tsvg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: '#171b26', 'stroke-width': 2, transform: 'rotate(45)' }, g);
     const lab = S('text', { x: 14, y: 4, style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); lab.textContent = ATTR[ai]; return { g, lab }; });
   const rays = MAPI.map((ai, i) => S('line', { x1: qN[i].x, y1: qN[i].y, x2: pills[ai].x, y2: pills[ai].y, stroke: '#c2410c', 'stroke-width': 1.1, 'stroke-dasharray': '3 3' }, svg));
-  const nsLab = box(tl, 'abs cap', 860, 880, 0, 0, '<span style="color:var(--accent)">叙事空间</span> · 位置 = 数据维度 · 连线 = 叙事关系');
+  const nsLab = box(tl, 'abs cap', 1180, 880, 0, 0, '<span style="color:var(--accent)">叙事空间</span> · 位置 = 数据维度 · 连线 = 叙事关系');
   const FLY = i => [.75 + i * .28, 1.3 + i * .28];                   // seconds into 解法: a step leaves the line, lands
   // 结果: controlled study
   const cmp = Compare(pn, 1330, 300, 'NarraSteer', [
@@ -1010,7 +1020,8 @@ const P4 = (() => {
   const t0 = T.p4[0];
   let BTN = { x: 1640, y: 470 };
   return {
-    layout() { const r = go.getBoundingClientRect(), s0 = document.getElementById('stage').getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 }; },
+    layout() { vis(sc.root, true); const s0 = document.getElementById('stage').getBoundingClientRect(), r = go.getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 };
+      rowAt = rows.map(e => { const d = e.querySelector('.td').getBoundingClientRect(); return { x: d.left - s0.left + d.width / 2, y: d.top - s0.top + d.height / 2 }; }); vis(sc.root, false); },
     render(t) {
       if (!sc.on(t)) return;
       const u = warp(t - t0, PLAN.p4.map);
@@ -1020,7 +1031,7 @@ const P4 = (() => {
       // 背景
       const bgOut = 1 - oC(P(u, s1 - .05, s1 + .35));
       log.style.opacity = rise(log, u, .55, .5, 14) * bgOut;
-      logLines.forEach((l, i) => { const p = P(u, .75 + i * .18, .9 + i * .18); l.style.opacity = .25 + .75 * p; l.querySelector('i').style.cssText = p >= 1 ? 'background:var(--ink);color:#fff' : ''; });
+      logLines.forEach((l, i) => { const p = P(u, .75 + i * .18, .9 + i * .18); l.style.opacity = .25 + .75 * p; l.querySelector('i').style.background = p >= 1 ? 'var(--ink)' : 'var(--faint)'; });
       who.style.opacity = rise(who, u, .8, .5, 14) * bgOut;
       wait.style.opacity = rise(wait, u, 1.0, .5, 14) * bgOut;
       const wp = oQ(P(u, 1.2, 2.0)); w1.setAttribute('width', 822 * .741 * wp); w2.setAttribute('x', 822 * .741 * wp + 3); w2.setAttribute('width', Math.max(0, 822 * .259 * P(u, 1.7, 2.1) - 3));
@@ -1028,21 +1039,21 @@ const P4 = (() => {
       const sr = t - t0 - PLAN.p4.steps[1];
       const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
       const shift = ioC(P(u, s2, s2 + .6));
-      st(disc, { opacity: P(sr, 0, .35), transform: `translate(${-shift * 230}px, 0) scale(${1 - shift * .12})`, transformOrigin: `${C.x}px ${C.y}px` });
+      st(disc, { opacity: P(sr, 0, .35), transform: `translate(${-shift * 380}px, 0) scale(${1 - shift * .12})`, transformOrigin: `${C.x}px ${C.y}px` });
       face.setAttribute('r', R * oQ(P(sr, 0, .6)));
       spokes.forEach((s, i) => s.style.opacity = P(sr, .15 + i * .02, .45 + i * .02));
       st(hub, { opacity: P(sr, .1, .35) });
       // the trace, in time order
       st(tl, { opacity: pOut });
-      rise(tlLab, sr, .1, .4, 6); draw(tlLine, oQ(P(sr, .1, .55)));
+      rise(tcard, sr, .05, .4, 12);
+      rows.forEach((e, i) => { const [f0, f1] = FLY(i); e.style.opacity = P(sr, .15 + i * .08, .3 + i * .08);
+        const on = P(sr, f0 - .05, f0 + .05) * (1 - P(sr, f1, f1 + .15)); e.style.background = on > .01 ? `rgba(194,65,12,${.1 * on})` : ''; });
+      work.style.opacity = P(sr, .6, .75) * (.55 + .45 * Math.abs(Math.cos(Math.max(0, sr) * 3)));
       const flash = MAPI.map(() => 0);
-      chips.forEach((c, i) => { const k = oB(P(sr, .2 + i * .06, .5 + i * .06)); const [f0] = FLY(i); const gone = P(sr, f0, f0 + .15);
-        c.g.setAttribute('transform', `translate(${tx0 + i * tdx},${TLY}) scale(${Math.max(0, k)})`); c.g.style.opacity = Math.min(1, k * 2) * (1 - .6 * gone);
-        c.r.setAttribute('stroke-dasharray', gone > .5 ? '3 3' : ''); });
       // each step flies to its place on the disc
       let pq = 0;
       flyers.forEach((f, i) => { const [f0, f1] = FLY(i), p = ioC(P(sr, f0, f1)), n = qN[i];
-        const x0 = tx0 + i * tdx, y0 = TLY, cx = (x0 + n.x) / 2 + (n.x < x0 ? -40 : 40), cy = (y0 + n.y) / 2 - 70;
+        const x0 = rowAt[i].x, y0 = rowAt[i].y, cx = (x0 + n.x) / 2, cy = Math.min(y0, n.y) - 60;
         const x = (1 - p) ** 2 * x0 + 2 * (1 - p) * p * cx + p * p * n.x, y = (1 - p) ** 2 * y0 + 2 * (1 - p) * p * cy + p * p * n.y;
         f.g.setAttribute('transform', `translate(${x},${y})`); f.g.style.opacity = sr > f0 && sr < f1 + .05 ? 1 : 0; f.lab.style.opacity = 1 - P(p, .6, 1);
         const k = oB(P(sr, f1 - .05, f1 + .2)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`);
