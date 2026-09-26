@@ -1,17 +1,19 @@
 # Showreel
 
-A 15-second motion-graphics opener for the résumé, built from the site's own content and visual language.
-Output: `public/videos/showreel.mp4` (1920×1080, 60 fps, H.264 + AAC).
+A 30-second opener for the résumé: white, restrained, and built entirely from the site's own content.
+Every visual is redrawn in `composition.html` — no screenshots. Output: `public/videos/showreel.mp4`
+(1920×1080, 60 fps, H.264 + AAC).
 
-| Time | Chapter | Source on the site |
-| --- | --- | --- |
-| 0.0–1.5 | DESIGN · ENGINEERING · AI, with the CAPABILITIES tags | home hero + skills |
-| 1.5–4.0 | Alibaba Taotian — AI Design Engineer (skill test platform, evaluate → auto-revise → admit loop, ≈30 skills, 1000+ uses, DOM + CV + LLM output checks) | home experience, résumé |
-| 4.0–6.5 | NarraSteer — agent trajectories as storylines in a narrative disc, drag to steer, 15/16 steered | `/narrasteer` |
-| 6.5–9.5 | ToA — lost linear chat → analysis tree, signals + REC, real UI, +58.3% insights / turn | `/toa` |
-| 9.5–11.75 | Public-opinion platform — frames from the demo, 3-layer IA, 5 teams, 0 → 1 | home works, `yuqing-demo.mp4` |
-| 11.75–12.5 | Undergraduate flashes: COCOCREATE, Qi Baishi × AIGC, L3 takeover HMI | project videos |
-| 12.5–15.0 | Name over the hero's depth-of-field Möbius band | home hero |
+Each project is told the same way — **背景 → 解法 → 结果** — with earlier steps kept on screen so there is time to read.
+
+| Time | Chapter | 背景 | 解法 | 结果 |
+| --- | --- | --- | --- | --- |
+| 0–2.5 | Intro: name, role, the four projects | | | |
+| 2.5–8.75 | 01 阿里巴巴淘天 · 设计 Agent 的 Skill 标准化 | skills keep growing; admission and output need one standard | 4-dimension test platform + auto-revise loop; Radix UI components + DOM/CV/LLM checks | ~30 skills admitted · 1000+ team uses · became the team's acceptance standard |
+| 8.75–15 | 02 NarraSteer | opaque agent; 74% idle, 5/8 saw drift only at the end | trajectory → storyline in a narrative-space disc; drag to steer | N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run |
+| 15–21.25 | 03 ToA | novices get lost in linear chat; 4/6 failed | chat → analysis tree; chart signals suggest next queries | N=12 · +58.3% insights/turn · +17.7% thinking time · −23% turns |
+| 21.25–27.5 | 04 跨社交媒体舆情分析与治理平台 | monitoring / assessment / handling fragmented | 3-layer IA (大屏 / 仪表盘 / 中台), 5 tech teams | delivered 0 → 1, supporting the National Key R&D Program |
+| 27.5–30 | Outro: name and contact | | | |
 
 ## Build
 
@@ -21,11 +23,11 @@ pip install numpy scipy          # soundtrack
 FFMPEG=ffmpeg ./showreel/build.sh
 ```
 
-- `composition.html` — the whole animation as `renderFrame(t)`. Open it through any static server at the repo root
-  with `?play` for a realtime preview or `?t=8.5` to freeze a moment.
-- `render.mjs` — steps every frame in headless Chromium and pipes it to ffmpeg (`--stills 1.2,6.8` for spot checks).
-  If Playwright's bundled browser is missing, set `CHROMIUM=/path/to/chrome`.
-- `soundtrack.py` — synthesises the 120 BPM score; cuts and hits line up with the timeline above.
-- `prepare-assets.sh` — pulls the stills the reel uses out of `public/` (screenshots and demo videos).
+- `composition.html` — the whole animation as `renderFrame(t)`. Serve the repo root with any static server and open
+  `showreel/composition.html?play` for a realtime preview, or `?t=12` to freeze a moment.
+- `render.mjs` — steps every frame in headless Chromium and pipes it to ffmpeg (`--stills 4.2,12.6` for spot checks,
+  `--shutter 2` for motion blur). If Playwright's bundled browser is missing, set `CHROMIUM=/path/to/chrome`.
+- `soundtrack.py` — synthesises the 96 BPM score; chapter chimes and step ticks line up with the timeline above.
 
-Fonts: Syne and JetBrains Mono (SIL OFL, licences in `fonts/`), PingFang SC from `public/fonts`.
+Chinese copy only uses characters present in the site's PingFang subset (`public/fonts`), so it renders without fallback.
+Fonts: Syne and JetBrains Mono (SIL OFL, licences in `fonts/`).

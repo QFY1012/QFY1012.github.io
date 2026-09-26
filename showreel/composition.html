@@ -1,17 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh">
 <head>
 <meta charset="utf-8">
-<title>Qu Feiyuan · Showreel</title>
+<title>屈非塬 · Showreel</title>
 <!--
-  15-second showreel composition. Everything is driven by window.renderFrame(t) (t in seconds),
-  so render.mjs can step it frame by frame. Open with ?play for a realtime preview, or ?t=8.5
-  to freeze on a single moment. All content comes from the site (index / toa / narrasteer / resume).
+  30-second showreel. Everything is drawn here (no screenshots) and driven by window.renderFrame(t),
+  so render.mjs can step it frame by frame. Open with ?play for a realtime preview, ?t=12 to freeze.
+  Four projects, each told as 背景 → 解法 → 结果; every fact comes from the site (index / toa / narrasteer / resume).
 -->
 <style>
-  @font-face { font-family: 'Syne'; font-weight: 600; src: url('fonts/syne-latin-600-normal.woff2') format('woff2'); }
   @font-face { font-family: 'Syne'; font-weight: 700; src: url('fonts/syne-latin-700-normal.woff2') format('woff2'); }
-  @font-face { font-family: 'Syne'; font-weight: 800; src: url('fonts/syne-latin-800-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url('fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 500; src: url('fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: url('fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2'); }
@@ -19,1011 +17,728 @@
   @font-face { font-family: 'PingFang SC'; font-weight: 500; src: url('../public/fonts/PingFangSC-Medium.woff2') format('woff2'); }
   @font-face { font-family: 'PingFang SC'; font-weight: 700; src: url('../public/fonts/PingFangSC-Bold.woff2') format('woff2'); }
 
-  /* site palette (src/styles/home.css, dark theme) */
+  /* the site's light theme (src/styles/home.css [data-theme="light"]) */
   :root {
-    --bg: #0a0c12; --panel: #10141d; --text: #e6eaf3; --dim: #848c9f; --dimmer: #626b82;
-    --teal: #00e8c8; --teal2: #1291ab; --orange: #ff8c42;
-    --line: rgba(255,255,255,0.14); --line2: rgba(255,255,255,0.28);
+    --page: #ffffff; --panel: #f5f6f8; --card: #ffffff;
+    --ink: #171b26; --dim: #666d7e; --dimmer: #8a92a6; --faint: #c3c8d3;
+    --line: rgba(23,27,38,0.12); --line2: rgba(23,27,38,0.22);
+    --accent: #c2410c; --accent-soft: rgba(194,65,12,0.10); --accent-mid: rgba(194,65,12,0.45);
+    --sans: 'PingFang SC', sans-serif;
     --mono: 'JetBrains Mono', 'PingFang SC', monospace;
     --display: 'Syne', 'PingFang SC', sans-serif;
-    --zh: 'PingFang SC', sans-serif;
   }
-  html, body { margin: 0; background: #000; }
+  html, body { margin: 0; background: #e9ebef; }
   body.preview { display: grid; place-items: center; min-height: 100vh; }
-  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg);
-           color: var(--text); font-family: var(--mono); -webkit-font-smoothing: antialiased; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--page); color: var(--ink);
+           font-family: var(--sans); -webkit-font-smoothing: antialiased; }
   .layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
   .abs { position: absolute; }
-  .scene { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; visibility: hidden; }
+  .nowrap { white-space: nowrap; }
   svg.full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
 
-  /* letter masks for kinetic type */
-  .lm { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.08em 0 0.04em; margin: -0.08em 0 -0.04em; }
-  .lc { display: inline-block; will-change: transform; }
-  .display { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; line-height: 0.92; white-space: nowrap; }
-  .kicker { font-family: var(--mono); font-weight: 500; font-size: 18px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--teal); white-space: nowrap; }
-  .meta { font-family: var(--mono); font-size: 16px; letter-spacing: 0.08em; color: var(--dim); white-space: nowrap; }
-  .chip { position: absolute; font-family: var(--mono); font-size: 17px; font-weight: 500; letter-spacing: 0.12em; color: var(--text);
-          padding: 7px 14px; background: rgba(255,255,255,0.06); white-space: nowrap; }
-  .chip b { color: var(--teal); font-weight: 500; margin-right: 10px; }
-  .badge { display: inline-block; font-family: var(--mono); font-size: 15px; font-weight: 500; letter-spacing: 0.12em; padding: 6px 12px;
-           margin-right: 10px; background: rgba(0,232,200,0.12); color: var(--teal); white-space: nowrap; }
-  .badge.ghost { background: rgba(255,255,255,0.06); color: var(--text); }
-  .metric { font-family: var(--mono); font-weight: 700; color: var(--teal); letter-spacing: -0.04em; line-height: 0.9; white-space: nowrap; }
+  .mono { font-family: var(--mono); }
+  .kick { font-family: var(--mono); font-size: 13px; letter-spacing: 0.12em; color: var(--dim); white-space: nowrap; }
+  .kick b { color: var(--accent); font-weight: 500; margin-right: 14px; }
+  .title { font-family: var(--sans); font-weight: 500; font-size: 40px; line-height: 1.25; letter-spacing: 0.01em; white-space: nowrap; }
+  .title.latin { font-family: var(--display); font-weight: 700; letter-spacing: 0.01em; }
+  .sub { font-size: 17px; line-height: 1.6; color: var(--dim); width: 560px; }
+  .mask { overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .mask > * { will-change: transform; }
 
-  /* HUD */
-  #hud .tl { left: 56px; top: 44px; }
-  #hud .tr { right: 56px; top: 36px; text-align: right; }
-  .roller { display: inline-flex; font-family: var(--mono); font-weight: 500; font-size: 30px; letter-spacing: 0.04em; color: var(--text); height: 36px; overflow: hidden; }
-  .roller .col { display: flex; flex-direction: column; }
-  .roller .col span { height: 36px; line-height: 36px; }
-  .chapters { position: absolute; left: 96px; right: 96px; bottom: 44px; height: 30px; }
-  .chap { position: absolute; bottom: 0; height: 30px; }
-  .chap .lab { position: absolute; left: 0; bottom: 10px; font-size: 12px; letter-spacing: 0.16em; color: var(--dimmer); white-space: nowrap; }
-  .chap .trk { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(255,255,255,0.12); }
-  .chap .fil { position: absolute; left: 0; bottom: 0; height: 2px; background: var(--teal); width: 0; }
+  .steps { position: absolute; left: 120px; top: 440px; width: 600px; }
+  .rail { position: absolute; left: 0; top: 10px; width: 1px; background: var(--line); }
+  .dot { position: absolute; left: -4px; width: 9px; height: 9px; border-radius: 50%; background: var(--page); border: 1.5px solid var(--faint); box-sizing: border-box; }
+  .step { position: absolute; left: 30px; width: 560px; }
+  .step .lab { font-size: 15px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+  .step .lab i { font-style: normal; font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; color: var(--dimmer); margin-left: 12px; }
+  .step .txt { margin-top: 8px; font-size: 20px; line-height: 1.6; color: var(--ink); }
+  .step .txt em { font-style: normal; color: var(--accent); }
+  .metrics { display: flex; gap: 40px; margin-top: 10px; }
+  .metric .v { font-family: var(--mono); font-weight: 500; font-size: 34px; letter-spacing: -0.02em; color: var(--accent); line-height: 1.1; white-space: nowrap; }
+  .metric .l { font-size: 13px; color: var(--dim); margin-top: 6px; white-space: nowrap; }
 
-  /* ToA vector recreation */
-  .tnode { position: absolute; width: 214px; padding: 10px 12px; background: #121722; border: 1.5px solid rgba(255,255,255,0.26); border-radius: 6px;
-           font-family: var(--mono); font-size: 13px; color: var(--dim); box-sizing: border-box; transform-origin: 50% 50%; }
-  .tnode.dash { border-style: dashed; background: rgba(18,23,34,0.6); }
-  .tnode.focus { border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal), 0 0 28px rgba(0,232,200,0.25); }
-  .tnode .row { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin: 2px 0; }
-  .tnode .k { color: var(--dimmer); margin-right: 2px; }
-  .tnode .c { color: var(--text); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 0 7px; font-size: 12px; line-height: 18px; }
-  .tnode .c.f { border-color: rgba(0,232,200,0.6); color: var(--teal); }
-  .troot { position: absolute; width: 150px; height: 44px; line-height: 44px; text-align: center; background: #121722; border: 1.5px solid rgba(255,255,255,0.4);
-           border-radius: 6px; font-family: var(--mono); font-size: 16px; color: var(--text); letter-spacing: 0.1em; }
-  .elabel { font-family: var(--mono); font-style: italic; font-size: 14px; fill: var(--dim); }
-  .chat { position: absolute; left: 1150px; top: 0; width: 640px; }
-  .msg-q { margin: 0 0 16px auto; width: fit-content; max-width: 460px; padding: 10px 16px; background: rgba(255,255,255,0.07); border-radius: 8px; font-size: 15px; color: var(--text); }
-  .msg-a { margin: 0 0 22px; padding: 16px; background: #121722; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; font-size: 13px; color: var(--dim); line-height: 1.5; }
-  .bars { display: flex; align-items: flex-end; gap: 10px; height: 90px; margin-top: 10px; padding-left: 6px; border-left: 1px solid rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.2); }
-  .bars i { display: block; width: 34px; }
-  .popover { position: absolute; width: 270px; background: #151b27; border: 1px solid rgba(255,255,255,0.22); border-radius: 6px; padding: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
-  .sig { padding: 8px 10px; margin: 4px 0; background: rgba(255,255,255,0.04); border-radius: 4px; font-size: 13px; color: var(--dim); line-height: 1.4; position: relative; }
-  .sig b { display: block; color: var(--text); font-family: var(--mono); font-size: 13px; }
-  .sig .rec { position: absolute; right: 8px; bottom: 8px; background: var(--text); color: #0a0c12; font-size: 10px; font-weight: 700; padding: 1px 8px; border-radius: 2px; }
+  /* right-hand illustration panel */
+  #panel { position: absolute; left: 780px; top: 150px; width: 1020px; height: 780px; border-radius: 20px; background: var(--panel); }
+  .card { position: absolute; background: var(--card); border-radius: 10px; box-shadow: 0 1px 0 rgba(23,27,38,0.04), 0 10px 30px rgba(23,27,38,0.06); box-sizing: border-box; }
+  .cap { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--dimmer); white-space: nowrap; }
+  .zh13 { font-size: 13px; color: var(--dim); white-space: nowrap; }
+  .tile { position: absolute; width: 58px; height: 36px; border-radius: 6px; background: var(--card); border: 1px solid var(--line2); box-sizing: border-box;
+          font-family: var(--mono); font-size: 10px; color: var(--dimmer); text-align: center; line-height: 34px; }
+  .chipx { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 10px; background: var(--panel); color: var(--dim); margin-right: 6px; white-space: nowrap; }
+  .station { position: absolute; width: 150px; height: 52px; border-radius: 26px; background: var(--card); box-shadow: 0 6px 20px rgba(23,27,38,0.06);
+             text-align: center; line-height: 52px; font-size: 16px; font-weight: 500; }
+  .meter { display: flex; align-items: center; gap: 12px; margin: 9px 0; font-size: 13px; color: var(--ink); white-space: nowrap; }
+  .meter .n { width: 86px; }
+  .meter .tr { position: relative; width: 110px; height: 3px; border-radius: 2px; background: var(--line); }
+  .meter .tr i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--accent); }
+  .meter .ok { color: var(--accent); font-size: 13px; }
+  .wf { position: absolute; background: #eef0f3; border-radius: 3px; }
+  .cvb { position: absolute; border: 1.5px dashed var(--accent); border-radius: 4px; }
+  .cvt { position: absolute; font-family: var(--mono); font-size: 9px; font-weight: 700; color: #fff; background: var(--accent); padding: 0 4px; line-height: 13px; border-radius: 2px; }
 
-  /* NarraSteer */
-  .pill { font-family: var(--mono); font-size: 14px; }
-  .nlabel { font-family: var(--mono); font-size: 11px; fill: var(--dim); }
-  .tlabel { font-family: var(--mono); font-style: italic; font-size: 14px; font-weight: 500; }
-  .log { font-family: var(--mono); font-size: 17px; color: var(--dim); white-space: nowrap; margin: 0 0 14px; }
-  .log i { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.18); color: var(--bg); font-style: normal; font-size: 12px; line-height: 18px; text-align: center; margin-right: 12px; vertical-align: 1px; }
-  .npop { position: absolute; width: 380px; background: #151b27; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 14px; font-size: 14px; color: var(--text); box-shadow: 0 16px 50px rgba(0,0,0,0.55); }
-  .npop .cols { display: flex; gap: 12px; align-items: stretch; }
-  .npop .col { flex: 1; border: 1px solid rgba(255,255,255,0.18); border-radius: 4px; padding: 8px; }
-  .npop .col b { display: block; margin-bottom: 6px; font-weight: 500; }
-  .npop .fl { border: 1px solid rgba(255,255,255,0.14); border-radius: 3px; padding: 3px 6px; margin: 4px 0; color: var(--dim); font-size: 12px; }
-  .npop .fl em { color: var(--text); font-style: italic; font-weight: 700; }
-  .npop .btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
-  .npop .btn { padding: 5px 14px; border: 1px solid rgba(255,255,255,0.25); border-radius: 3px; font-size: 13px; }
-  .npop .btn.go { background: var(--text); color: #0a0c12; font-weight: 700; border-color: var(--text); }
+  .logl { font-family: var(--mono); font-size: 13px; color: var(--dim); margin: 0 0 13px; white-space: nowrap; }
+  .logl i { display: inline-block; width: 15px; height: 15px; border-radius: 50%; background: var(--panel); color: var(--dimmer); font-style: normal; font-size: 10px; line-height: 15px; text-align: center; margin-right: 10px; vertical-align: 1px; }
+  .pdot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 7px; background: var(--faint); }
 
-  /* Alibaba */
-  .evrow { display: flex; align-items: center; gap: 16px; margin: 10px 0; font-family: var(--mono); font-size: 15px; letter-spacing: 0.12em; color: var(--text); white-space: nowrap; }
-  .evrow .nm { width: 230px; }
-  .evrow .tr { position: relative; width: 250px; height: 3px; background: rgba(255,255,255,0.12); }
-  .evrow .tr i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--teal); }
-  .evrow .ok { color: var(--teal); width: 20px; }
-  .wf { position: absolute; background: rgba(255,255,255,0.08); border-radius: 3px; }
-  .cvbox { position: absolute; border: 1.5px dashed var(--teal); border-radius: 3px; }
-  .cvtag { position: absolute; font-family: var(--mono); font-size: 11px; font-weight: 700; color: #0a0c12; background: var(--teal); padding: 0 5px; line-height: 16px; white-space: nowrap; }
+  .npop { position: absolute; width: 300px; background: var(--card); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--ink); box-shadow: 0 14px 40px rgba(23,27,38,0.14); box-sizing: border-box; }
+  .npop .cols { display: flex; gap: 8px; align-items: center; }
+  .npop .col { flex: 1; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; }
+  .npop .col b { display: block; margin-bottom: 4px; font-weight: 500; font-family: var(--mono); font-size: 12px; }
+  .npop .fl { color: var(--dim); font-family: var(--mono); font-size: 11px; line-height: 1.6; }
+  .npop .btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; font-family: var(--mono); font-size: 11px; }
+  .npop .btn { padding: 3px 10px; border: 1px solid var(--line2); border-radius: 3px; color: var(--dim); }
+  .npop .btn.go { background: var(--ink); color: #fff; border-color: var(--ink); }
 
-  /* Public-opinion panels */
-  .panel { position: absolute; width: 920px; height: 518px; border-radius: 10px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.12);
-           background-size: cover; background-position: center; backface-visibility: hidden; }
+  .tnode { position: absolute; width: 176px; padding: 8px 10px; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2); box-sizing: border-box;
+           font-family: var(--mono); font-size: 11px; color: var(--dimmer); }
+  .tnode.dash { box-shadow: none; border: 1px dashed var(--faint); background: rgba(255,255,255,0.6); }
+  .tnode.focus { box-shadow: 0 0 0 1.5px var(--accent), 0 8px 24px rgba(194,65,12,0.12); }
+  .tnode .row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 2px 0; }
+  .tnode .c { color: var(--ink); background: var(--panel); border-radius: 8px; padding: 0 6px; line-height: 16px; }
+  .tnode .c.f { color: var(--accent); background: var(--accent-soft); }
+  .troot { position: absolute; width: 110px; height: 34px; line-height: 34px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2);
+           font-family: var(--mono); font-size: 13px; color: var(--ink); }
+  .msgq { margin: 0 0 12px auto; width: fit-content; max-width: 330px; padding: 8px 12px; background: var(--panel); border-radius: 8px; font-size: 13px; line-height: 1.45; color: var(--ink); font-family: var(--mono); }
+  .msga { margin: 0 0 16px; padding: 12px; border-radius: 8px; box-shadow: 0 0 0 1px var(--line); font-size: 12px; color: var(--dim); line-height: 1.5; font-family: var(--mono); }
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 60px; margin-top: 8px; border-bottom: 1px solid var(--line2); }
+  .bars i { display: block; width: 24px; background: #d5d9e1; border-radius: 2px 2px 0 0; }
+  .bars i.hi { background: var(--accent); }
+  .sigp { position: absolute; width: 236px; background: var(--card); border-radius: 8px; padding: 8px; box-shadow: 0 14px 40px rgba(23,27,38,0.14); box-sizing: border-box; }
+  .sig { padding: 6px 8px; margin: 3px 0; background: var(--panel); border-radius: 4px; font-size: 11px; color: var(--dim); line-height: 1.4; position: relative; font-family: var(--mono); }
+  .sig b { display: block; color: var(--ink); font-weight: 500; }
+  .sig .rec { position: absolute; right: 6px; bottom: 6px; background: var(--ink); color: #fff; font-size: 9px; font-weight: 700; padding: 0 6px; border-radius: 2px; }
 
-  /* Undergrad flashes */
-  .flash { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; visibility: hidden; }
-  .flash .img { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background-size: cover; background-position: center; }
-  .flash .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,12,18,0.92) 0%, rgba(10,12,18,0.35) 42%, rgba(10,12,18,0) 70%); }
-  .flash .ttl { position: absolute; left: 96px; bottom: 150px; }
-  .flash .ttl .display { font-size: 120px; }
+  .cmp { position: absolute; width: 400px; padding: 26px 28px; }
+  .cmp .hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .cmp .lg { font-size: 12px; color: var(--dim); white-space: nowrap; }
+  .cmp .lg span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 6px 0 14px; vertical-align: -1px; }
+  .cmp .r { margin: 0 0 18px; }
+  .cmp .rl { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink); margin-bottom: 8px; white-space: nowrap; }
+  .cmp .rl b { font-family: var(--mono); font-weight: 500; color: var(--accent); font-size: 14px; }
+  .cmp .bar { position: relative; height: 12px; margin: 5px 0; }
+  .cmp .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+  .cmp .bar span { position: absolute; top: -2px; font-family: var(--mono); font-size: 11px; color: var(--dim); white-space: nowrap; }
+
+  .plane { position: absolute; width: 340px; height: 214px; border-radius: 10px; background: var(--card); box-shadow: 0 0 0 1px var(--line), 0 20px 40px rgba(23,27,38,0.08); transform: rotateX(58deg) rotateZ(-42deg); }
+  .modl { position: absolute; width: 132px; height: 44px; border-radius: 8px; background: var(--card); box-shadow: 0 0 0 1px var(--line2); box-sizing: border-box;
+          font-size: 13px; color: var(--dim); text-align: center; line-height: 44px; white-space: nowrap; }
+  .stg { position: absolute; width: 120px; height: 44px; border-radius: 22px; background: var(--card); box-shadow: 0 6px 18px rgba(23,27,38,0.06); text-align: center; line-height: 44px; font-size: 16px; font-weight: 500; }
+
+  .toc { position: absolute; left: 1000px; top: 380px; width: 800px; }
+  .toc .h { margin-bottom: 18px; }
+  .toc .rw { display: flex; align-items: baseline; gap: 22px; padding: 18px 0; border-top: 1px solid var(--line); white-space: nowrap; }
+  .toc .rw:last-child { border-bottom: 1px solid var(--line); }
+  .toc .i { font-family: var(--mono); font-size: 13px; color: var(--accent); width: 24px; }
+  .toc .n { font-size: 20px; font-weight: 500; width: 300px; }
+  .toc .d { font-size: 15px; color: var(--dim); flex: 1; }
+  .toc .y { font-family: var(--mono); font-size: 13px; color: var(--dimmer); }
+
+  #hud .seg { position: absolute; top: 1004px; height: 20px; }
+  #hud .seg .l { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--dimmer); white-space: nowrap; }
+  #hud .seg .t { position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--line); }
+  #hud .seg .f { position: absolute; left: 0; top: 22px; height: 2px; background: var(--accent); }
 </style>
 </head>
 <body>
 <div id="stage">
-  <canvas id="particles" class="layer" width="1920" height="1080"></canvas>
+  <div id="panel"></div>
   <div id="world" class="layer"></div>
   <div id="hud" class="layer"></div>
-  <div id="vignette" class="layer" style="background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45) 100%); pointer-events:none"></div>
-  <canvas id="grain" class="layer" width="960" height="540" style="opacity:0.04; mix-blend-mode:screen"></canvas>
-  <div id="flashfx" class="layer" style="background:#fff; opacity:0"></div>
 </div>
 <svg width="0" height="0" style="position:absolute">
   <defs>
-    <filter id="hblur" x="-60%" y="-10%" width="220%" height="120%"><feGaussianBlur id="hblurStd" stdDeviation="0 0"/></filter>
-    <marker id="arrT" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00e8c8"/></marker>
-    <marker id="arrW" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e6eaf3"/></marker>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="#171b26" stroke-width="1.6"/></marker>
+    <marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="#c2410c" stroke-width="1.6"/></marker>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#eef0f3"/><line x1="0" y1="0" x2="0" y2="6" stroke="#c3c8d3" stroke-width="2"/></pattern>
   </defs>
 </svg>
 
 <script>
-/* ============================================================
-   utilities
-   ============================================================ */
+/* ============================================================ utilities */
 const W = 1920, H = 1080, FPS = 60;
 const clamp = (x, a = 0, b = 1) => x < a ? a : x > b ? b : x;
 const lerp = (a, b, t) => a + (b - a) * t;
 const P = (t, a, b) => clamp((t - a) / (b - a));
-const oE = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
-const iE = x => x <= 0 ? 0 : Math.pow(2, 10 * x - 10);
-const ioE = x => x <= 0 ? 0 : x >= 1 ? 1 : x < .5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2;
-const oC = x => 1 - Math.pow(1 - x, 3);
-const iC = x => x * x * x;
-const ioC = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const oQ = x => 1 - Math.pow(1 - x, 4);
-const oB = (x, s = 1.7) => x <= 0 ? 0 : 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
-const win = (t, a, b, fi = .12, fo = .12) => Math.min(P(t, a, a + fi), 1 - P(t, b - fo, b));
+const oC = x => 1 - Math.pow(1 - x, 3);
+const ioC = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const oB = (x, s = 1.2) => x <= 0 ? 0 : 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
 function mulberry32(a) { return () => { a |= 0; a = a + 0x6d2b79f5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
 const $ = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; (parent || document.body).appendChild(e); return e; };
 const NS = 'http://www.w3.org/2000/svg';
 const S = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
 const st = (e, o) => { for (const k in o) e.style[k] = o[k]; };
-const pos = (e, x, y) => st(e, { left: x + 'px', top: y + 'px' });
-const show = (e, on) => { e.style.visibility = on ? 'visible' : 'hidden'; };
-const fmt = (v, d) => v.toFixed(d);
+const at = (e, x, y) => st(e, { left: x + 'px', top: y + 'px' });
+const vis = (e, on) => { e.style.visibility = on ? 'visible' : 'hidden'; };
+/* soft entrance: fade + small rise; returns progress */
+const rise = (e, t, t0, d = .5, dy = 14) => { const p = oQ(P(t, t0, t0 + d)); st(e, { opacity: p, transform: `translateY(${(1 - p) * dy}px)` }); return p; };
+/* line draw-on */
+const draw = (el, p) => { const L = el.getTotalLength(); st(el, { strokeDasharray: `${L} ${L}`, strokeDashoffset: L * (1 - p) }); };
 
-/* kinetic letters: each glyph rides up out of its own mask */
-function Letters(parent, text, cls, style) {
-  const root = $('div', cls, parent);
-  if (style) st(root, style);
-  const spans = [...text].map(ch => { const m = $('span', 'lm', root); return $('span', 'lc', m, ch === ' ' ? '&nbsp;' : ch); });
-  return { root, spans };
-}
-function reveal(L, t, t0, o = {}) {
-  const { stagger = .028, dur = .42, ease = oE, out = null, outStagger = .012, outDur = .16, from = 1.1 } = o;
-  const n = L.spans.length;
-  L.spans.forEach((s, i) => {
-    const p = ease(P(t, t0 + i * stagger, t0 + i * stagger + dur));
-    let y = (1 - p) * from * 100;
-    if (out != null) { const q = P(t, out + i * outStagger, out + i * outStagger + outDur); y -= q * q * 115; }
-    s.style.transform = `translate3d(0,${y}%,0)`;
-  });
-}
-/* typewriter */
-function typed(text, t, t0, cps) { const n = Math.floor(clamp((t - t0) * cps, 0, text.length)); return text.slice(0, n); }
+/* ============================================================ timeline
+   96 BPM → one beat = 0.625 s. Each project gets 10 beats (6.25 s):
+   header on beat 0, 背景 on beat 1, 解法 on beat 4, 结果 on beat 7. */
+const BEAT = 0.625;
+const T = { intro: [0, 2.5], p1: [2.5, 8.75], p2: [8.75, 15.0], p3: [15.0, 21.25], p4: [21.25, 27.5], outro: [27.5, 30.0] };
+const STEP = [BEAT, 4 * BEAT, 7 * BEAT];   // local start of 背景 / 解法 / 结果
+const OUT = 6.0;                            // local start of the hand-off to the next project
+const DUR = 30.0;
 
-/* horizontal motion blur (whip pans) */
-const hblurStd = document.getElementById('hblurStd');
-
-/* ============================================================
-   timeline — beats at 120 BPM (0.5 s); chapters get the screen time
-   ============================================================ */
-const T = { intro: [0, 1.5], ali: [1.5, 4.0], ns: [4.0, 6.5], toa: [6.5, 9.5], po: [9.5, 11.75], ug: [11.75, 12.5], end: [12.5, 15.0] };
-const DUR = 15.0;
-const HITS = [0.5, 1.0, 3.0, 6.0, 8.5, 11.0, 12.5];   // slams that kick the camera
-
-const stage = document.getElementById('stage');
 const world = document.getElementById('world');
-const hud = document.getElementById('hud');
-const flashfx = document.getElementById('flashfx');
+const panelBg = document.getElementById('panel');
 
-/* ============================================================
-   PARTICLES — the site's hero: a depth-of-field Möbius band
-   (src/scripts/hero-particles.ts). Bookends the reel: a haze at
-   the open, then pulled into focus behind the name.
-   ============================================================ */
-const PT = (() => {
-  const cv = document.getElementById('particles');
-  const ctx = cv.getContext('2d');
-  const img = ctx.createImageData(W, H);
-  const A = new Float32Array(W * H), B = new Float32Array(W * H);
-  const N = 200000;
-  const rnd = mulberry32(1012);
-  const bx = new Float32Array(N), by = new Float32Array(N), bz = new Float32Array(N);
-  const dx = new Float32Array(N), dy = new Float32Array(N);
-  const sx = new Float32Array(N), sy = new Float32Array(N), sz = new Float32Array(N);
-  const key = new Float32Array(N);
-  const R = 720, WID = 0.24;
-  for (let i = 0; i < N; i++) {
-    const u = rnd() * Math.PI * 2, v = (rnd() * 2 - 1) * WID, th = (rnd() - .5) * 0.02;
-    const c = Math.cos(u / 2), s = Math.sin(u / 2);
-    bx[i] = (1 + v * c) * Math.cos(u) * R; by[i] = (1 + v * c) * Math.sin(u) * R; bz[i] = (v * s + th) * R;
-    const a = rnd() * Math.PI * 2, m = Math.sqrt(rnd());
-    dx[i] = Math.cos(a) * m; dy[i] = Math.sin(a) * m;
-    const sc = 1.15 + rnd() * 0.7; sx[i] = bx[i] * sc + (rnd() - .5) * 300; sy[i] = by[i] * sc + (rnd() - .5) * 300; sz[i] = bz[i] * sc + (rnd() - .5) * 600;
-    key[i] = (u / (Math.PI * 2) + rnd() * 0.35) / 1.35;
-  }
-  const teal = [0, 232, 200], far = [18, 145, 171], bg = [10, 12, 18];
-  let wasClear = false;
-  function clear() { if (!wasClear) { ctx.clearRect(0, 0, W, H); wasClear = true; } }
-  function splat(buf, x, y, w) {
-    const x0 = x | 0, y0 = y | 0; if (x0 < 0 || y0 < 0 || x0 >= W - 1 || y0 >= H - 1) return;
-    const fx = x - x0, fy = y - y0, i = y0 * W + x0;
-    buf[i] += w * (1 - fx) * (1 - fy); buf[i + 1] += w * fx * (1 - fy); buf[i + W] += w * (1 - fx) * fy; buf[i + W + 1] += w * fx * fy;
-  }
-  /* o: { spin, tilt, roll, cx, cy, coc, alpha, gather (0..1 scattered→band), fade } */
-  function draw(o) {
-    wasClear = false;
-    A.fill(0); B.fill(0);
-    const D = 2200, F = 1850;
-    const cs = Math.cos(o.spin), sn = Math.sin(o.spin), ct = Math.cos(o.tilt), stl = Math.sin(o.tilt), cr = Math.cos(o.roll), sr = Math.sin(o.roll);
-    const g = o.gather, coc = o.coc, al = o.alpha;
-    for (let i = 0; i < N; i++) {
-      let lx = bx[i], ly = by[i], lz = bz[i], c0 = cs, s0 = sn;
-      if (g < 1) { // spiral in: contract toward the band while swirling about its axis
-        const p = ioC(clamp((g - key[i] * 0.45) / 0.55)), q = 1 - p;
-        lx = lerp(sx[i], lx, p); ly = lerp(sy[i], ly, p); lz = lerp(sz[i], lz, p);
-        const a = o.spin - 2.2 * q * q; c0 = Math.cos(a); s0 = Math.sin(a);
-      }
-      let x = lx * c0 - ly * s0, y = lx * s0 + ly * c0, z = lz;
-      const y2 = y * ct - z * stl, z2 = y * stl + z * ct; y = y2; z = z2;
-      const x3 = x * cr - y * sr, y3 = x * sr + y * cr; x = x3; y = y3;
-      const d = D + z; if (d < 200) continue;
-      const k = F / d;
-      const r = coc * Math.abs(d - D) + o.blurAll;
-      const X = o.cx + x * k + dx[i] * r, Y = o.cy + y * k + dy[i] * r;
-      const m = clamp(r / 26);
-      const w = al * k * k / (1 + r * 0.05);
-      splat(A, X, Y, w * (1 - m)); splat(B, X, Y, w * m);
-    }
-    const px = img.data, fd = o.fade;
-    for (let i = 0, j = 0; i < W * H; i++, j += 4) {
-      const a = (1 - Math.exp(-A[i])) * fd, b = (1 - Math.exp(-B[i])) * fd;
-      px[j] = bg[0] + teal[0] * a + far[0] * b; px[j + 1] = bg[1] + teal[1] * a + far[1] * b; px[j + 2] = bg[2] + teal[2] * a + far[2] * b; px[j + 3] = 255;
-    }
-    ctx.putImageData(img, 0, 0);
-  }
-  return { draw, clear };
-})();
-
-/* grain — a few deterministic noise tiles, cycled per frame */
-const GR = (() => {
-  const cv = document.getElementById('grain'), ctx = cv.getContext('2d'); const tiles = []; const r = mulberry32(7);
-  for (let k = 0; k < 6; k++) { const id = ctx.createImageData(960, 540); for (let j = 0; j < id.data.length; j += 4) { const v = r() * 255; id.data[j] = id.data[j + 1] = id.data[j + 2] = v; id.data[j + 3] = 255; } tiles.push(id); }
-  return { draw(f) { ctx.putImageData(tiles[f % tiles.length], 0, 0); } };
-})();
-
-/* ============================================================
-   HUD — chapter bar (screen time per chapter) + rolling year
-   ============================================================ */
-const CHAPTERS = [
-  { id: 'ali', label: '01  ALIBABA', range: T.ali, year: '2026', dates: '2026.06 — NOW' },
-  { id: 'ns',  label: '02  NARRASTEER', range: T.ns, year: '2026', dates: '2026.01 — 2026.04' },
-  { id: 'toa', label: '03  TOA', range: T.toa, year: '2025', dates: '2025.07 — 2025.11' },
-  { id: 'po',  label: '04  PUBLIC OPINION', range: T.po, year: '2024', dates: '2024.09 — 2025.04' },
-  { id: 'ug',  label: 'UNDERGRAD', range: T.ug, year: '2020', dates: '2020 — 2024' },
-];
-const HUD = (() => {
-  const root = $('div', 'layer', hud);
-  const tl = $('div', 'abs tl kicker', root); st(tl, { color: 'var(--dim)', fontSize: '14px', letterSpacing: '0.22em' });
-  tl.innerHTML = 'SELECTED WORKS <span style="color:var(--teal)">·</span> 2020 — 2026';
-  const tr = $('div', 'abs tr', root);
-  const roll = $('div', 'roller', tr);
-  const cols = [0, 1, 2, 3].map(() => { const c = $('div', 'col', roll); for (let d = 0; d <= 9; d++) $('span', '', c, String(d)); return c; });
-  const dates = $('div', 'meta', tr); st(dates, { fontSize: '13px', letterSpacing: '0.18em', marginTop: '6px', color: 'var(--dimmer)' });
-  const bar = $('div', 'chapters', root);
-  const total = T.ug[1] - T.ali[0], span = 1728, gap = 14;
-  const segs = CHAPTERS.map(c => {
-    const x = (c.range[0] - T.ali[0]) / total * span, w = (c.range[1] - c.range[0]) / total * span - gap;
-    const e = $('div', 'chap', bar); st(e, { left: x + 'px', width: w + 'px' });
-    const lab = $('div', 'lab', e, c.label); $('div', 'trk', e); const fil = $('div', 'fil', e);
-    return { c, e, lab, fil };
+/* ============================================================ left column: header + 背景 / 解法 / 结果 */
+function LeftCol(parent, c) {
+  const root = $('div', 'layer', parent);
+  const kick = $('div', 'kick abs', root, `<b>${c.idx}</b>${c.kicker}`); at(kick, 120, 236);
+  const tm = $('div', 'mask abs', root); at(tm, 120, 264);
+  const title = $('div', 'title' + (c.latin ? ' latin' : ''), tm, c.title);
+  const sub = $('div', 'sub abs', root, c.sub); at(sub, 120, 326);
+  const wrap = $('div', 'steps', root);
+  const tops = [0, 150, 300];
+  const rail = $('div', 'rail', wrap); st(rail, { height: tops[2] + 'px' });
+  const railFill = $('div', 'rail', wrap); st(railFill, { background: 'var(--accent)', height: '0px' });
+  const labels = [['背景', 'BACKGROUND'], ['解法', 'SOLUTION'], ['结果', 'RESULT']];
+  const steps = labels.map(([zh, en], i) => {
+    const s = $('div', 'step', wrap); st(s, { top: tops[i] + 'px' });
+    const lab = $('div', 'lab', s, `${zh}<i>${en}</i>`);
+    const body = i < 2 ? $('div', 'txt', s, c.steps[i])
+      : $('div', 'metrics', s, c.metrics.map(m => `<div class="metric"><div class="v">${m[0]}</div><div class="l">${m[1]}</div></div>`).join(''));
+    const dot = $('div', 'dot', wrap); st(dot, { top: tops[i] + 6 + 'px' });
+    return { s, lab, body, dot, parts: i < 2 ? [body] : [...body.children] };
   });
-  function year(t) {
-    // digits roll to the chapter's year; before the first chapter show 2026
-    let from = '2026', to = '2026', p = 1;
-    for (let i = 0; i < CHAPTERS.length; i++) {
-      const c = CHAPTERS[i], prev = i ? CHAPTERS[i - 1].year : '2026';
-      if (t >= c.range[0]) { from = prev; to = c.year; p = oE(P(t, c.range[0], c.range[0] + .35)); }
-    }
-    cols.forEach((col, i) => {
-      const a = +from[i], b = +to[i];
-      col.style.transform = `translateY(${-lerp(a, b, p) * 36}px)`;
-    });
-  }
   return {
-    render(t) {
-      const vis = win(t, 1.35, 12.62, .25, .18);
-      root.style.opacity = vis;
-      year(t);
-      const cur = CHAPTERS.find(c => t >= c.range[0] && t < c.range[1]) || (t >= T.ug[1] ? CHAPTERS[4] : CHAPTERS[0]);
-      dates.textContent = cur.dates;
-      segs.forEach(s => {
-        const p = P(t, s.c.range[0], s.c.range[1]);
-        s.fil.style.width = (p * 100) + '%';
-        s.fil.style.background = t >= s.c.range[1] ? 'rgba(230,234,243,0.55)' : 'var(--teal)';
-        s.lab.style.color = (t >= s.c.range[0] && t < s.c.range[1]) ? 'var(--teal)' : (t >= s.c.range[1] ? 'var(--dim)' : 'var(--dimmer)');
+    render(u) {
+      const out = oC(P(u, OUT, OUT + .25));
+      st(root, { opacity: 1 - out, transform: `translateY(${-out * 16}px)` });
+      rise(kick, u, 0, .45, 10);
+      const tp = oQ(P(u, .05, .65)); st(title, { transform: `translateY(${(1 - tp) * 105}%)` });
+      rise(sub, u, .2, .5, 10);
+      steps.forEach((s, i) => {
+        const t0 = STEP[i];
+        rise(s.lab, u, t0, .45, 10);
+        s.parts.forEach((m, k) => rise(m, u, t0 + .1 + k * .14, .55, 12));
+        // once the next step arrives, earlier ones recede but stay readable
+        const next = i < 2 ? P(u, STEP[i + 1], STEP[i + 1] + .4) : 0;
+        st(s.s, { filter: `opacity(${1 - .45 * next})` });
+        const on = P(u, t0, t0 + .3);
+        st(s.dot, { background: on > 0 ? `rgba(194,65,12,${on})` : 'var(--page)', borderColor: on > 0 ? 'var(--accent)' : 'var(--faint)', opacity: P(u, .45, .7) });
       });
+      st(rail, { opacity: P(u, .45, .7) });
+      const fill = u < STEP[1] ? 0 : u < STEP[2] ? 150 * oQ(P(u, STEP[1], STEP[1] + .5)) : 150 + 150 * oQ(P(u, STEP[2], STEP[2] + .5));
+      st(railFill, { height: fill + 'px', opacity: P(u, .45, .7) });
     },
   };
-})();
+}
 
-/* ============================================================
-   SCENE 0 · INTRO — the site's hero tagline, one word per beat,
-   each orbited by the real skill tags from the CAPABILITIES section
-   ============================================================ */
+/* comparison card: accent = our system, grey = baseline (real study numbers) */
+function Compare(parent, x, y, sys, rows) {
+  const c = $('div', 'card cmp', parent); at(c, x, y);
+  $('div', 'hd', c, `<div class="cap">对照实验</div><div class="lg"><span style="background:var(--accent)"></span>${sys}<span style="background:#d5d9e1"></span>基线</div>`);
+  const W0 = 250;
+  const rs = rows.map(r => {
+    const e = $('div', 'r', c);
+    $('div', 'rl', e, `<span>${r.label}</span><b>${r.delta}</b>`);
+    const mk = (v, col, txt) => { const b = $('div', 'bar', e); const i = $('i', '', b); st(i, { background: col }); const s = $('span', '', b, txt); return { i, s, w: v / r.max * W0 }; };
+    return { a: mk(r.a, 'var(--accent)', r.at), b: mk(r.b, '#d5d9e1', r.bt) };
+  });
+  return {
+    render(u, t0) {
+      rise(c, u, t0, .5, 16);
+      rs.forEach((r, k) => [r.a, r.b].forEach((b, j) => {
+        const p = oQ(P(u, t0 + .15 + k * .12 + j * .05, t0 + .75 + k * .12 + j * .05));
+        st(b.i, { width: b.w * p + 'px' }); st(b.s, { left: b.w * p + 10 + 'px', opacity: P(u, t0 + .45 + k * .12, t0 + .7 + k * .12) });
+      }));
+    },
+  };
+}
+
+function Scene(range) {
+  const root = $('div', 'layer', world);
+  return { root, on(t) { const on = t >= range[0] - .01 && t < range[1] + .01; vis(root, on); return on; } };
+}
+
+/* ============================================================ INTRO */
 const INTRO = (() => {
-  const sc = $('div', 'scene', world);
-  const words = [
-    { w: 'DESIGN', t0: 0.02, out: 0.5, color: 'var(--text)', zh: '设计',
-      chips: [['FIGMA', 250, 190], ['PROTOTYPING', 1380, 230], ['USER RESEARCH', 330, 850], ['INFORMATION ARCHITECTURE', 1170, 830]] },
-    { w: 'ENGINEERING', t0: 0.5, out: 1.0, color: 'var(--text)', zh: '开发',
-      chips: [['PYTHON', 300, 250], ['REACT', 1450, 250], ['LANGCHAIN', 420, 800], ['LANGGRAPH', 1300, 800]] },
-    { w: 'AI', t0: 1.0, out: null, color: 'var(--teal)', zh: '研究',
-      chips: [['LLM4VIS', 360, 300], ['AGENT4VIS', 1380, 330], ['CHART GENERATION', 1180, 790]] },
-  ];
-  words.forEach(o => {
-    o.L = Letters(sc, o.w, 'display abs', { color: o.color, transformOrigin: '50% 50%' });
-    o.chipEls = o.chips.map(([txt, x, y]) => { const c = $('div', 'chip', sc, `<b>+</b>${txt}`); pos(c, x, y); return c; });
-    o.zhEl = $('div', 'abs', sc, o.zh); st(o.zhEl, { fontFamily: 'var(--zh)', fontWeight: 500, fontSize: '22px', letterSpacing: '0.5em', color: 'var(--dim)' });
-  });
-  const tag = $('div', 'abs kicker', sc); pos(tag, 96, 96); st(tag, { color: 'var(--dim)', fontSize: '15px' });
+  const sc = Scene(T.intro);
+  const r = sc.root;
+  const nm = $('div', 'mask abs', r); at(nm, 120, 372);
+  const name = $('div', '', nm, '屈非塬'); st(name, { fontSize: '56px', fontWeight: 500, letterSpacing: '0.12em', whiteSpace: 'nowrap' });
+  const en = $('div', 'abs nowrap', r, 'QU FEIYUAN'); at(en, 122, 456); st(en, { fontFamily: 'var(--display)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.34em', color: 'var(--dim)' });
+  const hl = $('div', 'abs', r); at(hl, 122, 500); st(hl, { height: '2px', background: 'var(--accent)', width: '0px' });
+  const role = $('div', 'abs nowrap', r, '设计 · 工程 · AI'); at(role, 120, 526); st(role, { fontSize: '22px' });
+  const aff = $('div', 'abs', r, '浙江大学 CAD&amp;CG 全国重点实验室 · 人机交互与数据可视化方向硕士研究生<br>阿里巴巴淘天集团 · AI 设计工程师（实习）'); at(aff, 120, 580); st(aff, { fontSize: '16px', lineHeight: '1.8', color: 'var(--dim)', whiteSpace: 'nowrap' });
+  const toc = $('div', 'toc', r);
+  const h = $('div', 'h cap', toc, '精选项目 &nbsp;·&nbsp; 背景 / 解法 / 结果');
+  const rows = [
+    ['01', '设计 Agent 的 Skill 标准化', '阿里巴巴淘天集团 · 实习', '2026'],
+    ['02', 'NarraSteer', '数据叙事 Agent · CHI\'27 在投', '2026'],
+    ['03', 'ToA', '对话式可视分析 · CHI\'26 收录', '2025'],
+    ['04', '跨社交媒体舆情分析与治理平台', 'G 端产品负责人', '2024'],
+  ].map(([i, n, d, y]) => $('div', 'rw', toc, `<span class="i">${i}</span><span class="n">${n}</span><span class="d">${d}</span><span class="y">${y}</span>`));
   return {
-    layout() {
-      words.forEach(o => {
-        const r = o.L.root; st(r, { fontSize: '100px' });
-        const w = r.getBoundingClientRect().width;
-        const fs = Math.min(560, 100 * 1700 / w);
-        st(r, { fontSize: fs + 'px' });
-        const b = r.getBoundingClientRect();
-        o.box = { w: b.width, h: b.height };
-        pos(r, (W - b.width) / 2, (H - b.height) / 2 - 10);
-        pos(o.zhEl, (W - b.width) / 2 + 8, (H + b.height) / 2 + 10);
-      });
-    },
     render(t) {
-      const on = t < T.intro[1] + 0.02; show(sc, on); if (!on) return;
-      tag.textContent = typed('> DESIGN · ENGINEERING · AI', t, 0.05, 40);
-      words.forEach((o, k) => {
-        reveal(o.L, t, o.t0, { stagger: k === 2 ? .06 : .022, dur: .36, out: o.out == null ? null : o.out - .03, outStagger: .004, outDur: .07 });
-        if (k === 2) { // AI collapses into a point that becomes the loop ring of the next chapter
-          const c = iE(P(t, 1.3, 1.47));
-          st(o.L.root, { transform: `scale(${1 - c * 0.985})`, opacity: 1 - P(t, 1.44, 1.5) });
-        }
-        const end = o.out ?? 1.3;
-        o.chipEls.forEach((c, i) => {
-          const p = oB(P(t, o.t0 + .08 + i * .05, o.t0 + .3 + i * .05));
-          const q = P(t, end - .02, end + .1);
-          const drift = (t - o.t0) * 18;
-          st(c, { opacity: Math.min(1, p) * (1 - q), transform: `translate(${(i % 2 ? 1 : -1) * drift}px, ${-q * 30}px) scale(${0.6 + 0.4 * Math.min(1, p)})` });
-        });
-        st(o.zhEl, { opacity: win(t, o.t0 + .12, end, .12, .06) * 0.9 });
-      });
+      if (!sc.on(t)) return;
+      const out = oC(P(t, 2.2, 2.5));
+      st(r, { opacity: 1 - out, transform: `translateY(${-out * 16}px)` });
+      const p = oQ(P(t, .05, .7)); st(name, { transform: `translateY(${(1 - p) * 105}%)` });
+      rise(en, t, .25, .5, 8);
+      st(hl, { width: 48 * oQ(P(t, .35, .8)) + 'px' });
+      rise(role, t, .4, .5, 10); rise(aff, t, .55, .5, 10);
+      rise(h, t, .6, .5, 8);
+      rows.forEach((rw, i) => rise(rw, t, .75 + i * .16, .5, 10));
     },
   };
 })();
 
-/* ============================================================
-   SCENE 1 · ALIBABA TAOTIAN — AI Design Engineer intern.
-   Skill test platform → evaluate / auto-revise / admit loop,
-   ~30 skills admitted, 1000+ team uses, DOM+CV+LLM output checks.
-   ============================================================ */
-const RING = { x: 1360, y: 560 };
-const ALI = (() => {
-  const sc = $('div', 'scene', world);
-  const svg = S('svg', { class: 'full', viewBox: '0 0 1920 1080' }, sc);
-  const ring = S('circle', { cx: RING.x, cy: RING.y, r: 230, fill: 'none', stroke: 'rgba(255,255,255,0.22)', 'stroke-width': 2 }, svg);
-  const R0 = 230;
-  const ST = [
-    { a: -90, en: 'EVALUATE', zh: '评估', dx: 0, dy: -46, anchor: 'middle' },
-    { a: 150, en: 'AUTO-REVISE', zh: '自动修订', dx: -22, dy: 30, anchor: 'end' },
-    { a: 30, en: 'ADMIT', zh: '入库', dx: 22, dy: 30, anchor: 'start' },
-  ];
-  const pt = (a, r = R0) => [RING.x + Math.cos(a * Math.PI / 180) * r, RING.y + Math.sin(a * Math.PI / 180) * r];
-  // counter-clockwise arcs: evaluate → auto-revise → admit → evaluate
-  const arcs = [[-90, -210], [150, 30], [30, -90]].map(([a0, a1]) => {
-    const s0 = a0 - 14, s1 = a1 + 14; const [x0, y0] = pt(s0), [x1, y1] = pt(s1);
-    const p = S('path', { d: `M${x0},${y0} A${R0},${R0} 0 0 0 ${x1},${y1}`, fill: 'none', stroke: '#00e8c8', 'stroke-width': 2.5, 'marker-end': 'url(#arrT)' }, svg);
-    return p;
+/* ============================================================ 01 · ALIBABA TAOTIAN — Skill 标准化
+   背景: a design agent whose skills keep growing → 解法: 4-dim admission tests + auto-revise loop, output standard
+   → 结果: nearly 30 skills admitted, 1000+ team uses, became the team's acceptance standard */
+const P1 = (() => {
+  const sc = Scene(T.p1);
+  const L = LeftCol(sc.root, {
+    idx: '01', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '设计 Agent 的 Skill 标准化',
+    sub: '沿 Skill 与 Tool 两个维度，扩展 Taobao Design Counselor 的能力边界',
+    steps: ['团队 Agent 辅助设计师完成设计评审、设计调研；<br>Skill 持续增加，入库与输出都需要统一标准',
+            '搭建 Skill 测试平台：四维评测，自动修订后入库；<br>基于 Radix UI 定义组件规范，多模态评测 HTML 输出'],
+    metrics: [['近 30', '个 Skill 标准化入库'], ['1000+', '团队内使用量'], ['验收标准', '评测机制落地为团队标准']],
   });
-  const stations = ST.map(s => {
-    const g = S('g', {}, svg); const [x, y] = pt(s.a);
-    S('circle', { cx: x, cy: y, r: 10, fill: '#0a0c12', stroke: '#00e8c8', 'stroke-width': 2.5 }, g);
-    const t1 = S('text', { x: x + s.dx, y: y + s.dy, 'text-anchor': s.anchor, style: 'font: 500 17px JetBrains Mono; letter-spacing: .14em', fill: '#e6eaf3' }, g); t1.textContent = s.en;
-    const t2 = S('text', { x: x + s.dx, y: y + s.dy + 24, 'text-anchor': s.anchor, style: 'font: 400 15px PingFang SC; letter-spacing: .3em', fill: '#848c9f' }, g); t2.textContent = s.zh;
-    g.style.transformOrigin = `${x}px ${y}px`; return g;
+  const pn = $('div', 'layer', sc.root);
+  const svg = S('svg', { class: 'full' }, pn);
+  // 背景: the agent and a drift of not-yet-standardised skills
+  const agent = $('div', 'card', pn); st(agent, { width: '300px', height: '124px', padding: '20px 22px' }); at(agent, 1140, 478);
+  agent.innerHTML = '<div class="cap">DESIGN AGENT</div><div style="font-family:var(--mono);font-weight:500;font-size:16px;margin:8px 0 12px">Taobao Design Counselor</div><span class="chipx">设计评审</span><span class="chipx">设计调研</span>';
+  const rnd = mulberry32(3);
+  const tiles = Array.from({ length: 28 }, (_, i) => {
+    const e = $('div', 'tile', pn, 'Skill');
+    const a = rnd() * Math.PI * 2, rr = 250 + rnd() * 120;
+    const sx = 1261 + Math.cos(a) * rr * 1.25, sy = 522 + Math.sin(a) * rr * .78;
+    const c = i % 7, row = Math.floor(i / 7);
+    return { e, sx, sy, rot: (rnd() - .5) * 18, dash: rnd() < .45, gx: 1412 + c * 44, gy: 380 + row * 44, d: rnd() };
   });
-  const comet = S('g', {}, svg); const cometDots = Array.from({ length: 16 }, (_, i) => S('circle', { r: 6 - i * 0.3, fill: '#00e8c8', opacity: 1 - i / 16 }, comet));
-  const ctrN = S('text', { x: RING.x, y: RING.y + 18, 'text-anchor': 'middle', style: 'font: 700 84px JetBrains Mono; letter-spacing: -.04em', fill: '#00e8c8' }, svg);
-  const ctrL = S('text', { x: RING.x, y: RING.y + 52, 'text-anchor': 'middle', style: 'font: 500 14px JetBrains Mono; letter-spacing: .2em', fill: '#848c9f' }, svg); ctrL.textContent = 'SKILLS ADMITTED';
-  // admitted skill tiles (≈30) stacking beside the loop
-  const tiles = []; const gx = 1650, gy = 420;
-  for (let i = 0; i < 30; i++) {
-    const c = i % 5, r = Math.floor(i / 5);
-    const g = S('g', {}, svg);
-    const rect = S('rect', { x: -17, y: -17, width: 34, height: 34, rx: 4, fill: 'none', stroke: '#00e8c8', 'stroke-width': 1.5 }, g);
-    const chk = S('path', { d: 'M-7,0 L-2,5 L8,-6', fill: 'none', stroke: '#0a0c12', 'stroke-width': 2.5, 'stroke-linecap': 'round' }, g);
-    tiles.push({ g, rect, chk, x: gx + c * 44 + 17, y: gy + r * 44 + 17 });
-  }
-  const gridLab = S('text', { x: gx, y: gy - 18, style: 'font: 500 13px JetBrains Mono; letter-spacing: .2em', fill: '#626b82' }, svg); gridLab.textContent = 'SKILL LIBRARY';
-  // left column
-  const L = $('div', 'abs', sc); pos(L, 96, 214);
-  const kick = $('div', 'kicker', L, '01 · Internship · 2026.06 — now');
-  const comp = $('div', '', L, 'ALIBABA <span style="color:var(--teal)">·</span> TAOTIAN GROUP'); st(comp, { fontFamily: 'var(--display)', fontWeight: 700, fontSize: '34px', marginTop: '18px', letterSpacing: '0.02em' });
-  const hA = Letters(L, 'AI DESIGN', 'display', { fontSize: '104px', marginTop: '22px' });
-  const hB = Letters(L, 'ENGINEER', 'display', { fontSize: '104px', color: 'var(--teal)' });
-  const sub = $('div', 'meta', L, 'Extending <span style="color:var(--text)">Taobao Design Counselor</span> along <span style="color:var(--teal)">SKILL × TOOL</span>'); st(sub, { marginTop: '24px', fontSize: '18px' });
-  const ev = $('div', '', L); st(ev, { marginTop: '34px' });
-  const evHead = $('div', 'meta', ev, 'SKILL TEST PLATFORM · ADMISSION CRITERIA'); st(evHead, { fontSize: '13px', letterSpacing: '0.2em', color: 'var(--dimmer)', marginBottom: '6px' });
-  const evRows = ['SOURCE QUALITY', 'TOKEN COST', 'RUN EFFICIENCY', 'STABILITY'].map(n => {
-    const r = $('div', 'evrow', ev); $('div', 'nm', r, n); const tr = $('div', 'tr', r); const fill = $('i', '', tr); const ok = $('div', 'ok', r, '✓'); return { r, fill, ok };
-  });
-  // big number
-  const big = $('div', 'abs', sc); pos(big, 96, 300);
-  const bigN = $('div', 'metric', big); st(bigN, { fontSize: '250px' });
-  const bigL = $('div', 'meta', big, 'TEAM USES <span style="color:var(--dimmer)">·</span> NEARLY 30 SKILLS STANDARDIZED'); st(bigL, { fontSize: '19px', marginTop: '26px', color: 'var(--text)', letterSpacing: '0.14em' });
-  // output-standard schematic: a generated HTML page checked by DOM + CV + LLM
-  const out = $('div', 'abs', sc); pos(out, 96, 300); st(out, { width: '700px' });
-  const outK = $('div', 'kicker', out, 'Skill output standard'); st(outK, { color: 'var(--dim)' });
-  const page = $('div', 'abs', out); st(page, { left: '0px', top: '44px', width: '560px', height: '330px', background: '#121722', border: '1px solid rgba(255,255,255,0.16)', borderRadius: '8px' });
-  const blocks = [[28, 26, 300, 26], [28, 70, 180, 14], [28, 112, 240, 150], [290, 112, 240, 70], [290, 196, 240, 66], [28, 282, 110, 28], [150, 282, 90, 28]];
-  const bEls = blocks.map(([x, y, w, h]) => { const b = $('div', 'wf', page); st(b, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' }); return b; });
-  const cv = [[2, 'COMPONENT'], [3, 'SPACING'], [5, 'COMPONENT']].map(([bi, lab]) => {
-    const [x, y, w, h] = blocks[bi]; const b = $('div', 'cvbox', page); st(b, { left: x - 5 + 'px', top: y - 5 + 'px', width: w + 10 + 'px', height: h + 10 + 'px' });
-    const tg = $('div', 'cvtag', page, lab); st(tg, { left: x - 5 + 'px', top: y - 21 + 'px' }); return { b, tg };
-  });
-  const gap = $('div', 'abs', page); st(gap, { left: '268px', top: '140px', width: '22px', height: '2px', background: 'var(--orange)' });
-  const tagsEl = $('div', 'abs', out); st(tagsEl, { left: '0px', top: '400px', width: '760px' });
-  tagsEl.innerHTML = '<span class="badge">DOM + CV + LLM EVAL</span><span class="badge ghost">RADIX UI · DESIGN TOKENS</span><span class="badge ghost">AGENT HTML LOOP</span>';
-  const checks = $('div', 'meta', out, '✓ COMPONENT USE &nbsp; ✓ SPACING &nbsp; ✓ WHITESPACE'); st(checks, { position: 'absolute', top: '452px', color: 'var(--teal)', fontSize: '15px', letterSpacing: '0.14em' });
+  const links = tiles.slice(0, 9).map(tl => S('line', { x1: 1290, y1: 540, x2: tl.sx + 29, y2: tl.sy + 18, stroke: 'rgba(23,27,38,0.10)', 'stroke-dasharray': '3 5' }, svg));
+  // 解法: evaluate → auto-revise → admit, with the four admission tests
+  const stN = [['评估', 900], ['自动修订', 1140], ['入库', 1380]].map(([n, x]) => { const e = $('div', 'station', pn, n); at(e, x, 236); return e; });
+  const a1 = S('path', { d: 'M1052,262 L1136,262', fill: 'none', stroke: '#171b26', 'stroke-width': 1.4, 'marker-end': 'url(#arr)' }, svg);
+  const a2 = S('path', { d: 'M1292,262 L1376,262', fill: 'none', stroke: '#171b26', 'stroke-width': 1.4, 'marker-end': 'url(#arr)' }, svg);
+  const a3 = S('path', { d: 'M1215,236 C1215,196 975,196 975,232', fill: 'none', stroke: '#c2410c', 'stroke-width': 1.4, 'stroke-dasharray': '4 4', 'marker-end': 'url(#arrA)' }, svg);
+  const loopLab = $('div', 'cap abs', pn, 'LOOP'); at(loopLab, 1076, 180); st(loopLab, { color: 'var(--accent)' });
+  const meters = $('div', 'card', pn); st(meters, { width: '300px', padding: '18px 22px' }); at(meters, 852, 330);
+  meters.innerHTML = '<div class="cap" style="margin-bottom:8px">SKILL 测试平台 · 入库评测</div>' + ['源码质量', 'Token 消耗', '运行效率', '执行稳定性'].map(n => `<div class="meter"><span class="n">${n}</span><span class="tr"><i></i></span><span class="ok">✓</span></div>`).join('');
+  const mFill = [...meters.querySelectorAll('.tr i')], mOk = [...meters.querySelectorAll('.ok')];
+  const lib = $('div', 'cap abs', pn, 'SKILL 库'); at(lib, 1418, 350);
+  // 输出标准: a generated HTML page checked by DOM + CV + LLM
+  const pg = $('div', 'card', pn); st(pg, { width: '300px', height: '200px' }); at(pg, 852, 548);
+  const blocks = [[18, 16, 170, 14], [18, 40, 110, 8], [18, 64, 128, 100], [158, 64, 124, 44], [158, 120, 124, 44], [18, 174, 60, 12], [86, 174, 50, 12]];
+  const bEl = blocks.map(([x, y, w, h]) => { const b = $('div', 'wf', pg); st(b, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' }); return b; });
+  const cvs = [[2, 'DOM'], [3, 'CV'], [5, 'LLM']].map(([k, lab]) => { const [x, y, w, h] = blocks[k]; const b = $('div', 'cvb', pg); st(b, { left: x - 4 + 'px', top: y - 4 + 'px', width: w + 8 + 'px', height: h + 8 + 'px' }); const g = $('div', 'cvt', pg, lab); st(g, { left: x - 4 + 'px', top: y - 16 + 'px' }); return { b, g }; });
+  const pgCap = $('div', 'cap abs', pn, '输出标准 · RADIX UI + DESIGN TOKEN'); at(pgCap, 852, 764);
+  const pgOk = $('div', 'abs zh13', pn, '<span style="color:var(--accent)">✓</span> 组件使用 &nbsp;<span style="color:var(--accent)">✓</span> 间距 &nbsp;<span style="color:var(--accent)">✓</span> 留白'); at(pgOk, 852, 790);
+  const badge = $('div', 'abs', pn, '落地为团队验收标准'); at(badge, 852, 828); st(badge, { fontSize: '13px', color: 'var(--accent)', background: 'var(--accent-soft)', padding: '4px 12px', borderRadius: '12px' });
 
-  const t0 = T.ali[0];
+  const use = S('path', { d: 'M1566,560 C1566,610 1450,600 1450,648', fill: 'none', stroke: '#c2410c', 'stroke-width': 1.4, 'marker-end': 'url(#arrA)' }, svg);
+  const useLab = $('div', 'abs', pn, '<span class="mono" style="color:var(--accent);font-size:15px">1000+</span>&nbsp; 团队内使用'); at(useLab, 1590, 596); st(useLab, { fontSize: '13px', color: 'var(--dim)', whiteSpace: 'nowrap' });
+
+  const t0 = T.p1[0];
   return {
     render(t) {
-      const on = t >= 1.28 && t < T.ali[1] + 0.02; show(sc, on); if (!on) return;
+      if (!sc.on(t)) return;
       const u = t - t0;
-      // ring grows out of the collapsing "AI" (screen centre) and settles at the loop centre
-      const g = oE(P(t, 1.42, 1.85));
-      const cx = lerp(960, RING.x, g), cy = lerp(530, RING.y, g);
-      ring.setAttribute('cx', cx); ring.setAttribute('cy', cy); ring.setAttribute('r', Math.max(0.1, R0 * g));
-      ring.setAttribute('stroke', g < 0.35 ? '#00e8c8' : 'rgba(255,255,255,0.22)');
-      ring.setAttribute('stroke-width', lerp(6, 2, g));
-      const pieces = 1 - P(u, 2.3, 2.46); // everything but the ring clears before the ring becomes NarraSteer's disc
-      arcs.forEach((a, i) => { const L0 = a.getTotalLength(); const p = oC(P(u, .18 + i * .08, .5 + i * .08)); st(a, { strokeDasharray: L0, strokeDashoffset: L0 * (1 - p), opacity: pieces }); });
-      stations.forEach((s, i) => { const p = oB(P(u, .2 + i * .07, .45 + i * .07)); st(s, { opacity: Math.min(1, p) * pieces, transform: `scale(${Math.max(0, p)})` }); });
-      // comet runs the loop counter-clockwise, one lap per beat pair
-      const ca = -90 - 360 * Math.max(0, u - .25) / 1.0;
-      cometDots.forEach((d, i) => { const a = (ca + i * 3.2) * Math.PI / 180; d.setAttribute('cx', RING.x + Math.cos(a) * R0); d.setAttribute('cy', RING.y + Math.sin(a) * R0); });
-      comet.style.opacity = P(u, .25, .4) * pieces;
-      // tiles leave the ADMIT station and stack into the library
-      const [ax, ay] = pt(30);
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景 (the agent card leaves during 解法 and returns in 结果 as the library's consumer)
+      const ag = rise(agent, u, .55, .6, 14);
+      const toSol = ioC(P(u, s1, s1 + .6)), back = oQ(P(u, s2 + .2, s2 + .7));
+      st(agent, { opacity: ag * Math.max(1 - toSol, back), left: lerp(1140, 1300, back) + 'px', top: lerp(478, 656, back) + 'px', transform: `translateY(${(1 - back) * (toSol ? 12 : 0)}px)` });
+      draw(use, oQ(P(u, s2 + .1, s2 + .5))); use.style.opacity = P(u, s2 + .1, s2 + .15);
+      rise(useLab, u, s2 + .35, .45, 6);
+      links.forEach((l, i) => { l.style.opacity = P(u, .9 + i * .04, 1.2 + i * .04) * (1 - toSol); });
       tiles.forEach((tl, i) => {
-        const s0 = .6 + i * .028, p = ioC(P(u, s0, s0 + .3));
-        const x = lerp(ax, tl.x, p), y = lerp(ay, tl.y, p) - Math.sin(p * Math.PI) * 60;
-        tl.g.setAttribute('transform', `translate(${x},${y}) scale(${lerp(.4, 1, p)})`);
-        const land = P(u, s0 + .28, s0 + .34);
-        tl.rect.setAttribute('fill', `rgba(0,232,200,${0.85 * land})`); tl.chk.setAttribute('opacity', land);
-        tl.g.style.opacity = (u > s0 ? 1 : 0) * pieces;
+        const inn = oQ(P(u, .7 + tl.d * .8, 1.2 + tl.d * .8));
+        const drift = Math.sin(u * 1.3 + i) * 4;
+        // 解法: each tile passes the stations and lands in the library grid
+        const k0 = s1 + .3 + i * .045, go = ioC(P(u, k0, k0 + .9));
+        let x = tl.sx, y = tl.sy + drift;
+        if (go > 0) {
+          const via = [[tl.sx, tl.sy + drift], [945, 244], [1425, 244], [tl.gx, tl.gy]];
+          const seg = Math.min(2, Math.floor(go * 3)), f = go * 3 - seg;
+          x = lerp(via[seg][0], via[seg + 1][0], f); y = lerp(via[seg][1], via[seg + 1][1], f);
+        }
+        const settled = P(u, k0 + .85, k0 + .95);
+        st(tl.e, { left: x + 'px', top: y + 'px', opacity: inn, transform: `rotate(${tl.rot * (1 - go)}deg) scale(${lerp(1, .78, go)})`,
+                   borderStyle: tl.dash && go < .5 ? 'dashed' : 'solid', background: settled > 0 ? 'rgba(194,65,12,0.10)' : 'var(--card)',
+                   borderColor: settled > 0 ? 'var(--accent-mid)' : 'var(--line2)', color: settled > 0 ? 'var(--accent)' : 'var(--dimmer)' });
       });
-      gridLab.style.opacity = P(u, .6, .8) * pieces;
-      const n = Math.round(30 * oC(P(u, .95, 1.45)));
-      ctrN.textContent = '≈' + n; ctrN.style.opacity = P(u, .92, 1.0) * pieces; ctrL.style.opacity = P(u, .95, 1.05) * pieces;
-      // left column: role → 1000+ → output standard
-      const colOut = P(u, 1.42, 1.56);
-      st(L, { opacity: 1 - colOut, transform: `translateY(${-oE(colOut) * 60}px)` });
-      st(kick, { opacity: P(u, 0, .15) }); st(comp, { opacity: P(u, .05, .2), transform: `translateX(${(1 - oE(P(u, .05, .4))) * -40}px)` });
-      reveal(hA, u, .02, { stagger: .025 }); reveal(hB, u, .12, { stagger: .025 });
-      st(sub, { opacity: P(u, .3, .45) });
-      st(ev, { opacity: P(u, .5, .6) });
-      evRows.forEach((r, i) => { const p = oC(P(u, .55 + i * .1, .85 + i * .1)); r.fill.style.width = (p * 100) + '%'; r.ok.style.opacity = P(u, .83 + i * .1, .9 + i * .1); st(r.r, { opacity: P(u, .5 + i * .08, .6 + i * .08) }); });
-      // 1000+
-      const bn = oE(P(u, 1.5, 1.9));
-      bigN.textContent = Math.round(1000 * bn) + (bn > .98 ? '+' : '');
-      st(big, { opacity: win(u, 1.5, 2.02, .05, .08), transform: `translateY(${(1 - oE(P(u, 1.5, 1.8))) * 70}px) scale(${1 + (1 - oE(P(u, 1.5, 1.7))) * 0.12})` });
-      st(bigL, { opacity: P(u, 1.62, 1.75) });
-      // output standard
-      st(out, { opacity: win(u, 2.0, 2.5, .06, .1) });
-      bEls.forEach((b, i) => st(b, { opacity: P(u, 2.0 + i * .02, 2.08 + i * .02) }));
-      cv.forEach((c, i) => { const p = P(u, 2.1 + i * .07, 2.16 + i * .07); st(c.b, { opacity: p, transform: `scale(${1.3 - .3 * oE(p)})` }); st(c.tg, { opacity: p }); });
-      st(gap, { opacity: P(u, 2.2, 2.25) });
-      st(tagsEl, { opacity: P(u, 2.12, 2.2) }); st(checks, { opacity: P(u, 2.22, 2.3) });
+      stN.forEach((e, i) => rise(e, u, s1 + .05 + i * .1, .5, 10));
+      [a1, a2].forEach((a, i) => draw(a, oQ(P(u, s1 + .25 + i * .1, s1 + .6 + i * .1))));
+      draw(a3, oQ(P(u, s1 + .5, s1 + .95))); a3.style.opacity = P(u, s1 + .5, s1 + .55);
+      rise(loopLab, u, s1 + .8, .4, 6);
+      rise(meters, u, s1 + .25, .5, 12);
+      mFill.forEach((f, i) => { const p = oQ(P(u, s1 + .45 + i * .15, s1 + .95 + i * .15)); f.style.width = p * 100 + '%'; mOk[i].style.opacity = P(u, s1 + .9 + i * .15, s1 + 1 + i * .15); });
+      rise(lib, u, s1 + .5, .4, 6);
+      rise(pg, u, s1 + .9, .5, 12);
+      bEl.forEach((b, i) => b.style.opacity = P(u, s1 + 1 + i * .03, s1 + 1.15 + i * .03));
+      cvs.forEach((c, i) => { const p = P(u, s1 + 1.3 + i * .12, s1 + 1.4 + i * .12); st(c.b, { opacity: p, transform: `scale(${1.15 - .15 * oQ(p)})` }); c.g.style.opacity = p; });
+      rise(pgCap, u, s1 + 1.1, .4, 6);
+      // 结果
+      rise(pgOk, u, s2 + .15, .4, 6);
+      rise(badge, u, s2 + .35, .45, 8);
     },
   };
 })();
 
-/* ============================================================
-   SCENE 2 · NARRASTEER — agent trajectories rebuilt as storylines
-   in a circular narrative space; drag a node to steer the agent.
-   (CHI'27 under review, first author.) Labels from the real UI.
-   ============================================================ */
-const NS_ = (() => {
-  const sc = $('div', 'scene', world);
-  const disc = $('div', 'layer', sc); // zoom wrapper
-  const svg = S('svg', { class: 'full', viewBox: '0 0 1920 1080' }, disc);
-  const R = 390, C = RING;
-  const polar = (a, r) => [C.x + Math.cos(a * Math.PI / 180) * r, C.y + Math.sin(a * Math.PI / 180) * r];
-  const face = S('circle', { cx: C.x, cy: C.y, r: R, fill: 'rgba(255,255,255,0.025)', stroke: 'rgba(255,255,255,0.22)', 'stroke-width': 2 }, svg);
+/* ============================================================ 02 · NARRASTEER
+   背景: the agent works opaquely; users idle 74% of the time, 5/8 only saw the drift at the end
+   → 解法: trajectory → storyline in a narrative-space disc; drag a node to steer
+   → 结果: N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run */
+const P2 = (() => {
+  const sc = Scene(T.p2);
+  const L = LeftCol(sc.root, {
+    idx: '02', kicker: '研究生 · CHI\'27 在投 · 第一作者 · 2026.01 — 04', title: 'NarraSteer', latin: 1,
+    sub: '面向数据叙事的 Agent 交互产品设计',
+    steps: ['Agent 做数据叙事时过程不透明，用户只能被动等待：<br><em>74%</em> 的时间在等，<em>5/8</em> 的人到最后才发现跑偏',
+            '把 Agent 的执行轨迹重构为故事线，投影到叙事空间圆盘：<br>位置即数据维度，拖拽节点即可引导 Agent'],
+    metrics: [['+13.2%', '叙事洞察数'], ['15/16', '主动拖拽引导 Agent'], ['p<.05', '心理负荷显著下降']],
+  });
+  const pn = $('div', 'layer', sc.root);
+  // 背景: an opaque execution log + the waiting time
+  const log = $('div', 'card', pn); st(log, { width: '470px', padding: '22px 24px' }); at(log, 852, 220);
+  const LOG = ['Reading CSV with 1,031 rows…', 'Computing sales statistics by brand…', 'Writing script to rank brands by sales…', 'Generating bar chart for brand sales…', 'Filtering data for Xiaomi models…', 'Sorting Xiaomi models by average sales…'];
+  log.innerHTML = '<div class="cap" style="margin-bottom:14px">AGENT 执行日志</div>' + LOG.map(s => `<div class="logl"><i>✓</i>${s}</div>`).join('');
+  const logLines = [...log.querySelectorAll('.logl')];
+  const who = $('div', 'card', pn); st(who, { width: '330px', padding: '22px 24px' }); at(who, 1392, 220);
+  who.innerHTML = '<div class="cap" style="margin-bottom:14px">形成性研究 · N = 8</div><div>' + Array.from({ length: 8 }, (_, i) => `<span class="pdot"${i < 5 ? ' style="background:var(--accent)"' : ''}></span>`).join('') + '</div><div class="zh13" style="margin-top:12px">5 / 8 的人到最后才发现方向跑偏</div>';
+  const wait = $('div', 'card', pn); st(wait, { width: '870px', padding: '22px 24px' }); at(wait, 852, 560);
+  wait.innerHTML = '<div style="display:flex;justify-content:space-between"><span class="cap">AGENT 运行期间 · 用户的时间</span><span class="zh13"><span style="color:var(--accent);font-family:var(--mono);font-size:15px">74%</span> 在等待</span></div>' +
+    '<svg width="822" height="26" style="display:block;margin-top:14px"><rect class="w1" x="0" y="0" height="26" rx="3" fill="url(#hatch)"/><rect class="w2" y="0" height="26" rx="3" fill="#171b26" opacity=".85"/></svg>' +
+    '<div style="display:flex;justify-content:space-between;margin-top:8px"><span class="zh13">等待</span><span class="zh13">操作 / 查看</span></div>';
+  const w1 = wait.querySelector('.w1'), w2 = wait.querySelector('.w2');
+  // 解法: the narrative-space disc (attribute labels and link types from the real system)
+  const disc = $('div', 'layer', pn);
+  const svg = S('svg', { class: 'full' }, disc);
+  const C = { x: 1290, y: 548 }, R = 262;
+  const pol = (a, r) => [C.x + Math.cos(a * Math.PI / 180) * r, C.y + Math.sin(a * Math.PI / 180) * r];
+  const face = S('circle', { cx: C.x, cy: C.y, r: R, fill: '#fff', stroke: 'rgba(23,27,38,0.16)', 'stroke-width': 1.2 }, svg);
   const ATTR = ['GDP', 'Country', 'Unemployment', 'Inflation', 'Country code', 'GDP per Capita', 'Oil Price', 'Life Expectancy', 'FDI', 'Exports', 'GDP Growth'];
   const ang = i => -90 + i * 360 / ATTR.length;
-  const spokes = ATTR.map((_, i) => { const [x0, y0] = polar(ang(i), 62), [x1, y1] = polar(ang(i), R); return S('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: 'rgba(255,255,255,0.13)', 'stroke-width': 1.2, 'stroke-dasharray': '6 7' }, svg); });
-  // transitions ring (the six narrative links NarraSteer defines)
-  const ringPath = S('path', { id: 'nsring', d: `M${C.x - R - 36},${C.y} a${R + 36},${R + 36} 0 1 1 ${2 * (R + 36)},0 a${R + 36},${R + 36} 0 1 1 ${-2 * (R + 36)},0`, fill: 'none' }, svg);
-  const ringText = S('text', { style: 'font: 500 13px JetBrains Mono; letter-spacing: .32em', fill: '#626b82' }, svg);
-  const tp = S('textPath', { href: '#nsring' }, ringText);
-  tp.textContent = 'ELABORATION · CONTRAST · CAUSATION · SEQUENCE · TOPIC SHIFT · SUMMARY · ELABORATION · CONTRAST · CAUSATION · SEQUENCE · TOPIC SHIFT · SUMMARY · ';
-  ringText.style.transformOrigin = `${C.x}px ${C.y}px`;
-  const hub = S('g', {}, svg); S('circle', { cx: C.x, cy: C.y, r: 58, fill: '#0a0c12', stroke: 'rgba(255,255,255,0.35)', 'stroke-width': 2 }, hub);
-  const hubT = S('text', { x: C.x, y: C.y + 6, 'text-anchor': 'middle', style: 'font: 500 17px JetBrains Mono', fill: '#e6eaf3' }, hub); hubT.textContent = 'Year';
-  hub.style.transformOrigin = `${C.x}px ${C.y}px`;
-
-  // storylines (angles/radii follow the real case figure: Qatar in black, Israel steered in orange)
-  function arcPath(nodes) { // polar interpolation between nodes → smooth arc along the disc
-    let d = ''; const pts = [];
-    for (let k = 0; k < nodes.length - 1; k++) {
-      const [a0, r0] = nodes[k], [a1, r1] = nodes[k + 1];
-      for (let s = 0; s <= 24; s++) { const f = s / 24, a = lerp(a0, a1, f), r = lerp(r0, r1, f) * R + Math.sin(f * Math.PI) * 14; const [x, y] = polar(a, r); pts.push([x, y]); }
-    }
-    pts.forEach(([x, y], i) => d += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1));
-    return d;
-  }
-  const qatar = [[122, .80], [155, .84], [205, .86], [255, .86], [300, .84], [335, .78]];
-  const israel = [[128, .62], [160, .66], [212, .66], [262, .60]];
-  const qBand = S('path', { d: arcPath(qatar), fill: 'none', stroke: 'rgba(255,255,255,0.14)', 'stroke-width': 16, 'stroke-linecap': 'round' }, svg);
-  const qLine = S('path', { d: arcPath(qatar), fill: 'none', stroke: '#e6eaf3', 'stroke-width': 2.5 }, svg);
-  const iBand = S('path', { d: arcPath(israel), fill: 'none', stroke: 'rgba(255,140,66,0.28)', 'stroke-width': 18, 'stroke-linecap': 'round' }, svg);
-  const iLine = S('path', { d: arcPath(israel), fill: 'none', stroke: '#ff8c42', 'stroke-width': 2.5 }, svg);
-  function nodeEl(a, r, col, lab) {
-    const [x, y] = polar(a, r * R); const g = S('g', {}, svg);
-    S('rect', { x: -10, y: -10, width: 20, height: 20, fill: '#0a0c12', stroke: col, 'stroke-width': 3, transform: 'rotate(45)' }, g);
-    const t1 = S('text', { x: 16, y: -14, class: 'nlabel', fill: col === '#ff8c42' ? '#ff8c42' : '#848c9f' }, g); t1.textContent = lab;
-    g.setAttribute('transform', `translate(${x},${y})`); return { g, x, y };
-  }
-  const qNodes = qatar.map(([a, r]) => nodeEl(a, r, '#e6eaf3', 'Year<=2008 · Country=Qatar'));
-  const iNodes = israel.map(([a, r]) => nodeEl(a, r, '#ff8c42', 'Country=Israel'));
-  const links = [
-    { on: 'q', k: 0, text: 'elaboration' }, { on: 'q', k: 1, text: 'cause-effect' }, { on: 'q', k: 3, text: 'cause-effect' },
-    { on: 'i', k: 0, text: 'elaboration' }, { on: 'i', k: 2, text: 'contrast' },
-  ].map(l => {
-    const arr = l.on === 'q' ? qatar : israel; const [a0, r0] = arr[l.k], [a1, r1] = arr[l.k + 1];
-    const [x, y] = polar((a0 + a1) / 2, ((r0 + r1) / 2 + (l.on === 'q' ? .06 : -.1)) * R);
-    const e = S('text', { x, y, 'text-anchor': 'middle', class: 'tlabel', fill: l.on === 'q' ? '#e6eaf3' : '#ff8c42' }, svg); e.textContent = l.text; return { ...l, e };
+  const spokes = ATTR.map((_, i) => { const [x0, y0] = pol(ang(i), 44), [x1, y1] = pol(ang(i), R); return S('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: 'rgba(23,27,38,0.08)', 'stroke-dasharray': '4 5' }, svg); });
+  const hub = S('g', {}, svg); S('circle', { cx: C.x, cy: C.y, r: 40, fill: '#fff', stroke: 'rgba(23,27,38,0.2)' }, hub);
+  S('text', { x: C.x, y: C.y + 5, 'text-anchor': 'middle', style: 'font: 500 13px JetBrains Mono', fill: '#171b26' }, hub).textContent = 'Year';
+  function arc(nodes) { let d = ''; nodes.forEach((n, k) => { if (k === nodes.length - 1) return; const [a0, r0] = n, [a1, r1] = nodes[k + 1]; for (let s = 0; s <= 20; s++) { const f = s / 20; const [x, y] = pol(lerp(a0, a1, f), lerp(r0, r1, f) * R + Math.sin(f * Math.PI) * 10); d += (d ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1); } }); return d; }
+  const qa = [[122, .80], [158, .84], [210, .86], [262, .86], [310, .82], [340, .76]];
+  const il = [[128, .58], [165, .62], [218, .62], [262, .56]];
+  const qBand = S('path', { d: arc(qa), fill: 'none', stroke: 'rgba(23,27,38,0.07)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
+  const qLine = S('path', { d: arc(qa), fill: 'none', stroke: '#171b26', 'stroke-width': 1.6 }, svg);
+  const iBand = S('path', { d: arc(il), fill: 'none', stroke: 'rgba(194,65,12,0.14)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
+  const iLine = S('path', { d: arc(il), fill: 'none', stroke: '#c2410c', 'stroke-width': 1.6 }, svg);
+  const node = (a, r, col) => { const [x, y] = pol(a, r * R); const g = S('g', {}, svg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: col, 'stroke-width': 2, transform: 'rotate(45)' }, g); return { g, x, y }; };
+  const qN = qa.map(([a, r]) => node(a, r, '#171b26'));
+  const iN = il.map(([a, r]) => node(a, r, '#c2410c'));
+  const linkLab = [['q', 1, 'cause-effect'], ['q', 3, 'cause-effect'], ['i', 0, 'elaboration'], ['i', 2, 'contrast']].map(([w, k, s]) => {
+    const arr = w === 'q' ? qa : il; const [a0, r0] = arr[k], [a1, r1] = arr[k + 1]; const [x, y] = pol((a0 + a1) / 2, ((r0 + r1) / 2 + (w === 'q' ? .08 : -.09)) * R);
+    const e = S('text', { x, y, 'text-anchor': 'middle', style: 'font: italic 500 11px JetBrains Mono', fill: w === 'q' ? '#666d7e' : '#c2410c' }, svg); e.textContent = s; return { e, w, k };
   });
-  // attribute pills on the rim
-  const pills = ATTR.map((name, i) => {
-    const [x, y] = polar(ang(i), R); const g = S('g', {}, svg);
-    const w = name.length * 8.6 + 26;
-    const rect = S('rect', { x: -w / 2, y: -15, width: w, height: 30, rx: 15, fill: '#0a0c12', stroke: 'rgba(255,255,255,0.32)', 'stroke-width': 1.5 }, g);
-    const tx = S('text', { x: 0, y: 5, 'text-anchor': 'middle', class: 'pill', fill: '#c3c9d6' }, g); tx.textContent = name;
-    g.setAttribute('transform', `translate(${x},${y})`); return { g, rect, tx, x, y };
-  });
-  // steering: drag the last orange node toward "Unemployment"
-  const dragFrom = iNodes[3], target = pills[2];
-  const ghost = S('rect', { x: -10, y: -10, width: 20, height: 20, fill: 'none', stroke: '#ff8c42', 'stroke-width': 2, 'stroke-dasharray': '4 3', transform: `translate(${dragFrom.x},${dragFrom.y}) rotate(45)` }, svg);
-  const trail = S('path', { fill: 'none', stroke: '#e6eaf3', 'stroke-width': 2.5, 'stroke-dasharray': '9 7', 'marker-end': 'url(#arrW)' }, svg);
-  const dragged = S('g', {}, svg); S('rect', { x: -12, y: -12, width: 24, height: 24, fill: '#0a0c12', stroke: '#ff8c42', 'stroke-width': 3.5, transform: 'rotate(45)' }, dragged);
-  const cursor = S('path', { d: 'M0,0 L0,26 L7,19 L12,30 L17,28 L12,17 L21,17 Z', fill: '#fff', stroke: '#0a0c12', 'stroke-width': 1.5 }, svg);
+  const pills = ATTR.map((n, i) => { const [x, y] = pol(ang(i), R); const g = S('g', {}, svg); const w = n.length * 7.4 + 18;
+    const r = S('rect', { x: -w / 2, y: -12, width: w, height: 24, rx: 12, fill: '#fff', stroke: 'rgba(23,27,38,0.2)' }, g);
+    const tx = S('text', { x: 0, y: 4, 'text-anchor': 'middle', style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); tx.textContent = n;
+    g.setAttribute('transform', `translate(${x},${y})`); return { g, r, tx, x, y }; });
+  const from = iN[3], tgt = pills[2];
+  const ghost = S('rect', { x: -7, y: -7, width: 14, height: 14, fill: 'none', stroke: '#c2410c', 'stroke-dasharray': '3 3', transform: `translate(${from.x},${from.y}) rotate(45)` }, svg);
+  const trail = S('path', { fill: 'none', stroke: '#171b26', 'stroke-width': 1.4, 'stroke-dasharray': '5 5', 'marker-end': 'url(#arr)' }, svg);
+  const dragN = S('g', {}, svg); S('rect', { x: -8, y: -8, width: 16, height: 16, fill: '#fff', stroke: '#c2410c', 'stroke-width': 2.5, transform: 'rotate(45)' }, dragN);
+  const cursor = S('path', { d: 'M0,0 L0,20 L5.5,15 L9.5,23.5 L13,22 L9,13.5 L16,13.5 Z', fill: '#171b26', stroke: '#fff', 'stroke-width': 1.2 }, svg);
   const pop = $('div', 'npop', disc);
-  pop.innerHTML = '<div class="cols"><div class="col"><b>GDP</b><div class="fl">Year ≤ <em>2008</em></div><div class="fl">Country = <em>Israel</em></div></div>' +
-    '<div style="align-self:center;color:var(--dim)">→</div><div class="col"><b>Unemployment</b><div class="fl">Year ≤ <em>2008</em></div><div class="fl">Country = <em>Israel</em></div></div></div>' +
-    '<div class="btns"><div class="btn">Cancel</div><div class="btn go">Explore →</div></div>';
-  const goBtn = pop.querySelector('.go');
-  pos(pop, 1250, 440);
+  pop.innerHTML = '<div class="cols"><div class="col"><b>GDP</b><div class="fl">Year ≤ 2008<br>Country = Israel</div></div><div style="color:var(--dimmer)">→</div><div class="col"><b>Unemployment</b><div class="fl">Year ≤ 2008<br>Country = Israel</div></div></div><div class="btns"><div class="btn">Cancel</div><div class="btn go">Explore →</div></div>';
+  at(pop, 1392, 356);
+  const go = pop.querySelector('.go');
+  // 结果: controlled study
+  const cmp = Compare(pn, 1330, 300, 'NarraSteer', [
+    { label: '叙事洞察数', delta: '+13.2%', a: 6.4, b: 5.7, max: 7, at: '6.4', bt: '5.7' },
+    { label: '主动拖拽引导 Agent', delta: '15/16', a: 15, b: 9, max: 16, at: '15/16', bt: '9/16' },
+    { label: '执行中途主动介入', delta: '10/16', a: 10, b: 5, max: 16, at: '10/16', bt: '5/16' },
+  ]);
 
-  // left column
-  const L = $('div', 'abs', sc); pos(L, 96, 214);
-  const kick = $('div', 'kicker', L, '02 · Graduate research · 2026.01 — 04');
-  const logBox = $('div', 'abs', sc); pos(logBox, 96, 480);
-  const LOG = ['Reading CSV with 1,031 rows…', 'Computing sales statistics by brand…', 'Writing script to rank brands by sales…', 'Generating bar chart for brand sales…', 'Filtering data for Xiaomi models…', 'Sorting Xiaomi models by average sales…'];
-  const logs = LOG.map(s => $('div', 'log', logBox, `<i>✓</i>${s}`));
-  const hTraj = Letters(sc, 'TRAJECTORY', 'display abs', { fontSize: '80px' }); pos(hTraj.root, 96, 296);
-  const hStory = Letters(sc, 'STORYLINE', 'display abs', { fontSize: '80px', color: 'var(--teal)' }); pos(hStory.root, 96, 296);
-  const hSub = $('div', 'meta abs', sc, 'agent steps, rebuilt as a story you can steer'); pos(hSub, 100, 400); st(hSub, { fontSize: '19px' });
-  const title = $('div', 'abs', sc); pos(title, 96, 290);
-  const tName = Letters(title, 'NARRASTEER', 'display', { fontSize: '76px' });
-  const tSub = $('div', '', title, 'Steering LLM agents in narrative space'); st(tSub, { fontFamily: 'var(--display)', fontWeight: 600, fontSize: '32px', marginTop: '18px', color: 'var(--text)' });
-  const tBad = $('div', '', title, '<span class="badge">CHI 2027 · UNDER REVIEW</span><span class="badge ghost">FIRST AUTHOR</span><span class="badge ghost">LANGGRAPH · REACT AGENT</span>'); st(tBad, { marginTop: '26px' });
-  const steerW = $('div', 'display abs', sc, 'DRAG TO <span style="color:var(--orange)">STEER.</span>'); st(steerW, { fontSize: '56px' }); pos(steerW, 96, 560);
-  const met = $('div', 'abs', sc); pos(met, 96, 300);
-  const mN = $('div', 'metric', met); st(mN, { fontSize: '210px' });
-  const mL = $('div', 'meta', met, 'USERS ACTIVELY STEERED THE AGENT BY DRAGGING'); st(mL, { fontSize: '19px', color: 'var(--text)', marginTop: '26px', letterSpacing: '0.12em' });
-  const mS = $('div', 'meta', met, 'vs 9/16 with a tree view &nbsp;·&nbsp; <span style="color:var(--teal)">+13.2%</span> narrative insights &nbsp;·&nbsp; N = 16'); st(mS, { fontSize: '17px', marginTop: '12px' });
-
-  const t0 = T.ns[0];
-  let BTN = { x: 1570, y: 590 };
+  const t0 = T.p2[0];
+  let BTN = { x: 1640, y: 470 };
   return {
-    layout() { const r = goBtn.getBoundingClientRect(), s0 = stage.getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 }; },
+    layout() { const r = go.getBoundingClientRect(), s0 = document.getElementById('stage').getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 }; },
     render(t) {
-      const on = t >= t0 - 0.02 && t < T.ns[1] + 0.02; show(sc, on); if (!on) return;
+      if (!sc.on(t)) return;
       const u = t - t0;
-      // the loop ring expands into the narrative disc
-      const g = oE(P(u, 0, .38));
-      face.setAttribute('r', lerp(230, R, g)); face.setAttribute('fill', `rgba(255,255,255,${0.025 * P(u, .1, .4)})`);
-      // zoom-through exit into ToA
-      const z = iE(P(u, 2.26, 2.5));
-      st(disc, { transform: `scale(${1 + z * 5})`, transformOrigin: `${C.x}px ${C.y}px`, opacity: 1 - P(u, 2.4, 2.5) });
-      spokes.forEach((s, i) => { const p = oC(P(u, .1 + i * .015, .35 + i * .015)); s.style.opacity = p; });
-      st(hub, { transform: `scale(${oB(P(u, .08, .3))})` });
-      pills.forEach((p, i) => { const k = oB(P(u, .14 + i * .025, .34 + i * .025)); p.g.style.opacity = Math.min(1, k * 1.5); p.g.setAttribute('transform', `translate(${p.x},${p.y}) scale(${Math.max(0, k)})`); });
-      ringText.style.opacity = P(u, .3, .6) * 0.9; ringText.style.transform = `rotate(${u * 14}deg)`;
-      // black storyline
-      const dl = (el, p) => { const L0 = el.getTotalLength(); st(el, { strokeDasharray: L0, strokeDashoffset: L0 * (1 - p) }); };
-      const pq = ioC(P(u, .55, 1.05)); dl(qLine, pq); dl(qBand, pq);
-      qNodes.forEach((n, i) => { const k = oB(P(u, .55 + i * .09, .72 + i * .09)); n.g.style.opacity = Math.min(1, k * 2); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
-      const pi_ = ioC(P(u, 1.0, 1.4)); dl(iLine, pi_); dl(iBand, pi_);
-      iNodes.forEach((n, i) => { if (i === 3) return; const k = oB(P(u, 1.0 + i * .1, 1.16 + i * .1)); n.g.style.opacity = Math.min(1, k * 2); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
-      links.forEach(l => { const s = l.on === 'q' ? .62 + l.k * .09 : 1.05 + l.k * .1; l.e.style.opacity = P(u, s, s + .12); });
-      // drag
-      const n3 = iNodes[3];
-      const appear = oB(P(u, 1.3, 1.45));
-      const d = ioC(P(u, 1.62, 1.95));
-      const tx = lerp(n3.x, target.x - 40, d), ty = lerp(n3.y, target.y - 34, d) - Math.sin(d * Math.PI) * 60;
-      dragged.setAttribute('transform', `translate(${tx},${ty}) scale(${Math.max(0, appear) * (1 + .25 * P(u, 1.55, 1.62) - .25 * P(u, 1.95, 2.02))})`);
-      dragged.style.opacity = P(u, 1.3, 1.36);
-      ghost.style.opacity = P(u, 1.64, 1.7) * 0.9;
-      n3.g.style.opacity = 0;
-      trail.setAttribute('d', `M${n3.x},${n3.y} Q${(n3.x + tx) / 2 + 40},${Math.min(n3.y, ty) - 70} ${tx},${ty}`);
-      trail.style.opacity = P(u, 1.66, 1.72);
-      // cursor: comes in, grabs, drags, then clicks Explore
-      const bx = BTN.x - 6, by = BTN.y - 4;
-      let cx = lerp(1700, n3.x + 4, oC(P(u, 1.38, 1.6))), cy = lerp(900, n3.y + 4, oC(P(u, 1.38, 1.6)));
-      if (u > 1.62) { cx = tx + 4; cy = ty + 4; }
-      const toBtn = ioC(P(u, 1.98, 2.12)); cx = lerp(cx, bx, toBtn); cy = lerp(cy, by, toBtn);
-      cursor.setAttribute('transform', `translate(${cx},${cy}) scale(${1 - .15 * P(u, 2.14, 2.17) + .15 * P(u, 2.2, 2.24)})`);
-      cursor.style.opacity = P(u, 1.38, 1.44);
-      const hl = P(u, 1.9, 1.96);
-      target.rect.setAttribute('stroke', hl > 0 ? '#ff8c42' : 'rgba(255,255,255,0.32)'); target.rect.setAttribute('stroke-width', 1.5 + hl * 1.5);
-      target.tx.setAttribute('fill', hl > 0 ? '#ff8c42' : '#c3c9d6');
-      st(pop, { opacity: P(u, 1.94, 2.02), transform: `translateY(${(1 - oE(P(u, 1.94, 2.1))) * 24}px)` });
-      goBtn.style.background = u > 2.16 && u < 2.3 ? 'var(--orange)' : ''; goBtn.style.borderColor = u > 2.16 && u < 2.3 ? 'var(--orange)' : '';
-      // left column choreography
-      const colFade = 1 - P(u, 2.36, 2.46);
-      st(kick, { opacity: P(u, 0, .12) }); st(L, { opacity: colFade });
-      reveal(hTraj, u, 0.0, { stagger: .02, dur: .3, out: .47, outStagger: .006, outDur: .08 });
-      reveal(hStory, u, .52, { stagger: .02, dur: .3, out: .96, outStagger: .006, outDur: .08 });
-      st(hSub, { opacity: win(u, .25, 1.02, .1, .08) });
-      logs.forEach((l, i) => {
-        const inn = P(u, .04 + i * .05, .12 + i * .05);
-        const fly = ioC(P(u, .5 + i * .03, .78 + i * .03));
-        const n = qNodes[Math.min(i, qNodes.length - 1)];
-        const dx = (n.x - 96 - 20) * fly, dy = (n.y - (480 + i * 39)) * fly;
-        st(l, { opacity: inn * (1 - P(fly, .6, 1)), transform: `translate(${dx}px, ${dy}px) scale(${1 - .8 * fly})`, transformOrigin: '0 50%' });
-      });
-      st(title, { opacity: win(u, 1.0, 2.02, .04, .08) });
-      reveal(tName, u, 1.0, { stagger: .026 });
-      st(tSub, { opacity: P(u, 1.12, 1.25), transform: `translateY(${(1 - oE(P(u, 1.12, 1.4))) * 20}px)` });
-      st(tBad, { opacity: P(u, 1.2, 1.32) });
-      st(steerW, { opacity: win(u, 1.55, 2.0, .06, .06) * colFade, transform: `translateX(${(1 - oE(P(u, 1.55, 1.8))) * -40}px)` });
-      const m = oE(P(u, 2.0, 2.3));
-      mN.innerHTML = Math.round(15 * m) + '<span style="color:var(--dim)">/16</span>';
-      st(met, { opacity: P(u, 2.0, 2.05) * colFade, transform: `translateY(${(1 - oE(P(u, 2.0, 2.25))) * 70}px) scale(${1 + (1 - oE(P(u, 2.0, 2.2))) * .12})` });
-      st(mL, { opacity: P(u, 2.08, 2.16) }); st(mS, { opacity: P(u, 2.14, 2.22) });
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景
+      const bgOut = 1 - oC(P(u, s1 - .05, s1 + .35));
+      log.style.opacity = rise(log, u, .55, .5, 14) * bgOut;
+      logLines.forEach((l, i) => { const p = P(u, .75 + i * .18, .9 + i * .18); l.style.opacity = .25 + .75 * p; l.querySelector('i').style.cssText = p >= 1 ? 'background:var(--ink);color:#fff' : ''; });
+      who.style.opacity = rise(who, u, .8, .5, 14) * bgOut;
+      wait.style.opacity = rise(wait, u, 1.0, .5, 14) * bgOut;
+      const wp = oQ(P(u, 1.2, 2.0)); w1.setAttribute('width', 822 * .741 * wp); w2.setAttribute('x', 822 * .741 * wp + 3); w2.setAttribute('width', Math.max(0, 822 * .259 * P(u, 1.7, 2.1) - 3));
+      // 解法: disc builds, storylines grow, then a drag steers the agent
+      const shift = ioC(P(u, s2, s2 + .6));
+      st(disc, { opacity: P(u, s1, s1 + .3), transform: `translate(${-shift * 230}px, 0) scale(${1 - shift * .12})`, transformOrigin: `${C.x}px ${C.y}px` });
+      face.setAttribute('r', R * oQ(P(u, s1, s1 + .5)));
+      spokes.forEach((s, i) => s.style.opacity = P(u, s1 + .15 + i * .02, s1 + .4 + i * .02));
+      st(hub, { opacity: P(u, s1 + .1, s1 + .3) });
+      pills.forEach((p, i) => { const k = oB(P(u, s1 + .2 + i * .03, s1 + .5 + i * .03)); p.g.style.opacity = Math.min(1, k * 2); p.g.setAttribute('transform', `translate(${p.x},${p.y}) scale(${Math.max(0, k)})`); });
+      const pq = ioC(P(u, s1 + .35, s1 + .95)); draw(qLine, pq); draw(qBand, pq);
+      qN.forEach((n, i) => { const k = oB(P(u, s1 + .35 + i * .1, s1 + .55 + i * .1)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
+      const pi = ioC(P(u, s1 + .75, s1 + 1.2)); draw(iLine, pi); draw(iBand, pi);
+      iN.forEach((n, i) => { const k = i === 3 ? 0 : oB(P(u, s1 + .75 + i * .12, s1 + .95 + i * .12)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
+      linkLab.forEach(l => { const s = l.w === 'q' ? s1 + .5 + l.k * .1 : s1 + .85 + l.k * .12; l.e.style.opacity = P(u, s, s + .2); });
+      // drag toward Unemployment, then Explore
+      const d0 = s1 + 1.15, d = ioC(P(u, d0 + .2, d0 + .6));
+      const tx = lerp(from.x, tgt.x - 30, d), ty = lerp(from.y, tgt.y + 32, d) - Math.sin(d * Math.PI) * 40;
+      dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(u, d0, d0 + .15))})`); dragN.style.opacity = P(u, d0, d0 + .05);
+      ghost.style.opacity = P(u, d0 + .22, d0 + .3);
+      trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2 + 30},${Math.min(from.y, ty) - 50} ${tx},${ty}`); trail.style.opacity = P(u, d0 + .25, d0 + .3);
+      let cx = lerp(1620, from.x + 3, oC(P(u, d0 - .15, d0 + .15))), cy = lerp(760, from.y + 3, oC(P(u, d0 - .15, d0 + .15)));
+      if (u > d0 + .2) { cx = tx + 3; cy = ty + 3; }
+      const toB = ioC(P(u, d0 + .7, d0 + .9)); cx = lerp(cx, BTN.x - 4, toB); cy = lerp(cy, BTN.y - 2, toB);
+      cursor.setAttribute('transform', `translate(${cx},${cy})`); cursor.style.opacity = P(u, d0 - .15, d0 - .05) * (1 - P(u, s2 - .1, s2));
+      const hl = P(u, d0 + .55, d0 + .6); tgt.r.setAttribute('stroke', hl ? '#c2410c' : 'rgba(23,27,38,0.2)'); tgt.tx.setAttribute('fill', hl ? '#c2410c' : '#666d7e');
+      st(pop, { opacity: P(u, d0 + .6, d0 + .7) * (1 - P(u, s2 - .05, s2 + .15)), transform: `translateY(${(1 - oQ(P(u, d0 + .6, d0 + .9))) * 10}px)` });
+      go.style.background = u > d0 + .92 && u < d0 + 1.05 ? 'var(--accent)' : ''; go.style.borderColor = go.style.background ? 'var(--accent)' : '';
+      // 结果
+      cmp.render(u, s2 + .15);
     },
   };
 })();
 
-/* ============================================================
-   SCENE 3 · TOA — a lost linear chat reorganised into an
-   Analysis Tree (CHI'26, first author). Node contents, edge
-   types and signals are taken from the real system figures.
-   ============================================================ */
-const TOA = (() => {
-  const sc = $('div', 'scene', world);
-  const camHold = $('div', 'layer', sc); st(camHold, { WebkitMaskImage: 'linear-gradient(to right, transparent 0px, transparent 930px, #000 1010px)' });
-  const cam = $('div', 'layer', camHold);
-  // "before": the linear conversation (real queries from the demo)
-  const chatWrap = $('div', 'layer', cam); st(chatWrap, { overflow: 'hidden', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)' });
-  const chat = $('div', 'chat', chatWrap); st(chat, { left: '1170px' });
-  const barsHTML = (vals, cols) => '<div class="bars">' + vals.map((v, i) => `<i style="height:${v}%;background:${cols[i]}"></i>`).join('') + '</div>';
-  const COL = ['#4c78a8', '#f58518', '#54a24b', '#e45756', '#b279a2'];
-  const Q = [
-    ['Show me phone sales.', 'Sales distribution shows Realme leading with 4,033,351 units sold (32.1%), followed by Xiaomi (3,191,605, 25.4%)…', [7, 45, 100, 21, 79]],
-    ['Show only Poco phones with their models and sales numbers', 'Poco shows remarkable efficiency with only 11 distinct models…', [60, 30, 92, 70, 46]],
-    ['Add price ranges to compare premium (Apple, Samsung) vs budget (Realme, Poco, Xiaomi) brand sales', 'Budget brands dominate with 72% market share…', [30, 88, 64, 40, 72]],
-    ['What processors does Poco use and how do they perform?', 'Poco phones use Qualcomm and MediaTek processors…', [80, 55, 35, 66, 28]],
-    ['Show Poco phones priced under $20,000', 'Most Poco models fall in the budget segment…', [44, 76, 58, 90, 36]],
-    ['Show me phone sales.', 'Sales distribution shows Realme leading…', [7, 45, 100, 21, 79]],
-  ];
-  const msgs = [];
-  Q.forEach(([q, a, v]) => { msgs.push($('div', 'msg-q', chat, q)); msgs.push($('div', 'msg-a', chat, a + barsHTML(v, COL))); });
-
-  // "after": the analysis tree (layout mirrors Fig. 1 of the paper)
-  const svg = S('svg', { class: 'full', viewBox: '0 0 1920 1080' }, cam);
-  const nodesLayer = $('div', 'layer', cam);
-  const root = $('div', 'troot', nodesLayer, 'Root'); const RX = 1420, RY = 150; pos(root, RX - 75, RY - 22);
+/* ============================================================ 03 · TOA
+   背景: novices lose their way in linear multi-turn chat; 4/6 novices failed in the formative study
+   → 解法: the conversation becomes an analysis tree (answers = nodes, queries = edges) + next-step suggestions
+   → 结果: N=12 · +58.3% insights per turn · +17.7% thinking time · −23% turns */
+const P3 = (() => {
+  const sc = Scene(T.p3);
+  const L = LeftCol(sc.root, {
+    idx: '03', kicker: '研究生 · CHI\'26 收录 · 第一作者 · 2025.07 — 11', title: 'ToA · Tree-of-Analysis', latin: 1,
+    sub: '对话式可视分析产品设计',
+    steps: ['新手在多轮可视分析对话中频繁迷路：线性对话难以回溯，<br>形成性研究中 <em>4/6</em> 名新手任务失败',
+            '把对话实时重组为可分支、可回溯的分析树：<br>回答是节点，提问是边；识别图表信号，推荐下一步提问'],
+    metrics: [['+58.3%', '每轮洞察数'], ['+17.7%', '每轮深度思考时间'], ['−23%', '总对话轮次']],
+  });
+  const pn = $('div', 'layer', sc.root);
+  // 背景: a long linear chat (queries from the real demo)
+  const chatCard = $('div', 'card', pn); st(chatCard, { width: '440px', height: '690px', overflow: 'hidden', padding: '0 22px' }); at(chatCard, 852, 195);
+  const chat = $('div', '', chatCard); st(chat, { paddingTop: '24px' });
+  const Q = [['Show me phone sales.', [7, 45, 100, 21, 79], 2], ['Show only Poco phones with their models and sales numbers', [60, 30, 92, 70, 46], 2],
+             ['Add price ranges to compare premium vs budget brand sales', [30, 88, 64, 40, 72], 1], ['What processors does Poco use and how do they perform?', [80, 55, 35, 66, 28], 0],
+             ['Show Poco phones priced under $20,000', [44, 76, 58, 90, 36], 3], ['Show me phone sales.', [7, 45, 100, 21, 79], 2]];
+  Q.forEach(([q, v, hi]) => { $('div', 'msgq', chat, q); $('div', 'msga', chat, '<div class="bars">' + v.map((h, i) => `<i style="height:${h}%"${i === hi ? ' class="hi"' : ''}></i>`).join('') + '</div>'); });
+  const fade = $('div', 'abs', chatCard); st(fade, { left: 0, right: 0, top: '0px', height: '120px', background: 'linear-gradient(#fff, rgba(255,255,255,0))' });
+  const fs = $('div', 'card', pn); st(fs, { width: '350px', padding: '22px 24px' }); at(fs, 1360, 300);
+  const dots = (n, bad) => Array.from({ length: n }, (_, i) => `<span class="pdot" style="${i < bad ? 'background:none;box-shadow:inset 0 0 0 1.5px var(--accent)' : 'background:var(--ink)'}"></span>`).join('');
+  fs.innerHTML = '<div class="cap" style="margin-bottom:16px">形成性研究 · N = 12</div>' +
+    `<div class="zh13" style="margin-bottom:8px">新手</div><div>${dots(6, 4)}</div><div class="zh13" style="margin:14px 0 8px">专家</div><div>${dots(6, 0)}</div>` +
+    '<div class="zh13" style="margin-top:16px"><span style="color:var(--accent)">○</span> 任务失败 &nbsp; <span>●</span> 完成</div>';
+  // 解法: the analysis tree (node contents from the paper's figure)
+  const tree = $('div', 'layer', pn);
+  const tsvg = S('svg', { class: 'full' }, tree);
+  const root = $('div', 'troot', tree, 'Root'); const RX = 1290, RY = 250; at(root, RX - 55, RY - 17);
   const chip = (s, f) => `<span class="c${f ? ' f' : ''}">${s}</span>`;
-  const mk = (attrs, filter, cls = '') => `<div class="row"><span class="k">Attr:</span>${attrs.map(a => chip(a)).join('')}</div><div class="row"><span class="k">Filter:</span>${filter ? chip(filter, 1) : '<span>none</span>'}</div>`;
+  const mk = (a, f) => `<div class="row">Attr: ${a.map(x => chip(x)).join('')}</div><div class="row">Filter: ${f ? chip(f, 1) : 'none'}</div>`;
   const NODES = [
-    { id: 'A', p: 'root', x: 1150, y: 320, e: 'Start new', html: mk(['discount_percent', 'num_of_ratings']) },
-    { id: 'B', p: 'root', x: 1420, y: 320, e: 'Start new', html: mk(['brand', 'num_of_sales']), cls: 'focus' },
-    { id: 'C', p: 'root', x: 1690, y: 320, e: 'Start new', html: mk(['sales_price', 'battery_capacity']) },
-    { id: 'A1', p: 'A', x: 1150, y: 505, e: 'Elaborate', html: mk(['screen_size', 'sales_price', 'num_of_ratings']) },
-    { id: 'B1', p: 'B', x: 1420, y: 505, e: 'Slice', html: mk(['models', 'num_of_sales'], "brand='Poco'") },
-    { id: 'A2', p: 'A1', x: 1150, y: 700, e: 'Dice', html: mk(['brand', 'sales_price', 'num_of_ratings'], "brand='Realme'") },
-    { id: 'B2', p: 'B1', x: 1420, y: 700, e: 'Elaborate', html: mk(['models', 'num_of_sales', 'processor'], "brand='Poco'"), cls: 'dash', rec: 1 },
-    { id: 'B3', p: 'B1', x: 1690, y: 700, e: 'Dice', html: mk(['models', 'num_of_sales'], 'sales_price<=20000'), cls: 'dash', rec: 1 },
+    { id: 'A', p: 'root', x: 1060, y: 390, e: 'Start new', h: mk(['discount_percent', 'num_of_ratings']) },
+    { id: 'B', p: 'root', x: 1290, y: 390, e: 'Start new', h: mk(['brand', 'num_of_sales']), c: 'focus' },
+    { id: 'C', p: 'root', x: 1520, y: 390, e: 'Start new', h: mk(['sales_price', 'battery_capacity']) },
+    { id: 'A1', p: 'A', x: 1060, y: 560, e: 'Elaborate', h: mk(['screen_size', 'sales_price'], null) },
+    { id: 'B1', p: 'B', x: 1290, y: 560, e: 'Slice', h: mk(['models', 'num_of_sales'], "brand='Poco'") },
+    { id: 'B2', p: 'B1', x: 1290, y: 730, e: 'Elaborate', h: mk(['models', 'processor'], "brand='Poco'"), c: 'dash', rec: 1 },
+    { id: 'B3', p: 'B1', x: 1520, y: 730, e: 'Dice', h: mk(['models', 'num_of_sales'], 'sales_price<=20000'), c: 'dash', rec: 1 },
   ];
-  const byId = { root: { x: RX, y: RY, h: 44 } };
-  NODES.forEach((n, i) => {
-    n.el = $('div', 'tnode ' + (n.cls || ''), nodesLayer, n.html); n.i = i;
-  });
+  const byId = { root: { x: RX, y: RY, h: 34 } };
+  NODES.forEach((n, i) => { n.el = $('div', 'tnode ' + (n.c || ''), tree, n.h); n.i = i; });
   const edges = [];
-  function layoutTree() {
-    NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.h = b.height; pos(n.el, n.x - 107, n.y - n.h / 2); byId[n.id] = n; });
-    NODES.forEach(n => {
-      const p = byId[n.p]; const y0 = p.y + p.h / 2, y1 = n.y - n.h / 2, my = (y0 + y1) / 2;
-      const path = S('path', { d: `M${p.x},${y0} C${p.x},${my} ${n.x},${my} ${n.x},${y1}`, fill: 'none', stroke: n.rec ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.55)', 'stroke-width': 1.8, 'stroke-dasharray': n.rec ? '7 6' : 'none' }, svg);
-      const lab = S('text', { x: (p.x + n.x) / 2 + (n.x === p.x ? 10 : 0), y: my + 5, 'text-anchor': n.x === p.x ? 'start' : 'middle', class: 'elabel' }, svg); lab.textContent = n.e;
-      edges.push({ n, path, lab });
-    });
-  }
-  // signals popover + recommendation cards (text from Fig. 5)
-  const popv = $('div', 'popover', nodesLayer);
-  popv.innerHTML = '<div class="sig"><b>Extreme</b>Realme slice occupies 32.1% of markets<span class="rec">REC.</span></div>' +
-    '<div class="sig"><b>Difference</b>The sales gap between Realme and Apple is huge.<span class="rec">REC.</span></div>' +
-    '<div class="sig"><b>Majority</b>Budget brands dominate with 72% market share<span class="rec">REC.</span></div>';
-  pos(popv, 1540, 196);
-  const chart = $('div', 'popover', nodesLayer); st(chart, { width: '300px' });
-  chart.innerHTML = '<div style="font-size:12px;color:var(--dim);line-height:1.4">Sales distribution shows <span style="color:var(--text)">Realme</span> leading with 4,033,351 units sold (32.1%)</div>' + barsHTML([7, 45, 100, 21, 79], COL);
-  pos(chart, 1572, 478); st(chart, { width: '276px' });
-  const link = S('path', { d: 'M1527,330 C1552,330 1552,500 1572,500', fill: 'none', stroke: 'rgba(255,255,255,0.5)', 'stroke-width': 1.6, 'stroke-dasharray': '3 5' }, svg);
+  const sig = $('div', 'sigp', tree); at(sig, 1392, 270);
+  sig.innerHTML = '<div class="cap" style="margin:2px 2px 6px">图表信号</div><div class="sig"><b>Extreme</b>Realme slice occupies 32.1% of markets<span class="rec">REC.</span></div><div class="sig"><b>Majority</b>Budget brands dominate with 72% market share<span class="rec">REC.</span></div>';
+  // 结果
+  const cmp = Compare(pn, 1350, 330, 'ToA', [
+    { label: '每轮洞察数', delta: '+58.3%', a: 1.583, b: 1, max: 1.7, at: '', bt: '' },
+    { label: '每轮深度思考时间', delta: '+17.7%', a: 71.3, b: 60.6, max: 80, at: '71.3s', bt: '60.6s' },
+    { label: '总对话轮次', delta: '−23%', a: 14.4, b: 18.8, max: 20, at: '14.4', bt: '18.8' },
+  ]);
 
-  // real product UI plate
-  const plateWrap = $('div', 'layer', sc); st(plateWrap, { perspective: '2000px' });
-  const plate = $('img', 'abs', plateWrap); plate.src = 'assets/toa-interface.png';
-  st(plate, { width: '940px', left: '940px', top: '262px', borderRadius: '10px', boxShadow: '0 30px 90px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.14)', transformOrigin: '0% 50%' });
-  const stack = $('div', 'meta abs', sc, 'LANGCHAIN · GEMINI 2.5 FLASH · VEGA-LITE · G6 · VUE 3 · DJANGO'); pos(stack, 940, 750); st(stack, { fontSize: '14px', letterSpacing: '0.2em', color: 'var(--dimmer)' });
-
-  // left column
-  const kick = $('div', 'kicker abs', sc, '03 · Graduate research · 2025.07 — 11'); pos(kick, 96, 214);
-  const hA = Letters(sc, 'LOST IN', 'display abs', { fontSize: '96px' }); pos(hA.root, 96, 290);
-  const hB = Letters(sc, 'THE CHAT?', 'display abs', { fontSize: '96px' }); pos(hB.root, 96, 384);
-  const gA = Letters(sc, 'GAIN', 'display abs', { fontSize: '96px' }); pos(gA.root, 96, 290);
-  const gB = Letters(sc, 'A MAP.', 'display abs', { fontSize: '96px', color: 'var(--teal)' }); pos(gB.root, 96, 384);
-  const hNote = $('div', 'meta abs', sc, 'Novices lose their way in multi-turn conversational visual analysis'); pos(hNote, 100, 520); st(hNote, { fontSize: '18px' });
-  const gNote = $('div', 'meta abs', sc, 'Each turn becomes a node · every query type becomes an edge'); pos(gNote, 100, 520); st(gNote, { fontSize: '18px' });
-  const title = $('div', 'abs', sc); pos(title, 96, 280);
-  const tA = Letters(title, 'TREE-OF-', 'display', { fontSize: '90px' });
-  const tB = Letters(title, 'ANALYSIS', 'display', { fontSize: '90px' });
-  const tSub = $('div', '', title, 'Conversational visual analysis for novices'); st(tSub, { fontFamily: 'var(--display)', fontWeight: 600, fontSize: '30px', marginTop: '20px' });
-  const tBad = $('div', '', title, '<span class="badge">CHI 2026 · ACCEPTED</span><span class="badge ghost">FIRST AUTHOR</span><span class="badge ghost">CCF-A</span>'); st(tBad, { marginTop: '26px' });
-  const met = $('div', 'abs', sc); pos(met, 96, 262);
-  const mN = $('div', 'metric', met); st(mN, { fontSize: '210px' });
-  const mL = $('div', 'meta', met, 'INSIGHTS PER CONVERSATION TURN'); st(mL, { fontSize: '19px', color: 'var(--text)', marginTop: '24px', letterSpacing: '0.14em' });
-  const mS = $('div', 'meta', met, 'vs linear-chat baseline · N = 12 · p = 0.002'); st(mS, { fontSize: '16px', marginTop: '10px' });
-  const row2 = $('div', '', met); st(row2, { display: 'flex', gap: '64px', marginTop: '46px' });
-  const sm = [['+17.7%', 'THINKING TIME / TURN'], ['−23%', 'CONVERSATION TURNS']].map(([v, l]) => { const d = $('div', '', row2); $('div', 'metric', d, v).style.fontSize = '64px'; const e = $('div', 'meta', d, l); st(e, { fontSize: '14px', marginTop: '10px', letterSpacing: '0.16em' }); return d; });
-
-  const t0 = T.toa[0];
-  return {
-    layout: layoutTree,
-    render(t) {
-      const on = t >= t0 - 0.02 && t < T.toa[1] + 0.02; show(sc, on); if (!on) return;
-      const u = t - t0;
-      // whip-pan out to the next chapter
-      const wp = iE(P(u, 2.84, 3.0));
-      st(sc, { transform: `translateX(${-wp * 700}px)`, opacity: 1 - P(u, 2.9, 3.0), filter: wp > 0.01 ? 'url(#hblur)' : 'none' });
-      // zoom-in arrival from NarraSteer's zoom-through
-      const arrive = oE(P(u, 0, .35));
-      // chat scroll & dissolve
-      st(chat, { transform: `translateY(${-u * 520 + 60}px)` });
-      st(chatWrap, { opacity: (P(u, 0, .08)) * (1 - P(u, .5, .72)) });
-      msgs.forEach((m, i) => { const f = ioC(P(u, .5 + i * .012, .7 + i * .012)); st(m, { transform: `translateX(${-f * 160}px) scale(${1 - f * .5})`, opacity: 1 - f }); });
-      // camera: pull back (arrival) → push into the focus node → hand off to the real UI
-      const push = ioC(P(u, 1.0, 1.4));
-      const s = lerp(1.14 - .14 * arrive, 1.08, push) + push * (u - 1.0) * .03;
-      const fx = 1440, fy = lerp(480, 440, push);
-      st(cam, { transform: `translate(${1440 - fx * s}px, ${540 - fy * s + (1 - arrive) * 30}px) scale(${s})`, transformOrigin: '0 0', opacity: 1 - P(u, 1.5, 1.66) });
-      // tree build
-      const rp = oB(P(u, .45, .65)); st(root, { transform: `scale(${Math.max(0, rp)})`, opacity: Math.min(1, rp * 2) });
-      edges.forEach(({ n, path, lab }) => {
-        const s0 = n.rec ? 1.05 + (n.i - 6) * .08 : .55 + n.i * .06; const L0 = path.getTotalLength();
-        const p = oC(P(u, s0, s0 + .18)); st(path, { strokeDasharray: n.rec ? '7 6' : L0, strokeDashoffset: n.rec ? 0 : L0 * (1 - p), opacity: n.rec ? p : 1 });
-        lab.style.opacity = P(u, s0 + .1, s0 + .2);
-        const k = oB(P(u, s0 + .1, s0 + .28)); st(n.el, { transform: `scale(${Math.max(0, k)})`, opacity: Math.min(1, k * 2) });
-      });
-      st(popv, { opacity: P(u, 1.12, 1.2), transform: `translateX(${(1 - oE(P(u, 1.12, 1.35))) * 30}px)` });
-      st(chart, { opacity: P(u, 1.02, 1.1), transform: `translateX(${(1 - oE(P(u, 1.02, 1.3))) * -30}px)` });
-      link.style.opacity = P(u, 1.0, 1.08);
-      // real UI plate
-      const pl = oE(P(u, 1.5, 1.95));
-      st(plate, { opacity: P(u, 1.5, 1.62) * (1 - .45 * P(u, 2.0, 2.2)), transform: `translateX(${(1 - pl) * 120}px) rotateY(${lerp(4, 12, pl)}deg) scale(${lerp(1.2, 1, pl) * (1 + (u - 1.5) * .02)})` });
-      st(stack, { opacity: win(u, 1.62, 3.0, .1, .1) });
-      // left column
-      st(kick, { opacity: P(u, .02, .15) * (1 - P(u, 2.84, 2.9)) });
-      reveal(hA, u, .03, { stagger: .024, dur: .32, out: .47, outStagger: .006, outDur: .08 });
-      reveal(hB, u, .1, { stagger: .024, dur: .32, out: .48, outStagger: .006, outDur: .08 });
-      reveal(gA, u, .54, { stagger: .03, dur: .32, out: .96, outStagger: .006, outDur: .08 });
-      reveal(gB, u, .6, { stagger: .03, dur: .32, out: .97, outStagger: .006, outDur: .08 });
-      st(hNote, { opacity: win(u, .2, .52, .08, .06) }); st(gNote, { opacity: win(u, .7, 1.02, .08, .06) });
-      st(title, { opacity: win(u, 1.02, 2.02, .04, .08) });
-      reveal(tA, u, 1.04, { stagger: .022 }); reveal(tB, u, 1.1, { stagger: .022 });
-      st(tSub, { opacity: P(u, 1.2, 1.32) }); st(tBad, { opacity: P(u, 1.28, 1.4) });
-      const m = oE(P(u, 2.0, 2.4));
-      mN.innerHTML = '+' + fmt(58.3 * m, 1) + '%';
-      st(met, { opacity: P(u, 2.0, 2.05), transform: `translateY(${(1 - oE(P(u, 2.0, 2.25))) * 70}px) scale(${1 + (1 - oE(P(u, 2.0, 2.2))) * .12})` });
-      st(mL, { opacity: P(u, 2.1, 2.18) }); st(mS, { opacity: P(u, 2.16, 2.24) });
-      sm.forEach((d, i) => st(d, { opacity: P(u, 2.5 + i * .08, 2.58 + i * .08), transform: `translateY(${(1 - oE(P(u, 2.5 + i * .08, 2.75 + i * .08))) * 30}px)` }));
-    },
-  };
-})();
-
-/* ============================================================
-   SCENE 4 · PUBLIC OPINION PLATFORM — G-end product lead,
-   National Key R&D Program (¥30M), 3-layer IA, 5 tech teams.
-   Panels are frames from the recorded platform demo.
-   ============================================================ */
-const PO = (() => {
-  const sc = $('div', 'scene', world);
-  const persp = $('div', 'layer', sc); st(persp, { perspective: '2200px', perspectiveOrigin: '1400px 540px' });
-  const stackEl = $('div', 'abs', persp); st(stackEl, { left: '940px', top: '270px', width: '920px', height: '518px', transformStyle: 'preserve-3d' });
-  const imgs = ['po-bubbles.jpg', 'po-network.jpg', 'po-sankey.jpg'];
-  const panels = imgs.map(f => { const p = $('div', 'panel', stackEl); st(p, { backgroundImage: `url(assets/${f})`, left: '0px', top: '0px' }); return p; });
-  const svg = S('svg', { class: 'full', viewBox: '0 0 1920 1080' }, sc);
-  const teams = [0, 1, 2, 3, 4].map(i => S('path', { d: `M ${-20} ${250 + i * 150} C 520 ${250 + i * 150}, 980 540, 1400 530`, fill: 'none', stroke: '#00e8c8', 'stroke-width': 2, opacity: .8 }, svg));
-  const hubDot = S('circle', { cx: 1400, cy: 530, r: 10, fill: '#00e8c8' }, svg);
-  // left column
-  const L = $('div', 'abs', sc); pos(L, 96, 214);
-  const kick = $('div', 'kicker', L, '04 · Graduate · product lead · 2024.09 — 2025.04');
-  const tA = Letters(L, 'PUBLIC', 'display', { fontSize: '108px', marginTop: '26px' });
-  const tB = Letters(L, 'OPINION', 'display', { fontSize: '108px' });
-  const sub = $('div', 'meta', L, 'Cross-platform social media public opinion<br>event tracking &amp; governance platform'); st(sub, { fontSize: '19px', marginTop: '22px', lineHeight: '1.5', color: 'var(--text)' });
-  const bad = $('div', '', L, '<span class="badge">NATIONAL KEY R&amp;D PROGRAM · ¥30M</span>'); st(bad, { marginTop: '22px' });
-  const ia = $('div', 'abs', sc); pos(ia, 96, 690);
-  ia.innerHTML = '<div class="meta" style="font-size:13px;letter-spacing:.22em;color:var(--dimmer);margin-bottom:10px">3-LAYER INFORMATION ARCHITECTURE</div>' +
-    ['BIG SCREEN', 'WORKBENCH DASHBOARD', 'VISUALIZATION MIDDLE PLATFORM'].map((s, i) => `<div class="evrow" style="margin:6px 0"><span style="color:var(--teal)">0${i + 1}</span><span>${s}</span></div>`).join('');
-  const iaRows = [...ia.querySelectorAll('.evrow')];
-  const teamLab = $('div', 'abs kicker', sc, '5 tech teams coordinated'); pos(teamLab, 96, 880); st(teamLab, { fontSize: '20px' });
-  const zero = $('div', 'abs display', sc, '0<span style="color:var(--teal)">→</span>1'); st(zero, { fontSize: '230px' }); pos(zero, 96, 300);
-  const zeroL = $('div', 'abs meta', sc, '0-TO-1 PRODUCT DESIGN · DELIVERED'); pos(zeroL, 104, 610); st(zeroL, { fontSize: '19px', color: 'var(--text)', letterSpacing: '0.14em' });
-
-  const t0 = T.po[0];
-  return {
-    render(t) {
-      const on = t >= t0 - 0.02 && t < T.po[1] + 0.01; show(sc, on); if (!on) return;
-      const u = t - t0;
-      // whip-pan in
-      const wi = 1 - oE(P(u, 0, .28));
-      st(sc, { transform: `translateX(${wi * 700}px)`, filter: wi > 0.02 ? 'url(#hblur)' : 'none' });
-      // panels: hero panel → stacked 3-layer view
-      const stk = ioC(P(u, .5, .9));
-      const spin = (u - .5) * 6;
-      st(stackEl, { transform: `rotateX(${lerp(0, 56, stk)}deg) rotateY(${lerp(-14, 0, stk)}deg) rotateZ(${lerp(0, -34 - spin * stk, stk)}deg) scale(${lerp(1, .78, stk)}) translateZ(${lerp(0, -80, stk)}px)` });
-      panels.forEach((p, i) => {
-        const inn = i === 0 ? 1 : oE(P(u, .5 + i * .06, .8 + i * .06));
-        const z = lerp(0, 190 - i * 190, stk);
-        const x = i === 0 ? 0 : (1 - inn) * 900;
-        st(p, { transform: `translate3d(${x}px, 0, ${z}px)`, opacity: i === 0 ? 1 : inn, filter: `brightness(${lerp(1, .82 + i * .06, stk)})` });
-      });
-      // five teams converge
-      teams.forEach((pth, i) => { const L0 = pth.getTotalLength(); const p = oC(P(u, 1.0 + i * .03, 1.3 + i * .03)); st(pth, { strokeDasharray: L0, strokeDashoffset: L0 * (1 - p), opacity: .75 * (1 - P(u, 1.72, 1.9)) }); });
-      st(hubDot, { transform: `scale(${oB(P(u, 1.28, 1.42))})`, transformOrigin: '1400px 530px', opacity: 1 - P(u, 1.72, 1.9) });
-      st(teamLab, { opacity: win(u, 1.05, 1.52, .08, .06) });
-      // left column
-      const colOut = P(u, 1.46, 1.54);
-      st(L, { opacity: 1 - colOut });
-      st(kick, { opacity: P(u, .05, .18) });
-      reveal(tA, u, .06, { stagger: .026 }); reveal(tB, u, .12, { stagger: .026 });
-      st(sub, { opacity: P(u, .25, .38) }); st(bad, { opacity: P(u, .32, .44) });
-      st(ia, { opacity: win(u, .55, 1.5, .06, .06) });
-      iaRows.forEach((r, i) => st(r, { opacity: P(u, .6 + i * .07, .68 + i * .07), transform: `translateX(${(1 - oE(P(u, .6 + i * .07, .85 + i * .07))) * -24}px)` }));
-      const zp = oE(P(u, 1.5, 1.72));
-      st(zero, { opacity: P(u, 1.5, 1.54), transform: `scale(${lerp(1.35, 1, zp)})`, transformOrigin: '0 50%' });
-      st(zeroL, { opacity: P(u, 1.62, 1.7) });
-      st(persp, { opacity: 1 - .5 * P(u, 1.5, 1.7) });
-    },
-  };
-})();
-
-/* ============================================================
-   SCENE 5 · UNDERGRADUATE — three real projects, an eighth note each
-   ============================================================ */
-const UG = (() => {
-  const sc = $('div', 'scene', world);
-  const F = [
-    { img: 'ug-coco.jpg', t: 'COCOCREATE', k: 'VR participatory design platform', n: '01' },
-    { img: 'ug-qibaishi.jpg', t: 'QI BAISHI × AIGC', k: 'SD + LoRA + ControlNet · 1000 → 15 training images', n: '02', light: 1 },
-    { img: 'ug-l3.jpg', t: 'L3 TAKEOVER HMI', k: 'Huawei UCD × Hunan University', n: '03', wide: 1 },
-  ];
-  F.forEach(f => {
-    f.el = $('div', 'flash', sc);
-    f.im = $('div', 'img', f.el); st(f.im, { backgroundImage: `url(assets/${f.img})` });
-    if (f.wide) st(f.im, { backgroundSize: '100% auto', backgroundRepeat: 'no-repeat', backgroundPosition: 'center 38%', backgroundColor: '#000' });
-    $('div', 'shade', f.el);
-    const ttl = $('div', 'ttl', f.el);
-    const kk = $('div', 'kicker', ttl, `Undergraduate · ${f.n}`); st(kk, { marginBottom: '14px' });
-    f.tt = $('div', 'display', ttl, f.t);
-    const k2 = $('div', 'meta', ttl, f.k); st(k2, { fontSize: '20px', marginTop: '18px', color: 'var(--text)' });
-  });
-  const top = $('div', 'abs kicker', sc, 'Hunan University · Industrial Design · ranked 1st · 2020 — 2024'); pos(top, 96, 100); st(top, { color: 'var(--text)', fontSize: '15px' });
-  return {
-    layout() { F.forEach(f => { show(f.el, true); st(f.tt, { fontSize: '100px' }); const w = f.tt.getBoundingClientRect().width; st(f.tt, { fontSize: Math.min(150, 100 * 1600 / w) + 'px' }); show(f.el, false); }); },
-    render(t) {
-      const on = t >= T.ug[0] && t < T.ug[1]; show(sc, on); if (!on) { F.forEach(f => show(f.el, false)); return; }
-      const u = t - T.ug[0];
-      const idx = Math.min(F.length - 1, Math.floor(u / .25));
-      F.forEach((f, i) => {
-        show(f.el, i === idx);
-        if (i !== idx) return;
-        const v = (u - i * .25) / .25;
-        st(f.im, { transform: `scale(${1.12 - .08 * oC(v)}) translateX(${(i % 2 ? 1 : -1) * v * 20}px)` });
-      });
-    },
-  };
-})();
-
-/* ============================================================
-   SCENE 6 · NAME — the Möbius band comes into focus
-   ============================================================ */
-const END = (() => {
-  const sc = $('div', 'scene', world);
-  const glow = $('div', 'layer', sc); st(glow, { background: 'radial-gradient(ellipse 40% 24% at 50% 50%, rgba(10,12,18,0.9) 0%, rgba(10,12,18,0.6) 55%, rgba(10,12,18,0) 100%)' });
-  const wrap = $('div', 'layer', sc);
-  const name = Letters(wrap, 'QU FEIYUAN', 'display abs', { fontSize: '176px', letterSpacing: '0.04em' });
-  const zh = $('div', 'abs', wrap, '屈非塬'); st(zh, { fontFamily: 'var(--zh)', fontWeight: 700, fontSize: '54px', letterSpacing: '0.62em', color: 'var(--text)' });
-  const rule = $('div', 'abs', wrap); st(rule, { height: '2px', background: 'var(--teal)', width: '0px' });
-  const role = $('div', 'abs kicker', wrap); st(role, { fontSize: '21px', letterSpacing: '0.34em' });
-  const cur = $('span', '', null); st(cur, { display: 'inline-block', width: '3px', height: '22px', background: 'var(--teal)', verticalAlign: '-3px', marginLeft: '4px' });
-  const bl = $('div', 'abs meta', wrap, 'STATE KEY LAB OF CAD&amp;CG · ZHEJIANG UNIVERSITY'); pos(bl, 96, 990); st(bl, { fontSize: '14px', letterSpacing: '0.2em' });
-  const br = $('div', 'abs meta', wrap, 'QFY1012.GITHUB.IO'); st(br, { right: '96px', top: '990px', fontSize: '14px', letterSpacing: '0.2em', color: 'var(--text)' });
-  let NFS = 130, RW = 800;
+  const t0 = T.p3[0];
   return {
     layout() {
-      st(name.root, { fontSize: '100px', letterSpacing: '0.04em' }); const w0 = name.root.getBoundingClientRect().width; NFS = 100 * 1320 / w0; st(name.root, { fontSize: NFS + 'px' });
-      const b = name.root.getBoundingClientRect(); pos(name.root, (W - b.width) / 2, 540 - b.height / 2 - 60);
-      const z = zh.getBoundingClientRect(); pos(zh, (W - z.width) / 2 + 17, 600);
-      role.textContent = 'DESIGN · ENGINEERING · AI'; RW = role.getBoundingClientRect().width;
+      NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.hh = b.height; at(n.el, n.x - 88, n.y - n.hh / 2); byId[n.id] = { x: n.x, y: n.y, h: n.hh }; });
+      NODES.forEach(n => {
+        const p = byId[n.p]; const y0 = p.y + p.h / 2, y1 = n.y - n.hh / 2, my = (y0 + y1) / 2;
+        const path = S('path', { d: `M${p.x},${y0} C${p.x},${my} ${n.x},${my} ${n.x},${y1}`, fill: 'none', stroke: 'rgba(23,27,38,0.35)', 'stroke-width': 1.2, 'stroke-dasharray': n.rec ? '4 4' : 'none' }, tsvg);
+        const lab = S('text', { x: (p.x + n.x) / 2 + (p.x === n.x ? 8 : 0), y: my + 4, 'text-anchor': p.x === n.x ? 'start' : 'middle', style: 'font: italic 11px JetBrains Mono', fill: '#8a92a6' }, tsvg); lab.textContent = n.e;
+        edges.push({ n, path, lab });
+      });
     },
     render(t) {
-      const on = t >= T.end[0]; show(sc, on); if (!on) return;
-      const u = t - T.end[0];
-      st(wrap, { transform: `scale(${1 + u * .012})`, transformOrigin: '50% 50%' });
-      glow.style.opacity = P(u, .2, .8);
-      // letter-spacing breathes in while glyphs rise
-      const ls = lerp(0.42, 0.04, oE(P(u, .18, 1.4)));
-      st(name.root, { letterSpacing: ls + 'em' });
-      const b = name.root.getBoundingClientRect(); const sc_ = 1 + u * .012; pos(name.root, (W - b.width / sc_) / 2, 540 - b.height / sc_ / 2 - 60);
-      reveal(name, u, .2, { stagger: .045, dur: .6 });
-      st(zh, { opacity: P(u, .85, 1.1), transform: `translateY(${(1 - oE(P(u, .85, 1.3))) * 20}px)` });
-      const rw = oE(P(u, .8, 1.3)) * 140; st(rule, { width: rw + 'px', left: (W - rw) / 2 + 'px', top: '570px' });
-      const txt = 'DESIGN · ENGINEERING · AI';
-      role.textContent = typed(txt, u, 1.2, 44); role.appendChild(cur);
-      cur.style.opacity = (u < 1.2 + txt.length / 44 + .05) || (Math.floor(u * 2.2) % 2 === 0) ? 1 : 0;
-      role.style.opacity = P(u, 1.15, 1.2);
-      pos(role, (W - RW) / 2 + 12, 716);
-      st(bl, { opacity: P(u, 1.6, 1.9) }); st(br, { opacity: P(u, 1.7, 2.0) });
+      if (!sc.on(t)) return;
+      const u = t - t0;
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景
+      const bgOut = 1 - oC(P(u, s1 - .05, s1 + .35));
+      chatCard.style.opacity = rise(chatCard, u, .55, .5, 14) * bgOut;
+      st(chat, { transform: `translateY(${-Math.max(0, u - .6) * 150}px)` });
+      fs.style.opacity = rise(fs, u, 1.0, .5, 14) * bgOut;
+      // 解法
+      const shift = ioC(P(u, s2, s2 + .6));
+      st(tree, { opacity: P(u, s1, s1 + .2), transform: `translate(${-shift * 215}px, ${shift * 90}px) scale(${1 - shift * .24})`, transformOrigin: `${RX}px 250px` });
+      const rp = oB(P(u, s1, s1 + .25)); st(root, { transform: `scale(${Math.max(0, rp)})` });
+      edges.forEach(({ n, path, lab }) => {
+        const k0 = n.rec ? s1 + 1.05 + (n.i - 5) * .1 : s1 + .2 + n.i * .1; const p = oC(P(u, k0, k0 + .25));
+        if (n.rec) path.style.opacity = p; else draw(path, p);
+        lab.style.opacity = P(u, k0 + .1, k0 + .25);
+        const k = oB(P(u, k0 + .12, k0 + .35)); st(n.el, { transform: `scale(${Math.max(0, k)})`, opacity: Math.min(1, k * 2) });
+      });
+      st(sig, { opacity: P(u, s1 + .75, s1 + .85) * (1 - P(u, s2 - .05, s2 + .15)), transform: `translateX(${(1 - oQ(P(u, s1 + .75, s1 + 1.05))) * 16}px)` });
+      // 结果
+      cmp.render(u, s2 + .15);
     },
   };
 })();
 
-/* ============================================================
-   frame renderer
-   ============================================================ */
-function camShake(t) {
-  let x = 0, y = 0;
-  HITS.forEach((h, i) => { const d = t - h; if (d >= 0 && d < .22) { const a = (1 - d / .22) ** 2 * (h === 12.5 ? 12 : 6); x += Math.sin(d * 95 + i) * a; y += Math.cos(d * 80 + i * 2) * a; } });
-  return [x, y];
-}
-function particles(t) {
-  const endU = t - T.end[0];
-  if (t < 1.6) {
-    // opening haze: the band far out of focus behind the tagline
-    PT.draw({ spin: 0.9 + t * 0.35, tilt: 1.12, roll: -0.12, cx: 960, cy: 560, coc: 0.05, blurAll: 14, alpha: 1.1, gather: 1, fade: 0.55 * P(t, 0, .25) * (1 - P(t, 1.3, 1.6)) });
-  } else if (t >= T.end[0]) {
-    const g = P(endU, 0, 1.25);
-    const focus = ioC(P(endU, .15, 1.35));
-    PT.draw({ spin: 1.4 + endU * 0.32, tilt: 1.2, roll: -0.1, cx: 960, cy: 545, coc: lerp(0.05, 0.024, focus), blurAll: lerp(5, 0.3, focus), alpha: lerp(4.0, 1.15, focus), gather: g, fade: P(endU, 0, .06) });
-  } else PT.clear();
-}
+/* ============================================================ 04 · 跨社交媒体舆情分析与治理平台
+   背景: monitoring / assessment / handling fragmented; five modules' algorithms not yet a product
+   → 解法: three-layer IA (大屏 / 仪表盘 / 中台), five tech teams coordinated
+   → 结果: delivered 0 → 1, supporting the National Key R&D Program milestone */
+const P4 = (() => {
+  const sc = Scene(T.p4);
+  const L = LeftCol(sc.root, {
+    idx: '04', kicker: '研究生 · G 端产品负责人 · 2024.09 — 2025.04', title: '跨社交媒体舆情分析与治理平台',
+    sub: '承接国家重点研发计划（3000w），主导平台从 0 到 1 的产品设计',
+    steps: ['政府用户在舆情监控、研判、处置中信息分散、流程割裂；<br>五大技术模块的算法能力需要转化为可用的产品',
+            '规划可视化大屏、工作台仪表盘、可视化中台三层信息架构；<br>协调五大技术团队，完成高保真原型与设计规范'],
+    metrics: [['0 → 1', '平台完整落地'], ['3 层', '信息架构'], ['5 个', '技术团队协同交付']],
+  });
+  const pn = $('div', 'layer', sc.root);
+  const svg = S('svg', { class: 'full' }, pn);
+  // workflow stages
+  const stages = [['监控', 930], ['研判', 1230], ['处置', 1530]].map(([n, x]) => { const e = $('div', 'stg', pn, n); at(e, x, 214); return { e, x }; });
+  const brk = [[1050, 1230], [1350, 1530]].map(([a, b]) => ({
+    dash: S('line', { x1: a + 6, y1: 236, x2: b - 6, y2: 236, stroke: 'rgba(23,27,38,0.3)', 'stroke-dasharray': '3 6' }, svg),
+    solid: S('path', { d: `M${a + 6},236 L${b - 8},236`, fill: 'none', stroke: '#c2410c', 'stroke-width': 1.6, 'marker-end': 'url(#arrA)' }, svg),
+    x: (a + b) / 2,
+  }));
+  const cuts = brk.map(b => { const g = S('g', {}, svg); S('line', { x1: b.x - 6, y1: 226, x2: b.x + 6, y2: 246, stroke: '#c2410c', 'stroke-width': 1.6 }, g); return g; });
+  // five technical modules
+  const rnd = mulberry32(9);
+  const mods = Array.from({ length: 5 }, (_, i) => {
+    const e = $('div', 'modl', pn, `技术模块 0${i + 1}`);
+    return { e, sx: 900 + (i % 3) * 300 + rnd() * 90, sy: 430 + Math.floor(i / 3) * 190 + rnd() * 70, rot: (rnd() - .5) * 10, cx: 870, cy: 360 + i * 84 };
+  });
+  const feeds = mods.map(() => S('path', { fill: 'none', stroke: 'rgba(194,65,12,0.5)', 'stroke-width': 1.2 }, svg));
+  const scat = $('div', 'abs zh13', pn, '信息分散 · 流程割裂'); at(scat, 1230, 300);
+  // three-layer information architecture (drawn, isometric)
+  const stack = $('div', 'layer', pn);
+  const LAYERS = [
+    { n: '可视化大屏', y: 330, draw: g => { const r = mulberry32(5); for (let k = 0; k < 42; k++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * 70; S('circle', { cx: 190 + Math.cos(a) * d * 1.5, cy: 120 + Math.sin(a) * d * .8, r: 4 + r() * 9, fill: k % 11 === 0 ? '#c2410c' : '#d5d9e1', opacity: .9 }, g); } } },
+    { n: '工作台仪表盘', y: 470, draw: g => { [0, 1, 2].forEach(k => S('rect', { x: 24 + k * 116, y: 24, width: 104, height: 56, rx: 6, fill: '#eef0f3' }, g)); S('path', { d: 'M24,190 C80,150 120,176 170,140 S270,110 356,128', fill: 'none', stroke: '#c2410c', 'stroke-width': 2 }, g); S('line', { x1: 24, y1: 208, x2: 356, y2: 208, stroke: '#d5d9e1' }, g); } },
+    { n: '可视化中台', y: 610, draw: g => { for (let k = 0; k < 6; k++) { const x = 24 + (k % 3) * 116, y = 24 + Math.floor(k / 3) * 100; S('rect', { x, y, width: 104, height: 88, rx: 6, fill: '#eef0f3' }, g); for (let b = 0; b < 4; b++) { const h = 10 + ((k * 7 + b * 13) % 40); S('rect', { x: x + 14 + b * 20, y: y + 70 - h, width: 12, height: h, fill: b === 1 ? '#c2410c' : '#c3c8d3' }, g); } } } },
+  ];
+  const planes = LAYERS.map((l, i) => {
+    const holder = $('div', 'abs', stack); at(holder, 1240, l.y - 60); st(holder, { width: '340px', height: '214px', zIndex: 3 - i });
+    const p = $('div', 'plane', holder); st(p, { left: 0, top: 0 });
+    const g = S('svg', { width: 380, height: 240, style: 'transform:scale(0.895);transform-origin:0 0' }, p); l.draw(g);
+    const lab = $('div', 'abs', stack, `<span class="mono" style="color:var(--accent);font-size:12px;margin-right:10px">L${i + 1}</span>${l.n}`); at(lab, 1590, l.y + 40); st(lab, { fontSize: '15px', whiteSpace: 'nowrap', zIndex: 5 });
+    return { holder, lab };
+  });
+  const done = $('div', 'abs', pn, '<span style="font-family:var(--mono);font-size:22px;color:var(--accent)">✓</span>&nbsp; 完整落地 · 支撑国家重点研发计划交付'); at(done, 1120, 830); st(done, { fontSize: '15px', whiteSpace: 'nowrap' });
+
+  const t0 = T.p4[0];
+  return {
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = t - t0;
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景: stages that don't connect, modules adrift
+      stages.forEach((s, i) => rise(s.e, u, .55 + i * .1, .5, 10));
+      brk.forEach((b, i) => { b.dash.style.opacity = P(u, .8, 1.0) * (1 - P(u, s1 + .3, s1 + .5)); draw(b.solid, oQ(P(u, s1 + .35 + i * .15, s1 + .7 + i * .15))); b.solid.style.opacity = P(u, s1 + .35, s1 + .4); });
+      cuts.forEach(c => c.style.opacity = P(u, .9, 1.1) * (1 - P(u, s1 + .25, s1 + .4)));
+      scat.style.opacity = rise(scat, u, 1.2, .5, 6) * (1 - P(u, s1, s1 + .3));
+      mods.forEach((m, i) => {
+        const inn = oQ(P(u, .9 + i * .1, 1.4 + i * .1));
+        const g = ioC(P(u, s1 + .1 + i * .06, s1 + .7 + i * .06));
+        const x = lerp(m.sx, m.cx, g), y = lerp(m.sy + Math.sin(u * 1.4 + i) * 4, m.cy, g);
+        st(m.e, { left: x + 'px', top: y + 'px', opacity: inn, transform: `rotate(${m.rot * (1 - g)}deg)`, color: g >= 1 ? 'var(--ink)' : 'var(--dim)' });
+        const f = feeds[i], fp = oQ(P(u, s1 + .8 + i * .06, s1 + 1.3 + i * .06));
+        f.setAttribute('d', `M${m.cx + 132},${m.cy + 22} C${m.cx + 220},${m.cy + 22} 1170,680 1262,680`); draw(f, fp); f.style.opacity = fp > 0 ? 1 : 0;
+      });
+      // 解法: the stack assembles layer by layer
+      planes.forEach((p, i) => {
+        const k = oQ(P(u, s1 + .3 + i * .18, s1 + .9 + i * .18));
+        st(p.holder, { opacity: k, transform: `translateY(${(1 - k) * 40}px)` });
+        rise(p.lab, u, s1 + .6 + i * .18, .45, 8);
+      });
+      // 结果
+      rise(done, u, s2 + .3, .5, 10);
+    },
+  };
+})();
+
+/* ============================================================ OUTRO */
+const OUTRO = (() => {
+  const sc = Scene(T.outro);
+  const r = sc.root;
+  const nm = $('div', 'mask abs', r);
+  const name = $('div', '', nm, '屈非塬'); st(name, { fontSize: '56px', fontWeight: 500, letterSpacing: '0.12em', whiteSpace: 'nowrap' });
+  const en = $('div', 'abs nowrap', r, 'QU FEIYUAN'); st(en, { fontFamily: 'var(--display)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.34em', color: 'var(--dim)' });
+  const hl = $('div', 'abs', r); st(hl, { height: '2px', background: 'var(--accent)', width: '0px', top: '552px' });
+  const role = $('div', 'abs nowrap', r, '设计 · 工程 · AI'); st(role, { fontSize: '22px' });
+  const ct = $('div', 'abs nowrap mono', r, 'feiyuan_qu@zju.edu.cn &nbsp; · &nbsp; qfy1012.github.io'); st(ct, { fontSize: '15px', color: 'var(--dim)', letterSpacing: '0.04em' });
+  const center = (e, y) => { const w = e.getBoundingClientRect().width; at(e, (W - w) / 2, y); };
+  return {
+    layout() { vis(r, true); center(nm, 424); center(en, 508); center(role, 574); center(ct, 626); vis(r, false); },
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = t - T.outro[0];
+      const p = oQ(P(u, .1, .8)); st(name, { transform: `translateY(${(1 - p) * 105}%)` });
+      rise(en, u, .35, .5, 8);
+      const w = 48 * oQ(P(u, .45, .9)); st(hl, { width: w + 'px', left: (W - w) / 2 + 'px' });
+      rise(role, u, .55, .5, 10); rise(ct, u, .75, .5, 10);
+    },
+  };
+})();
+
+/* ============================================================ HUD: name, chapter index, progress */
+const HUD = (() => {
+  const h = document.getElementById('hud');
+  const tl = $('div', 'abs kick', h, '屈非塬 &nbsp;·&nbsp; QU FEIYUAN'); at(tl, 120, 70);
+  const tr = $('div', 'abs kick', h); st(tr, { right: '120px', top: '70px' });
+  const chaps = [['01', '阿里巴巴淘天', T.p1], ['02', 'NARRASTEER', T.p2], ['03', 'TOA', T.p3], ['04', '舆情分析与治理平台', T.p4]];
+  const span = 1680, gap = 24, w = (span - gap * 3) / 4;
+  const segs = chaps.map(([i, n, r], k) => { const s = $('div', 'seg', h); st(s, { left: 120 + k * (w + gap) + 'px', width: w + 'px' }); const l = $('div', 'l', s, `${i}&nbsp;&nbsp;${n}`); $('div', 't', s); const f = $('div', 'f', s); return { l, f, r }; });
+  return {
+    render(t) {
+      h.style.opacity = P(t, 2.3, 2.7) * (1 - P(t, 27.3, 27.7));
+      const cur = chaps.findIndex(c => t >= c[2][0] && t < c[2][1]);
+      tr.innerHTML = cur >= 0 ? `<b style="color:var(--accent);font-weight:500">0${cur + 1}</b> &nbsp;/&nbsp; 04` : '';
+      segs.forEach(s => {
+        s.f.style.width = P(t, s.r[0], s.r[1]) * 100 + '%';
+        s.f.style.background = t >= s.r[1] ? 'var(--faint)' : 'var(--accent)';
+        s.l.style.color = t >= s.r[0] && t < s.r[1] ? 'var(--ink)' : 'var(--dimmer)';
+      });
+    },
+  };
+})();
+
+/* ============================================================ frame */
 function renderFrame(t) {
   t = clamp(t, 0, DUR - 1e-6);
-  const frame = Math.round(t * FPS);
-  particles(t);
-  INTRO.render(t); ALI.render(t); NS_.render(t); TOA.render(t); PO.render(t); UG.render(t); END.render(t);
+  st(panelBg, { opacity: P(t, 2.25, 2.75) * (1 - P(t, 27.25, 27.75)), transform: `translateY(${(1 - oQ(P(t, 2.25, 2.75))) * 20}px)` });
+  INTRO.render(t); P1.render(t); P2.render(t); P3.render(t); P4.render(t); OUTRO.render(t);
   HUD.render(t);
-  const [sx, sy] = camShake(t);
-  world.style.transform = `translate(${sx}px, ${sy}px)`;
-  // whip blur strength (ToA → Public Opinion)
-  const wb = Math.max(iE(P(t, T.toa[0] + 2.84, T.toa[0] + 3.0)), 1 - oE(P(t, T.po[0], T.po[0] + .28)));
-  hblurStd.setAttribute('stdDeviation', `${(wb * 40).toFixed(1)} 0`);
-  // flashes: undergrad cuts + the final hit
-  let fl = 0;
-  [11.75, 12.0, 12.25].forEach(c => { const d = t - c; if (d >= 0 && d < .07) fl = Math.max(fl, .55 * (1 - d / .07)); });
-  { const d = t - 12.5; if (d >= 0 && d < .18) fl = Math.max(fl, (1 - d / .18) ** 3); }
-  flashfx.style.opacity = fl;
-  GR.draw(Math.floor(frame / 3)); // grain at 20 fps: filmic, and far kinder to the encoder
 }
 
 async function boot() {
   await document.fonts.ready;
-  await Promise.all(['Syne', 'JetBrains Mono', 'PingFang SC'].flatMap(f => [400, 500, 600, 700, 800].map(w => document.fonts.load(`${w} 40px "${f}"`, '屈非塬评估自动修订入库设计开发研究Aa'))));
-  const srcs = ['toa-interface.png', 'po-bubbles.jpg', 'po-network.jpg', 'po-sankey.jpg', 'ug-coco.jpg', 'ug-qibaishi.jpg', 'ug-l3.jpg'];
-  await Promise.all(srcs.map(s => { const i = new Image(); i.src = 'assets/' + s; return i.decode().catch(() => console.warn('missing', s)); }));
-  INTRO.layout(); NS_.layout(); TOA.layout(); UG.layout(); END.layout();
+  await Promise.all(['Syne', 'JetBrains Mono', 'PingFang SC'].flatMap(f => [400, 500, 700].map(w => document.fonts.load(`${w} 40px "${f}"`, '屈非塬设计工程Aa'))));
+  P2.layout(); P3.layout(); OUTRO.layout();
   window.renderFrame = renderFrame;
   window.SHOWREEL = { duration: DUR, fps: FPS };
   const q = new URLSearchParams(location.search);
