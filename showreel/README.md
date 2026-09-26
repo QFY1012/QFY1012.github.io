@@ -2,18 +2,19 @@
 
 The opener for the résumé: white, restrained, and built entirely from the site's content and the internship
 write-up. Every visual is redrawn in `composition.html` (no screenshots). Output: `public/videos/showreel.mp4`
-(1920×1080, 60 fps, H.264 + AAC, about two minutes).
+(1920×1080, 60 fps, H.264 + AAC, about two and a half minutes).
 
 Each chapter is told the same way — **背景 → 解法 → 结果** — with earlier steps kept on screen.
 
 | Chapter | 背景 | 解法 | 结果 |
 | --- | --- | --- | --- |
-| Intro | name, role, the five projects | | |
-| 01 TDA 技能体系 | designer-made skills: messy output, bloated and overlapping | shadcn/ui component library; 基座 / 业务 two-layer atomic skills; concurrent test platform (test → diagnose → iterate) | 13 of 17 atomic skills live · 1000+ team uses · three skills: Token −20.47%, time −21.21% |
-| 02 TDA 文档美化小工具 | output only lives in chat; every platform keeps its own skin | edit-first editor with limited editable units; template / DSL generator / skin renderer as separate modules, one skin library | built 0 → 1: React + GrapesJS, TDA-based PPT agent, FastAPI + MySQL / OSS |
-| 03 NarraSteer | opaque agent; 74% idle, 5/8 saw drift only at the end | trajectory → storyline in a narrative-space disc; drag to steer | N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run |
-| 04 ToA | novices get lost in linear chat; 4/6 failed | chat → analysis tree; chart signals suggest next queries | N=12 · +58.3% insights/turn · +17.7% thinking time · −23% turns |
-| 05 跨社交媒体舆情分析与治理平台 | monitoring / assessment / handling fragmented | 3-layer IA (大屏 / 仪表盘 / 中台), 5 tech teams | delivered 0 → 1, supporting the National Key R&D Program |
+| Intro | name, role, the six chapters | | |
+| 01 Skill 的治理、评测与优化 | designer-made skills plugged into the design agent: bloated, overlapping, slow | 治理: 基座 / 业务 atomic skills + admission rules; 评测: concurrent test platform + checker agent; 优化: test → diagnose → iterate | 30+ skills governed · 1000+ team uses · three skills: Token −20.47%, time −21.21% |
+| 02 输出组件库的建立、测试与优化 | skill output ignores the visual spec; prompt-generated HTML drifts | React library on shadcn/ui (atomic components + slots); DOM + CV + LLM checks drive the agent to revise its HTML in a loop | adopted as the team's acceptance standard |
+| 03 PPT 文档生成小工具 | the author's PPT-generation skill only lives in chat; one skin per platform | edit-first editor with limited editable units; template / DSL generator / skin renderer as separate modules, one skin library | built 0 → 1: React + GrapesJS, a PPT agent on the design agent, FastAPI + MySQL / OSS |
+| 04 NarraSteer | opaque agent; 74% idle, 5/8 saw drift only at the end | trajectory → storyline in a narrative-space disc; drag to steer | N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run |
+| 05 ToA | novices get lost in linear chat; 4/6 failed | chat → analysis tree; chart signals suggest next queries | N=12 · +58.3% insights/turn · +17.7% thinking time · −23% turns |
+| 06 跨社交媒体舆情分析与治理平台 | monitoring / assessment / handling fragmented | 3-layer IA (大屏 / 仪表盘 / 中台), 5 tech teams | delivered 0 → 1, supporting the National Key R&D Program |
 | Outro | name and contact | | |
 
 ## Pacing

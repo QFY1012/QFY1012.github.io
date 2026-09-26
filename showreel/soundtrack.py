@@ -5,7 +5,7 @@
 
 Quiet and sparse to match the white, restrained picture: a soft pad, a light mallet arpeggio that
 fills in from each chapter's 解法 step, a gentle pulse, and a small chime on every chapter and a
-tick on every 背景 / 解法 / 结果 step. Harmony: D (intro) → Bm → G → Em → F#m → A → D (outro).
+tick on every 背景 / 解法 / 结果 step. Harmony: D (intro) → Bm → G → Em → F#m → G → A → D (outro).
 """
 import json
 import sys
@@ -107,11 +107,12 @@ def pad(notes, d, attack=0.7, release=0.9, cutoff=1500):
 
 
 # ---------- arrangement ----------
-PROGRESSION = [  # (pad voicing, arpeggio notes) per chapter
+PROGRESSION = [  # (pad voicing, arpeggio notes) per chapter: Bm → G → Em → F#m → G → A, then D
     ([47, 54, 57, 62], [71, 74, 78, 73]),       # Bm(add9)
     ([43, 50, 54, 59], [67, 71, 74, 69]),       # Gmaj7(add9)
     ([40, 47, 55, 62], [67, 71, 74, 66]),       # Em9
     ([42, 52, 57, 61], [66, 69, 73, 76]),       # F#m7
+    ([43, 50, 55, 59], [67, 71, 74, 79]),       # G(add9)
     ([45, 52, 57, 61], [69, 73, 76, 71]),       # A(add9)
 ]
 DMAJ9 = ([50, 57, 61, 64], [74, 78, 81, 76])

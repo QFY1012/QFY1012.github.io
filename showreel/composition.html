@@ -72,7 +72,7 @@
   .pill { position: absolute; font-size: 14px; padding: 7px 16px 7px 30px; border-radius: 18px; background: var(--card); box-shadow: 0 4px 14px rgba(23,27,38,0.06); white-space: nowrap; }
   .pill::before { content: ''; position: absolute; left: 14px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--accent); }
 
-  /* 01 · TDA skills */
+  /* 01 · skill governance, 02 · output component library */
   .abar { position: absolute; height: 40px; line-height: 40px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line); font-size: 15px; box-sizing: border-box; }
   .abar.dark { background: var(--ink); color: #fff; box-shadow: none; font-weight: 500; }
   .abar.acc { box-shadow: 0 0 0 1.5px var(--accent); color: var(--accent); }
@@ -81,6 +81,9 @@
   .mcard .ml { height: 6px; margin: 12px 14px 0; background: #e3e6eb; border-radius: 3px; }
   .mcard .mb { height: 38px; margin: 12px 14px 0; border-radius: 3px; }
   .fl2 { height: 5px; margin: 0 18px 8px; background: #e3e6eb; border-radius: 3px; }
+  .wf { position: absolute; background: #eef0f3; border-radius: 3px; }
+  .cvb { position: absolute; border: 1.5px dashed var(--accent); border-radius: 4px; box-sizing: border-box; }
+  .cvt { position: absolute; font-family: var(--mono); font-size: 9px; font-weight: 700; color: #fff; background: var(--accent); padding: 0 4px; line-height: 13px; border-radius: 2px; white-space: nowrap; }
   .ucard { position: absolute; width: 380px; height: 82px; background: var(--card); border-radius: 8px; box-shadow: 0 0 0 1px var(--line), 0 6px 18px rgba(23,27,38,0.05); box-sizing: border-box; padding: 12px 14px; }
   .ucard .uh { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; }
   .ucard .ut { font-family: var(--mono); font-size: 10px; color: var(--accent); background: var(--accent-soft); padding: 1px 7px; border-radius: 8px; font-weight: 500; }
@@ -226,47 +229,55 @@ const vline = (svg, x, y0, y1, both = true, col = '#171b26') => S('path', { d: `
    Every chapter: 背景 → 解法 → 结果. Steps are kept short; on-screen time is derived from their length. */
 const COPY = {
   p1: {
-    idx: '01', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'TDA 技能体系',
-    sub: '从设计与工程两个维度，为 TDA 建立技能的规范与测试体系',
-    steps: ['设计师各自开发的技能上架 TDA：样式杂乱、<br>体量大、功能重叠，调用耗时且难维护',
-            '用组件库统一视觉输出；拆成基座 / 业务<br>双层原子技能，并发测试、量化迭代'],
-    metrics: [['13 / 17', '上线 / 制作原子技能'], ['1000+', '团队内使用量'], ['−21%', '三大技能合计耗时']],
-    toc: ['TDA 技能体系', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'TDA 技能',
+    idx: '01', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'Skill 的治理、评测与优化',
+    sub: '为中台设计 Agent 建立技能的准入、测试与迭代机制',
+    steps: ['设计师各自开发的技能接入设计 Agent：<br>体量大、功能重叠，调用耗时且难以维护',
+            '拆成基座 / 业务双层原子技能，制定准入规范；<br>搭建并发测试平台：测试、诊断、迭代'],
+    metrics: [['30+', '完成治理的 Skill'], ['1000+', '团队内使用量'], ['−21%', '三大技能合计耗时']],
+    toc: ['Skill 的治理、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'SKILL 治理',
   },
   p2: {
-    idx: '02', kicker: '实习 · 阿里巴巴淘天集团 · 产品定义 / 交互设计 / 研发', title: 'TDA 文档美化小工具',
-    sub: '独立完成产品定义、交互设计与研发，以小工具的形式接入 TDA',
-    steps: ['技能结果只能在对话里看，改不了也存不下；<br>多个平台各自维护皮肤，版本难以统一',
-            '编辑为主、有限编辑、编辑预览一体；<br>拆成模板、DSL 生成、皮肤渲染三个模块'],
-    metrics: [['0 → 1', '定义、设计到研发'], ['3 模块', '模板 · DSL · 渲染器解耦'], ['1 套', '跨平台共用的皮肤库']],
-    toc: ['TDA 文档美化小工具', '阿里巴巴淘天集团 · 实习', '2026'], hud: '文档美化小工具',
+    idx: '02', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '输出组件库的建立、测试与优化',
+    sub: '为中台设计 Agent 产出的设计稿建立统一的视觉规范与组件库',
+    steps: ['技能产出的设计稿不遵循视觉规范，样式杂乱；<br>靠 Prompt 生成 HTML，样式漂移、成本高',
+            '基于 shadcn/ui 建组件库：原子组件 + 配置化插槽；<br>DOM + CV + LLM 多模态评测，驱动 Agent 循环改良'],
+    metrics: [['3 路评测', 'DOM · CV · LLM'], ['循环改良', 'Agent 按评测迭代 HTML'], ['团队标准', '落地为验收标准']],
+    toc: ['输出组件库的建立、测试与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '输出组件库',
   },
   p3: {
-    idx: '03', kicker: '研究生 · CHI\'27 在投 · 第一作者 · 2026.01 — 04', title: 'NarraSteer', latin: 1,
+    idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 产品定义 / 交互设计 / 研发', title: 'PPT 文档生成小工具',
+    sub: '独立完成产品定义、交互设计与研发，接入中台设计 Agent',
+    steps: ['我做的 PPT 生成技能只能在对话里输出：<br>改不了也存不下；每个平台一套皮肤，难以统一',
+            '编辑为主、有限编辑、编辑预览一体；<br>拆成模板、DSL 生成、皮肤渲染三个模块'],
+    metrics: [['0 → 1', '独立完成定义、设计与研发'], ['3 模块', '模板 · DSL · 渲染器解耦'], ['1 套', '跨平台共用的皮肤库']],
+    toc: ['PPT 文档生成小工具', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成小工具',
+  },
+  p4: {
+    idx: '04', kicker: '研究生 · CHI\'27 在投 · 第一作者 · 2026.01 — 04', title: 'NarraSteer', latin: 1,
     sub: '面向数据叙事的 Agent 交互产品设计',
     steps: ['Agent 过程不透明，用户只能被动等待：<br><em>74%</em> 的时间在等，<em>5/8</em> 的人最后才发现跑偏',
             '把执行轨迹重构为叙事空间中的故事线：<br>位置即数据维度，拖拽节点即可引导 Agent'],
     metrics: [['+13.2%', '叙事洞察数'], ['15/16', '主动拖拽引导 Agent'], ['p<.05', '心理负荷显著下降']],
     toc: ['NarraSteer', '数据叙事 Agent · CHI\'27 在投', '2026'], hud: 'NARRASTEER',
   },
-  p4: {
-    idx: '04', kicker: '研究生 · CHI\'26 收录 · 第一作者 · 2025.07 — 11', title: 'ToA · Tree-of-Analysis', latin: 1,
+  p5: {
+    idx: '05', kicker: '研究生 · CHI\'26 收录 · 第一作者 · 2025.07 — 11', title: 'ToA · Tree-of-Analysis', latin: 1,
     sub: '对话式可视分析产品设计',
     steps: ['新手在多轮可视分析对话中容易迷路：<br>线性对话难回溯，<em>4/6</em> 名新手任务失败',
             '把对话重组为分析树：回答是节点，提问是边；<br>识别图表信号，推荐下一步提问'],
     metrics: [['+58.3%', '每轮洞察数'], ['+17.7%', '每轮深度思考时间'], ['−23%', '总对话轮次']],
     toc: ['ToA', '对话式可视分析 · CHI\'26 收录', '2025'], hud: 'TOA',
   },
-  p5: {
-    idx: '05', kicker: '研究生 · G 端产品负责人 · 2024.09 — 2025.04', title: '跨社交媒体舆情分析与治理平台',
+  p6: {
+    idx: '06', kicker: '研究生 · G 端产品负责人 · 2024.09 — 2025.04', title: '跨社交媒体舆情分析与治理平台',
     sub: '承接国家重点研发计划（3000w），主导平台从 0 到 1 的产品设计',
     steps: ['舆情监控、研判、处置中信息分散、流程割裂；<br>五大模块的算法能力需要从零变成产品',
             '规划大屏、仪表盘、中台三层信息架构；<br>协调五大技术团队，完成原型与设计规范'],
     metrics: [['0 → 1', '平台完整落地'], ['3 层', '信息架构'], ['5 个', '技术团队协同交付']],
-    toc: ['跨社交媒体舆情分析与治理平台', 'G 端产品负责人', '2024'], hud: '舆情分析与治理平台',
+    toc: ['跨社交媒体舆情分析与治理平台', 'G 端产品负责人', '2024'], hud: '舆情平台',
   },
 };
-const KEYS = ['p1', 'p2', 'p3', 'p4', 'p5'];
+const KEYS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
 
 /* ============================================================ timeline — paced by reading
    Scene code is authored on a compact "animation clock": 背景 at STEP[0], 解法 at STEP[1], 结果 at STEP[2],
@@ -402,59 +413,61 @@ const INTRO = (() => {
   };
 })();
 
-/* ============================================================ 01 · TDA 技能体系
-   背景: TDA extends along Skills and Apps; designer-made skills arrive with messy output and bloated, overlapping code
-   → 解法: shadcn/ui component library; 基座 / 业务 two-layer atomic skills; a concurrent test platform
-   → 结果: 13 of 17 atomic skills live, 1000+ team uses; three skills: Token −20.47%, time −21.21% */
+/* ============================================================ 01 · Skill 的治理、评测与优化
+   背景: designer-made skills plugged into the design agent arrive bloated, overlapping and slow
+   → 解法: 治理 — 基座 / 业务 atomic skills + admission rules; 评测 — concurrent test platform + checker agent;
+           优化 — test → diagnose → iterate
+   → 结果: 30+ skills governed, 1000+ team uses; three skills: Token −20.47%, time −21.21% */
 const P1 = (() => {
   const c = COPY.p1, sc = Scene(T.p1);
   const L = LeftCol(sc.root, c);
   const pn = $('div', 'layer', sc.root);
   const svg = S('svg', { class: 'full' }, pn);
-  // 背景 · TDA's layers (redrawn from the architecture figure)
+  // 背景 · where skills sit in the design agent (redrawn from the architecture figure)
   const arch = $('div', 'layer', pn);
   const asvg = S('svg', { class: 'full' }, arch);
-  const bars = [['Users · 用户', 860, 196, 860, ''], ['TDA', 1060, 262, 660, 'dark'], ['Apps · 小工具', 860, 328, 410, ''], ['Skills · 技能', 1310, 328, 410, 'acc'], ['Knowledge · 知识', 860, 394, 860, '']]
+  const bars = [['Users · 用户', 860, 196, 860, ''], ['中台设计 Agent', 1060, 262, 660, 'dark'], ['Apps · 小工具', 860, 328, 410, ''], ['Skills · 技能', 1310, 328, 410, 'acc'], ['Knowledge · 知识', 860, 394, 860, '']]
     .map(([n, x, y, w, k]) => box(arch, 'abar ' + k, x, y, w, 40, n));
   const archArrows = [[900, 236, 328], [1170, 302, 328], [1650, 236, 262], [1650, 302, 328], [1060, 368, 394], [1650, 368, 394]].map(([x, a, b]) => vline(asvg, x, a + 3, b - 3));
-  const archCap = box(arch, 'abs zh13', 860, 452, 0, 0, '从技能与小工具两个维度，扩展 TDA 的能力边界');
-  // 背景 · what arrived: inconsistent outputs, one bloated skill file
-  const MESSY = [{ x: 872, y: 528, r: -4, col: '#5b7cfa', f: 'Georgia, serif', rad: 2 }, { x: 938, y: 590, r: 3.5, col: '#2fae7a', f: 'var(--mono)', rad: 14 }, { x: 898, y: 660, r: -1.5, col: '#e3a33a', f: 'var(--sans)', rad: 6 }];
-  const messy = MESSY.map(m => { const e = box(pn, 'mcard', m.x, m.y, 290, 150);
-    st(e, { borderRadius: m.rad + 'px' });
-    e.innerHTML = `<div class="mh" style="background:${m.col};font-family:${m.f}">报告</div><div class="ml" style="width:78%"></div><div class="ml" style="width:60%"></div><div class="mb" style="background:${m.col}26"></div>`;
-    return { e, m }; });
-  const messyCap = box(pn, 'abs zh13', 860, 862, 0, 0, '<span class="x">✕</span>规范前：样式杂乱、体验割裂');
+  const archCap = box(arch, 'abs zh13', 860, 452, 0, 0, '从技能与小工具两个维度，扩展设计 Agent 的能力边界');
+  // 背景 · what arrived: every skill re-implements the same basics, in one bloated file
+  const dup = ['眼动分析', 'CTR 预测'].map((n, i) => {
+    const e = box(pn, 'card', 860 + i * 212, 520, 196, 0); st(e, { padding: '14px 14px 8px' });
+    e.innerHTML = `<div class="zh14" style="font-weight:500;margin-bottom:10px">${n}</div>` +
+      ['界面识别', '坐标提取', '业务逻辑', '报告生成'].map((b, j) => `<div style="font-size:12px;padding:6px 8px;margin-bottom:6px;border-radius:4px;${j < 2 ? 'border:1px dashed var(--accent);color:var(--accent)' : 'background:var(--panel);color:var(--dim)'}">${b}</div>`).join('');
+    return e; });
+  const dupCap = box(pn, 'abs zh13', 860, 862, 0, 0, '<span class="x">✕</span>功能重叠：各自重复实现底层能力');
   const fat = box(pn, 'card', 1300, 520, 420, 322);
   const rf = mulberry32(21);
   fat.innerHTML = '<div class="cap" style="padding:16px 18px 12px">SKILL.md</div>' + Array.from({ length: 22 }, () => `<div class="fl2" style="width:${35 + rf() * 55}%"></div>`).join('');
-  const fatCap = box(pn, 'abs zh13', 1300, 862, 0, 0, '<span class="x">✕</span>体量大 · 功能重叠 · 调用耗时');
-  // 解法 · one component library for every output
-  const ucards = [0, 1, 2].map(i => { const e = box(pn, 'ucard', 860, 198 + i * 94, 0, 0);
-    e.innerHTML = `<div class="uh"><span>${['眼动分析', 'CTR 预测', '字号检查'][i]}</span><span class="ut">TDA</span></div><div class="ul" style="width:82%"></div><div class="ul" style="width:58%"></div>`; return e; });
-  const compCap = box(pn, 'abs zh13', 860, 486, 0, 0, '<span style="color:var(--accent)">TDA 组件库</span> · 基于 shadcn/ui · 原子组件 + 配置化插槽');
-  // 解法 · two layers of atomic skills
-  const biz = box(pn, 'lay', 1290, 196, 430, 112); $('div', 'lt', biz, '业务技能 · 提供设计判断');
-  const base = box(pn, 'lay', 1290, 352, 430, 112); $('div', 'lt', base, '基座技能 · 支撑底层能力');
-  const bizSk = ['视觉热力预测', 'CTR 预测', '字号规范检测'].map((n, i) => box(pn, 'sk', 1306 + i * 138, 250, 0, 0, n));
-  const baseSk = ['界面标注', '报告合并', '……'].map((n, i) => box(pn, 'sk', 1306 + i * 138, 406, 0, 0, n));
-  const holds = [1430, 1614].map(x => S('path', { d: `M${x},352 L${x},312`, stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
-  const holdLab = box(pn, 'abs', 1438, 322, 0, 0, '支撑'); st(holdLab, { fontSize: '12px', color: 'var(--dim)' });
-  // 解法 · how TDA chains them for one request
+  const fatCap = box(pn, 'abs zh13', 1300, 862, 0, 0, '<span class="x">✕</span>体量大 · 调用耗时 · 运行环境混乱');
+  // 解法 · 治理: two layers of atomic skills + admission rules
+  const govLab = box(pn, 'abs cap', 860, 170, 0, 0, '<span style="color:var(--accent)">治理</span> · 原子化与准入');
+  const biz = box(pn, 'lay', 860, 196, 580, 112); $('div', 'lt', biz, '业务技能 · 提供设计判断');
+  const base = box(pn, 'lay', 860, 352, 580, 112); $('div', 'lt', base, '基座技能 · 支撑底层能力');
+  const bizSk = ['视觉热力预测', 'CTR 预测', '字号规范检测', '……'].map((n, i) => box(pn, 'sk', 876 + i * 138, 250, 0, 0, n));
+  const baseSk = ['界面标注', '报告合并', '……'].map((n, i) => box(pn, 'sk', 876 + i * 138, 406, 0, 0, n));
+  const holds = [1000, 1276].map(x => S('path', { d: `M${x},352 L${x},312`, stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const holdLab = box(pn, 'abs', 1008, 322, 0, 0, '支撑'); st(holdLab, { fontSize: '12px', color: 'var(--dim)' });
+  const rules = box(pn, 'card', 1466, 196, 254, 268);
+  st(rules, { padding: '18px 20px' });
+  rules.innerHTML = '<div class="cap" style="margin-bottom:14px">准入规范</div>' +
+    [['环境兼容性检测', ''], ['性能基准测试', ''], ['SKILL.md 统一格式', '名字 · 输入 · 输出 · 执行流程']].map(([a, b]) => `<div style="padding:9px 0;border-top:1px solid var(--line)"><div class="zh14"><span style="color:var(--accent);margin-right:8px">✓</span>${a}</div>${b ? `<div class="zh13" style="margin:4px 0 0 20px;color:var(--dimmer)">${b}</div>` : ''}</div>`).join('');
+  // 解法 · how the agent chains atomic skills for one request
   const query = box(pn, 'abs zh14', 0, 540, 0, 0, '“帮我分析页面的 CTR 与眼动热力图”'); st(query, { left: 'auto', right: '200px' });
-  const chainLab = box(pn, 'abs cap', 860, 546, 0, 0, 'TDA 执行链路');
+  const chainLab = box(pn, 'abs cap', 860, 546, 0, 0, 'AGENT 执行链路');
   const CH = [['意图识别', ''], ['界面标注', '基座'], ['视觉热力预测', '业务'], ['CTR 预测', '业务'], ['报告合并', '基座'], ['返回报告', '']];
   const chain = CH.map(([n, tag], i) => { const x = 860 + i * 147; const e = box(pn, 'pc', x, 580, 0, 0, n); const tg = box(pn, 'ptag', x, 632, 0, 0, tag);
     const a = i < CH.length - 1 ? S('path', { d: `M${x + 128},602 L${x + 143},602`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg) : null; return { e, tg, a }; });
-  // 解法 · test → diagnose → iterate
-  const loopLab = box(pn, 'abs cap', 860, 700, 0, 0, 'SKILL 并发测试平台');
+  // 解法 · 评测 / 优化: test → diagnose → iterate
+  const loopLab = box(pn, 'abs cap', 860, 700, 0, 0, '<span style="color:var(--accent)">评测 · 优化</span> · SKILL 并发测试平台');
   const ln = [['测试', 870], ['诊断', 1070], ['迭代', 1270]].map(([n, x]) => box(pn, 'lnode', x, 732, 0, 0, n));
   const la = [S('path', { d: 'M970,752 L1066,752', stroke: '#171b26', 'stroke-width': 1.2, fill: 'none', 'marker-end': 'url(#arr)' }, svg),
               S('path', { d: 'M1170,752 L1266,752', stroke: '#171b26', 'stroke-width': 1.2, fill: 'none', 'marker-end': 'url(#arr)' }, svg),
               S('path', { d: 'M1318,774 C1318,826 918,826 918,778', stroke: '#c2410c', 'stroke-width': 1.2, 'stroke-dasharray': '4 4', fill: 'none', 'marker-end': 'url(#arrA)' }, svg)];
   const checker = box(pn, 'card', 1430, 716, 290, 0, '<div class="cap" style="margin-bottom:6px">CHECKER AGENT</div><div class="zh13">按测试集自动评估每轮结果<br>导出执行轨迹，定位问题</div>');
   st(checker, { padding: '14px 18px', lineHeight: '1.6' });
-  // 结果 · measured on the three largest skills, before vs after the refactor
+  // 结果 · the three largest skills, before vs after the refactor
   const cost = box(pn, 'card cost', 860, 520, 0, 0);
   const SEGC = ['#171b26', '#8a92a6', '#d5d9e1'], SEGT = ['#fff', '#fff', '#171b26'];
   cost.innerHTML = `<div class="hd"><span class="tt">三大技能合计成本 · 改造前后</span><span class="lg"><span style="background:${SEGC[0]}"></span>链路分析<span style="background:${SEGC[1]}"></span>行为数据预测<span style="background:${SEGC[2]}"></span>竞品分析</span></div>`;
@@ -469,7 +482,7 @@ const P1 = (() => {
     const max = g.rows[0][1].reduce((a, b) => a + b, 0);
     const rows = g.rows.map(([n, vals, tot]) => {
       const row = $('div', 'row', wrap); $('div', 'rl', row, n);
-      let x = BX; const segs = vals.map((v, j) => { const w = v / max * BW; const s = $('div', 'seg', row, v.toLocaleString('en-US')); st(s, { left: x + 'px', background: SEGC[j], color: SEGT[j], width: '0px', borderRadius: j === 0 ? '3px 0 0 3px' : j === 2 ? '0 3px 3px 0' : '0' }); x += w; return { s, w }; });
+      let x = BX; const segs = vals.map((v, j) => { const w = v / max * BW; const sg = $('div', 'seg', row, v.toLocaleString('en-US')); st(sg, { left: x + 'px', background: SEGC[j], color: SEGT[j], width: '0px', borderRadius: j === 0 ? '3px 0 0 3px' : j === 2 ? '0 3px 3px 0' : '0' }); x += w; return { s: sg, w }; });
       const t = $('div', 'tot', row, tot); st(t, { left: x + 14 + 'px' });
       return { segs, t };
     });
@@ -490,18 +503,18 @@ const P1 = (() => {
       bars.forEach((b, i) => { b.style.opacity = rise(b, u, .55 + i * .07, .5, 10) * bgOut; });
       archArrows.forEach((a, i) => { a.style.opacity = P(u, .9 + i * .04, 1.1 + i * .04) * bgOut; });
       archCap.style.opacity = rise(archCap, u, 1.05, .45, 6) * bgOut;
-      messy.forEach(({ e, m }, i) => { const p = oQ(P(u, 1.0 + i * .1, 1.5 + i * .1)); st(e, { opacity: p * bgOut, transform: `translateY(${(1 - p) * 14 - (1 - bgOut) * 40}px) rotate(${m.r}deg)` }); });
-      messyCap.style.opacity = rise(messyCap, u, 1.45, .45, 6) * bgOut;
-      fat.style.opacity = rise(fat, u, 1.15, .5, 14) * bgOut;
+      dup.forEach((e, i) => { e.style.opacity = rise(e, u, 1.0 + i * .12, .5, 14) * bgOut; });
+      dupCap.style.opacity = rise(dupCap, u, 1.45, .45, 6) * bgOut;
+      fat.style.opacity = rise(fat, u, 1.2, .5, 14) * bgOut;
       fatCap.style.opacity = rise(fatCap, u, 1.55, .45, 6) * bgOut;
       // 解法
-      ucards.forEach((e, i) => rise(e, u, s1 + .2 + i * .08, .5, 12));
-      rise(compCap, u, s1 + .5, .45, 6);
-      rise(biz, u, s1 + .25, .5, 10); rise(base, u, s1 + .35, .5, 10);
-      bizSk.forEach((e, i) => { const k = oB(P(u, s1 + .4 + i * .06, s1 + .7 + i * .06)); st(e, { opacity: Math.min(1, k * 2), transform: `scale(${Math.max(0, k)})` }); });
-      baseSk.forEach((e, i) => { const k = oB(P(u, s1 + .5 + i * .06, s1 + .8 + i * .06)); st(e, { opacity: Math.min(1, k * 2), transform: `scale(${Math.max(0, k)})` }); });
-      holds.forEach((h, i) => draw(h, oQ(P(u, s1 + .75 + i * .06, s1 + 1.0 + i * .06))));
-      holdLab.style.opacity = P(u, s1 + .9, s1 + 1.05);
+      rise(govLab, u, s1 + .15, .45, 6);
+      rise(biz, u, s1 + .2, .5, 10); rise(base, u, s1 + .3, .5, 10);
+      bizSk.forEach((e, i) => { const k = oB(P(u, s1 + .35 + i * .06, s1 + .65 + i * .06)); st(e, { opacity: Math.min(1, k * 2), transform: `scale(${Math.max(0, k)})` }); });
+      baseSk.forEach((e, i) => { const k = oB(P(u, s1 + .45 + i * .06, s1 + .75 + i * .06)); st(e, { opacity: Math.min(1, k * 2), transform: `scale(${Math.max(0, k)})` }); });
+      holds.forEach((h, i) => draw(h, oQ(P(u, s1 + .7 + i * .06, s1 + .95 + i * .06))));
+      holdLab.style.opacity = P(u, s1 + .85, s1 + 1.0);
+      rise(rules, u, s1 + .45, .5, 12);
       const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
       query.style.opacity = rise(query, u, s1 + .8, .45, 8) * pOut;
       chainLab.style.opacity = P(u, s1 + .8, s1 + 1.0) * pOut;
@@ -509,7 +522,7 @@ const P1 = (() => {
       chain.forEach((ch, i) => {
         ch.e.style.opacity = rise(ch.e, u, s1 + .85 + i * .05, .4, 8) * pOut;
         ch.tg.style.opacity = P(u, s1 + 1.0 + i * .05, s1 + 1.15 + i * .05) * pOut;
-        ch.e.classList.toggle('on', lit >= i && lit < 99);
+        ch.e.classList.toggle('on', lit >= i);
         if (ch.a) { draw(ch.a, P(u, s1 + .95 + i * .05, s1 + 1.05 + i * .05)); ch.a.style.opacity = +ch.a.style.opacity * pOut; }
       });
       loopLab.style.opacity = P(u, s1 + 1.15, s1 + 1.3) * pOut;
@@ -529,12 +542,133 @@ const P1 = (() => {
   };
 })();
 
-/* ============================================================ 02 · TDA 文档美化小工具
-   背景: skills only answer in chat, nothing persists or can be edited; every platform keeps its own skin
-   → 解法: edit-first, limited editing, edit = preview; template / DSL generator / skin renderer as separate modules
-   → 结果: one tool wired into TDA and other platforms (React + GrapesJS · TDA-based PPT agent · FastAPI + MySQL / OSS) */
+/* ============================================================ 02 · 设计稿输出组件库的建立、测试与优化
+   背景: skill output ignores the visual spec; prompt-generated HTML drifts in style and costs more
+   → 解法: 建立 — React library on shadcn/ui, atomic components + configurable slots;
+           测试 · 优化 — DOM + CV + LLM checks on component use, spacing and whitespace drive the agent to revise its HTML in a loop
+   → 结果: the evaluation became the team's acceptance standard */
 const P2 = (() => {
   const c = COPY.p2, sc = Scene(T.p2);
+  const L = LeftCol(sc.root, c);
+  const pn = $('div', 'layer', sc.root);
+  const svg = S('svg', { class: 'full' }, pn);
+  const mini = (parent, x, y, w, h, col, f, rad, rot = 0) => {
+    const e = box(parent, 'mcard', x, y, w, h); st(e, { borderRadius: rad + 'px', transform: `rotate(${rot}deg)` });
+    e.innerHTML = `<div class="mh" style="background:${col};font-family:${f}">报告</div><div class="ml" style="width:78%"></div><div class="ml" style="width:60%"></div><div class="mb" style="background:${col}26"></div>`;
+    return e; };
+  // 背景 · outputs that ignore the visual spec
+  const MESSY = [[880, 300, -4, '#5b7cfa', 'Georgia, serif', 2], [944, 362, 3.5, '#2fae7a', 'var(--mono)', 14], [904, 432, -1.5, '#e3a33a', 'var(--sans)', 6]];
+  const messy = MESSY.map(([x, y, r, col, f, rad]) => ({ e: mini(pn, x, y, 290, 150, col, f, rad, r), r }));
+  const messyCap = box(pn, 'abs zh13', 860, 646, 0, 0, '<span class="x">✕</span>规范前：样式杂乱、体验割裂');
+  // 背景 · the same prompt, three different pages
+  const prompt = box(pn, 'pc', 1446, 300, 0, 0, 'Prompt');
+  const drift = [[1300, '#5b7cfa', 'Georgia, serif', 2], [1446, '#c2410c', 'var(--sans)', 12], [1592, '#2fae7a', 'var(--mono)', 6]].map(([x, col, f, rad]) => mini(pn, x, 420, 124, 150, col, f, rad));
+  const driftA = [1362, 1508, 1654].map(x => S('path', { d: `M1508,346 C1508,380 ${x},382 ${x},414`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const driftCap = box(pn, 'abs zh13', 1300, 646, 0, 0, '<span class="x">✕</span>Prompt 生成 HTML：样式漂移、成本高');
+  // 解法 · 建立: atomic components → configurable slots
+  const buildLab = box(pn, 'abs cap', 860, 170, 0, 0, '<span style="color:var(--accent)">建立</span> · 基于 SHADCN/UI 的 REACT 组件库');
+  const atoms = box(pn, 'card', 860, 196, 300, 280);
+  $('div', 'cap', atoms, '原子组件').style.cssText = 'position:absolute;left:20px;top:16px';
+  const glyph = {
+    Header: '<i style="left:10px;top:30px;width:70px;height:7px;background:#171b26"></i>',
+    Tag: '<i style="left:10px;top:29px;width:40px;height:12px;border-radius:6px;background:rgba(194,65,12,0.15)"></i>',
+    Metric: '<i style="left:10px;top:27px;width:30px;height:14px;background:#c2410c"></i><i style="left:46px;top:33px;width:40px;height:5px;background:#d5d9e1"></i>',
+    Chart: '<i style="left:10px;top:34px;width:8px;height:10px;background:#d5d9e1"></i><i style="left:22px;top:26px;width:8px;height:18px;background:#c2410c"></i><i style="left:34px;top:30px;width:8px;height:14px;background:#d5d9e1"></i>',
+    Table: '<i style="left:10px;top:28px;width:90px;height:1px;background:#c3c8d3"></i><i style="left:10px;top:35px;width:90px;height:1px;background:#c3c8d3"></i><i style="left:10px;top:42px;width:90px;height:1px;background:#c3c8d3"></i>',
+    Note: '<i style="left:10px;top:28px;width:80px;height:5px;background:#e3e6eb"></i><i style="left:10px;top:37px;width:56px;height:5px;background:#e3e6eb"></i>',
+  };
+  const atomEls = Object.keys(glyph).map((n, i) => { const e = box(atoms, 'abs', 20 + (i % 2) * 140, 46 + Math.floor(i / 2) * 72, 120, 56);
+    st(e, { borderRadius: '6px', boxShadow: '0 0 0 1px var(--line2)', background: '#fff' });
+    e.innerHTML = `<span class="mono" style="position:absolute;left:10px;top:8px;font-size:10px;color:var(--dimmer);letter-spacing:.08em">${n}</span><span style="position:absolute;inset:0">${glyph[n].replace(/<i style="/g, '<i style="position:absolute;display:block;border-radius:2px;')}</span>`;
+    return e; });
+  const comp = box(pn, 'card', 1190, 196, 530, 280);
+  $('div', 'cap', comp, '配置化插槽 · 拼装一份报告').style.cssText = 'position:absolute;left:20px;top:16px';
+  const SLOTS = [
+    [20, 44, 490, 34, '<i style="left:12px;top:13px;width:170px;height:8px;background:#171b26"></i><i style="left:430px;top:11px;width:46px;height:12px;border-radius:6px;background:rgba(194,65,12,0.15)"></i>'],
+    [20, 90, 156, 64, '<i style="left:12px;top:14px;width:48px;height:20px;background:#c2410c"></i><i style="left:12px;top:42px;width:90px;height:6px;background:#d5d9e1"></i>'],
+    [187, 90, 156, 64, '<i style="left:12px;top:14px;width:48px;height:20px;background:#171b26"></i><i style="left:12px;top:42px;width:70px;height:6px;background:#d5d9e1"></i>'],
+    [354, 90, 156, 64, '<i style="left:12px;top:14px;width:48px;height:20px;background:#171b26"></i><i style="left:12px;top:42px;width:80px;height:6px;background:#d5d9e1"></i>'],
+    [20, 166, 320, 96, [0, 1, 2, 3, 4, 5].map(b => `<i style="left:${20 + b * 48}px;top:${82 - [30, 52, 40, 64, 36, 46][b]}px;width:28px;height:${[30, 52, 40, 64, 36, 46][b]}px;background:${b === 3 ? '#c2410c' : '#d5d9e1'}"></i>`).join('')],
+    [352, 166, 158, 96, '<i style="left:12px;top:16px;width:120px;height:5px;background:#e3e6eb"></i><i style="left:12px;top:28px;width:100px;height:5px;background:#e3e6eb"></i><i style="left:12px;top:40px;width:110px;height:5px;background:#e3e6eb"></i><i style="left:12px;top:52px;width:70px;height:5px;background:#e3e6eb"></i>'],
+  ];
+  const slots = SLOTS.map(([x, y, w, h, inner]) => {
+    const hole = box(comp, 'edu', x, y, w, h); st(hole, { borderColor: 'var(--faint)' });
+    const fill = box(comp, 'abs', x, y, w, h); st(fill, { borderRadius: '4px', background: '#fff', boxShadow: '0 0 0 1px var(--line)' });
+    fill.innerHTML = inner.replace(/<i style="/g, '<i style="position:absolute;display:block;border-radius:2px;');
+    return { hole, fill }; });
+  // 解法 · 测试 · 优化: DOM + CV + LLM checks, the agent revises until they pass
+  const testLab = box(pn, 'abs cap', 860, 512, 0, 0, '<span style="color:var(--accent)">测试 · 优化</span> · 多模态评测');
+  const pg = box(pn, 'card', 860, 540, 300, 200);
+  const blocks = [[18, 16, 170, 14], [18, 40, 110, 8], [18, 64, 128, 100], [158, 64, 124, 44], [158, 120, 124, 44], [18, 174, 60, 12], [86, 174, 50, 12]];
+  blocks.forEach(([x, y, w, h]) => box(pg, 'wf', x, y, w, h));
+  const cvs = [[2, 'DOM'], [3, 'CV'], [5, 'LLM']].map(([k, lab]) => { const [x, y, w, h] = blocks[k]; const b = box(pg, 'cvb', x - 4, y - 4, w + 8, h + 8); const g = box(pg, 'cvt', x - 4, y - 16, 0, 0, lab); return { b, g }; });
+  const evals = [['DOM · 结构', 540], ['CV · 视觉', 596], ['LLM · 判断', 652]].map(([n, y]) => box(pn, 'mod2', 1200, y, 0, 0, n));
+  const toEval = [560, 616, 672].map(y => S('path', { d: `M1162,640 C1182,640 1180,${y} 1196,${y}`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const toCheck = [560, 616, 672].map(y => S('path', { d: `M1372,${y} C1392,${y} 1390,622 1406,622`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const checks = box(pn, 'card', 1410, 540, 310, 0);
+  st(checks, { padding: '16px 20px' });
+  checks.innerHTML = '<div class="cap" style="margin-bottom:8px">质量指标</div>' + ['组件使用', '间距', '留白'].map(n => `<div class="zh14" style="padding:7px 0;border-top:1px solid var(--line)"><span style="color:var(--accent);margin-right:8px">✓</span>${n}</div>`).join('');
+  const back = S('path', { d: 'M1565,712 C1565,800 1010,800 1010,746', stroke: '#c2410c', 'stroke-width': 1.2, 'stroke-dasharray': '4 4', fill: 'none', 'marker-end': 'url(#arrA)' }, svg);
+  const backLab = box(pn, 'abs zh13', 1150, 806, 0, 0, 'Agent 按评测结果循环改良 HTML'); st(backLab, { color: 'var(--accent)' });
+  // 结果 · before / after, and the check became the team's acceptance standard
+  const res = box(pn, 'card', 860, 520, 860, 356);
+  $('div', 'cap', res, '规范前 → 规范后').style.cssText = 'position:absolute;left:24px;top:20px';
+  const before = [[40, 70, -4, '#5b7cfa', 'Georgia, serif', 2], [86, 110, 3.5, '#2fae7a', 'var(--mono)', 14], [56, 156, -1.5, '#e3a33a', 'var(--sans)', 6]].map(([x, y, r, col, f, rad]) => mini(res, x, y, 240, 120, col, f, rad, r));
+  const rsvg = S('svg', { width: 860, height: 356, style: 'position:absolute;left:0;top:0;overflow:visible' }, res);
+  const arrowR = S('path', { d: 'M364,170 L436,170', stroke: '#c2410c', 'stroke-width': 1.4, fill: 'none', 'marker-end': 'url(#arrA)' }, rsvg);
+  const after = ['眼动分析', 'CTR 预测', '字号检查'].map((n, i) => { const e = box(res, 'ucard', 460, 60 + i * 86, 0, 0); st(e, { width: '360px', height: '74px' });
+    e.innerHTML = `<div class="uh"><span>${n}</span><span class="ut">设计 Agent</span></div><div class="ul" style="width:82%"></div><div class="ul" style="width:58%"></div>`; return e; });
+  const std = box(res, 'abs', 460, 320, 0, 0, '<span style="color:var(--accent);margin-right:6px">✓</span>评测机制落地为团队验收标准'); st(std, { fontSize: '13px' });
+
+  const t0 = T.p2[0];
+  return {
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - t0, PLAN.p2.map);
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景
+      const bgOut = 1 - oC(P(u, s1 - .05, s1 + .3));
+      messy.forEach(({ e, r }, i) => { const p = oQ(P(u, .6 + i * .1, 1.1 + i * .1)); st(e, { opacity: p * bgOut, transform: `translateY(${(1 - p) * 14}px) rotate(${r}deg)` }); });
+      messyCap.style.opacity = rise(messyCap, u, 1.1, .45, 6) * bgOut;
+      prompt.style.opacity = rise(prompt, u, .9, .45, 8) * bgOut;
+      driftA.forEach((a, i) => { draw(a, oQ(P(u, 1.05 + i * .08, 1.3 + i * .08))); a.style.opacity = +a.style.opacity * bgOut; });
+      drift.forEach((e, i) => { e.style.opacity = rise(e, u, 1.15 + i * .1, .45, 10) * bgOut; });
+      driftCap.style.opacity = rise(driftCap, u, 1.5, .45, 6) * bgOut;
+      // 解法 · 建立
+      const eOut = 1 - oC(P(u, s2 - .05, s2 + .25));
+      rise(buildLab, u, s1 + .1, .45, 6);
+      rise(atoms, u, s1 + .15, .5, 12);
+      atomEls.forEach((e, i) => rise(e, u, s1 + .3 + i * .05, .4, 6));
+      rise(comp, u, s1 + .25, .5, 12);
+      slots.forEach((sl, i) => { const k = P(u, s1 + .55 + i * .08, s1 + .75 + i * .08); sl.hole.style.opacity = P(u, s1 + .35, s1 + .5) * (1 - k); st(sl.fill, { opacity: k, transform: `scale(${1.04 - .04 * oQ(k)})` }); });
+      // 解法 · 测试 · 优化
+      testLab.style.opacity = P(u, s1 + .9, s1 + 1.05) * eOut;
+      pg.style.opacity = rise(pg, u, s1 + .9, .45, 10) * eOut;
+      cvs.forEach((cv, i) => { const p = P(u, s1 + 1.05 + i * .08, s1 + 1.15 + i * .08); st(cv.b, { opacity: p, transform: `scale(${1.15 - .15 * oQ(p)})` }); cv.g.style.opacity = p; });
+      toEval.forEach((a, i) => { draw(a, oQ(P(u, s1 + 1.1 + i * .05, s1 + 1.3 + i * .05))); a.style.opacity = +a.style.opacity * eOut; });
+      evals.forEach((e, i) => { e.style.opacity = rise(e, u, s1 + 1.15 + i * .07, .4, 8) * eOut; });
+      toCheck.forEach((a, i) => { draw(a, oQ(P(u, s1 + 1.3 + i * .05, s1 + 1.5 + i * .05))); a.style.opacity = +a.style.opacity * eOut; });
+      checks.style.opacity = rise(checks, u, s1 + 1.35, .45, 8) * eOut;
+      draw(back, oQ(P(u, s1 + 1.5, s1 + 1.8))); back.style.opacity = +back.style.opacity * eOut;
+      backLab.style.opacity = rise(backLab, u, s1 + 1.6, .4, 6) * eOut;
+      // 结果
+      rise(res, u, s2 + .1, .5, 16);
+      before.forEach((e, i) => { const p = P(u, s2 + .3 + i * .06, s2 + .5 + i * .06); e.style.opacity = p; });
+      draw(arrowR, oQ(P(u, s2 + .5, s2 + .75)));
+      after.forEach((e, i) => rise(e, u, s2 + .6 + i * .1, .45, 10));
+      rise(std, u, s2 + 1.0, .45, 6);
+    },
+  };
+})();
+
+/* ============================================================ 03 · PPT 文档生成小工具
+   背景: the author's PPT-generation skill only answers in chat — nothing can be edited or kept; one skin per platform
+   → 解法: edit-first, limited editing, edit = preview; template / DSL generator / skin renderer as separate modules
+   → 结果: one tool wired into the design agent and other platforms (React + GrapesJS · a PPT agent built on the design agent · FastAPI + MySQL / OSS) */
+const P3 = (() => {
+  const c = COPY.p3, sc = Scene(T.p3);
   const L = LeftCol(sc.root, c);
   const pn = $('div', 'layer', sc.root);
   const svg = S('svg', { class: 'full' }, pn);
@@ -550,14 +684,14 @@ const P2 = (() => {
   // 背景 · output lives only in the chat
   const chatC = box(pn, 'card', 860, 214, 400, 0);
   st(chatC, { padding: '18px 20px' });
-  chatC.innerHTML = '<div class="cap" style="margin-bottom:14px">TDA · 对话</div>' +
+  chatC.innerHTML = '<div class="cap" style="margin-bottom:14px">设计 AGENT · 对话</div>' +
     '<div class="bub" style="background:var(--panel);width:60%;margin-left:auto"><div class="bl" style="width:90%"></div><div class="bl" style="width:60%"></div></div>' +
     '<div class="bub" style="box-shadow:0 0 0 1px var(--line);position:relative;height:190px"></div>' +
     '<div class="zh13"><span class="x">✕</span>只能对话查看 · 无法直接编辑 · 无法持久化</div>';
   const inChat = slide(chatC, 30, 132, 300, 169, '#c2410c');
   const lock = box(chatC, 'abs', 262, 142, 0, 0, '只读'); st(lock, { fontSize: '11px', color: '#fff', background: 'var(--ink)', padding: '1px 8px', borderRadius: '8px' });
   // 背景 · every platform keeps its own skin
-  const PLAT = [['TDA', '#c2410c', 'v1'], ['Other Platforms', '#5b7cfa', 'v2'], ['…', '#2fae7a', 'v3']];
+  const PLAT = [['设计 Agent', '#c2410c', 'v1'], ['Other Platforms', '#5b7cfa', 'v2'], ['…', '#2fae7a', 'v3']];
   const plats = PLAT.map(([n, col, v], i) => {
     const y = 214 + i * 132;
     const g = $('div', '', pn);
@@ -566,11 +700,11 @@ const P2 = (() => {
     const tag = box(g, 'abs', 1500, y + 112, 0, 0, `皮肤 ${v}`); st(tag, { fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--dimmer)' });
     return g;
   });
-  const platCap = box(pn, 'abs zh13', 1320, 636, 0, 0, '<span class="x">✕</span>各平台各自维护一套皮肤，结果不一致');
+  const platCap = box(pn, 'abs zh13', 1320, 636, 0, 0, '<span class="x">✕</span>每个平台一套皮肤，结果不一致');
   // 解法 · the editor: edit-first, limited editable units, preview in place
   const ed = box(pn, 'card', 860, 196, 860, 330);
   const edTop = box(ed, 'abs', 0, 0, 860, 40); st(edTop, { borderBottom: '1px solid var(--line)' });
-  edTop.innerHTML = '<span class="cap" style="position:absolute;left:18px;top:14px">TDA · 文档美化</span><span style="position:absolute;left:380px;top:9px;font-size:12px;padding:3px 12px;border-radius:10px;background:var(--panel);color:var(--dim)">编辑即预览</span>';
+  edTop.innerHTML = '<span class="cap" style="position:absolute;left:18px;top:14px">PPT 文档生成</span><span style="position:absolute;left:380px;top:9px;font-size:12px;padding:3px 12px;border-radius:10px;background:var(--panel);color:var(--dim)">编辑即预览</span>';
   const thumbs = [0, 1, 2, 3].map(i => { const s = slide(ed, 16, 56 + i * 66, 104, 58, '#c2410c', ''); if (i === 1) st(s, { boxShadow: '0 0 0 1.5px var(--accent)' }); return s; });
   const canvas = slide(ed, 144, 58, 450, 253, '#c2410c');
   const k = 450 / 300;
@@ -589,7 +723,7 @@ const P2 = (() => {
   const libCap = box(pn, 'abs zh13', 1046, 812, 0, 0, '管理员入库 · 支持自定义皮肤共创');
   const gen = box(pn, 'mod2 acc', 1110, 656, 200, 0, 'PPT 生成');
   const toGen = [620, 676, 732].map(y => S('path', { d: `M1032,${y} C1072,${y} 1070,676 1106,676`, stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
-  const outs = [['TDA', 600], ['Other Platforms', 656], ['…', 712]].map(([n, y]) => box(pn, 'dk', 1400, y, 320, 0, n));
+  const outs = [['设计 Agent', 600], ['Other Platforms', 656], ['…', 712]].map(([n, y]) => box(pn, 'dk', 1400, y, 320, 0, n));
   const toOut = [620, 676, 732].map(y => S('path', { d: `M1312,676 C1352,676 1352,${y} 1396,${y}`, stroke: '#c2410c', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arrA)' }, svg));
   const outCap = box(pn, 'abs zh13', 1400, 770, 0, 0, '<span style="color:var(--accent)">✓</span> 一套皮肤库，跨平台结果一致');
   // 结果 · how it is built (redrawn from the architecture figure)
@@ -604,11 +738,11 @@ const P2 = (() => {
   const tArrows = [vline(tsvg, 1160, 623, 651), vline(tsvg, 1640, 623, 713), vline(tsvg, 1160, 693, 713),
     S('path', { d: 'M1350,775 L1350,790 L1160,790 L1160,803 M1350,790 L1540,790 L1540,803', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none' }, tsvg)];
 
-  const t0 = T.p2[0];
+  const t0 = T.p3[0];
   return {
     render(t) {
       if (!sc.on(t)) return;
-      const u = warp(t - t0, PLAN.p2.map);
+      const u = warp(t - t0, PLAN.p3.map);
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
@@ -650,13 +784,13 @@ const P2 = (() => {
   };
 })();
 
-/* ============================================================ 03 · NARRASTEER
+/* ============================================================ 04 · NARRASTEER
    背景: the agent works opaquely; users idle 74% of the time, 5/8 only saw the drift at the end
    → 解法: trajectory → storyline in a narrative-space disc; drag a node to steer
    → 结果: N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run */
-const P3 = (() => {
-  const sc = Scene(T.p3);
-  const L = LeftCol(sc.root, COPY.p3);
+const P4 = (() => {
+  const sc = Scene(T.p4);
+  const L = LeftCol(sc.root, COPY.p4);
   const pn = $('div', 'layer', sc.root);
   // 背景: an opaque execution log + the waiting time
   const log = $('div', 'card', pn); st(log, { width: '470px', padding: '22px 24px' }); at(log, 852, 220);
@@ -715,13 +849,13 @@ const P3 = (() => {
     { label: '执行中途主动介入', delta: '10/16', a: 10, b: 5, max: 16, at: '10/16', bt: '5/16' },
   ]);
 
-  const t0 = T.p3[0];
+  const t0 = T.p4[0];
   let BTN = { x: 1640, y: 470 };
   return {
     layout() { const r = go.getBoundingClientRect(), s0 = document.getElementById('stage').getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 }; },
     render(t) {
       if (!sc.on(t)) return;
-      const u = warp(t - t0, PLAN.p3.map);
+      const u = warp(t - t0, PLAN.p4.map);
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
@@ -763,13 +897,13 @@ const P3 = (() => {
   };
 })();
 
-/* ============================================================ 04 · TOA
+/* ============================================================ 05 · TOA
    背景: novices lose their way in linear multi-turn chat; 4/6 novices failed in the formative study
    → 解法: the conversation becomes an analysis tree (answers = nodes, queries = edges) + next-step suggestions
    → 结果: N=12 · +58.3% insights per turn · +17.7% thinking time · −23% turns */
-const P4 = (() => {
-  const sc = Scene(T.p4);
-  const L = LeftCol(sc.root, COPY.p4);
+const P5 = (() => {
+  const sc = Scene(T.p5);
+  const L = LeftCol(sc.root, COPY.p5);
   const pn = $('div', 'layer', sc.root);
   // 背景: a long linear chat (queries from the real demo)
   const chatCard = $('div', 'card', pn); st(chatCard, { width: '440px', height: '690px', overflow: 'hidden', padding: '0 22px' }); at(chatCard, 852, 195);
@@ -811,7 +945,7 @@ const P4 = (() => {
     { label: '总对话轮次', delta: '−23%', a: 14.4, b: 18.8, max: 20, at: '14.4', bt: '18.8' },
   ]);
 
-  const t0 = T.p4[0];
+  const t0 = T.p5[0];
   return {
     layout() {
       NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.hh = b.height; at(n.el, n.x - 88, n.y - n.hh / 2); byId[n.id] = { x: n.x, y: n.y, h: n.hh }; });
@@ -824,7 +958,7 @@ const P4 = (() => {
     },
     render(t) {
       if (!sc.on(t)) return;
-      const u = warp(t - t0, PLAN.p4.map);
+      const u = warp(t - t0, PLAN.p5.map);
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
@@ -850,13 +984,13 @@ const P4 = (() => {
   };
 })();
 
-/* ============================================================ 05 · 跨社交媒体舆情分析与治理平台
+/* ============================================================ 06 · 跨社交媒体舆情分析与治理平台
    背景: monitoring / assessment / handling fragmented; five modules' algorithms not yet a product
    → 解法: three-layer IA (大屏 / 仪表盘 / 中台), five tech teams coordinated
    → 结果: delivered 0 → 1, supporting the National Key R&D Program milestone */
-const P5 = (() => {
-  const sc = Scene(T.p5);
-  const L = LeftCol(sc.root, COPY.p5);
+const P6 = (() => {
+  const sc = Scene(T.p6);
+  const L = LeftCol(sc.root, COPY.p6);
   const pn = $('div', 'layer', sc.root);
   const svg = S('svg', { class: 'full' }, pn);
   // workflow stages
@@ -891,11 +1025,11 @@ const P5 = (() => {
   });
   const done = $('div', 'abs', pn, '<span style="font-family:var(--mono);font-size:22px;color:var(--accent)">✓</span>&nbsp; 完整落地 · 支撑国家重点研发计划交付'); at(done, 1120, 830); st(done, { fontSize: '15px', whiteSpace: 'nowrap' });
 
-  const t0 = T.p5[0];
+  const t0 = T.p6[0];
   return {
     render(t) {
       if (!sc.on(t)) return;
-      const u = warp(t - t0, PLAN.p5.map);
+      const u = warp(t - t0, PLAN.p6.map);
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
@@ -973,14 +1107,14 @@ const HUD = (() => {
 function renderFrame(t) {
   t = clamp(t, 0, DUR - 1e-6);
   st(panelBg, { opacity: P(t, T.p1[0] - .3, T.p1[0] + .3) * (1 - P(t, T.outro[0] - .3, T.outro[0] + .2)), transform: `translateY(${(1 - oQ(P(t, T.p1[0] - .3, T.p1[0] + .3))) * 20}px)` });
-  INTRO.render(t); P1.render(t); P2.render(t); P3.render(t); P4.render(t); P5.render(t); OUTRO.render(t);
+  INTRO.render(t); P1.render(t); P2.render(t); P3.render(t); P4.render(t); P5.render(t); P6.render(t); OUTRO.render(t);
   HUD.render(t);
 }
 
 async function boot() {
   await document.fonts.ready;
   await Promise.all(['Syne', 'JetBrains Mono', 'PingFang SC', 'Noto Sans SC Fallback'].flatMap(f => [400, 500, 700].map(w => document.fonts.load(`${w} 40px "${f}"`, '屈非塬设计热皮肤Aa'))));
-  P3.layout(); P4.layout(); OUTRO.layout();
+  P4.layout(); P5.layout(); OUTRO.layout();
   window.renderFrame = renderFrame;
   // the score (soundtrack.py) reads these cues so its chimes and ticks land on the same beats
   window.SHOWREEL = { duration: DUR, fps: FPS, beat: BEAT, intro: T.intro, outro: T.outro,
