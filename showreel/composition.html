@@ -235,7 +235,7 @@ const COPY = {
     steps: ['设计师各自开发的技能接入设计 Agent：<br>体量大、功能重叠，调用耗时且难以维护',
             '拆成基座 / 业务双层原子技能，按需组合调用；<br>与设计师共定过程检查点与理想输出，让技能并发评测、自我迭代'],
     metrics: [['30+', '完成治理的 Skill'], ['1000+', '团队内使用量'], ['−21%', '典型技能耗时']],
-    look: [1, 4, 1],
+    look: [0, 1.5, 0],
     toc: ['Skill 的治理、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'SKILL 治理',
   },
   p2: {
@@ -244,7 +244,7 @@ const COPY = {
     steps: ['Agent 的各类视觉输出没有统一规范：<br>每次生成风格不一，难以复用',
             '封装设计组件库 + design.md，Agent 按需组合、动态输出；<br>DOM · CV · LLM 多模态评测，反向迭代组件库与 design.md'],
     result: 'Agent 的所有 HTML 类输出<br>统一为同一套视觉风格',
-    look: [0.5, 3.5, 1],
+    look: [0, 1, 0],
     toc: ['视觉输出组件库的建立、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '视觉组件库',
   },
   p3: {
@@ -253,7 +253,7 @@ const COPY = {
     steps: ['产品、运营日常要做大量 PPT：<br>希望 AI 生成后直接微调，而不是从零排版',
             '设计：定义编辑交互，打造多套 PPT 模板；<br>开发：前端编辑器、后端生成服务、PPT 模板管理后台'],
     result: '设计与前后端从 0 到 1 独立完成<small>React · GrapesJS / FastAPI</small>',
-    look: [1, 3.5, 1.5],
+    look: [0, 1, 0.5],
     toc: ['PPT 生成模式', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成模式',
   },
   p4: {
@@ -289,16 +289,16 @@ const KEYS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
    plus LEAD to take in the drawing), rounded to whole beats of the 96 BPM score. The animation plays at
    SPEED of its authored pace, then holds until the reader is done. */
 const BEAT = 0.625;
-const READ_CPS = 6, LEAD = 1.25, SPEED = 0.6;
+const READ_CPS = 7.5, LEAD = 1.0, SPEED = 0.75;
 const STEP = [0.625, 2.5, 4.375], OUT = 6.0, END = 6.25, HANDOFF = 0.4;
 const readLoad = html => { const s = html.replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' '); return (s.match(/[㐀-鿿]/g) || []).length + (s.match(/[A-Za-z0-9][\w.+%\/−-]*/g) || []).length; };
 const beats = (sec, min) => Math.max(min, Math.ceil(sec / BEAT - 1e-6)) * BEAT;
 function plan(c) {
   const look = c.look || [0, 0, 0];  // extra seconds for denser drawings
   const r = [3 * BEAT,
-    beats(LEAD + look[0] + readLoad(c.steps[0]) / READ_CPS, 8),
-    beats(LEAD + look[1] + readLoad(c.steps[1]) / READ_CPS, 10),
-    beats(LEAD + look[2] + 1.0 + readLoad(c.metrics ? c.metrics.flat().join(' ') : c.result) / READ_CPS, 9)];
+    beats(LEAD + look[0] + readLoad(c.steps[0]) / READ_CPS, 7),
+    beats(LEAD + look[1] + readLoad(c.steps[1]) / READ_CPS, 8),
+    beats(LEAD + look[2] + 1.0 + readLoad(c.metrics ? c.metrics.flat().join(' ') : c.result) / READ_CPS, 8)];
   const segs = [[0, STEP[0], r[0]], [STEP[0], STEP[1], r[1]], [STEP[1], STEP[2], r[2]], [STEP[2], OUT, r[3] - HANDOFF]];
   const map = [[0, 0]]; let x = 0;
   // play at SPEED, then hold the clock still (not creeping, or the next step's fade-outs would start early)
@@ -598,19 +598,17 @@ const P2 = (() => {
   const L = LeftCol(sc.root, c);
   const pn = $('div', 'layer', sc.root);
   const svg = S('svg', { class: 'full' }, pn);
-  // one HTML output — 分析报告 / 设计稿 / 文档 — in a given style
+  // one HTML output — 分析报告 / 文档 — in a given style
   const out = (parent, x, y, w, h, kind, col, f, rad, rot = 0) => {
     const e = box(parent, 'mcard', x, y, w, h); st(e, { borderRadius: rad + 'px', transform: `rotate(${rot}deg)` });
-    const body = kind === '设计稿'
-      ? `<div class="mb" style="height:${Math.round(h * .3)}px;background:${col}22"></div>` + (h >= 110 ? `<div style="display:flex;gap:6px;margin:10px 14px 0"><i style="display:block;width:40px;height:12px;border-radius:${rad}px;background:${col}"></i><i style="display:block;width:40px;height:12px;border-radius:${rad}px;box-shadow:inset 0 0 0 1px ${col}"></i></div>` : '')
-      : kind === '文档'
+    const body = kind === '文档'
       ? `<div class="ml" style="width:44%;height:7px;background:#171b26"></div>` + [90, 96, 72, 86, 64].map(w => `<div class="ml" style="width:${w}%;margin-top:7px"></div>`).join('')
       : `<div class="ml" style="width:78%"></div><div class="ml" style="width:60%"></div><div class="mb" style="background:${col}26"></div>`;
     e.innerHTML = `<div class="mh" style="background:${col};font-family:${f}">${kind}</div>` + body;
     return e; };
   const SAME = ['#171b26', 'var(--sans)', 8];
   // 背景 · each kind of output in its own style
-  const MESSY = [[880, 300, -4, '分析报告', '#5b7cfa', 'Georgia, serif', 2], [944, 362, 3.5, '设计稿', '#2fae7a', 'var(--mono)', 14], [904, 432, -1.5, '文档', '#e3a33a', 'var(--sans)', 6]];
+  const MESSY = [[884, 318, -4, '分析报告', '#5b7cfa', 'Georgia, serif', 2], [936, 420, 3.5, '文档', '#2fae7a', 'var(--mono)', 14]];
   const messy = MESSY.map(([x, y, r, k, col, f, rad]) => ({ e: out(pn, x, y, 290, 150, k, col, f, rad, r), r }));
   const messyCap = box(pn, 'abs zh13', 860, 646, 0, 0, '<span class="x">✕</span>各类输出，样式各异');
   // 背景 · the same request, three different looks
@@ -646,8 +644,8 @@ const P2 = (() => {
   const agent = box(pn, 'dk', 1216, 316, 120, 0, '设计 Agent');
   const feed = [S('path', { d: 'M1162,278 C1192,278 1188,330 1212,330', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg),
                 S('path', { d: 'M1162,426 C1192,426 1188,342 1212,342', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg)];
-  const outs = ['分析报告', '设计稿', '文档'].map((k, i) => out(pn, 1420, 200 + i * 92, 300, 76, k, ...SAME));
-  const fan = [238, 330, 422].map(y => S('path', { d: `M1338,336 C1380,336 1378,${y} 1416,${y}`, stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const outs = ['分析报告', '文档'].map((k, i) => out(pn, 1420, 232 + i * 112, 300, 96, k, ...SAME));
+  const fan = [280, 392].map(y => S('path', { d: `M1338,336 C1380,336 1378,${y} 1416,${y}`, stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
   const outCap = box(pn, 'abs zh13', 1420, 470, 0, 0, '<span style="color:var(--accent);margin-right:6px">✓</span>按需组合，动态输出');
   // 解法 · 评测 · 迭代: an output is checked three ways; the findings go back into the library and design.md
   const labB = box(pn, 'abs cap', 860, 512, 0, 0, '<span style="color:var(--accent)">评测 · 迭代</span> · 多模态评测');
@@ -672,10 +670,10 @@ const P2 = (() => {
   // 结果 · before / after: every kind of HTML output in one style
   const res = box(pn, 'card', 860, 520, 860, 356);
   $('div', 'cap', res, '改造前 → 改造后').style.cssText = 'position:absolute;left:24px;top:20px';
-  const before = MESSY.map(([, , r, k, col, f, rad], i) => out(res, [40, 86, 56][i], [64, 118, 174][i], 240, 120, k, col, f, rad, r));
+  const before = MESSY.map(([, , r, k, col, f, rad], i) => out(res, [44, 92][i], [72, 168][i], 250, 130, k, col, f, rad, r));
   const rsvg = S('svg', { width: 860, height: 356, style: 'position:absolute;left:0;top:0;overflow:visible' }, res);
   const arrowR = S('path', { d: 'M364,186 L436,186', stroke: '#c2410c', 'stroke-width': 1.4, fill: 'none', 'marker-end': 'url(#arrA)' }, rsvg);
-  const after = ['分析报告', '设计稿', '文档'].map((k, i) => out(res, 460, 54 + i * 96, 370, 82, k, ...SAME));
+  const after = ['分析报告', '文档'].map((k, i) => out(res, 460, 66 + i * 140, 370, 120, k, ...SAME));
 
   const t0 = T.p2[0];
   const loop0 = PLAN.p2.steps[1] + 1.8 / SPEED;

@@ -2,7 +2,7 @@
 
 The opener for the résumé: white, restrained, and built entirely from the site's content and the internship
 write-up. Every visual is redrawn in `composition.html` (no screenshots). Output: `public/videos/showreel.mp4`
-(1920×1080, 60 fps, H.264 + AAC, about two minutes forty).
+(1920×1080, 60 fps, H.264 + AAC, about two minutes).
 
 Each chapter is told the same way — **背景 → 解法 → 结果** — with earlier steps kept on screen.
 
@@ -20,9 +20,9 @@ Each chapter is told the same way — **背景 → 解法 → 结果** — with 
 ## Pacing
 
 On-screen time follows reading speed rather than a fixed length (`plan()` in `composition.html`): each step gets
-`LEAD + characters / READ_CPS` seconds (1.25 s + 6 characters a second), plus a few seconds of `look` for the denser
+`LEAD + characters / READ_CPS` seconds (1 s + 7.5 characters a second), plus a second or so of `look` for the denser
 drawings, rounded up to whole beats of the 96 BPM score. Scenes are authored on a compact animation clock; `warp()`
-plays them at 60% speed and then holds the clock still until the step has been read (the loops in 01 and 02 keep
+plays them at 75% speed and then holds the clock still until the step has been read (the loops in 01 and 02 keep
 moving on real time during the hold). Editing the copy re-times the whole reel; the composition exports its cue sheet
 (`out/timeline.json`) and the score is synthesised from it, so music and picture stay in sync.
 
