@@ -1017,20 +1017,28 @@ const P4 = (() => {
     const r = S('rect', { x: -w / 2, y: -12, width: w, height: 24, rx: 12, fill: '#fff', stroke: 'rgba(23,27,38,0.2)' }, g);
     const tx = S('text', { x: 0, y: 4, 'text-anchor': 'middle', style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); tx.textContent = n;
     g.setAttribute('transform', `translate(${x},${y})`); return { g, r, tx, x, y }; });
-  // steering grows the same storyline: its head (Unemployment) is dragged onto an unexplored spoke, Inflation
-  const from = qN[5], tgt = pills[ATTR.indexOf('Inflation')], [EX, EY] = pol(A('Inflation'), .76 * R);
-  const sdx = (from.x + EX) / 2 - C.x, sdy = (from.y + EY) / 2 - C.y, sdl = Math.hypot(sdx, sdy);
-  const steerD = `M${from.x},${from.y} Q${(from.x + EX) / 2 + sdx / sdl * 16},${(from.y + EY) / 2 + sdy / sdl * 16} ${EX},${EY}`;
-  const sBand = S('path', { d: steerD, fill: 'none', stroke: 'rgba(23,27,38,0.07)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
-  const sLine = S('path', { d: steerD, fill: 'none', stroke: '#171b26', 'stroke-width': 1.6 }, svg);
-  const sNode = node(A('Inflation'), .76, '#171b26');
-  const trail = S('path', { fill: 'none', stroke: '#171b26', 'stroke-width': 1.4, 'stroke-dasharray': '5 5', 'marker-end': 'url(#arr)' }, svg);
-  const dragN = S('g', {}, svg); S('rect', { x: -8, y: -8, width: 16, height: 16, fill: '#fff', stroke: '#c2410c', 'stroke-width': 2.5, transform: 'rotate(45)' }, dragN);
+  // steering by chaining (paper, Fig. 2d4): press on the storyline's head and drag. A candidate the pointer passes over,
+  // mouse still down, is taken as a temporary selection and at once grows the next candidates from it, so one gesture
+  // chains several steps; releasing commits the chain. Candidates sit on spokes and step inward, like every node
+  const from = qN[5];
+  const CAND = [
+    { a: 'Inflation', r: .64, p: -1, pick: 1 }, { a: 'Country', r: .64, p: -1 },
+    { a: 'Country code', r: .52, p: 0 }, { a: 'GDP per Capita', r: .52, p: 0, pick: 2 },
+    { a: 'Oil Price', r: .40, p: 3 }, { a: 'Life Expectancy', r: .40, p: 3 },
+  ];
+  CAND.forEach(c => { [c.x, c.y] = pol(A(c.a), c.r * R); const q = c.p < 0 ? from : CAND[c.p];
+    const mx = (q.x + c.x) / 2 - C.x, my = (q.y + c.y) / 2 - C.y, ml = Math.hypot(mx, my) || 1;
+    c.d = `M${q.x},${q.y} Q${(q.x + c.x) / 2 + mx / ml * 12},${(q.y + c.y) / 2 + my / ml * 12} ${c.x},${c.y}`;
+    c.dash = S('path', { d: c.d, fill: 'none', stroke: '#8a92a6', 'stroke-width': 1.2, 'stroke-dasharray': '4 4' }, svg);
+    if (c.pick) { c.band = S('path', { d: c.d, fill: 'none', stroke: 'rgba(23,27,38,0.07)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
+                  c.line = S('path', { d: c.d, fill: 'none', stroke: '#171b26', 'stroke-width': 1.6 }, svg); }
+    c.g = S('g', {}, svg);
+    c.sq = S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#e3e6eb', stroke: '#c3c8d3', 'stroke-width': 1.5, transform: 'rotate(45)' }, c.g); });
+  const trail = S('path', { fill: 'none', stroke: '#c2410c', 'stroke-width': 1.4, 'stroke-dasharray': '5 5' }, svg);
+  const dragN = S('g', {}, svg); S('circle', { r: 10, fill: 'rgba(194,65,12,0.14)', stroke: '#c2410c', 'stroke-width': 1.5 }, dragN);
   const cursor = S('path', { d: 'M0,0 L0,20 L5.5,15 L9.5,23.5 L13,22 L9,13.5 L16,13.5 Z', fill: '#171b26', stroke: '#fff', 'stroke-width': 1.2 }, svg);
-  const pop = $('div', 'npop', disc);
-  pop.innerHTML = '<div class="cols"><div class="col"><b>Unemployment</b><div class="fl">by Year</div></div><div style="color:var(--dimmer)">→</div><div class="col"><b>Inflation</b><div class="fl">by Year</div></div></div><div class="btns"><div class="btn">Cancel</div><div class="btn go">Explore →</div></div>';
-  at(pop, 1350, 608);
-  const go = pop.querySelector('.go');
+  const gestLab = box(disc, 'abs', 1180, 832, 0, 0, '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px"></span>拖拽不松手 · 经过候选即临时选中，并立即生成后续候选');
+  st(gestLab, { fontSize: '12px', color: 'var(--accent)', whiteSpace: 'nowrap' });
   // 解法 · the mapping: the agent's trace is a line of steps in time; each step moves to where its data dimension sits on
   // the disc (angle = the attribute it analyses), and the storyline is drawn through them as they land
   // each step explores one rim attribute with the focus (Year), so its node sits on that attribute's spoke
@@ -1043,8 +1051,9 @@ const P4 = (() => {
   tcard.innerHTML = '<div class="cap" style="margin-bottom:10px">AGENT 执行轨迹</div>' +
     TRACE.map(([f, a, r]) => `<div class="trow"><i class="td"></i><b>${f}</b><span class="ta">(${a})</span><div class="tr">${r}</div></div>`).join('') +
     // what the drag writes back: the user's steer, then the agent carrying on from it
-    '<div class="trow tnew"><i class="td" style="background:var(--accent)"></i><b style="color:var(--accent)">用户引导</b><span class="ta"> → Inflation</span><div class="tr">from Unemployment · by Year</div></div>' +
+    '<div class="trow tnew"><i class="td" style="background:var(--accent)"></i><b style="color:var(--accent)">用户引导</b><span class="ta"> · 一次拖拽</span><div class="tr">→ Inflation → GDP per Capita</div></div>' +
     '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(Inflation)</span><div class="tr">by Year · line chart</div></div>' +
+    '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(GDP per Capita)</span><div class="tr">by Year · line chart</div></div>' +
     '<div class="twork"><i></i>Analyzing…</div>';
   const rows = [...tcard.querySelectorAll('.trow:not(.tnew)')], news = [...tcard.querySelectorAll('.tnew')], work = tcard.querySelector('.twork'), workDot = work.querySelector('i');
   let newAt = { x: 884, y: 640 };
@@ -1065,9 +1074,9 @@ const P4 = (() => {
   ]);
 
   const t0 = T.p4[0];
-  let BTN = { x: 1640, y: 470 }, FIT = { s: 1, tx: 0, ty: 0 };
+  let FIT = { s: 1, tx: 0, ty: 0 };
   return {
-    layout() { vis(sc.root, true); const s0 = document.getElementById('stage').getBoundingClientRect(), r = go.getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 };
+    layout() { vis(sc.root, true); const s0 = document.getElementById('stage').getBoundingClientRect();
       cmp.place(); FIT = fitBox(unionRect([face, ...pills.map(p => p.g)], s0), GRID.x0, GRID.x1 - GRID.card - GRID.gutter, GRID.cy);
       rowAt = rows.map(e => { const d = e.querySelector('.td').getBoundingClientRect(); return { x: d.left - s0.left + d.width / 2, y: d.top - s0.top + d.height / 2 }; });
       const dn = news[0].querySelector('.td').getBoundingClientRect(); newAt = { x: dn.left - s0.left + dn.width / 2, y: dn.top - s0.top + dn.height / 2 }; vis(sc.root, false); },
@@ -1111,35 +1120,46 @@ const P4 = (() => {
         if (i > 0) pq += P(sr, f1 - .35, f1) / 5; });
       draw(qLine, pq); draw(qBand, pq);
       // dimension labels on the rim light up as their step lands (and Unemployment again when the drag reaches it)
-      const d0 = 3.1, d = ioC(P(sr, d0 + .25, d0 + .75));
-      const hlDrag = P(sr, d0 + .7, d0 + .75);
+      const d0 = 3.1, T1 = d0 + .85, T2 = d0 + 1.55, REL = d0 + 1.9;   // press on the head · reach Inflation · reach GDP per Capita · release
+      const chainLit = n => (n === 'Inflation' && sr > T1 - .05 || n === 'GDP per Capita' && sr > T2 - .05) && sr < REL + .6 ? 1 : 0;
       pills.forEach((p, i) => { const k = oB(P(sr, .2 + i * .03, .5 + i * .03)); p.g.style.opacity = Math.min(1, k * 2); p.g.setAttribute('transform', `translate(${p.x},${p.y}) scale(${Math.max(0, k)})`);
-        const on = Math.max(...STEPS.map((_, j) => MAPI[j] === i || MAPD[j] === i ? flash[j] : 0), p === tgt ? hlDrag : 0) > .5;
+        const on = Math.max(...STEPS.map((_, j) => MAPI[j] === i || MAPD[j] === i ? flash[j] : 0), chainLit(ATTR[i])) > .5;
         p.r.setAttribute('stroke', on ? '#c2410c' : 'rgba(23,27,38,0.2)'); p.tx.setAttribute('fill', on ? '#c2410c' : '#666d7e'); });
       hub.firstChild.setAttribute('stroke', STEPS.some((_, j) => MAPD[j] < 0 && flash[j] > .5) ? '#c2410c' : 'rgba(23,27,38,0.2)');
       linkLab.forEach(l => { const s = FLY(l.k + 1)[1]; l.e.style.opacity = P(sr, s, s + .2); });
       rise(nsLab, sr, 2.75, .4, 6);
-      // steer from the storyline itself: drag its head onto the unexplored Inflation spoke, then Explore
-      const ex = EX, ey = EY, bulge = Math.sin(d * Math.PI) * 16, tx = lerp(from.x, ex, d) + sdx / sdl * bulge, ty = lerp(from.y, ey, d) + sdy / sdl * bulge;
-      const steered = P(sr, d0 + 1.5, d0 + 1.62);
-      dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(sr, d0, d0 + .2))})`); dragN.style.opacity = P(sr, d0, d0 + .07) * (1 - steered);
-      trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2 + sdx / sdl * 16},${(from.y + ty) / 2 + sdy / sdl * 16} ${tx},${ty}`); trail.style.opacity = P(sr, d0 + .3, d0 + .38) * (1 - steered);
-      // once explored, it is the storyline's next node
-      draw(sLine, oC(P(sr, d0 + 1.5, d0 + 1.8))); draw(sBand, oC(P(sr, d0 + 1.5, d0 + 1.8)));
-      sNode.g.setAttribute('transform', `translate(${EX},${EY}) scale(${Math.max(0, oB(P(sr, d0 + 1.5, d0 + 1.75)))})`);
-      let cx = lerp(1620, from.x + 3, oC(P(sr, d0 - .2, d0 + .2))), cy = lerp(760, from.y + 3, oC(P(sr, d0 - .2, d0 + .2)));
-      if (sr > d0 + .25) { cx = tx + 3; cy = ty + 3; }
-      const toB = ioC(P(sr, d0 + .9, d0 + 1.15)); cx = lerp(cx, BTN.x - 4, toB); cy = lerp(cy, BTN.y - 2, toB);
-      cursor.setAttribute('transform', `translate(${cx},${cy})`); cursor.style.opacity = P(sr, d0 - .2, d0 - .07) * (1 - P(sr, d0 + 1.45, d0 + 1.6));
-      st(pop, { opacity: P(sr, d0 + .75, d0 + .88) * (1 - P(sr, d0 + 1.45, d0 + 1.65)), transform: `translateY(${(1 - oQ(P(sr, d0 + .75, d0 + 1.1))) * 10}px)` });
-      go.style.background = sr > d0 + 1.18 && sr < d0 + 1.4 ? 'var(--accent)' : ''; go.style.borderColor = go.style.background ? 'var(--accent)' : '';
-      // …and acts back on the trace: the steer flies from the dragged node into the transcript as a user turn,
-      // and the agent carries on from it
-      const b0 = d0 + 1.45, b1 = b0 + .6, bp = ioC(P(sr, b0, b1));
-      const bx0 = ex, by0 = ey, bcx = (bx0 + newAt.x) / 2, bcy = Math.min(by0, newAt.y) - 90;
+      // steer by chaining: press on the head, drag across candidates (each one passed is selected and grows the next),
+      // release to commit the chain
+      const c0 = CAND[0], c3 = CAND[3];
+      const p1 = ioC(P(sr, d0 + .35, T1)), p2 = ioC(P(sr, d0 + 1.05, T2));
+      let px = from.x, py = from.y;
+      if (sr > d0 + .35) { px = lerp(from.x, c0.x, p1); py = lerp(from.y, c0.y, p1); }
+      if (sr > d0 + 1.05) { px = lerp(c0.x, c3.x, p2); py = lerp(c0.y, c3.y, p2); }
+      const held = P(sr, d0, d0 + .1) * (1 - P(sr, REL, REL + .1)), committed = P(sr, REL, REL + .15);
+      const wave = [d0 + .15, T1, T2];                                   // when each generation of candidates grows
+      CAND.forEach((c, i) => { const w = wave[i < 2 ? 0 : i < 4 ? 1 : 2], k = oB(P(sr, w, w + .25));
+        const sel = c.pick === 1 ? P(sr, T1 - .05, T1 + .05) : c.pick === 2 ? P(sr, T2 - .05, T2 + .05) : 0;
+        const gone = c.pick ? 0 : P(sr, REL, REL + .3), solid = c.pick && committed > .5;
+        c.g.setAttribute('transform', `translate(${c.x},${c.y}) scale(${Math.max(0, k) * (1 + .2 * sel * (1 - committed))})`);
+        c.g.style.opacity = Math.min(1, k * 2) * (1 - gone);
+        c.sq.setAttribute('fill', solid || sel > .5 ? '#fff' : '#e3e6eb');
+        c.sq.setAttribute('stroke', solid ? '#171b26' : sel > .5 ? '#c2410c' : '#c3c8d3');
+        c.sq.setAttribute('stroke-width', solid || sel > .5 ? 2 : 1.5);
+        c.dash.style.opacity = P(sr, w, w + .15) * (1 - gone) * (c.pick ? 1 - committed : 1);
+        if (c.pick) { const a = REL + .05 + (c.pick - 1) * .15, q = oC(P(sr, a, a + .25)); draw(c.line, q); draw(c.band, q); } });
+      dragN.setAttribute('transform', `translate(${px},${py})`); dragN.style.opacity = held;
+      trail.setAttribute('d', sr > d0 + 1.05 ? `M${from.x},${from.y} L${c0.x},${c0.y} L${px},${py}` : `M${from.x},${from.y} L${px},${py}`);
+      trail.style.opacity = held * P(sr, d0 + .35, d0 + .45);
+      let cx = lerp(1620, from.x, oC(P(sr, d0 - .45, d0 - .05))), cy = lerp(760, from.y, oC(P(sr, d0 - .45, d0 - .05)));
+      if (sr > d0) { cx = px; cy = py; }
+      cursor.setAttribute('transform', `translate(${cx + 3},${cy + 3}) scale(${1 - .12 * held})`); cursor.style.opacity = P(sr, d0 - .45, d0 - .35) * (1 - P(sr, REL + .3, REL + .5));
+      gestLab.style.opacity = P(sr, d0 + .2, d0 + .45) * pOut;
+      // …and the chain acts back on the trace as one user turn; the agent carries on through it
+      const b0 = REL + .3, b1 = b0 + .6, bp = ioC(P(sr, b0, b1));
+      const bx0 = c3.x, by0 = c3.y, bcx = (bx0 + newAt.x) / 2, bcy = Math.min(by0, newAt.y) - 90;
       back.setAttribute('transform', `translate(${(1 - bp) ** 2 * bx0 + 2 * (1 - bp) * bp * bcx + bp * bp * newAt.x},${(1 - bp) ** 2 * by0 + 2 * (1 - bp) * bp * bcy + bp * bp * newAt.y})`);
       back.style.opacity = sr > b0 && sr < b1 + .05 ? 1 : 0;
-      news.forEach((e, i) => { const a = b1 - .05 + i * .5, p = oQ(P(sr, a, a + .35));
+      news.forEach((e, i) => { const a = b1 - .05 + i * .4, p = oQ(P(sr, a, a + .35));
         st(e, { maxHeight: p * 48 + 'px', paddingTop: 4 * p + 'px', paddingBottom: 4 * p + 'px', marginBottom: 6 * p + 'px', opacity: P(sr, a + .1, a + .35),
                 background: i === 0 ? `rgba(194,65,12,${.1 * p})` : '' }); });
       // 结果
