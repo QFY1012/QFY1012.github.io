@@ -45,21 +45,21 @@ contents starting on the panel column. Cards that sit beside a drawing share its
 
 ## On the site
 
-The home page's first screen is the composition itself, not the MP4: `src/pages/index.astro` embeds
-`/showreel/?embed` in an iframe (it keeps the two stylesheets apart). In `?embed` the stage is scaled to the frame and
-only draws; the home page owns the clock and calls `renderFrame(t)` every animation frame.
+The home page's first screen is a centred name and one line about the work, over a white 16:9 card (about 70% of the
+screen height, a hairline edge and a very light shadow). The nav stays hidden until the card has scrolled away.
 
-- The opening page is the site's first page: name, the introduction, skills and the six chapters. The site plays its
-  entrance, then stops on it (`SHOWREEL.menu`) with a headphones prompt — 开启声音播放 / 静音播放 — so the viewer decides
-  on sound. Playing goes on from there into 01 (`SHOWREEL.start`).
-- With sound on, the time comes from `public/showreel/soundtrack.mp3`, so picture and score stay together.
-- 目录, or the name at the top left of the reel, goes back to the first page; the contents rows and the progress bar's
-  six chapters jump to a chapter. The reel pauses when it scrolls out of view or the tab is hidden, and stops on the
-  outro with a replay button.
+- Before anything plays, the card shows a lead-in — 来都来了，先看个视频吧 — that hands over to a headphones prompt
+  (开启声音播放 / 静音播放). Nothing plays until the viewer picks one.
+- Desktop: the card holds the composition live, `/showreel/?embed` in an iframe (it keeps the two stylesheets apart).
+  In `?embed` the stage is scaled to the frame and only draws, and its opening page is just the six chapters (the page
+  above already carries the name). The home page owns the clock and calls `renderFrame(t)` every animation frame; with
+  sound on, the time comes from `public/showreel/soundtrack.mp3`, and every jump moves picture and audio together.
+  Controls: sound, pause, 目录 (back to the chapters; the name at the reel's top left does the same), full screen. The
+  chapters and the progress bar jump to a chapter. It pauses out of view or in a hidden tab and stops on the outro with
+  a replay button.
+- Phones: the card holds the MP4 in the system player (full screen, zoom).
 - During 05 a link opens ToA's live demo on the ToA page (an iframe loaded as it nears the view).
-- Phones see the first page with a play button that plays the MP4 full screen; with reduced motion it stops on the
-  first page. The same name, introduction and skills are also in the page as text (shown on phones, kept for screen
-  readers and search elsewhere).
+- The introduction and skills are in the MP4's opening page, and in the page as text for screen readers and search.
 - Type: the site's PingFang, declared as the site does (the system PingFang first, else the site's subset); the few
   characters the subset lacks fall back to Noto Sans SC, as they do on the site.
 
