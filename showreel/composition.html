@@ -162,6 +162,7 @@
   .qb { display: inline-block; width: 16px; height: 16px; border-radius: 8px; background: var(--accent); color: #fff; font: 500 10px/16px var(--mono); text-align: center; vertical-align: 1px; }
   .qa { position: relative; margin: 0 -8px 10px; padding: 6px 8px 6px 32px; border-radius: 6px; }
   .qa .qb { position: absolute; left: 8px; top: 9px; }
+  .qa.qnew { overflow: hidden; }
   .qa .qq { font-family: var(--mono); font-size: 11px; line-height: 1.45; color: var(--ink); background: var(--panel); border-radius: 8px; padding: 5px 9px; }
   .qa .qc { margin-top: 6px; width: 96px; padding: 5px 7px; border-radius: 6px; box-shadow: 0 0 0 1px var(--line); }
   .mbars { display: flex; align-items: flex-end; gap: 3px; height: 22px; }
@@ -292,7 +293,7 @@ const COPY = {
     steps: ['新手在多轮可视分析对话中容易迷路：<br>线性对话难回溯，<em>4/6</em> 名新手任务失败',
             '把对话重组为分析树：回答是节点，提问是边；<br>识别图表信号，推荐后续节点'],
     metrics: [['+58.3%', '每轮洞察数'], ['+17.7%', '每轮深度思考时间'], ['−23%', '总对话轮次']],
-    look: [0, 3.5, 0],
+    look: [0, 4, 0],
     toc: ['ToA', '对话式可视分析 · CHI\'26 收录', '2025'], hud: 'TOA',
   },
   p6: {
@@ -1121,7 +1122,8 @@ const P4 = (() => {
    背景: novices lose their way in linear multi-turn chat; 4/6 novices failed in the formative study
    → 解法: the conversation, numbered, is re-laid out as an analysis tree: each answer's chart flies into a node and each
            question's number onto the edge into it (answers = nodes, queries = edges); chat order 1–5 lands on different
-           branches. B1's chart signals grow two recommended follow-up nodes (dashed), which ④ and ⑤ then take
+           branches. ⑤'s chart signals then grow two recommended follow-up nodes that were never asked (dashed); clicking
+           one asks it — a new turn ⑥ appears in the chat
    → 结果: N=12 · +58.3% insights per turn · +17.7% thinking time · −23% turns */
 const P5 = (() => {
   const sc = Scene(T.p5);
@@ -1142,10 +1144,11 @@ const P5 = (() => {
     '<div class="zh13" style="margin-top:16px"><span style="color:var(--accent)">○</span> 任务失败 &nbsp; <span>●</span> 完成</div>';
   // 解法: the same conversation, numbered — each answer becomes a node, each question the edge into it
   const bars = (v, hi) => `<div class="mbars">${v.map((h, i) => `<i style="height:${Math.max(8, h)}%"${i === hi ? ' class="hi"' : ''}></i>`).join('')}</div>`;
+  const NEWQ = ['Show battery capacity of Poco models under $20,000', [52, 70, 38, 88, 45], 3];   // the turn a clicked recommendation adds
   const qaCard = box(pn, 'card', 852, 206, 316, 0); st(qaCard, { padding: '18px 18px 8px' });
-  qaCard.innerHTML = '<div class="cap" style="margin-bottom:12px">对话 · 按时间线性排列</div>' +
-    Q.slice(0, 5).map(([q, v, hi], i) => `<div class="qa"><span class="qb">${i + 1}</span><div class="qq">${q}</div><div class="qc">${bars(v, hi)}</div></div>`).join('');
-  const qas = [...qaCard.querySelectorAll('.qa')];
+  const qaHtml = ([q, v, hi], i, cls = '') => `<div class="qa${cls}"><span class="qb">${i + 1}</span><div class="qq">${q}</div><div class="qc">${bars(v, hi)}</div></div>`;
+  qaCard.innerHTML = '<div class="cap" style="margin-bottom:12px">对话 · 按时间线性排列</div>' + Q.slice(0, 5).map((x, i) => qaHtml(x, i)).join('') + qaHtml(NEWQ, 5, ' qnew');
+  const qas = [...qaCard.querySelectorAll('.qa')], qa6 = qas[5];
   // the analysis tree (node contents from the paper's figure)
   const tree = $('div', 'layer', pn);
   const tsvg = S('svg', { class: 'full' }, tree);
@@ -1156,23 +1159,27 @@ const P5 = (() => {
     { id: 'B', p: 'root', x: 1400, y: 360, e: 'Start new', q: 0, h: mk(['brand', 'num_of_sales']) },
     { id: 'B1', p: 'B', x: 1400, y: 510, e: 'Slice', q: 1, h: mk(['models', 'num_of_sales'], "brand='Poco'") },
     { id: 'C', p: 'root', x: 1650, y: 360, e: 'Start new', q: 2, h: mk(['sales_price', 'battery_capacity']) },
-    // B2, B3: follow-up nodes ToA recommends from B1's chart signals (dashed in the paper's figure); ④ and ⑤ then take them
-    { id: 'B2', p: 'B1', x: 1292, y: 672, e: 'Elaborate', q: 3, rec: 1, h: mk(['models', 'processor'], "brand='Poco'") },
-    { id: 'B3', p: 'B1', x: 1512, y: 672, e: 'Dice', q: 4, rec: 1, h: mk(['models', 'num_of_sales'], 'sales_price<=20000') },
+    { id: 'B2', p: 'B1', x: 1292, y: 672, e: 'Elaborate', q: 3, h: mk(['models', 'processor'], "brand='Poco'") },
+    { id: 'B3', p: 'B1', x: 1512, y: 672, e: 'Dice', q: 4, h: mk(['models', 'num_of_sales'], 'sales_price<=20000') },
+    // not asked yet: follow-ups ToA recommends from ⑤'s chart signals (illustrative attributes). Clicking R1 asks it as ⑥
+    { id: 'R1', p: 'B3', x: 1420, y: 836, e: 'Elaborate', q: 5, rec: 1, h: mk(['models', 'battery_capacity'], 'sales_price<=20000') },
+    { id: 'R2', p: 'B3', x: 1640, y: 836, e: 'Elaborate', rec: 1, h: mk(['models', 'screen_size'], 'sales_price<=20000') },
   ];
   const byId = { root: { x: RX, y: RY, h: 34 } };
   NODES.forEach((n, i) => { n.i = i; n.el = $('div', 'tnode', tree, n.h); st(n.el, { width: '196px', paddingRight: '48px' });
-    const [, v, hi] = Q[n.q]; n.g = $('div', '', n.el, bars(v, hi)); st(n.g, { position: 'absolute', right: '8px', top: '8px', transform: 'scale(.72)', transformOrigin: 'right top' });
-    if (n.rec) { n.tag = $('div', '', n.el, 'REC.'); st(n.tag, { position: 'absolute', right: '8px', top: '9px', background: 'var(--ink)', color: '#fff', font: '700 9px var(--mono)', padding: '1px 6px', borderRadius: '2px' }); } });
+    const qa = n.q === 5 ? NEWQ : Q[n.q];
+    if (qa) { n.g = $('div', '', n.el, bars(qa[1], qa[2])); st(n.g, { position: 'absolute', right: '8px', top: '8px', transform: 'scale(.72)', transformOrigin: 'right top' }); }
+    if (n.rec) { n.el.classList.add('dash'); n.tag = $('div', '', n.el, 'REC.'); st(n.tag, { position: 'absolute', right: '8px', top: '9px', background: 'var(--ink)', color: '#fff', font: '700 9px var(--mono)', padding: '1px 6px', borderRadius: '2px' }); } });
   const edges = [];
-  // what travels: the question's number to its edge, the answer's chart to its node
-  const qFly = NODES.map(n => box(tree, 'abs', 0, 0, 0, 0, `<span class="qb">${n.q + 1}</span>`));
-  const aFly = NODES.map(n => { const [, v, hi] = Q[n.q]; const e = box(tree, 'abs', 0, 0, 0, 0, bars(v, hi)); st(e, { background: '#fff', padding: '5px 7px', borderRadius: '6px', boxShadow: '0 4px 14px rgba(23,27,38,0.14)' }); return e; });
+  // what travels: the question's number to its edge, the answer's chart to its node (and back, for ⑥)
+  const qFly = NODES.map(n => box(tree, 'abs', 0, 0, 0, 0, `<span class="qb">${(n.q ?? 0) + 1}</span>`));
+  const aFly = NODES.map(n => { const qa = n.q === 5 ? NEWQ : Q[n.q ?? 0]; const e = box(tree, 'abs', 0, 0, 0, 0, bars(qa[1], qa[2])); st(e, { background: '#fff', padding: '5px 7px', borderRadius: '6px', boxShadow: '0 4px 14px rgba(23,27,38,0.14)' }); return e; });
   let qaAt = NODES.map(() => ({ q: { x: 870, y: 260 }, a: { x: 900, y: 300 } }));
-  const MAPT = [.6, 1.2, 1.8, 3.7, 4.3], MAP = i => MAPT[i];            // seconds into 解法 when pair i maps in
-  const REC = 2.6;                                                        // …and when B1's signals grow the recommended nodes
-  const sigLab = box(tree, 'abs', 1512, 498, 0, 0, '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:7px;vertical-align:1px"></span>图表信号 → 推荐后续节点');
+  const MAP = i => .6 + i * .6;              // seconds into 解法 when pair i (①–⑤) maps in
+  const REC = 3.9, CLICK = 5.1;              // ⑤'s chart signals grow the recommendations; R1 is clicked
+  const sigLab = box(tree, 'abs', 1622, 662, 0, 0, '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:7px;vertical-align:1px"></span>图表信号 → 推荐后续节点');
   st(sigLab, { fontSize: '13px', color: 'var(--accent)', whiteSpace: 'nowrap' });
+  const cursor = S('path', { d: 'M0,0 L0,20 L5.5,15 L9.5,23.5 L13,22 L9,13.5 L16,13.5 Z', fill: '#171b26', stroke: '#fff', 'stroke-width': 1.2 }, tsvg);
   // 结果
   const cmp = Compare(pn, 1350, 330, 'ToA', [
     { label: '每轮洞察数', delta: '+58.3%', a: 1.583, b: 1, max: 1.7, at: '', bt: '' },
@@ -1191,11 +1198,11 @@ const P5 = (() => {
         const d = `M${p.x},${y0} C${p.x},${my} ${n.x},${my} ${n.x},${y1}`;
         const dash = n.rec ? S('path', { d, fill: 'none', stroke: 'rgba(23,27,38,0.35)', 'stroke-width': 1.2, 'stroke-dasharray': '4 4' }, tsvg) : null;
         const path = S('path', { d, fill: 'none', stroke: 'rgba(23,27,38,0.35)', 'stroke-width': 1.2 }, tsvg);
-        const lab = box(tree, 'elab', 0, 0, 0, 0, `<span class="qb">${n.q + 1}</span>${n.e}`);
+        const lab = box(tree, 'elab', 0, 0, 0, 0, (n.q != null ? `<span class="qb">${n.q + 1}</span>` : '') + n.e);
         const w = lab.getBoundingClientRect().width, lx = p.x === n.x ? n.x + 10 : (p.x + n.x) / 2 - w / 2;
         at(lab, lx, my - 10); edges.push({ n, path, dash, lab, badge: lab.querySelector('.qb'), lx: lx + 8, ly: my - 1 });
       });
-      qaAt = NODES.map(n => { const e = qas[n.q], q = e.querySelector('.qb').getBoundingClientRect(), a = e.querySelector('.qc').getBoundingClientRect();
+      qaAt = NODES.map(n => { const e = qas[n.q ?? 0], q = e.querySelector('.qb').getBoundingClientRect(), a = e.querySelector('.qc').getBoundingClientRect();
         return { q: { x: q.left - s0.left, y: q.top - s0.top }, a: { x: a.left - s0.left, y: a.top - s0.top } }; });
       vis(sc.root, false);
     },
@@ -1219,31 +1226,49 @@ const P5 = (() => {
       const rp = oB(P(sr, .1, .4)); st(root, { transform: `scale(${Math.max(0, rp)})` });
       const bez = (a, b, p, lift) => { const cx = (a.x + b.x) / 2, cy = Math.min(a.y, b.y) - lift; return [(1 - p) ** 2 * a.x + 2 * (1 - p) * p * cx + p * p * b.x, (1 - p) ** 2 * a.y + 2 * (1 - p) * p * cy + p * p * b.y]; };
       edges.forEach(({ n, path, dash, lab, badge, lx, ly }) => {
-        const f0 = MAP(n.i), from = qaAt[n.i];
-        const on = P(sr, f0 - .05, f0 + .1) * (1 - P(sr, f0 + .8, f0 + 1.0)); qas[n.q].style.background = on > .01 ? `rgba(194,65,12,${.1 * on})` : '';
-        const pq = ioC(P(sr, f0, f0 + .5)), [qx, qy] = bez(from.q, { x: lx, y: ly }, pq, 60);
-        st(qFly[n.i], { left: qx + 'px', top: qy + 'px', opacity: sr > f0 && sr < f0 + .52 ? 1 : 0 });
-        const nodeAt = { x: n.x + 98 - 48, y: n.y - n.hh / 2 + 4 };
-        const pa = ioC(P(sr, f0 + .1, f0 + .6)), [ax, ay] = bez(from.a, nodeAt, pa, 40);
-        st(aFly[n.i], { left: ax + 'px', top: ay + 'px', opacity: sr > f0 + .1 && sr < f0 + .62 ? 1 : 0, transform: `scale(${1 - .3 * pa})`, transformOrigin: 'left top' });
-        draw(path, oC(P(sr, f0 + .2, f0 + .5)));
-        badge.style.opacity = P(sr, f0 + .48, f0 + .6);
-        if (!n.rec) {
+        const from = qaAt[n.i];
+        if (!n.rec) {   // ①–⑤: chat → tree
+          const f0 = MAP(n.i);
+          const on = P(sr, f0 - .05, f0 + .1) * (1 - P(sr, f0 + .8, f0 + 1.0)); qas[n.q].style.background = on > .01 ? `rgba(194,65,12,${.1 * on})` : '';
+          const pq = ioC(P(sr, f0, f0 + .5)), [qx, qy] = bez(from.q, { x: lx, y: ly }, pq, 60);
+          st(qFly[n.i], { left: qx + 'px', top: qy + 'px', opacity: sr > f0 && sr < f0 + .52 ? 1 : 0 });
+          const nodeAt = { x: n.x + 98 - 48, y: n.y - n.hh / 2 + 4 };
+          const pa = ioC(P(sr, f0 + .1, f0 + .6)), [ax, ay] = bez(from.a, nodeAt, pa, 40);
+          st(aFly[n.i], { left: ax + 'px', top: ay + 'px', opacity: sr > f0 + .1 && sr < f0 + .62 ? 1 : 0, transform: `scale(${1 - .3 * pa})`, transformOrigin: 'left top' });
+          draw(path, oC(P(sr, f0 + .2, f0 + .5)));
           lab.style.opacity = P(sr, f0 + .48, f0 + .6);
           const k = oB(P(sr, f0 + .5, f0 + .75)); st(n.el, { transform: `scale(${Math.max(0, k)})`, opacity: Math.min(1, k * 2) });
-        } else {
-          // recommended first (dashed, REC.), taken when its question maps in (solid, with the answer's chart)
-          const r0 = REC + .25 + (n.i - 3) * .15, taken = P(sr, f0 + .5, f0 + .65);
-          dash.style.opacity = P(sr, r0, r0 + .25) * (1 - taken); lab.style.opacity = P(sr, r0 + .15, r0 + .35);
-          const k = oB(P(sr, r0 + .1, r0 + .35)); st(n.el, { transform: `scale(${Math.max(0, k) * (1 + .05 * Math.sin(taken * Math.PI))})`, opacity: Math.min(1, k * 2) });
-          n.el.classList.toggle('dash', taken < .5);
-          n.g.style.opacity = taken; n.tag.style.opacity = 1 - taken;
+          return;
         }
+        // recommendations: new nodes, dashed; clicking R1 asks it — tree → chat, as ⑥
+        const r0 = REC + .25 + (n.i - 5) * .15, taken = n.q === 5 ? P(sr, CLICK + .05, CLICK + .2) : 0;
+        dash.style.opacity = P(sr, r0, r0 + .25) * (1 - taken); lab.style.opacity = P(sr, r0 + .15, r0 + .35);
+        const k = oB(P(sr, r0 + .1, r0 + .35)); st(n.el, { transform: `scale(${Math.max(0, k) * (1 + .06 * Math.sin(taken * Math.PI))})`, opacity: Math.min(1, k * 2) });
+        n.el.classList.toggle('dash', taken < .5);
+        n.tag.style.opacity = 1 - taken;
+        if (n.q !== 5) { qFly[n.i].style.opacity = 0; aFly[n.i].style.opacity = 0; path.style.opacity = 0; return; }
+        draw(path, oC(P(sr, CLICK + .05, CLICK + .3)));
+        if (badge) badge.style.opacity = P(sr, CLICK + .2, CLICK + .35);
+        n.g.style.opacity = P(sr, CLICK + .1, CLICK + .25);
+        const pa = ioC(P(sr, CLICK + .3, CLICK + .85)), nodeAt = { x: n.x + 98 - 48, y: n.y - n.hh / 2 + 4 }, [ax, ay] = bez(nodeAt, from.a, pa, 50);
+        st(aFly[n.i], { left: ax + 'px', top: ay + 'px', opacity: sr > CLICK + .3 && sr < CLICK + .87 ? 1 : 0, transform: `scale(${.7 + .3 * pa})`, transformOrigin: 'left top' });
+        const pq = ioC(P(sr, CLICK + .2, CLICK + .7)), [qx, qy] = bez({ x: lx, y: ly }, from.q, pq, 60);
+        st(qFly[n.i], { left: qx + 'px', top: qy + 'px', opacity: sr > CLICK + .2 && sr < CLICK + .72 ? 1 : 0 });
       });
-      // B1's chart signals → recommended follow-up nodes
-      const b1 = NODES[1].el, sg = P(sr, REC, REC + .2) * (1 - P(sr, REC + 1.6, REC + 2.0));
-      b1.style.boxShadow = sg > .01 ? `0 0 0 ${1 + sg}px rgba(194,65,12,${.9 * sg}), 0 8px 24px rgba(194,65,12,${.14 * sg})` : '';
+      NODES.forEach(n => { if (n.g && !n.rec) n.g.style.opacity = 1; });
+      // ⑥ opens at the bottom of the chat
+      const g6 = oQ(P(sr, CLICK + .15, CLICK + .5));
+      st(qa6, { maxHeight: g6 * 110 + 'px', paddingTop: 6 * g6 + 'px', paddingBottom: 6 * g6 + 'px', marginBottom: 10 * g6 + 'px', opacity: P(sr, CLICK + .3, CLICK + .55),
+                background: `rgba(194,65,12,${.1 * g6 * (1 - P(sr, CLICK + 1.6, CLICK + 2.0))})` });
+      qa6.querySelector('.qc').style.opacity = P(sr, CLICK + .82, CLICK + .9);
+      // ⑤'s chart signals → recommended follow-up nodes
+      const b3 = NODES[4].el, sg = P(sr, REC, REC + .2) * (1 - P(sr, REC + 1.2, REC + 1.6));
+      b3.style.boxShadow = sg > .01 ? `0 0 0 ${1 + sg}px rgba(194,65,12,${.9 * sg}), 0 8px 24px rgba(194,65,12,${.14 * sg})` : '';
       st(sigLab, { opacity: P(sr, REC, REC + .2) * pOut, transform: `translateX(${(1 - oQ(P(sr, REC, REC + .4))) * 10}px)` });
+      // the click on R1
+      const r1 = NODES[5], cxy = [lerp(1720, r1.x - 20, ioC(P(sr, CLICK - .6, CLICK - .1))), lerp(900, r1.y - 4, ioC(P(sr, CLICK - .6, CLICK - .1)))];
+      cursor.setAttribute('transform', `translate(${cxy[0]},${cxy[1]}) scale(${1 - .15 * Math.sin(P(sr, CLICK - .05, CLICK + .1) * Math.PI)})`);
+      cursor.style.opacity = P(sr, CLICK - .6, CLICK - .45) * (1 - P(sr, CLICK + .6, CLICK + .8));
       // 结果
       cmp.render(u, s2 + .15);
     },
