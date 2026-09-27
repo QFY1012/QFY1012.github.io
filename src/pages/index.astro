@@ -167,6 +167,9 @@ const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ')
       .reel-box { width: 100%; }
       .reel { border-radius: 12px; }
       .reel-frame, .reel-bar, .g-sub { display: none; }
+      /* 卡片小：引子与提示用与上方引导语同一档正文字号 */
+      .g-lead, .g-title { font-size: var(--text-body); }
+      .g-icon :global(svg) { width: 18px; height: 18px; }
       .g-prompt > .g-rule { margin: 0.6rem 0 0.7rem; }
       .g-btns { margin-top: 1rem; gap: 1.25rem; }
     }
