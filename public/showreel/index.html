@@ -284,13 +284,13 @@ const COPY = {
     toc: ['视觉输出的规范、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '视觉输出',
   },
   p3: {
-    idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'PPT 生成模式的设计与开发',
-    sub: '为中台设计 Agent 上线 PPT 生成模式与多套模板',
-    steps: ['为团队日常大量的 PPT 需求，<br>设计并开发 PPT 小工具，作为 App 接入中台设计 Agent',
-            '开发：前端编辑器、PPT 专用 Agent、后端与模板管理后台；<br>DSL + 模板：模板快速切换，生成稳定'],
-    result: '设计与前后端从 0 到 1 独立完成',
+    idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'PPT 生成 App 的设计与研发',
+    sub: '为中台设计 Agent 上线 PPT 生成 App 与多套模板',
+    steps: ['面向团队高频的 PPT 制作需求，<br>设计并研发 PPT 生成 App，接入中台设计 Agent',
+            '全栈开发：可视化编辑器、PPT Agent、后端与模板管理后台；<br>DSL + 模板：稳定生成，快速换肤'],
+    result: '产品设计与全栈开发，从 0 到 1 独立完成',
     look: [0.5, 1.5, 0.5],
-    toc: ['PPT 生成模式的设计与开发', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成模式',
+    toc: ['PPT 生成 App 的设计与研发', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成 App',
   },
   p4: {
     idx: '05', kicker: '研究生 · CHI\'27 在投 · 第一作者 · 2026.01 — 04', title: 'NarraSteer', latin: 1,
@@ -506,10 +506,10 @@ const INTRO = (() => {
 function Arch(parent) {
   const root = $('div', 'layer', parent);
   const svg = S('svg', { class: 'full' }, root);
-  const B = [['Users · 用户', 860, 196, 860], ['中台设计 Agent', 1060, 262, 660, 'dark'], ['Apps · 小工具', 860, 328, 410], ['Skills · 技能', 1310, 328, 410], ['Knowledge · 知识', 860, 394, 860]];
+  const B = [['Users · 用户', 860, 196, 860], ['中台设计 Agent', 1060, 262, 660, 'dark'], ['Apps · 应用', 860, 328, 410], ['Skills · 技能', 1310, 328, 410], ['Knowledge · 知识', 860, 394, 860]];
   const bars = B.map(([n, x, y, w, k]) => box(root, 'abar ' + (k || ''), x, y, w, 40, n));
   const arrows = [[900, 236, 328], [1170, 302, 328], [1650, 236, 262], [1650, 302, 328], [1060, 368, 394], [1650, 368, 394]].map(([x, a, b]) => vline(svg, x, a + 3, b - 3));
-  const cap = box(root, 'abs zh13', 860, 452, 0, 0, '从技能与小工具两个维度，扩展设计 Agent 的能力边界');
+  const cap = box(root, 'abs zh13', 860, 452, 0, 0, '沿 Skill 与 App 两个维度，扩展中台设计 Agent 的能力边界');
   // a chapter's tag, right-aligned at x
   const tag = (html, x, y) => { const e = box(root, 'abs atag', 0, y, 0, 0, html); st(e, { left: 'auto', right: W - x + 'px' }); return e; };
   const acc = (a, b) => S('path', { d: `M1650,${a + 3} L1650,${b - 3}`, stroke: '#c2410c', 'stroke-width': 1.6, fill: 'none', 'marker-start': 'url(#arrA)', 'marker-end': 'url(#arrA)' }, svg);
@@ -517,7 +517,7 @@ function Arch(parent) {
   const hi = [
     [box(root, 'abar acc', 1310, 328, 410, 40, B[3][0]), tag('<b>01</b>技能治理', 1706, 339)],
     [acc(236, 262), acc(302, 328), tag('<b>02</b>视觉输出', 1638, 240)],
-    [box(root, 'abar acc', 860, 328, 410, 40, B[2][0]), tag('<b>03</b>PPT 生成模式', 1256, 339)],
+    [box(root, 'abar acc', 860, 328, 410, 40, B[2][0]), tag('<b>03</b>PPT 生成 App', 1256, 339)],
   ];
   return {
     root,
@@ -854,7 +854,7 @@ const P2 = (() => {
   };
 })();
 
-/* ============================================================ 03 · PPT 生成模式的设计与开发
+/* ============================================================ 03 · PPT 生成 App 的设计与研发
    背景: the team makes a lot of decks, so a PPT tool (an App, the figure's other dimension) is designed and built — it opens on
          the internship's figure with Apps lit, over the blueprint of the app still to be built
    → 解法: the blueprint becomes the app, built end to end (write-up §3.1): a front-end editor (React · GrapesJS), a PPT agent
@@ -892,7 +892,7 @@ const P3 = (() => {
   const mix = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
   const place = (e, r) => st(e, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
   const cDash = box(pn, 'appc dash', 0, 0, 0, 0), cSolid = box(pn, 'appc', 0, 0, 0, 0);
-  const title = box(pn, 'abs atag', 0, 0, 0, 0, '<b>03</b>PPT 生成模式');
+  const title = box(pn, 'abs atag', 0, 0, 0, 0, '<b>03</b>PPT 生成 App');
   const rows = ['前端', 'Agent', '后端', '后台'].map(n => {
     const d = box(pn, 'appr', 0, 0, 0, 0), s = box(pn, 'card', 0, 0, 0, 0); st(s, { borderRadius: '8px' });
     return { d, s, cap: box(pn, 'abs cap', 0, 0, 0, 0, n) }; });
@@ -907,7 +907,7 @@ const P3 = (() => {
   const adMain = txt(1380, 753, '模板管理后台'); st(adMain, { fontWeight: 500 });
   const adSub = right(txt(0, 755, '入库 · 共创', 'zh13'), 1676);
   // 解法 · the agent part: PPT agent → DSL + 模板 → rendered deck
-  const agentN = box(pn, 'dk', 904, 524, 150, 0, 'PPT 专用 Agent');
+  const agentN = box(pn, 'dk', 904, 524, 150, 0, 'PPT Agent');
   const agentSub = txt(904, 574, '基于中台设计 Agent<br>二次开发', 'zh13'); st(agentSub, { fontSize: '12px', lineHeight: '1.6' });
   const dsl = box(pn, 'abs', 1094, 452, 190, 184); st(dsl, { background: 'var(--panel)', borderRadius: '8px' });
   $('div', 'cap', dsl, 'DSL').style.cssText = 'position:absolute;left:14px;top:12px';
@@ -929,14 +929,14 @@ const P3 = (() => {
   const outs = SEQ.map(v => tpl(outW, 0, 0, 160, v));
   const capOf = (x, a, b) => { const e = txt(x, 650, `<b style="color:var(--accent);font-weight:500">${a}</b><br>${b}`, 'zh13'); st(e, { lineHeight: '1.6' }); return e; };
   const capStable = capOf(1094, '稳定生成', 'Agent 只写 DSL');
-  const capSwitch = capOf(1522, '快速切换', 'DSL 不变，换模板即换样式');
+  const capSwitch = capOf(1522, '快速换肤', 'DSL 不变，换模板即换样式');
   // 解法 · the loop back: an element referenced in the editor goes back to the agent, which rewrites only its part.
   // Per template: the referenced element's box (300 × 169 grid), its name, and the DSL line it comes from
   const REF = [[174, 70, 106, 76, '图表', 4], [106, 70, 172, 50, '正文', 1], [154, 44, 136, 102, '图表', 4], [156, 24, 132, 22, '标题', 0]];
   const refBox = box(outW, 'abs', 0, 0, 0, 0); st(refBox, { border: '1.5px solid var(--accent)', borderRadius: '2px', boxSizing: 'border-box', zIndex: 3 });
   const refFill = box(outW, 'abs', 0, 0, 0, 0); st(refFill, { background: 'rgba(194,65,12,0.2)', zIndex: 3 });
   const refChip = box(pn, 'abs chipx', 1420, 325, 0, 0, ''); st(refChip, { color: 'var(--accent)', background: 'var(--accent-soft)' });
-  const backLab = txt(990, 466, '引用元素<br>交回 Agent 修改', 'zh13'); st(backLab, { fontSize: '12px', lineHeight: '1.6', color: 'var(--accent)' });
+  const backLab = txt(990, 466, '指定元素交由<br>Agent 定向修改', 'zh13'); st(backLab, { fontSize: '12px', lineHeight: '1.6', color: 'var(--accent)' });
   // arrows sit above the parts' cards
   const svg = S('svg', { class: 'full' }, pn);
   const arrow = (d, col = '#171b26') => S('path', { d, stroke: col, 'stroke-width': col === '#171b26' ? 1.1 : 1.6, fill: 'none', 'marker-end': col === '#171b26' ? 'url(#arr)' : 'url(#arrA)' }, svg);
