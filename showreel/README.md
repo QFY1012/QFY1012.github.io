@@ -12,15 +12,16 @@ The three internship chapters share one frame of reference, redrawn from the wri
 agent between its users and its knowledge, extended along two dimensions, Skills and Apps (`Arch()` in
 the composition). 01–03 each open on it at the same spot with their own part lit and tagged — 01 the Skills bar,
 02 the output path from the skills through the agent to the users, 03 the Apps bar — and 03 closes on it with all three lit. Their titles follow one pattern — the part of the figure, then what was done
-(技能的治理、评测与优化 · 视觉输出的规范、评测与优化 · PPT 生成模式的设计与开发) — and the figure's tags reuse the
-progress bar's short names.
+(技能的治理、评测与优化 · 视觉输出的规范、评测与优化 · PPT 生成 App 的设计与研发) — and the figure's tags reuse the
+progress bar's short names. The figure's caption and 03's wording follow the home page's experience section
+(沿 Skill 与 App 两个维度 · PPT 生成 App 的设计与研发 · DSL + 模板: 稳定生成，快速换肤); keep the two in step.
 
 | Chapter | 背景 | 解法 | 结果 |
 | --- | --- | --- | --- |
 | Intro | name, role, the six chapters | | |
 | 01 技能的治理、评测与优化 | the figure, Skills lit; designer-made skills plugged into the design agent: bloated, overlapping, slow | 治理: 基座 / 业务 atomic skills combined on demand; 评测 · 优化: the concurrent test platform — prompts × checks agreed with designers (process checkpoints, ideal outputs) → agent runs the skill → trace drawn as a clockwise cycle around the skill: ① run → ② judge ("better than the last version?") → ③ Revisor proposes a candidate; a version line advances only on kept rounds, a discarded round branches off | 30+ skills governed · 1000+ team uses · typical skills: Token −20.47%, time −21.21% |
 | 02 视觉输出的规范、评测与优化 | the figure, the output path lit; the agent's visual outputs follow no shared spec; every run looks different | a design component library + design.md the agent composes every output from; DOM + CV + LLM checks feed back into both the library and design.md | every HTML output of the agent in one visual style |
-| 03 PPT 生成模式的设计与开发 | the team makes a lot of decks, so a PPT tool (an App) is designed and built: the figure, Apps lit, over a dashed blueprint of the app to be built | the blueprint becomes the app, built end to end: front-end editor (React · GrapesJS), a PPT agent built on the design agent, back end (FastAPI), template admin; at its heart DSL + 模板 — the agent only writes DSL and a template gives it its look, so generation is stable and templates switch instantly (the DSL stays while the deck re-skins; its fields are illustrative); the editor (编辑 · 预览一体) closes the loop — an element referenced there goes back to the agent, which rewrites only its line of DSL and only that element changes; switching and referencing take turns while the step is read | the app folds back into the Apps bar and the figure lights all three parts; designed and built 0 → 1 |
+| 03 PPT 生成 App 的设计与研发 | the team makes a lot of decks, so a PPT app (the figure's Apps) is designed and built: the figure, Apps lit, over a dashed blueprint of the app to be built | the blueprint becomes the app, built end to end: front-end editor (React · GrapesJS), a PPT agent built on the design agent, back end (FastAPI), template admin; at its heart DSL + 模板 — the agent only writes DSL and a template gives it its look, so generation is stable and the deck re-skins instantly (the DSL stays while the deck re-skins; its fields are illustrative); the editor (编辑 · 预览一体) closes the loop — an element referenced there goes back to the agent, which rewrites only its line of DSL and only that element changes; switching and referencing take turns while the step is read | the app folds back into the Apps bar and the figure lights all three parts; product design and full-stack build, 0 → 1, single-handed |
 | 04 ToA | novices get lost in linear chat; 4/6 failed | the numbered chat re-laid out as an analysis tree: each answer flies into a node, each question onto the edge into it (1–5 in chat order land on different branches); chart signals then grow recommended follow-up nodes that were never asked (dashed); clicking one adds a new turn 6 to the chat | N=12 · +58.3% insights/turn · +17.7% thinking time · −23% turns |
 | 05 NarraSteer | opaque agent; 74% idle, 5/8 saw drift only at the end | the trace, shown as a familiar agent transcript (tool call + result per step), maps into a narrative-space disc: each step explores one rim attribute with the focus (Year) and flies onto that attribute's spoke, whose two ends light up, and the storyline is drawn through them; steering is one chained drag from the storyline's head: each gray candidate the pointer passes over (mouse held) becomes a temporary selection and at once grows the next candidates; releasing commits Unemployment → Inflation → GDP per Capita, which flies back into the transcript as one user steer the agent carries on from | N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run |
 | 06 跨社交媒体舆情分析与治理平台 | monitoring / assessment / handling fragmented | 3-layer IA (大屏 / 仪表盘 / 中台), 5 tech teams | delivered 0 → 1, supporting the National Key R&D Program |
@@ -60,8 +61,8 @@ screen height, a hairline edge and a very light shadow). The nav stays hidden un
 - Phones: the card holds the MP4 in the system player (full screen, zoom).
 - During 04 (ToA) a link opens ToA's live demo on the ToA page (an iframe loaded as it nears the view).
 - The introduction and skills are in the MP4's opening page, and in the page as text for screen readers and search.
-- Type: the site's PingFang, declared as the site does (the system PingFang first, else the site's subset); the few
-  characters the subset lacks fall back to Noto Sans SC, as they do on the site.
+- Type: the site's PingFang, declared as the site does (the system PingFang first, else the site's subset). The subset
+  holds every character of the site and the reel, so all Chinese is PingFang everywhere, the MP4 included.
 
 ## Build
 
@@ -80,8 +81,8 @@ FFMPEG=ffmpeg ./showreel/build.sh
 - `soundtrack.py` — synthesises the score from `out/timeline.json`. The harmony changes on every step (and every two
   bars within one), each chapter has its own arpeggio figure, density builds from 背景 to 解法 to 结果, and the level
   arcs across the reel; chapter chimes and step ticks mark the cuts.
-- `subset-fonts.py` — the reel is set in the site's PingFang (`public/fonts`), which only covers the site's characters.
-  This builds a few-KB Noto Sans SC fallback for the characters it lacks (热, 皮肤, 诊断 …). Re-run it after changing
-  the Chinese copy.
+- Fonts: the reel is set in the site's PingFang (`public/fonts`), cut to the characters the built site uses, the reel
+  included. After changing the Chinese copy, run `npm run build` and `scripts/subset-pingfang.py` (see the script) before
+  rendering, so no character falls outside it.
 
-Fonts: Syne, JetBrains Mono and Noto Sans SC are SIL OFL (licences in `public/showreel/fonts/`).
+Fonts: Syne and JetBrains Mono are SIL OFL (licences in `public/showreel/fonts/`).
