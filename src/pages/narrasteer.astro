@@ -13,7 +13,8 @@ import icLink from 'lucide-static/icons/link.svg?raw';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NarraSteer · 数据叙事 Agent 交互 · 屈非塬</title>
-  <script is:inline>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light')</script>
+  <!-- 深色模式暂时隐藏：固定浅色（原逻辑：localStorage.getItem('theme')||'light'） -->
+  <script is:inline>document.documentElement.setAttribute('data-theme','light')</script>
   <style>
     /* ── NarraSteer 页面专有样式（字号/颜色全部取自 tokens + home 统一层）── */
     :global(html) { scroll-snap-type: none !important; } /* 长文页不要首屏吸附 */

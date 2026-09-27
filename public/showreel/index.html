@@ -3,9 +3,12 @@
 <head>
 <meta charset="utf-8">
 <title>屈非塬 · Showreel</title>
+<script>if (new URLSearchParams(location.search).has('embed')) document.documentElement.classList.add('embed');</script>
 <!--
   Résumé showreel. Everything is drawn here (no screenshots) and driven by window.renderFrame(t),
   so render.mjs can step it frame by frame. Open with ?play for a realtime preview, ?t=12 to freeze.
+  ?embed is how the site's home page shows it: the stage is scaled to the frame, the host page drives renderFrame(t)
+  (it owns the clock and the score), and chapter clicks are posted back to it.
   Six chapters, each told as 背景 → 解法 → 结果; on-screen time follows reading speed (see plan()).
   Facts come from the site (index / toa / narrasteer / resume) and the internship defence write-up.
 -->
@@ -14,9 +17,9 @@
   @font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url('fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 500; src: url('fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: url('fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2'); }
-  @font-face { font-family: 'PingFang SC'; font-weight: 400; src: url('../public/fonts/PingFangSC-Regular.woff2') format('woff2'); }
-  @font-face { font-family: 'PingFang SC'; font-weight: 500; src: url('../public/fonts/PingFangSC-Medium.woff2') format('woff2'); }
-  @font-face { font-family: 'PingFang SC'; font-weight: 700; src: url('../public/fonts/PingFangSC-Bold.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 400; src: url('../fonts/PingFangSC-Regular.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 500; src: url('../fonts/PingFangSC-Medium.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 700; src: url('../fonts/PingFangSC-Bold.woff2') format('woff2'); }
   /* only for the few characters the site's PingFang subset lacks (built by subset-fonts.py) */
   @font-face { font-family: 'Noto Sans SC Fallback'; font-weight: 400; src: url('fonts/noto-sans-sc-fallback-400.woff2') format('woff2'); }
   @font-face { font-family: 'Noto Sans SC Fallback'; font-weight: 500; src: url('fonts/noto-sans-sc-fallback-500.woff2') format('woff2'); }
@@ -39,6 +42,18 @@
   .abs { position: absolute; }
   .nowrap { white-space: nowrap; }
   svg.full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+  /* ?embed: scaled to the frame; the progress bar and the opening contents jump to a chapter */
+  .embed, .embed body { overflow: hidden; background: #fff; }
+  .embed #stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; visibility: hidden; }
+  .embed.is-ready #stage { visibility: visible; }  /* shown once fitted and the first frame is drawn */
+  .embed #hud { pointer-events: none; }
+  .embed #hud .seg { pointer-events: auto; cursor: pointer; }
+  .embed #hud .seg::before { content: ''; position: absolute; left: 0; right: 0; top: -16px; bottom: -22px; }
+  .embed .toc .rw { cursor: pointer; }
+  .embed .toc .rw:hover .n { color: var(--accent); }
+  .demo-cta { position: absolute; left: 150px; top: 858px; font-size: 14px; padding: 7px 16px; border-radius: 18px; color: var(--accent); background: var(--accent-soft); text-decoration: none; white-space: nowrap; }
+  .demo-cta:hover { background: rgba(194,65,12,0.16); }
 
   .mono { font-family: var(--mono); }
   .kick { font-family: var(--mono); font-size: 13px; letter-spacing: 0.12em; color: var(--dim); white-space: nowrap; }
@@ -223,6 +238,7 @@
 <script>
 /* ============================================================ utilities */
 const W = 1920, H = 1080, FPS = 60;
+const EMBED = new URLSearchParams(location.search).has('embed');  // shown on the site (see boot)
 const clamp = (x, a = 0, b = 1) => x < a ? a : x > b ? b : x;
 const lerp = (a, b, t) => a + (b - a) * t;
 const P = (t, a, b) => clamp((t - a) / (b - a));
@@ -1355,6 +1371,19 @@ const P5 = (() => {
   };
 })();
 
+/* on the site only: while 05 plays, a link to ToA's live demo (embedded on the ToA page) */
+const DEMO = EMBED ? (() => {
+  const sc = Scene(T.p5);
+  const a = $('a', 'demo-cta', sc.root, '在线体验 ToA Demo ↗'); a.href = '/toa#demo'; a.target = '_top';
+  return {
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - T.p5[0], PLAN.p5.map);
+      a.style.opacity = rise(a, u, STEP[0] + .6, .5, 8) * (1 - oC(P(u, OUT, OUT + .25)));
+    },
+  };
+})() : null;
+
 /* ============================================================ 06 · 跨社交媒体舆情分析与治理平台
    背景: monitoring / assessment / handling fragmented; five modules' algorithms not yet a product
    → 解法: three-layer IA (大屏 / 仪表盘 / 中台), five tech teams coordinated
@@ -1463,6 +1492,7 @@ const HUD = (() => {
   return {
     render(t) {
       h.style.opacity = P(t, T.p1[0] - .2, T.p1[0] + .25) * (1 - P(t, T.outro[0] - .25, T.outro[0] + .2));
+      if (EMBED) h.style.visibility = +h.style.opacity > .05 ? 'visible' : 'hidden';
       const cur = KEYS.findIndex(k => t >= T[k][0] && t < T[k][1]);
       tr.innerHTML = cur >= 0 ? `<b style="color:var(--accent);font-weight:500">${COPY[KEYS[cur]].idx}</b> &nbsp;/&nbsp; 0${n}` : '';
       segs.forEach(s => {
@@ -1479,6 +1509,7 @@ function renderFrame(t) {
   t = clamp(t, 0, DUR - 1e-6);
   st(panelBg, { opacity: P(t, T.p1[0] - .3, T.p1[0] + .3) * (1 - P(t, T.outro[0] - .3, T.outro[0] + .2)), transform: `translateY(${(1 - oQ(P(t, T.p1[0] - .3, T.p1[0] + .3))) * 20}px)` });
   INTRO.render(t); P1.render(t); P2.render(t); P3.render(t); P4.render(t); P5.render(t); P6.render(t); OUTRO.render(t);
+  if (DEMO) DEMO.render(t);
   HUD.render(t);
 }
 
@@ -1491,13 +1522,25 @@ async function boot() {
   window.SHOWREEL = { duration: DUR, fps: FPS, beat: BEAT, intro: T.intro, outro: T.outro,
     chapters: KEYS.map(k => ({ id: k, start: T[k][0], end: T[k][1], steps: PLAN[k].steps.map(s => T[k][0] + s) })) };
   const q = new URLSearchParams(location.search);
-  if (q.has('play')) {
+  if (EMBED) {
+    const stage = document.getElementById('stage');
+    const fit = () => { const s = Math.min(innerWidth / W, innerHeight / H);
+      st(stage, { transform: `translate(${(innerWidth - W * s) / 2}px, ${(innerHeight - H * s) / 2}px) scale(${s})` }); };
+    addEventListener('resize', fit); fit();
+    // chapter jumps from the progress bar and the opening contents; the host page owns the clock
+    const seek = t => parent.postMessage({ reel: 'seek', t }, location.origin);
+    document.querySelectorAll('#hud .seg').forEach((e, i) => e.addEventListener('click', () => seek(T[KEYS[i]][0] + .01)));
+    document.querySelectorAll('.toc .rw').forEach((e, i) => e.addEventListener('click', () => seek(T[KEYS[i]][0] + .01)));
+    renderFrame(0);
+    document.documentElement.classList.add('is-ready');
+  } else if (q.has('play')) {
     document.body.classList.add('preview');
     const start = performance.now();
     const loop = () => { renderFrame(((performance.now() - start) / 1000) % DUR); requestAnimationFrame(loop); };
     loop();
   } else renderFrame(parseFloat(q.get('t') || '0'));
   window.__ready = true;
+  if (EMBED) parent.postMessage({ reel: 'ready' }, location.origin);
 }
 boot();
 </script>

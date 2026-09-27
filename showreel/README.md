@@ -1,14 +1,16 @@
 # Showreel
 
 The opener for the résumé: white, restrained, and built entirely from the site's content and the internship
-write-up. Every visual is redrawn in `composition.html` (no screenshots). Output: `public/videos/showreel.mp4`
+write-up. Every visual is redrawn in the composition, `public/showreel/index.html` (no screenshots). The site's home
+page plays it live as its first screen (see *On the site*); `public/videos/showreel.mp4` is the rendered copy for
+downloading and sharing
 (1920×1080, 60 fps, H.264 + AAC, about two minutes).
 
 Each chapter is told the same way — **背景 → 解法 → 结果** — with earlier steps kept on screen.
 
 The three internship chapters share one frame of reference, redrawn from the write-up's architecture figure: the design
 agent between its users and its knowledge, extended along two dimensions, Skills and Apps (`Arch()` in
-`composition.html`). 01–03 each open on it at the same spot with their own part lit and tagged — 01 the Skills bar,
+the composition). 01–03 each open on it at the same spot with their own part lit and tagged — 01 the Skills bar,
 02 the output path from the skills through the agent to the users, 03 the Apps bar — and 03 closes on it with all three lit. Their titles follow one pattern — the part of the figure, then what was done
 (技能的治理、评测与优化 · 视觉输出的规范、评测与优化 · PPT 生成模式的设计与开发) — and the figure's tags reuse the
 progress bar's short names.
@@ -26,7 +28,7 @@ progress bar's short names.
 
 ## Pacing
 
-On-screen time follows reading speed rather than a fixed length (`plan()` in `composition.html`): each step gets
+On-screen time follows reading speed rather than a fixed length (`plan()` in the composition): each step gets
 `LEAD + characters / READ_CPS` seconds (1 s + 7.5 characters a second), plus a second or so of `look` for the denser
 drawings, rounded up to whole beats of the 96 BPM score. Scenes are authored on a compact animation clock; `warp()`
 plays them at 75% speed and then holds the clock still until the step has been read (the loops in 01 and 02 and the
@@ -35,11 +37,22 @@ template switching in 03 keep moving on real time during the hold). Editing the 
 
 ## Layout
 
-Everything sits on one grid (`GRID` in `composition.html`): the left column starts at x 120; the illustration panel is
+Everything sits on one grid (`GRID` in the composition): the left column starts at x 120; the illustration panel is
 x 780–1800 with its inner box at x 860–1720, and the vertical axis is y 540. In a result frame the comparison card is
 right-aligned at 1720 and centred on 540, and the visual beside it is scaled by `fitBox()` into the rest of the row
 (40px gutter), also centred on 540. On the opening screen the name block and the contents are each centred on 540, the
 contents starting on the panel column. Cards that sit beside a drawing share its top edge.
+
+## On the site
+
+The home page's first screen is the composition itself, not the MP4: `src/pages/index.astro` embeds
+`/showreel/?embed` in an iframe (it keeps the two stylesheets apart). In `?embed` the stage is scaled to the frame and
+only draws; the home page owns the clock — it calls `renderFrame(t)` every animation frame, plays
+`public/showreel/soundtrack.mp3` and, while the sound is on, takes the time from the audio so picture and score stay
+together. It starts muted, pauses when the reel scrolls out of view or the tab is hidden, and stops on the outro with a
+replay button. The progress bar's six chapters and the opening contents jump to a chapter (the frame posts the time to
+the page). During 05 a link opens ToA's live demo, embedded (on click) on the ToA page. Phones get the opening frame
+and play the MP4 full screen; with reduced motion nothing plays until asked.
 
 ## Build
 
@@ -49,8 +62,9 @@ pip install numpy scipy          # soundtrack
 FFMPEG=ffmpeg ./showreel/build.sh
 ```
 
-- `composition.html` — the whole animation as `renderFrame(t)`. Serve the repo root with any static server and open
-  `showreel/composition.html?play` for a realtime preview, or `?t=12` to freeze a moment.
+- `public/showreel/index.html` — the whole animation as `renderFrame(t)`. With `npm run dev`, open `/showreel/?play`
+  for a realtime preview, `?t=12` to freeze a moment, or `?embed` for the site's mode. The MP4 tools below read it
+  from here too.
 - `render.mjs` — steps every frame in headless Chromium and pipes it to ffmpeg (`--stills 4.2,12.6` for spot checks,
   `--shutter 2` for motion blur, `--timeline-only` to just export the cue sheet). If Playwright's bundled browser is
   missing, set `CHROMIUM=/path/to/chrome`.
@@ -61,4 +75,4 @@ FFMPEG=ffmpeg ./showreel/build.sh
   This builds a few-KB Noto Sans SC fallback for the characters it lacks (热, 皮肤, 诊断 …). Re-run it after changing
   the Chinese copy.
 
-Fonts: Syne, JetBrains Mono and Noto Sans SC are SIL OFL (licences in `fonts/`).
+Fonts: Syne, JetBrains Mono and Noto Sans SC are SIL OFL (licences in `public/showreel/fonts/`).

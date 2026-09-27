@@ -6,6 +6,7 @@ import icFile from 'lucide-static/icons/file-text.svg?raw';
 import icSlides from 'lucide-static/icons/presentation.svg?raw';
 import icPlay from 'lucide-static/icons/play.svg?raw';
 import icDownload from 'lucide-static/icons/download.svg?raw';
+import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
 ---
 
 <html lang="zh">
@@ -13,7 +14,8 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>屈非塬 · HCI Researcher</title>
-  <script is:inline>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light')</script>
+  <!-- 深色模式暂时隐藏：固定浅色（原逻辑：localStorage.getItem('theme')||'light'；切换按钮与脚本保留） -->
+  <script is:inline>document.documentElement.setAttribute('data-theme','light')</script>
   <style>
     /* ── index 专有样式（新视觉语言：克制 · 深色唯一） ── */
 
@@ -51,16 +53,42 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
     }
     .nav-links a:hover { color: var(--text); border-bottom-color: var(--text-dimmer); }
 
-    /* HERO */
-    .hero {
-      min-height: 100vh;
-      display: flex; align-items: center;
+    /* 首屏 REEL：showreel 实时播放（/showreel/?embed）；画面白底，与动画同色 */
+    .reel { position: relative; height: 100vh; height: 100svh; background: #fff; overflow: hidden; }
+    .reel-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+    .reel-video { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; object-fit: contain; }
+    /* 控件放在右上角：动画画面顶部这条是空的，不压内容 */
+    .reel-ctrl {
+      position: absolute; top: 1.25rem; right: 1.5rem; z-index: 1;
+      display: flex; gap: 8px;
+      opacity: 0; transition: opacity 0.4s ease;
     }
-    .hero-inner {
-      position: relative; z-index: 1;
-      width: 100%; max-width: var(--content-w);
-      margin: 0 auto; padding: 8rem 2.5rem 5rem;
+    .reel.is-ready .reel-ctrl { opacity: 1; }
+    .reel-ctrl button, .reel-start {
+      font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.05em;
+      padding: 4px 10px; border: none; cursor: pointer;
+      background: var(--chip); color: var(--text-dim);
+      transition: color 0.18s, background 0.18s;
     }
+    .reel-ctrl button:hover { color: var(--text); background: var(--chip-hover); }
+    .reel-ctrl button[aria-pressed="true"] { color: var(--accent); background: var(--chip-accent); }
+    .reel-start {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1;
+      padding: 0.6rem 1.1rem; color: var(--accent); background: var(--chip-accent); font-weight: 500;
+      white-space: nowrap;
+    }
+    .reel-cue {
+      position: absolute; left: 0; right: 0; bottom: 0.6rem;
+      text-align: center; pointer-events: none;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3em; color: var(--text-dimmer);
+    }
+    /* 手机：首屏按 16:9 收起，点开后用 MP4 全屏播放 */
+    @media (max-width: 767px) {
+      .reel { height: auto; aspect-ratio: 16 / 9; }
+      .reel-ctrl, .reel-cue { display: none; }
+    }
+
+    /* ABOUT：原首屏的名字与简介，放在 showreel 下面 */
     .hero-copy { max-width: 620px; }
     .hero-role {
       display: inline-block;
@@ -68,19 +96,19 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
       font-size: var(--text-meta); letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 1.75rem;
     }
-    .hero h1 { line-height: 1.1; display: flex; flex-direction: column; align-items: flex-start; }
-    .hero h1 .en {
+    .about h1 { line-height: 1.1; display: flex; flex-direction: column; align-items: flex-start; }
+    .about h1 .en {
       font-family: var(--font-mono);
       font-size: var(--text-meta); font-weight: 400; letter-spacing: 0.3em;
       color: var(--text-dimmer); margin-bottom: 0.9rem;
     }
-    .hero h1 .zh {
+    .about h1 .zh {
       font-family: var(--font-body);
       font-size: var(--text-display);
       font-weight: 400; letter-spacing: 0.06em; color: var(--text);
     }
     /* 每排字一块填充矩形：inline + clone 让折行的每一段都带自己的底色 */
-    .hero-role, .hero h1 .en, .hero h1 .zh, .hero-desc p {
+    .hero-role, .about h1 .en, .about h1 .zh, .hero-desc p {
       background: var(--strip-bg);
       padding: 0.3rem 0.6rem 0.3rem 0; /* 固定值而非 em：各排字号不同，字形左缘才能对齐 */
     }
@@ -322,33 +350,39 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
 </head>
 <body>
 
-  <!-- HERO -->
-  <div class="hero">
-    <canvas id="hero-particles" aria-hidden="true"></canvas>
-    <div class="hero-inner">
-      <div class="hero-copy">
-        <div class="hero-role fu fu-1">Design · Engineering · AI</div>
+  <!-- 首屏 REEL：showreel 在 iframe 里实时播放，只负责画面；时钟、配乐与控件在本页（见底部脚本） -->
+  <div class="reel" id="reel">
+    <iframe class="reel-frame" src="/showreel/?embed" title="屈非塬 · Showreel：六个项目的背景、解法与结果"></iframe>
+    <video class="reel-video" src="/videos/showreel.mp4" controls playsinline preload="none" hidden></video>
+    <div class="reel-ctrl">
+      <button type="button" data-reel="sound" aria-pressed="false">开启声音</button>
+      <button type="button" data-reel="play">暂停</button>
+    </div>
+    <button type="button" class="reel-start" data-reel="start" hidden>▶ 播放 Showreel</button>
+    <div class="reel-cue" aria-hidden="true">SCROLL ↓</div>
+  </div>
 
-        <h1 class="fu fu-2">
-          <span class="en">QU FEIYUAN</span>
-          <span class="zh">屈非塬</span>
-        </h1>
+  {/* 粒子首屏：已停用（整块保留待恢复；脚本 src/scripts/hero-*.ts 未删，画布不在页面上时脚本不运行）
+  <canvas id="hero-particles" aria-hidden="true"></canvas>
+  <div class="hero-shape-tag" aria-hidden="true">
+    <div class="tag-kicker"></div>
+    <div class="tag-word"></div>
+  </div>
+  */}
 
-        <div class="hero-desc fu fu-3">
-          <p>本科毕业于湖南大学工业设计专业，现为浙江大学 CAD&amp;CG 全国重点实验室人机交互与数据可视化方向硕士研究生，同时在阿里巴巴淘天集团实习，任 AI 设计工程师。懂 AI，懂设计，也懂工程，主要关注如何用 AI 更好地赋能设计。主导过对话式可视分析工具、数据叙事 Agent、舆情分析平台等数据产品，完成从产品定义、交互设计到开发落地的全过程。</p>
-        </div>
+  <!-- ABOUT：原首屏的名字与简介 -->
+  <section id="about" class="about">
+    <div class="hero-copy">
+      <div class="hero-role">Design · Engineering · AI</div>
+      <h1>
+        <span class="en">QU FEIYUAN</span>
+        <span class="zh">屈非塬</span>
+      </h1>
+      <div class="hero-desc">
+        <p>本科毕业于湖南大学工业设计专业，现为浙江大学 CAD&amp;CG 全国重点实验室人机交互与数据可视化方向硕士研究生，同时在阿里巴巴淘天集团实习，任 AI 设计工程师。懂 AI，懂设计，也懂工程，主要关注如何用 AI 更好地赋能设计。主导过对话式可视分析工具、数据叙事 Agent、舆情分析平台等数据产品，完成从产品定义、交互设计到开发落地的全过程。</p>
       </div>
     </div>
-    <div class="scroll-cue fu fu-4" aria-hidden="true">
-      <span>SCROLL</span>
-      <span class="scroll-cue-line"></span>
-    </div>
-    <!-- 造型关键词浮层：hero 粒子形变为作品造型时浮现（hero-particles 发 heroshape 事件驱动） -->
-    <div class="hero-shape-tag" aria-hidden="true">
-      <div class="tag-kicker"></div>
-      <div class="tag-word"></div>
-    </div>
-  </div>
+  </section>
 
   <!-- FEATURED WORK：首屏之后的粒子项目舞台（暂时隐藏，整块保留待恢复） -->
   {/*
@@ -534,6 +568,7 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
         <div class="project-right">
           <div class="project-links">
             <a href="/toa" class="btn-link detail">详情</a>
+            <a href="/toa#demo" class="btn-link detail"><Fragment set:html={icDemo} /> Demo</a>
             <a href="/papers/toa-chi26.pdf" target="_blank" class="btn-link"><Fragment set:html={icFile} /> Paper</a>
             <a href="/papers/CHI-Presentation.pptx" download class="btn-link"><Fragment set:html={icSlides} /> Slides</a>
             <a href="/videos/toa-demo.mp4" target="_blank" class="btn-link"><Fragment set:html={icPlay} /> Video</a>
@@ -694,9 +729,9 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
     setTimeout(typeTag, 800);
   }
 
-  // 导航：滚过二屏时从顶部滑入（featured 暂时隐藏，退回观察 skills）
+  // 导航：滚过首屏 showreel 后从顶部滑入
   const navEl = document.querySelector('nav');
-  const featuredEl = document.getElementById('featured') ?? document.getElementById('skills');
+  const featuredEl = document.getElementById('reel');
   if (navEl && featuredEl) {
     new IntersectionObserver(([entry]) => {
       navEl.classList.toggle('is-visible', entry.boundingClientRect.bottom < 0);
@@ -711,6 +746,88 @@ import icDownload from 'lucide-static/icons/download.svg?raw';
       }
     });
   });
+</script>
+<script>
+  // 首屏 showreel：iframe（/showreel/?embed）只负责按时间画面（renderFrame），时钟、配乐与控件都在这里。
+  // 静音自动播放；开声音后以音频时间为准，声画不漂。滚出首屏或切走标签页即暂停。
+  // 手机竖屏画面太小：停在开场画面，点开后用 MP4 全屏播放；系统要求减少动态效果：不自动播放。
+  const reelEl = document.getElementById('reel');
+  const frame = reelEl?.querySelector<HTMLIFrameElement>('.reel-frame');
+  if (reelEl && frame) {
+    const btn = (k: string) => reelEl.querySelector<HTMLButtonElement>(`[data-reel="${k}"]`)!;
+    const btnSound = btn('sound'), btnPlay = btn('play'), btnStart = btn('start');
+    const video = reelEl.querySelector<HTMLVideoElement>('.reel-video')!;
+    const audio = new Audio('/showreel/soundtrack.mp3');
+    audio.preload = 'none';
+    const small = matchMedia('(max-width: 767px)').matches;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const POSTER = 3.6; // 开场名字与目录都已出现的一刻
+    let R: any = null, dur = 0, t = 0, last = performance.now();
+    let playing = false, ended = false, sound = false, inView = true;
+
+    const running = () => playing && inView && !document.hidden;
+    const sync = () => {
+      btnSound.textContent = sound ? '关闭声音' : '开启声音';
+      btnSound.setAttribute('aria-pressed', String(sound));
+      btnPlay.textContent = ended ? '重播' : playing ? '暂停' : '播放';
+      if (sound && running()) {
+        if (audio.paused) { audio.currentTime = t; audio.play().catch(() => { sound = false; sync(); }); }
+      } else if (!audio.paused) audio.pause();
+    };
+    const play = () => { if (ended) { t = 0; ended = false; } playing = true; sync(); };
+    const pause = () => { playing = false; sync(); };
+    const seek = (x: number) => {
+      t = Math.max(0, Math.min(dur, x)); ended = false;
+      if (sound && !audio.paused) audio.currentTime = t;
+      R?.renderFrame(t); btnStart.hidden = true; play();
+    };
+    btnPlay.addEventListener('click', () => (playing ? pause() : play()));
+    btnSound.addEventListener('click', () => { sound = !sound; if (sound && !playing) play(); else sync(); });
+
+    const tick = (now: number) => {
+      if (R && running()) {
+        if (sound && !audio.paused && !audio.seeking && audio.readyState >= 3) t = audio.currentTime;
+        else t += Math.min(0.1, (now - last) / 1000);
+        if (t >= dur) { t = dur; playing = false; ended = true; sync(); }
+        R.renderFrame(t);
+      }
+      last = now;
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    new IntersectionObserver(([e]) => { inView = e.isIntersecting; sync(); }, { threshold: 0.25 }).observe(reelEl);
+    document.addEventListener('visibilitychange', sync);
+
+    const init = () => {
+      const w = frame.contentWindow as any;
+      if (R || !w || !w.__ready) return;
+      R = w; dur = w.SHOWREEL.duration;
+      btnStart.textContent = `▶ 播放 Showreel · ${Math.floor(dur / 60)}:${String(Math.round(dur % 60)).padStart(2, '0')}`;
+      reelEl.classList.add('is-ready');
+      if (small || still) { t = POSTER; R.renderFrame(t); btnStart.hidden = false; }
+      else play();
+    };
+    addEventListener('message', (e) => {
+      if (e.origin !== location.origin || e.source !== frame.contentWindow) return;
+      if (e.data?.reel === 'ready') init();
+      if (e.data?.reel === 'seek') seek(e.data.t);
+    });
+    frame.addEventListener('load', init);
+    init();
+
+    btnStart.addEventListener('click', () => {
+      if (small) { // 手机：系统播放器全屏播 MP4（iPhone 不支持网页元素全屏）
+        const v = video as any;
+        video.hidden = false; video.play().catch(() => {});
+        if (v.requestFullscreen) v.requestFullscreen().catch(() => {}); else v.webkitEnterFullscreen?.();
+        return;
+      }
+      btnStart.hidden = true; t = 0; play();
+    });
+    const closeVideo = () => { video.pause(); video.hidden = true; };
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) closeVideo(); });
+    video.addEventListener('webkitendfullscreen', closeVideo);
+  }
 </script>
 <script>
   const featured = document.getElementById('featured');

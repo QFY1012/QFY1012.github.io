@@ -8,13 +8,15 @@ import icTree from 'lucide-static/icons/list-tree.svg?raw';
 import icBulb from 'lucide-static/icons/lightbulb.svg?raw';
 import icFilter from 'lucide-static/icons/filter.svg?raw';
 import icGear from 'lucide-static/icons/settings.svg?raw';
+import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
 ---
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToA · 对话式可视分析 · 屈非塬</title>
-  <script is:inline>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light')</script>
+  <!-- 深色模式暂时隐藏：固定浅色（原逻辑：localStorage.getItem('theme')||'light'） -->
+  <script is:inline>document.documentElement.setAttribute('data-theme','light')</script>
   <style>
     /* ── ToA 页面专有样式（字号/颜色全部取自 tokens + home 统一层）── */
     :global(html) { scroll-snap-type: none !important; } /* 长文页不要首屏吸附 */
@@ -73,6 +75,22 @@ import icGear from 'lucide-static/icons/settings.svg?raw';
     .behavior-item:last-child { border-bottom: none; }
     .behavior-item h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
 
+    /* 在线 Demo：点击才加载（不在每次打开页面时请求演示服务器），也可新窗口打开 */
+    .demo-frame {
+      position: relative; width: 100%; aspect-ratio: 16/10; margin-top: 1.5rem;
+      border: 1px solid var(--border); background: var(--chip); overflow: hidden;
+    }
+    .demo-frame img { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; }
+    .demo-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
+    .demo-load {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.05em; font-weight: 500;
+      padding: 0.6rem 1.1rem; border: none; cursor: pointer;
+      color: var(--accent); background: var(--chip-accent);
+    }
+    .demo-load:hover { color: var(--accent-hi); }
+    .demo-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.9rem; }
+
     .video-wrap { width: 100%; aspect-ratio: 16/9; margin-top: 1.5rem; overflow: hidden; border: 1px solid var(--border); background: #000; }
     .video-wrap video { width: 100%; height: 100%; object-fit: contain; }
 
@@ -98,6 +116,7 @@ import icGear from 'lucide-static/icons/settings.svg?raw';
     <div class="subtitle">通过分析树可视化辅助新手开展对话式可视分析</div>
     <div class="authors">屈非塬, 唐谭, 符泽阳, 陈燕, 贾瀚泽, 高君明, Songela, 吴英才 · State Key Lab of CAD&amp;CG, ZJU</div>
     <div class="hero-actions">
+      <a href="#demo" class="btn-link video"><Fragment set:html={icDemo} /> 在线体验</a>
       <a href="/papers/toa-chi26.pdf" target="_blank" class="btn-link paper"><Fragment set:html={icFile} /> Paper</a>
       <a href="/papers/CHI-Presentation.pptx" download class="btn-link"><Fragment set:html={icSlides} /> Slides</a>
       <a href="/images/toa/usecase.mp4" target="_blank" class="btn-link video"><Fragment set:html={icPlay} /> Demo Video</a>
@@ -111,6 +130,19 @@ import icGear from 'lucide-static/icons/settings.svg?raw';
       这个研究是为<strong style="color:var(--text);">没有数据分析背景的普通人</strong>做的。如果你曾经打开 ChatGPT 上传一份数据，却不知道该问什么、问着问着就迷失了方向——这正是我们想解决的问题。ToA 的做法是：把你和 AI 的每一轮对话，实时整理成一棵可视化的<strong style="color:var(--text);">分析树</strong>。你随时能看到自己分析到哪了、探索过哪些方向、下一步可以往哪走——不再是一眼望不到头的聊天记录。
     </p>
   </div>
+
+  <section id="demo">
+    <p class="sec-label">Live Demo</p>
+    <h2>在线体验</h2>
+    <p>ToA 的在线 Demo 已部署，可以直接在下面试用。点击后才会连接演示服务器；想要更大的画面，可以在新窗口打开。</p>
+    <div class="demo-frame" data-demo-src="https://118.25.51.150/toa/">
+      <img src="/images/toa/Interface.png" alt="" aria-hidden="true" />
+      <button type="button" class="demo-load">▶ 加载在线 Demo</button>
+    </div>
+    <div class="demo-actions">
+      <a href="https://118.25.51.150/toa/" target="_blank" rel="noopener" class="btn-link">新窗口打开 ↗</a>
+    </div>
+  </section>
 
   <section>
     <p class="sec-label">Research Background</p>
@@ -376,6 +408,17 @@ import icGear from 'lucide-static/icons/settings.svg?raw';
   <footer>© 2026 屈非塬 · State Key Lab of CAD&amp;CG, ZJU</footer>
 
 </body>
+<script>
+  // 在线 Demo：点击才加载 iframe
+  const demoFrame = document.querySelector<HTMLElement>('.demo-frame');
+  demoFrame?.querySelector('.demo-load')?.addEventListener('click', () => {
+    const f = document.createElement('iframe');
+    f.src = demoFrame.dataset.demoSrc ?? '';
+    f.title = 'ToA 在线 Demo';
+    f.allow = 'clipboard-write';
+    demoFrame.replaceChildren(f);
+  });
+</script>
 <script>
   const themeDots = document.querySelectorAll('.theme-dot');
   if (themeDots.length) {

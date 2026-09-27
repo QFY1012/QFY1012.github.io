@@ -1,4 +1,4 @@
-// Renders showreel/composition.html frame by frame with headless Chromium and pipes the frames into ffmpeg.
+// Renders the composition (public/showreel/index.html) frame by frame with headless Chromium and pipes the frames into ffmpeg.
 //
 //   node showreel/render.mjs                       → showreel/out/video.mp4 (silent, 1920×1080, 60 fps)
 //   node showreel/render.mjs --stills 1.2,6.8 --out dir   → PNG stills at those times (for checking)
@@ -20,7 +20,7 @@ const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] :
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 
-// tiny static server rooted at the repo (the composition reads ../public/fonts)
+// tiny static server rooted at the repo (the composition reads the site's fonts at public/fonts)
 const server = createServer(async (req, res) => {
   try {
     const p = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^([/\\])+/, '');
@@ -29,7 +29,7 @@ const server = createServer(async (req, res) => {
   } catch { res.writeHead(404).end(); }
 });
 await new Promise(r => server.listen(0, '127.0.0.1', r));
-const url = `http://127.0.0.1:${server.address().port}/showreel/composition.html`;
+const url = `http://127.0.0.1:${server.address().port}/public/showreel/index.html`;
 
 let browser;
 try { browser = await chromium.launch(); }
