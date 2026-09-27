@@ -4,6 +4,7 @@
 //   node showreel/render.mjs --stills 1.2,6.8 --out dir   → PNG stills at those times (for checking)
 //   --shutter 2   → render 2 sub-frames per frame and average them (180° motion blur)
 //   --timeline-only → just write out/timeline.json (the cue sheet soundtrack.py reads)
+//   --embed         → with --timeline-only: the site's timing (?embed, a shorter opening page) → out/timeline-embed.json
 //
 // Env: FFMPEG (ffmpeg binary), CHROMIUM (browser executable, if Playwright's bundled one is absent).
 import { chromium } from 'playwright';
@@ -29,7 +30,8 @@ const server = createServer(async (req, res) => {
   } catch { res.writeHead(404).end(); }
 });
 await new Promise(r => server.listen(0, '127.0.0.1', r));
-const url = `http://127.0.0.1:${server.address().port}/public/showreel/index.html`;
+const embed = args.includes('--embed');
+const url = `http://127.0.0.1:${server.address().port}/public/showreel/index.html${embed ? '?embed' : ''}`;
 
 let browser;
 try { browser = await chromium.launch(); }
@@ -41,7 +43,7 @@ await page.goto(url);
 await page.waitForFunction(() => window.__ready === true, null, { timeout: 60000 });
 const reel = await page.evaluate(() => window.SHOWREEL);
 const { duration, fps } = reel;
-const writeTimeline = async dir => { await mkdir(dir, { recursive: true }); await writeFile(join(dir, 'timeline.json'), JSON.stringify(reel, null, 2)); };
+const writeTimeline = async dir => { await mkdir(dir, { recursive: true }); await writeFile(join(dir, embed ? 'timeline-embed.json' : 'timeline.json'), JSON.stringify(reel, null, 2)); };
 const stage = page.locator('#stage');
 
 const shot = async (t, type = 'png') => {
@@ -52,7 +54,7 @@ const shot = async (t, type = 'png') => {
 const stills = opt('--stills');
 if (args.includes('--timeline-only')) {
   await writeTimeline(join(here, 'out'));
-  console.log(`timeline → showreel/out/timeline.json (${duration.toFixed(2)} s)`);
+  console.log(`timeline → showreel/out/${embed ? 'timeline-embed' : 'timeline'}.json (${duration.toFixed(2)} s)`);
 } else if (stills) {
   const out = opt('--out', join(here, 'out', 'stills'));
   await mkdir(out, { recursive: true });

@@ -10,6 +10,9 @@ node render.mjs --crf 20 --out out/video.mp4          # also writes out/timeline
 python3 soundtrack.py out/soundtrack.wav out/timeline.json
 "$FFMPEG" -hide_banner -loglevel error -y -i out/video.mp4 -i out/soundtrack.wav \
   -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart ../public/videos/showreel.mp4
-# the site plays the composition live (public/showreel/) with this score beside it
-"$FFMPEG" -hide_banner -loglevel error -y -i out/soundtrack.wav -c:a libmp3lame -b:a 128k ../public/showreel/soundtrack.mp3
+# the site plays the composition live (public/showreel/?embed); its opening page holds shorter, so it gets its own
+# cue sheet and score
+node render.mjs --timeline-only --embed
+python3 soundtrack.py out/soundtrack-embed.wav out/timeline-embed.json
+"$FFMPEG" -hide_banner -loglevel error -y -i out/soundtrack-embed.wav -c:a libmp3lame -b:a 128k ../public/showreel/soundtrack.mp3
 echo "showreel → public/videos/showreel.mp4 · score → public/showreel/soundtrack.mp3"
