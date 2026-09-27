@@ -26,6 +26,14 @@ plays them at 75% speed and then holds the clock still until the step has been r
 moving on real time during the hold). Editing the copy re-times the whole reel; the composition exports its cue sheet
 (`out/timeline.json`) and the score is synthesised from it, so music and picture stay in sync.
 
+## Layout
+
+Everything sits on one grid (`GRID` in `composition.html`): the left column starts at x 120; the illustration panel is
+x 780–1800 with its inner box at x 860–1720, and the vertical axis is y 540. In a result frame the comparison card is
+right-aligned at 1720 and centred on 540, and the visual beside it is scaled by `fitBox()` into the rest of the row
+(40px gutter), also centred on 540. On the opening screen the name block and the contents are each centred on 540, the
+contents starting on the panel column. Cards that sit beside a drawing share its top edge.
+
 ## Build
 
 ```bash

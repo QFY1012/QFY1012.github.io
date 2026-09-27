@@ -179,7 +179,7 @@
   .sig { padding: 6px 8px; margin: 3px 0; background: var(--panel); border-radius: 4px; font-size: 11px; color: var(--dim); line-height: 1.4; position: relative; font-family: var(--mono); }
   .sig b { display: block; color: var(--ink); font-weight: 500; }
   .sig .rec { position: absolute; right: 6px; bottom: 6px; background: var(--ink); color: #fff; font-size: 9px; font-weight: 700; padding: 0 6px; border-radius: 2px; }
-  .cmp { position: absolute; width: 400px; padding: 26px 28px; }
+  .cmp { position: absolute; width: 360px; padding: 26px 28px; box-sizing: border-box; }
   .cmp .hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
   .cmp .lg { font-size: 12px; color: var(--dim); white-space: nowrap; }
   .cmp .lg span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 6px 0 14px; vertical-align: -1px; }
@@ -390,11 +390,25 @@ function LeftCol(parent, c) {
   };
 }
 
+/* layout grid: the panel's inner box is x 860–1720 (80 in from the panel), centred on y 540. In a result frame the
+   comparison card is right-aligned at the inner edge and centred on 540; the visual beside it is scaled to fill the rest
+   of the row (a 40px gutter) and centred on 540 too */
+const GRID = { x0: 860, x1: 1720, cy: 540, gutter: 40, card: 360 };
+// transform (origin 0 0) that fits a box of the untransformed layout into [x0, x1] × centred on cy
+function fitBox(b, x0, x1, cy, maxH = 700) {
+  const s = Math.min(1, (x1 - x0) / b.w, maxH / b.h);
+  return { s, tx: (x0 + x1) / 2 - s * (b.x + b.w / 2), ty: cy - s * (b.y + b.h / 2) };
+}
+const fitCss = (f, k) => `translate(${f.tx * k}px, ${f.ty * k}px) scale(${1 + (f.s - 1) * k})`;
+const unionRect = (els, s0) => { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  els.forEach(e => { const r = e.getBoundingClientRect(); if (!r.width && !r.height) return; x0 = Math.min(x0, r.left - s0.left); y0 = Math.min(y0, r.top - s0.top); x1 = Math.max(x1, r.right - s0.left); y1 = Math.max(y1, r.bottom - s0.top); });
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 }; };
+
 /* comparison card: accent = our system, grey = baseline (real study numbers) */
 function Compare(parent, x, y, sys, rows) {
   const c = $('div', 'card cmp', parent); at(c, x, y);
   $('div', 'hd', c, `<div class="cap">对照实验</div><div class="lg"><span style="background:var(--accent)"></span>${sys}<span style="background:#d5d9e1"></span>基线</div>`);
-  const W0 = 250;
+  const W0 = 222;
   const rs = rows.map(r => {
     const e = $('div', 'r', c);
     $('div', 'rl', e, `<span>${r.label}</span><b>${r.delta}</b>`);
@@ -402,6 +416,9 @@ function Compare(parent, x, y, sys, rows) {
     return { a: mk(r.a, 'var(--accent)', r.at), b: mk(r.b, '#d5d9e1', r.bt) };
   });
   return {
+    el: c,
+    // right-aligned at the grid's inner edge, centred on its axis (call once fonts are in)
+    place() { const h = c.getBoundingClientRect().height; at(c, GRID.x1 - GRID.card, GRID.cy - h / 2); },
     render(u, t0) {
       rise(c, u, t0, .5, 16);
       rs.forEach((r, k) => [r.a, r.b].forEach((b, j) => {
@@ -431,6 +448,11 @@ const INTRO = (() => {
   const h = $('div', 'h cap', toc, '精选项目 &nbsp;·&nbsp; 背景 / 解法 / 结果');
   const rows = KEYS.map(k => { const [n, d, y] = COPY[k].toc; return $('div', 'rw', toc, `<span class="i">${COPY[k].idx}</span><span class="n">${n}</span><span class="d">${d}</span><span class="y">${y}</span>`); });
   return {
+    // the name block and the contents are each centred on the grid's axis (y 540); the contents sit on the panel column
+    layout() { vis(r, true); const s0 = document.getElementById('stage').getBoundingClientRect();
+      const left = [nm, en, hl, role, aff], b = unionRect(left, s0), dy = GRID.cy - (b.y + b.h / 2);
+      left.forEach(e => { e.style.top = parseFloat(e.style.top) + dy + 'px'; });
+      st(toc, { left: '780px', width: '1020px' }); const th = toc.getBoundingClientRect().height; st(toc, { top: GRID.cy - th / 2 + 'px' }); vis(r, false); },
     render(tr) {
       if (!sc.on(tr)) return;
       const t = warp(tr, INTRO_CLOCK);
@@ -861,8 +883,8 @@ const P3 = (() => {
   // 结果 · the mode, end to end
   const FL = ['进入 PPT 模式', '选择模板', 'Agent 生成', '编辑器里微调'];
   const frames = FL.map((n, i) => {
-    const f = box(pn, 'card', 860 + i * 220, 560, 200, 170);
-    const lab = box(pn, 'abs', 860 + i * 220, 744, 0, 0, `<span class="mono" style="color:var(--accent);font-size:12px;margin-right:8px">0${i + 1}</span>${n}`); st(lab, { fontSize: '14px', whiteSpace: 'nowrap' });
+    const f = box(pn, 'card', 860 + i * 220, 600, 200, 170);
+    const lab = box(pn, 'abs', 860 + i * 220, 784, 0, 0, `<span class="mono" style="color:var(--accent);font-size:12px;margin-right:8px">0${i + 1}</span>${n}`); st(lab, { fontSize: '14px', whiteSpace: 'nowrap' });
     return { f, lab };
   });
   // 01 · the design agent's input, switched to PPT mode
@@ -884,7 +906,7 @@ const P3 = (() => {
   const twTool = box(frames[3].f, 'abs', 16 + 166 * twK + 10, 22 + 36 * twK - 5, 0, 0, '<span style="display:inline-block;width:12px;height:3px;background:#171b26;margin:0 4px"></span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c2410c;margin:0 4px"></span>');
   st(twTool, { background: '#fff', boxShadow: '0 4px 12px rgba(23,27,38,0.14)', borderRadius: '5px', padding: '4px 2px', lineHeight: '8px' });
   const twBtn = box(frames[3].f, 'abs', 16, 132, 168, 22, '交给 Agent 修改'); st(twBtn, { lineHeight: '22px', textAlign: 'center', fontSize: '11px', borderRadius: '5px', color: '#fff', background: 'var(--accent)' });
-  const flowA = [0, 1, 2].map(i => arrow(`M${1062 + i * 220},645 L${1078 + i * 220},645`));
+  const flowA = [0, 1, 2].map(i => arrow(`M${1062 + i * 220},685 L${1078 + i * 220},685`));
 
   const t0 = T.p3[0];
   return {
@@ -971,7 +993,7 @@ const P4 = (() => {
   // 解法: the narrative-space disc (attribute labels and link types from the real system)
   const disc = $('div', 'layer', pn);
   const svg = S('svg', { class: 'full' }, disc);
-  const C = { x: 1440, y: 548 }, R = 262;
+  const C = { x: 1431, y: 548 }, R = 250;   // rim labels end at the inner edge (1720)
   const pol = (a, r) => [C.x + Math.cos(a * Math.PI / 180) * r, C.y + Math.sin(a * Math.PI / 180) * r];
   const face = S('circle', { cx: C.x, cy: C.y, r: R, fill: '#fff', stroke: 'rgba(23,27,38,0.16)', 'stroke-width': 1.2 }, svg);
   const ATTR = ['GDP', 'Country', 'Unemployment', 'Inflation', 'Country code', 'GDP per Capita', 'Oil Price', 'Life Expectancy', 'FDI', 'Exports', 'GDP Growth'];
@@ -1017,7 +1039,7 @@ const P4 = (() => {
   const MAPI = STEPS.map(([a]) => ATTR.indexOf(a)), MAPD = STEPS.map(() => -1);   // -1: the focus at the centre
   const tl = $('div', 'layer', pn);
   const TRACE = STEPS.map(([a, c]) => ['Analyze', a, `by Year · ${c}`]);
-  const tcard = box(tl, 'card', 860, 290, 272, 0); st(tcard, { padding: '16px 18px 14px' });
+  const tcard = box(tl, 'card', 860, C.y - R - 12, 272, 0); st(tcard, { padding: '16px 18px 14px' });   // top = the disc's top label
   tcard.innerHTML = '<div class="cap" style="margin-bottom:10px">AGENT 执行轨迹</div>' +
     TRACE.map(([f, a, r]) => `<div class="trow"><i class="td"></i><b>${f}</b><span class="ta">(${a})</span><div class="tr">${r}</div></div>`).join('') +
     // what the drag writes back: the user's steer, then the agent carrying on from it
@@ -1036,16 +1058,17 @@ const P4 = (() => {
   const nsLab = box(tl, 'abs cap', 1180, 880, 0, 0, '<span style="color:var(--accent)">叙事空间</span> · 位置 = 数据维度 · 连线 = 叙事关系');
   const FLY = i => [.75 + i * .28, 1.3 + i * .28];                   // seconds into 解法: a step leaves the line, lands
   // 结果: controlled study
-  const cmp = Compare(pn, 1330, 300, 'NarraSteer', [
+  const cmp = Compare(pn, 0, 0, 'NarraSteer', [
     { label: '叙事洞察数', delta: '+13.2%', a: 6.4, b: 5.7, max: 7, at: '6.4', bt: '5.7' },
     { label: '主动拖拽引导 Agent', delta: '15/16', a: 15, b: 9, max: 16, at: '15/16', bt: '9/16' },
     { label: '执行中途主动介入', delta: '10/16', a: 10, b: 5, max: 16, at: '10/16', bt: '5/16' },
   ]);
 
   const t0 = T.p4[0];
-  let BTN = { x: 1640, y: 470 };
+  let BTN = { x: 1640, y: 470 }, FIT = { s: 1, tx: 0, ty: 0 };
   return {
     layout() { vis(sc.root, true); const s0 = document.getElementById('stage').getBoundingClientRect(), r = go.getBoundingClientRect(); BTN = { x: r.left - s0.left + r.width / 2, y: r.top - s0.top + r.height / 2 };
+      cmp.place(); FIT = fitBox(unionRect([face, ...pills.map(p => p.g)], s0), GRID.x0, GRID.x1 - GRID.card - GRID.gutter, GRID.cy);
       rowAt = rows.map(e => { const d = e.querySelector('.td').getBoundingClientRect(); return { x: d.left - s0.left + d.width / 2, y: d.top - s0.top + d.height / 2 }; });
       const dn = news[0].querySelector('.td').getBoundingClientRect(); newAt = { x: dn.left - s0.left + dn.width / 2, y: dn.top - s0.top + dn.height / 2 }; vis(sc.root, false); },
     render(t) {
@@ -1065,7 +1088,7 @@ const P4 = (() => {
       const sr = t - t0 - PLAN.p4.steps[1];
       const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
       const shift = ioC(P(u, s2, s2 + .6));
-      st(disc, { opacity: P(sr, 0, .35), transform: `translate(${-shift * 380}px, 0) scale(${1 - shift * .12})`, transformOrigin: `${C.x}px ${C.y}px` });
+      st(disc, { opacity: P(sr, 0, .35), transform: fitCss(FIT, shift), transformOrigin: '0 0' });
       face.setAttribute('r', R * oQ(P(sr, 0, .6)));
       spokes.forEach((s, i) => s.style.opacity = P(sr, .15 + i * .02, .45 + i * .02));
       st(hub, { opacity: P(sr, .1, .35) });
@@ -1152,7 +1175,7 @@ const P5 = (() => {
   // 解法: the same conversation, numbered — each answer becomes a node, each question the edge into it
   const bars = (v, hi) => `<div class="mbars">${v.map((h, i) => `<i style="height:${Math.max(8, h)}%"${i === hi ? ' class="hi"' : ''}></i>`).join('')}</div>`;
   const NEWQ = ['Show battery capacity of Poco models under $20,000', [52, 70, 38, 88, 45], 3];   // the turn a clicked recommendation adds
-  const qaCard = box(pn, 'card', 852, 206, 316, 0); st(qaCard, { padding: '18px 18px 8px' });
+  const qaCard = box(pn, 'card', 860, 221, 308, 0); st(qaCard, { padding: '18px 18px 8px' });   // top = the root's top
   const qaHtml = ([q, v, hi], i, cls = '') => `<div class="qa${cls}"><span class="qb">${i + 1}</span><div class="qq">${q}</div><div class="qc">${bars(v, hi)}</div></div>`;
   qaCard.innerHTML = '<div class="cap" style="margin-bottom:12px">对话 · 按时间线性排列</div>' + Q.slice(0, 5).map((x, i) => qaHtml(x, i)).join('') + qaHtml(NEWQ, 5, ' qnew');
   const qas = [...qaCard.querySelectorAll('.qa')], qa6 = qas[5];
@@ -1165,15 +1188,15 @@ const P5 = (() => {
   const NODES = [   // q: which question-answer pair it comes from
     { id: 'B', p: 'root', x: 1400, y: 360, e: 'Start new', q: 0, h: mk(['brand', 'num_of_sales']) },
     { id: 'B1', p: 'B', x: 1400, y: 510, e: 'Slice', q: 1, h: mk(['models', 'num_of_sales'], "brand='Poco'") },
-    { id: 'C', p: 'root', x: 1650, y: 360, e: 'Start new', q: 2, h: mk(['sales_price', 'battery_capacity']) },
+    { id: 'C', p: 'root', x: 1628, y: 360, e: 'Start new', q: 2, h: mk(['sales_price', 'battery_capacity']) },
     { id: 'B2', p: 'B1', x: 1292, y: 672, e: 'Elaborate', q: 3, h: mk(['models', 'processor'], "brand='Poco'") },
     { id: 'B3', p: 'B1', x: 1512, y: 672, e: 'Dice', q: 4, h: mk(['models', 'num_of_sales'], 'sales_price<=20000') },
     // not asked yet: follow-ups ToA recommends from ⑤'s chart signals (illustrative attributes). Clicking R1 asks it as ⑥
-    { id: 'R1', p: 'B3', x: 1420, y: 836, e: 'Elaborate', q: 5, rec: 1, h: mk(['models', 'battery_capacity'], 'sales_price<=20000') },
-    { id: 'R2', p: 'B3', x: 1640, y: 836, e: 'Elaborate', rec: 1, h: mk(['models', 'screen_size'], 'sales_price<=20000') },
+    { id: 'R1', p: 'B3', x: 1416, y: 836, e: 'Elaborate', q: 5, rec: 1, h: mk(['models', 'battery_capacity'], 'sales_price<=20000') },
+    { id: 'R2', p: 'B3', x: 1628, y: 836, e: 'Elaborate', rec: 1, h: mk(['models', 'screen_size'], 'sales_price<=20000') },
   ];
   const byId = { root: { x: RX, y: RY, h: 34 } };
-  NODES.forEach((n, i) => { n.i = i; n.el = $('div', 'tnode', tree, n.h); st(n.el, { width: '196px', paddingRight: '48px' });
+  NODES.forEach((n, i) => { n.i = i; n.el = $('div', 'tnode', tree, n.h); st(n.el, { width: '184px', paddingRight: '44px' });
     const qa = n.q === 5 ? NEWQ : Q[n.q];
     if (qa) { n.g = $('div', '', n.el, bars(qa[1], qa[2])); st(n.g, { position: 'absolute', right: '8px', top: '8px', transform: 'scale(.72)', transformOrigin: 'right top' }); }
     if (n.rec) { n.el.classList.add('dash'); n.tag = $('div', '', n.el, 'REC.'); st(n.tag, { position: 'absolute', right: '8px', top: '9px', background: 'var(--ink)', color: '#fff', font: '700 9px var(--mono)', padding: '1px 6px', borderRadius: '2px' }); } });
@@ -1184,22 +1207,23 @@ const P5 = (() => {
   let qaAt = NODES.map(() => ({ q: { x: 870, y: 260 }, a: { x: 900, y: 300 } }));
   const MAP = i => .6 + i * .6;              // seconds into 解法 when pair i (①–⑤) maps in
   const REC = 3.9, CLICK = 5.1;              // ⑤'s chart signals grow the recommendations; R1 is clicked
-  const sigLab = box(tree, 'abs', 1622, 662, 0, 0, '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:7px;vertical-align:1px"></span>图表信号 → 推荐后续节点');
-  st(sigLab, { fontSize: '13px', color: 'var(--accent)', whiteSpace: 'nowrap' });
+  const sigLab = box(tree, 'abs', 1616, 652, 0, 0, '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:7px;vertical-align:1px"></span>图表信号<br><span style="padding-left:14px">→ 推荐后续节点</span>');
+  st(sigLab, { fontSize: '13px', lineHeight: '20px', color: 'var(--accent)', whiteSpace: 'nowrap' });   // two lines: stays inside the grid's inner edge
   const cursor = S('path', { d: 'M0,0 L0,20 L5.5,15 L9.5,23.5 L13,22 L9,13.5 L16,13.5 Z', fill: '#171b26', stroke: '#fff', 'stroke-width': 1.2 }, tsvg);
   // 结果
-  const cmp = Compare(pn, 1350, 330, 'ToA', [
+  const cmp = Compare(pn, 0, 0, 'ToA', [
     { label: '每轮洞察数', delta: '+58.3%', a: 1.583, b: 1, max: 1.7, at: '', bt: '' },
     { label: '每轮深度思考时间', delta: '+17.7%', a: 71.3, b: 60.6, max: 80, at: '71.3s', bt: '60.6s' },
     { label: '总对话轮次', delta: '−23%', a: 14.4, b: 18.8, max: 20, at: '14.4', bt: '18.8' },
   ]);
 
   const t0 = T.p5[0];
+  let FIT = { s: 1, tx: 0, ty: 0 };
   return {
     layout() {
       vis(sc.root, true);
       const s0 = document.getElementById('stage').getBoundingClientRect();
-      NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.hh = b.height; at(n.el, n.x - 98, n.y - n.hh / 2); byId[n.id] = { x: n.x, y: n.y, h: n.hh }; });
+      NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.hh = b.height; at(n.el, n.x - 92, n.y - n.hh / 2); byId[n.id] = { x: n.x, y: n.y, h: n.hh }; });
       NODES.forEach(n => {
         const p = byId[n.p]; const y0 = p.y + p.h / 2, y1 = n.y - n.hh / 2, my = (y0 + y1) / 2;
         const d = `M${p.x},${y0} C${p.x},${my} ${n.x},${my} ${n.x},${y1}`;
@@ -1211,6 +1235,7 @@ const P5 = (() => {
       });
       qaAt = NODES.map(n => { const e = qas[n.q ?? 0], q = e.querySelector('.qb').getBoundingClientRect(), a = e.querySelector('.qc').getBoundingClientRect();
         return { q: { x: q.left - s0.left, y: q.top - s0.top }, a: { x: a.left - s0.left, y: a.top - s0.top } }; });
+      cmp.place(); FIT = fitBox(unionRect([root, ...NODES.map(n => n.el)], s0), GRID.x0, GRID.x1 - GRID.card - GRID.gutter, GRID.cy);
       vis(sc.root, false);
     },
     render(t) {
@@ -1229,7 +1254,7 @@ const P5 = (() => {
       const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
       qaCard.style.opacity = rise(qaCard, sr, 0, .45, 12) * pOut;
       const shift = ioC(P(u, s2, s2 + .6));
-      st(tree, { opacity: P(sr, 0, .25), transform: `translate(${-shift * 380}px, ${shift * 90}px) scale(${1 - shift * .24})`, transformOrigin: `${RX}px 250px` });
+      st(tree, { opacity: P(sr, 0, .25), transform: fitCss(FIT, shift), transformOrigin: '0 0' });
       const rp = oB(P(sr, .1, .4)); st(root, { transform: `scale(${Math.max(0, rp)})` });
       const bez = (a, b, p, lift) => { const cx = (a.x + b.x) / 2, cy = Math.min(a.y, b.y) - lift; return [(1 - p) ** 2 * a.x + 2 * (1 - p) * p * cx + p * p * b.x, (1 - p) ** 2 * a.y + 2 * (1 - p) * p * cy + p * p * b.y]; };
       edges.forEach(({ n, path, dash, lab, badge, lx, ly }) => {
@@ -1239,7 +1264,7 @@ const P5 = (() => {
           const on = P(sr, f0 - .05, f0 + .1) * (1 - P(sr, f0 + .8, f0 + 1.0)); qas[n.q].style.background = on > .01 ? `rgba(194,65,12,${.1 * on})` : '';
           const pq = ioC(P(sr, f0, f0 + .5)), [qx, qy] = bez(from.q, { x: lx, y: ly }, pq, 60);
           st(qFly[n.i], { left: qx + 'px', top: qy + 'px', opacity: sr > f0 && sr < f0 + .52 ? 1 : 0 });
-          const nodeAt = { x: n.x + 98 - 48, y: n.y - n.hh / 2 + 4 };
+          const nodeAt = { x: n.x + 92 - 44, y: n.y - n.hh / 2 + 4 };
           const pa = ioC(P(sr, f0 + .1, f0 + .6)), [ax, ay] = bez(from.a, nodeAt, pa, 40);
           st(aFly[n.i], { left: ax + 'px', top: ay + 'px', opacity: sr > f0 + .1 && sr < f0 + .62 ? 1 : 0, transform: `scale(${1 - .3 * pa})`, transformOrigin: 'left top' });
           draw(path, oC(P(sr, f0 + .2, f0 + .5)));
@@ -1257,7 +1282,7 @@ const P5 = (() => {
         draw(path, oC(P(sr, CLICK + .05, CLICK + .3)));
         if (badge) badge.style.opacity = P(sr, CLICK + .2, CLICK + .35);
         n.g.style.opacity = P(sr, CLICK + .1, CLICK + .25);
-        const pa = ioC(P(sr, CLICK + .3, CLICK + .85)), nodeAt = { x: n.x + 98 - 48, y: n.y - n.hh / 2 + 4 }, [ax, ay] = bez(nodeAt, from.a, pa, 50);
+        const pa = ioC(P(sr, CLICK + .3, CLICK + .85)), nodeAt = { x: n.x + 92 - 44, y: n.y - n.hh / 2 + 4 }, [ax, ay] = bez(nodeAt, from.a, pa, 50);
         st(aFly[n.i], { left: ax + 'px', top: ay + 'px', opacity: sr > CLICK + .3 && sr < CLICK + .87 ? 1 : 0, transform: `scale(${.7 + .3 * pa})`, transformOrigin: 'left top' });
         const pq = ioC(P(sr, CLICK + .2, CLICK + .7)), [qx, qy] = bez({ x: lx, y: ly }, from.q, pq, 60);
         st(qFly[n.i], { left: qx + 'px', top: qy + 'px', opacity: sr > CLICK + .2 && sr < CLICK + .72 ? 1 : 0 });
@@ -1412,7 +1437,7 @@ function renderFrame(t) {
 async function boot() {
   await document.fonts.ready;
   await Promise.all(['Syne', 'JetBrains Mono', 'PingFang SC', 'Noto Sans SC Fallback'].flatMap(f => [400, 500, 700].map(w => document.fonts.load(`${w} 40px "${f}"`, '屈非塬设计热皮肤Aa'))));
-  P4.layout(); P5.layout(); OUTRO.layout();
+  INTRO.layout(); P4.layout(); P5.layout(); OUTRO.layout();
   window.renderFrame = renderFrame;
   // the score (soundtrack.py) reads these cues so its chimes and ticks land on the same beats
   window.SHOWREEL = { duration: DUR, fps: FPS, beat: BEAT, intro: T.intro, outro: T.outro,
