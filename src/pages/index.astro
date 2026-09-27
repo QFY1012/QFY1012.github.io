@@ -8,6 +8,14 @@ import icPlay from 'lucide-static/icons/play.svg?raw';
 import icDownload from 'lucide-static/icons/download.svg?raw';
 import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
 import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
+import icVolOn from 'lucide-static/icons/volume-2.svg?raw';
+import icVolOff from 'lucide-static/icons/volume-x.svg?raw';
+import icPause from 'lucide-static/icons/pause.svg?raw';
+import icPlayOn from 'lucide-static/icons/play.svg?raw';
+import icReplay from 'lucide-static/icons/rotate-ccw.svg?raw';
+import icList from 'lucide-static/icons/list.svg?raw';
+import icMax from 'lucide-static/icons/maximize.svg?raw';
+import icMin from 'lucide-static/icons/minimize.svg?raw';
 // 耳机图标要一笔描出：路径长度归一，描线动画只需 dasharray/offset 从 1 到 0
 const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ');
 ---
@@ -80,31 +88,34 @@ const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ')
     }
     .hero-head p { margin-top: 1.1rem; font-size: var(--text-body); letter-spacing: 0.08em; color: var(--text-dim); text-wrap: balance; }
 
+    .reel-box { width: min(100%, calc(70vh * 16 / 9)); display: flex; flex-direction: column; align-items: center; gap: 14px; }
     .reel {
       position: relative; overflow: hidden; background: #fff;
-      width: min(100%, calc(70vh * 16 / 9)); aspect-ratio: 16 / 9;
+      width: 100%; aspect-ratio: 16 / 9;
       border-radius: 16px;
       box-shadow: 0 0 0 1px rgba(10, 12, 18, 0.05), 0 4px 18px rgba(10, 12, 18, 0.025);
     }
-    .reel:fullscreen { width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
-    .reel::backdrop { background: #fff; }
+    /* 全屏：卡片与下方控件一起铺满，控件留在屏幕底部 */
+    .reel-box:fullscreen { width: 100vw; height: 100vh; box-sizing: border-box; padding: 16px 16px 12px; background: #fff; }
+    .reel-box:fullscreen .reel { flex: 1; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
+    .reel-box::backdrop { background: #fff; }
     .reel-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
     .reel-video { position: absolute; inset: 0; width: 100%; height: 100%; background: #fff; object-fit: contain; }
-    .reel button {
+    .reel-box button {
       font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.05em;
       border: none; cursor: pointer; transition: color 0.18s, background 0.18s;
     }
 
-    /* 播放中的控件：卡片右上角（动画画面顶部这条是空的） */
-    .reel-ctrl {
-      position: absolute; top: 1rem; right: 1.25rem; z-index: 1;
-      display: flex; gap: 8px;
-      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-    }
-    .reel:not([data-mode="gate"]) .reel-ctrl { opacity: 1; pointer-events: auto; }
-    .reel-ctrl button { padding: 4px 10px; background: var(--chip); color: var(--text-dim); }
-    .reel-ctrl button:hover { color: var(--text); background: var(--chip-hover); }
-    .reel-ctrl button[aria-pressed="true"] { color: var(--accent); background: var(--chip-accent); }
+    /* 播放中的控件：卡片下方居中的一排图标；播放前隐藏但占位，出现时页面不跳 */
+    .reel-bar { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+    .reel-box:not([data-mode="gate"]) .reel-bar { opacity: 1; pointer-events: auto; }
+    .reel-bar button { width: 32px; height: 32px; display: grid; place-items: center; padding: 0; background: none; color: var(--text-dim); }
+    .reel-bar button:hover { color: var(--text); background: var(--chip); }
+    .reel-bar button[aria-pressed="true"] { color: var(--accent); }
+    .reel-bar span { display: grid; }
+    .reel-bar span[hidden] { display: none; }
+    /* 图标是 set:html 插入的，不带作用域标记，用 :global() 选中 */
+    .reel-bar :global(svg) { width: 16px; height: 16px; stroke-width: 1.75; }
 
     /* 播放前：铺满卡片的纯白提示。引子与耳机提示叠在同一格里，前者淡出、后者接上 */
     .reel-gate {
@@ -112,7 +123,7 @@ const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ')
       display: grid; place-items: center; text-align: center;
       transition: opacity 0.6s ease, visibility 0s linear 0.6s;
     }
-    .reel:not([data-mode="gate"]) .reel-gate { opacity: 0; visibility: hidden; }
+    .reel-box:not([data-mode="gate"]) .reel-gate { opacity: 0; visibility: hidden; }
     .g-lead, .g-prompt { grid-area: 1 / 1; }
     .g-lead, .g-title {
       font-size: var(--text-title); font-weight: 400; color: var(--text);
@@ -151,8 +162,9 @@ const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ')
     /* 手机：卡片里放 MP4，用系统播放器（可全屏、可放大）；提示收紧 */
     @media (max-width: 767px) {
       .hero-reel { min-height: 0; padding: 4.5rem 12px 1rem; gap: 1.75rem; }
-      .reel { width: 100%; border-radius: 12px; }
-      .reel-frame, .reel-ctrl, .g-sub { display: none; }
+      .reel-box { width: 100%; }
+      .reel { border-radius: 12px; }
+      .reel-frame, .reel-bar, .g-sub { display: none; }
       .g-prompt > .g-rule { margin: 0.6rem 0 0.7rem; }
       .g-btns { margin-top: 1rem; gap: 1.25rem; }
     }
@@ -393,15 +405,10 @@ const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ')
       <h1>屈非塬<span class="en">QU FEIYUAN</span></h1>
       <p>懂 AI，懂设计，也懂工程，专注产品创新与 AI 赋能设计</p>
     </header>
-    <div class="reel" id="reel" data-mode="gate">
+    <div class="reel-box" id="reel" data-mode="gate">
+    <div class="reel">
       <iframe class="reel-frame" data-src="/showreel/?embed" title="屈非塬 · Showreel：六个项目的背景、解法与结果"></iframe>
       <video class="reel-video" src="/videos/showreel.mp4" playsinline preload="none" hidden></video>
-      <div class="reel-ctrl">
-        <button type="button" data-reel="sound" aria-pressed="false">开启声音</button>
-        <button type="button" data-reel="play">暂停</button>
-        <button type="button" data-reel="menu">目录</button>
-        <button type="button" data-reel="full">全屏</button>
-      </div>
       <!-- 播放前：引子过渡到耳机提示，观众点了才开始 -->
       <div class="reel-gate">
         <p class="g-lead" aria-hidden="true"><span class="a">来都来了，</span><span class="b">先看个视频吧</span><span class="tri">▶</span></p>
@@ -416,6 +423,14 @@ const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ')
           </div>
         </div>
       </div>
+    </div>
+    <!-- 播放中的控件：卡片下方居中的一排图标（悬停显示名称） -->
+    <div class="reel-bar">
+      <button type="button" data-reel="sound" aria-pressed="false" aria-label="开启声音" title="开启声音"><span data-i="on" hidden><Fragment set:html={icVolOn} /></span><span data-i="off"><Fragment set:html={icVolOff} /></span></button>
+      <button type="button" data-reel="play" aria-label="暂停" title="暂停"><span data-i="pause"><Fragment set:html={icPause} /></span><span data-i="play" hidden><Fragment set:html={icPlayOn} /></span><span data-i="replay" hidden><Fragment set:html={icReplay} /></span></button>
+      <button type="button" data-reel="menu" aria-label="目录" title="目录"><Fragment set:html={icList} /></button>
+      <button type="button" data-reel="full" aria-label="全屏" title="全屏"><span data-i="max"><Fragment set:html={icMax} /></span><span data-i="min" hidden><Fragment set:html={icMin} /></span></button>
+    </div>
     </div>
   </div>
 
@@ -818,11 +833,18 @@ const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ')
       let mode: 'gate' | 'play' | 'menu' | 'end' = 'gate', playing = false, sound = false, inView = true, pending = false;
 
       const running = () => playing && inView && !document.hidden;
+      // 图标按钮：显示当前状态对应的那个图标，名称（悬停提示与读屏）随之更新
+      const show = (b: HTMLElement, i: string, name: string) => {
+        b.querySelectorAll<HTMLElement>('[data-i]').forEach((e) => { e.hidden = e.dataset.i !== i; });
+        b.setAttribute('aria-label', name); b.title = name;
+      };
       const sync = () => {
         reelEl.dataset.mode = mode;
-        btnSound.textContent = sound ? '关闭声音' : '开启声音';
+        show(btnSound, sound ? 'on' : 'off', sound ? '关闭声音' : '开启声音');
         btnSound.setAttribute('aria-pressed', String(sound));
-        btnPlay.textContent = mode === 'end' ? '重播' : playing ? '暂停' : '继续';
+        if (mode === 'end') show(btnPlay, 'replay', '重播');
+        else if (playing) show(btnPlay, 'pause', '暂停');
+        else show(btnPlay, 'play', '继续');
         if (sound && mode === 'play' && running()) {
           if (audio.paused) { audio.currentTime = t; audio.play().catch(() => { sound = false; sync(); }); }
         } else if (!audio.paused) audio.pause();
@@ -845,7 +867,7 @@ const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ')
       });
       btnSound.addEventListener('click', () => { sound = !sound; sync(); });
       btnFull.addEventListener('click', () => (document.fullscreenElement ? document.exitFullscreen() : reelEl.requestFullscreen()).catch(() => {}));
-      document.addEventListener('fullscreenchange', () => { btnFull.textContent = document.fullscreenElement ? '退出全屏' : '全屏'; });
+      document.addEventListener('fullscreenchange', () => { const on = !!document.fullscreenElement; show(btnFull, on ? 'min' : 'max', on ? '退出全屏' : '全屏'); });
 
       const tick = (now: number) => {
         if (R && running()) {
