@@ -983,29 +983,30 @@ const P4 = (() => {
   // every node sits on a spoke — it explores that rim attribute together with the focus (Year) at the centre
   const A = n => ((ang(ATTR.indexOf(n)) % 360) + 360) % 360;
   const qa = [[A('Oil Price'), .80], [A('Life Expectancy'), .84], [A('FDI'), .86], [A('Exports'), .86], [A('GDP'), .82], [A('Unemployment'), .76]];
-  const il = [[A('Life Expectancy'), .58], [A('FDI'), .62], [A('Exports'), .62], [A('GDP'), .56]];
   const qBand = S('path', { d: arc(qa), fill: 'none', stroke: 'rgba(23,27,38,0.07)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
   const qLine = S('path', { d: arc(qa), fill: 'none', stroke: '#171b26', 'stroke-width': 1.6 }, svg);
-  const iBand = S('path', { d: arc(il), fill: 'none', stroke: 'rgba(194,65,12,0.14)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
-  const iLine = S('path', { d: arc(il), fill: 'none', stroke: '#c2410c', 'stroke-width': 1.6 }, svg);
   const node = (a, r, col) => { const [x, y] = pol(a, r * R); const g = S('g', {}, svg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: col, 'stroke-width': 2, transform: 'rotate(45)' }, g); return { g, x, y }; };
   const qN = qa.map(([a, r]) => node(a, r, '#171b26'));
-  const iN = il.map(([a, r]) => node(a, r, '#c2410c'));
-  const linkLab = [['q', 1, 'cause-effect'], ['q', 3, 'cause-effect'], ['i', 0, 'elaboration'], ['i', 2, 'contrast']].map(([w, k, s]) => {
-    const arr = w === 'q' ? qa : il; const [a0, r0] = arr[k], [a1, r1] = arr[k + 1]; const [x, y] = pol((a0 + a1) / 2, ((r0 + r1) / 2 + (w === 'q' ? -.08 : -.09)) * R);
+  const linkLab = [['q', 1, 'cause-effect'], ['q', 3, 'cause-effect']].map(([w, k, s]) => {
+    const arr = qa; const [a0, r0] = arr[k], [a1, r1] = arr[k + 1]; const [x, y] = pol((a0 + a1) / 2, ((r0 + r1) / 2 + (w === 'q' ? -.08 : -.09)) * R);
     const e = S('text', { x, y, 'text-anchor': 'middle', style: 'font: italic 500 11px JetBrains Mono', fill: w === 'q' ? '#666d7e' : '#c2410c' }, svg); e.textContent = s; return { e, w, k };
   });
   const pills = ATTR.map((n, i) => { const [x, y] = pol(ang(i), R); const g = S('g', {}, svg); const w = n.length * 7.4 + 18;
     const r = S('rect', { x: -w / 2, y: -12, width: w, height: 24, rx: 12, fill: '#fff', stroke: 'rgba(23,27,38,0.2)' }, g);
     const tx = S('text', { x: 0, y: 4, 'text-anchor': 'middle', style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); tx.textContent = n;
     g.setAttribute('transform', `translate(${x},${y})`); return { g, r, tx, x, y }; });
-  const from = iN[3], tgt = pills[2];
-  const ghost = S('rect', { x: -7, y: -7, width: 14, height: 14, fill: 'none', stroke: '#c2410c', 'stroke-dasharray': '3 3', transform: `translate(${from.x},${from.y}) rotate(45)` }, svg);
+  // steering grows the same storyline: its head (Unemployment) is dragged onto an unexplored spoke, Inflation
+  const from = qN[5], tgt = pills[ATTR.indexOf('Inflation')], [EX, EY] = pol(A('Inflation'), .76 * R);
+  const sdx = (from.x + EX) / 2 - C.x, sdy = (from.y + EY) / 2 - C.y, sdl = Math.hypot(sdx, sdy);
+  const steerD = `M${from.x},${from.y} Q${(from.x + EX) / 2 + sdx / sdl * 16},${(from.y + EY) / 2 + sdy / sdl * 16} ${EX},${EY}`;
+  const sBand = S('path', { d: steerD, fill: 'none', stroke: 'rgba(23,27,38,0.07)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
+  const sLine = S('path', { d: steerD, fill: 'none', stroke: '#171b26', 'stroke-width': 1.6 }, svg);
+  const sNode = node(A('Inflation'), .76, '#171b26');
   const trail = S('path', { fill: 'none', stroke: '#171b26', 'stroke-width': 1.4, 'stroke-dasharray': '5 5', 'marker-end': 'url(#arr)' }, svg);
   const dragN = S('g', {}, svg); S('rect', { x: -8, y: -8, width: 16, height: 16, fill: '#fff', stroke: '#c2410c', 'stroke-width': 2.5, transform: 'rotate(45)' }, dragN);
   const cursor = S('path', { d: 'M0,0 L0,20 L5.5,15 L9.5,23.5 L13,22 L9,13.5 L16,13.5 Z', fill: '#171b26', stroke: '#fff', 'stroke-width': 1.2 }, svg);
   const pop = $('div', 'npop', disc);
-  pop.innerHTML = '<div class="cols"><div class="col"><b>GDP</b><div class="fl">Year ≤ 2008<br>Country = Israel</div></div><div style="color:var(--dimmer)">→</div><div class="col"><b>Unemployment</b><div class="fl">Year ≤ 2008<br>Country = Israel</div></div></div><div class="btns"><div class="btn">Cancel</div><div class="btn go">Explore →</div></div>';
+  pop.innerHTML = '<div class="cols"><div class="col"><b>Unemployment</b><div class="fl">by Year</div></div><div style="color:var(--dimmer)">→</div><div class="col"><b>Inflation</b><div class="fl">by Year</div></div></div><div class="btns"><div class="btn">Cancel</div><div class="btn go">Explore →</div></div>';
   at(pop, 1350, 608);
   const go = pop.querySelector('.go');
   // 解法 · the mapping: the agent's trace is a line of steps in time; each step moves to where its data dimension sits on
@@ -1020,8 +1021,8 @@ const P4 = (() => {
   tcard.innerHTML = '<div class="cap" style="margin-bottom:10px">AGENT 执行轨迹</div>' +
     TRACE.map(([f, a, r]) => `<div class="trow"><i class="td"></i><b>${f}</b><span class="ta">(${a})</span><div class="tr">${r}</div></div>`).join('') +
     // what the drag writes back: the user's steer, then the agent carrying on from it
-    '<div class="trow tnew"><i class="td" style="background:var(--accent)"></i><b style="color:var(--accent)">用户引导</b><span class="ta"> GDP → Unemployment</span><div class="tr">Year ≤ 2008 · Israel</div></div>' +
-    '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(Unemployment)</span><div class="tr">by Year · line chart</div></div>' +
+    '<div class="trow tnew"><i class="td" style="background:var(--accent)"></i><b style="color:var(--accent)">用户引导</b><span class="ta"> → Inflation</span><div class="tr">from Unemployment · by Year</div></div>' +
+    '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(Inflation)</span><div class="tr">by Year · line chart</div></div>' +
     '<div class="twork"><i></i>Analyzing…</div>';
   const rows = [...tcard.querySelectorAll('.trow:not(.tnew)')], news = [...tcard.querySelectorAll('.tnew')], work = tcard.querySelector('.twork'), workDot = work.querySelector('i');
   let newAt = { x: 884, y: 640 };
@@ -1087,22 +1088,22 @@ const P4 = (() => {
         if (i > 0) pq += P(sr, f1 - .35, f1) / 5; });
       draw(qLine, pq); draw(qBand, pq);
       // dimension labels on the rim light up as their step lands (and Unemployment again when the drag reaches it)
-      const d0 = 3.5, d = ioC(P(sr, d0 + .25, d0 + .75));
+      const d0 = 3.1, d = ioC(P(sr, d0 + .25, d0 + .75));
       const hlDrag = P(sr, d0 + .7, d0 + .75);
       pills.forEach((p, i) => { const k = oB(P(sr, .2 + i * .03, .5 + i * .03)); p.g.style.opacity = Math.min(1, k * 2); p.g.setAttribute('transform', `translate(${p.x},${p.y}) scale(${Math.max(0, k)})`);
         const on = Math.max(...STEPS.map((_, j) => MAPI[j] === i || MAPD[j] === i ? flash[j] : 0), p === tgt ? hlDrag : 0) > .5;
         p.r.setAttribute('stroke', on ? '#c2410c' : 'rgba(23,27,38,0.2)'); p.tx.setAttribute('fill', on ? '#c2410c' : '#666d7e'); });
       hub.firstChild.setAttribute('stroke', STEPS.some((_, j) => MAPD[j] < 0 && flash[j] > .5) ? '#c2410c' : 'rgba(23,27,38,0.2)');
-      linkLab.forEach(l => { const s = l.w === 'q' ? FLY(l.k + 1)[1] : 3.1 + l.k * .14; l.e.style.opacity = P(sr, s, s + .2); });
+      linkLab.forEach(l => { const s = FLY(l.k + 1)[1]; l.e.style.opacity = P(sr, s, s + .2); });
       rise(nsLab, sr, 2.75, .4, 6);
-      // the second storyline, then a drag steers the agent toward Unemployment and Explore
-      const pi = ioC(P(sr, 2.9, 3.4)); draw(iLine, pi); draw(iBand, pi);
-      iN.forEach((n, i) => { const k = i === 3 ? 0 : oB(P(sr, 2.9 + i * .14, 3.15 + i * .14)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
-      // the drag stays on the inner orbit (inside the black storyline) so the two never cross; the rim label shows the direction
-      const [ex, ey] = pol(A('Unemployment'), .56 * R), tx = lerp(from.x, ex, d), ty = lerp(from.y, ey, d) - Math.sin(d * Math.PI) * 12;
-      dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(sr, d0, d0 + .2))})`); dragN.style.opacity = P(sr, d0, d0 + .07);
-      ghost.style.opacity = P(sr, d0 + .28, d0 + .38);
-      trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2},${Math.min(from.y, ty) - 22} ${tx},${ty}`); trail.style.opacity = P(sr, d0 + .3, d0 + .38);
+      // steer from the storyline itself: drag its head onto the unexplored Inflation spoke, then Explore
+      const ex = EX, ey = EY, bulge = Math.sin(d * Math.PI) * 16, tx = lerp(from.x, ex, d) + sdx / sdl * bulge, ty = lerp(from.y, ey, d) + sdy / sdl * bulge;
+      const steered = P(sr, d0 + 1.5, d0 + 1.62);
+      dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(sr, d0, d0 + .2))})`); dragN.style.opacity = P(sr, d0, d0 + .07) * (1 - steered);
+      trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2 + sdx / sdl * 16},${(from.y + ty) / 2 + sdy / sdl * 16} ${tx},${ty}`); trail.style.opacity = P(sr, d0 + .3, d0 + .38) * (1 - steered);
+      // once explored, it is the storyline's next node
+      draw(sLine, oC(P(sr, d0 + 1.5, d0 + 1.8))); draw(sBand, oC(P(sr, d0 + 1.5, d0 + 1.8)));
+      sNode.g.setAttribute('transform', `translate(${EX},${EY}) scale(${Math.max(0, oB(P(sr, d0 + 1.5, d0 + 1.75)))})`);
       let cx = lerp(1620, from.x + 3, oC(P(sr, d0 - .2, d0 + .2))), cy = lerp(760, from.y + 3, oC(P(sr, d0 - .2, d0 + .2)));
       if (sr > d0 + .25) { cx = tx + 3; cy = ty + 3; }
       const toB = ioC(P(sr, d0 + .9, d0 + 1.15)); cx = lerp(cx, BTN.x - 4, toB); cy = lerp(cy, BTN.y - 2, toB);
