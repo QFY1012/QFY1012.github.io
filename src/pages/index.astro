@@ -7,6 +7,7 @@ import icSlides from 'lucide-static/icons/presentation.svg?raw';
 import icPlay from 'lucide-static/icons/play.svg?raw';
 import icDownload from 'lucide-static/icons/download.svg?raw';
 import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
+import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
 ---
 
 <html lang="zh">
@@ -19,15 +20,11 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
   <style>
     /* ── index 专有样式（新视觉语言：克制 · 深色唯一） ── */
 
-    /* NAV：首屏隐藏；滚过首屏从顶部滑入 */
+    /* NAV：常驻顶部，首屏 showreel 以卡片嵌在其下 */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       backdrop-filter: blur(12px);
-      transform: translateY(-110%);
-      opacity: 0;
-      transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.4s ease;
     }
-    nav.is-visible { transform: translateY(0); opacity: 1; }
     /* 导航左侧：打字机（不显示姓名）；blink 关键帧复用 tokens.css */
     .logo { display: flex; align-items: center; gap: 2px; }
     /* 不设 min-width：光标必须紧跟最后一个字符 */
@@ -53,42 +50,73 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
     }
     .nav-links a:hover { color: var(--text); border-bottom-color: var(--text-dimmer); }
 
-    /* 首屏 REEL：showreel 实时播放（/showreel/?embed）；画面白底，与动画同色 */
-    .reel { position: relative; height: 100vh; height: 100svh; background: #fff; overflow: hidden; }
+    /* 首屏 REEL：showreel 实时播放（/showreel/?embed），白底与动画一致。
+       data-mode：intro 首页入场 → menu 停在首页（耳机提示）→ play 播放中 → end 片尾 */
+    .reel-wrap {
+      position: relative; box-sizing: border-box;
+      height: 100vh; height: 100svh;
+      padding: 60px 24px 44px; /* 上：常驻导航；下：SCROLL 提示 */
+      display: grid; place-items: center;
+    }
+    .reel {
+      position: relative; overflow: hidden; background: #fff;
+      aspect-ratio: 16 / 9;
+      width: min(100%, calc((100vh - 104px) * 16 / 9));
+      width: min(100%, calc((100svh - 104px) * 16 / 9));
+      border-radius: 16px;
+      box-shadow: 0 1px 0 rgba(10, 12, 18, 0.04), 0 18px 50px rgba(10, 12, 18, 0.07);
+    }
     .reel-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
     .reel-video { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; object-fit: contain; }
-    /* 控件放在右上角：动画画面顶部这条是空的，不压内容 */
-    .reel-ctrl {
-      position: absolute; top: 1.25rem; right: 1.5rem; z-index: 1;
-      display: flex; gap: 8px;
-      opacity: 0; transition: opacity 0.4s ease;
-    }
-    .reel.is-ready .reel-ctrl { opacity: 1; }
-    .reel-ctrl button, .reel-start {
+    .reel-ctrl button, .reel-gate button, .reel-start {
       font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.05em;
       padding: 4px 10px; border: none; cursor: pointer;
       background: var(--chip); color: var(--text-dim);
       transition: color 0.18s, background 0.18s;
     }
-    .reel-ctrl button:hover { color: var(--text); background: var(--chip-hover); }
-    .reel-ctrl button[aria-pressed="true"] { color: var(--accent); background: var(--chip-accent); }
-    .reel-start {
-      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1;
-      padding: 0.6rem 1.1rem; color: var(--accent); background: var(--chip-accent); font-weight: 500;
-      white-space: nowrap;
+    .reel-ctrl button:hover, .reel-gate button:hover { color: var(--text); background: var(--chip-hover); }
+    .reel-ctrl button[aria-pressed="true"], .reel-gate .go, .reel-start { color: var(--accent); background: var(--chip-accent); font-weight: 500; }
+    .reel-gate .go:hover { color: var(--accent-hi); background: var(--chip-accent); }
+    .reel svg { width: 13px; height: 13px; vertical-align: -2px; margin-right: 4px; }
+    /* 播放中的控件：右上角，动画画面顶部这条是空的 */
+    .reel-ctrl {
+      position: absolute; top: 1.25rem; right: 1.5rem; z-index: 1;
+      display: flex; gap: 8px;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
     }
+    .reel[data-mode="play"] .reel-ctrl, .reel[data-mode="end"] .reel-ctrl { opacity: 1; pointer-events: auto; }
+    /* 首页停住时的耳机提示：底部居中 */
+    .reel-gate {
+      position: absolute; left: 0; right: 0; bottom: 3.25rem; z-index: 1;
+      display: flex; justify-content: center; align-items: center; gap: 10px;
+      opacity: 0; pointer-events: none; transform: translateY(6px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .reel[data-mode="menu"] .reel-gate { opacity: 1; pointer-events: auto; transform: none; }
+    .reel-hint { font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.05em; color: var(--text-dim); margin-right: 6px; }
+    .reel-gate button { padding: 0.5rem 1rem; }
+    .reel-start { display: none; }
     .reel-cue {
-      position: absolute; left: 0; right: 0; bottom: 0.6rem;
+      position: absolute; left: 0; right: 0; bottom: 14px;
       text-align: center; pointer-events: none;
       font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3em; color: var(--text-dimmer);
     }
-    /* 手机：首屏按 16:9 收起，点开后用 MP4 全屏播放 */
+    /* 手机：卡片占满宽度，停在首页；点开后用 MP4 全屏播放 */
     @media (max-width: 767px) {
-      .reel { height: auto; aspect-ratio: 16 / 9; }
-      .reel-ctrl, .reel-cue { display: none; }
+      .reel-wrap { height: auto; padding: 60px 12px 0; }
+      .reel { width: 100%; border-radius: 12px; }
+      .reel-ctrl, .reel-gate, .reel-cue { display: none; }
+      .reel-start {
+        display: block; position: absolute; left: 50%; bottom: 0.75rem; transform: translateX(-50%); z-index: 1;
+        padding: 0.45rem 0.9rem; white-space: nowrap;
+      }
     }
 
-    /* ABOUT：原首屏的名字与简介，放在 showreel 下面 */
+    /* ABOUT：名字、简介与技能。桌面端在首屏动画的首页里，这里只供读屏与搜索；手机上直接显示 */
+    .about .skills-grid { margin-top: 2.5rem; }
+    @media (min-width: 768px) {
+      .about { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    }
     .hero-copy { max-width: 620px; }
     .hero-role {
       display: inline-block;
@@ -351,15 +379,24 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
 <body>
 
   <!-- 首屏 REEL：showreel 在 iframe 里实时播放，只负责画面；时钟、配乐与控件在本页（见底部脚本） -->
-  <div class="reel" id="reel">
+  <div class="reel-wrap">
+  <div class="reel" id="reel" data-mode="intro">
     <iframe class="reel-frame" src="/showreel/?embed" title="屈非塬 · Showreel：六个项目的背景、解法与结果"></iframe>
     <video class="reel-video" src="/videos/showreel.mp4" controls playsinline preload="none" hidden></video>
     <div class="reel-ctrl">
       <button type="button" data-reel="sound" aria-pressed="false">开启声音</button>
       <button type="button" data-reel="play">暂停</button>
+      <button type="button" data-reel="menu">目录</button>
     </div>
-    <button type="button" class="reel-start" data-reel="start" hidden>▶ 播放 Showreel</button>
-    <div class="reel-cue" aria-hidden="true">SCROLL ↓</div>
+    <!-- 首页停住时：由观众决定开不开声音 -->
+    <div class="reel-gate">
+      <span class="reel-hint"><Fragment set:html={icHeadphones} /> 戴上耳机，沉浸体验</span>
+      <button type="button" class="go" data-reel="go-sound">▶ 开启声音播放</button>
+      <button type="button" data-reel="go-mute">静音播放</button>
+    </div>
+    <button type="button" class="reel-start" data-reel="start"><Fragment set:html={icHeadphones} /> 播放 Showreel</button>
+  </div>
+  <div class="reel-cue" aria-hidden="true">SCROLL ↓</div>
   </div>
 
   {/* 粒子首屏：已停用（整块保留待恢复；脚本 src/scripts/hero-*.ts 未删，画布不在页面上时脚本不运行）
@@ -370,7 +407,7 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
   </div>
   */}
 
-  <!-- ABOUT：原首屏的名字与简介 -->
+  <!-- ABOUT：名字、简介与技能。桌面端它们在首屏动画的首页里，这里只留给读屏与搜索；手机上动画太小，直接显示 -->
   <section id="about" class="about">
     <div class="hero-copy">
       <div class="hero-role">Design · Engineering · AI</div>
@@ -380,6 +417,35 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
       </h1>
       <div class="hero-desc">
         <p>本科毕业于湖南大学工业设计专业，现为浙江大学 CAD&amp;CG 全国重点实验室人机交互与数据可视化方向硕士研究生，同时在阿里巴巴淘天集团实习，任 AI 设计工程师。懂 AI，懂设计，也懂工程，主要关注如何用 AI 更好地赋能设计。主导过对话式可视分析工具、数据叙事 Agent、舆情分析平台等数据产品，完成从产品定义、交互设计到开发落地的全过程。</p>
+      </div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <h3>设计</h3>
+        <div class="tags">
+          <span class="tag">原型设计</span>
+          <span class="tag">Figma</span>
+          <span class="tag">用户研究</span>
+          <span class="tag">信息架构</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>开发</h3>
+        <div class="tags">
+          <span class="tag">Python</span>
+          <span class="tag">React</span>
+          <span class="tag">PydenticAgent</span>
+          <span class="tag">LangGraph</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>研究</h3>
+        <div class="tags">
+          <span class="tag">LLM4Vis</span>
+          <span class="tag">Agent4Vis</span>
+          <span class="tag">Chart Generation</span>
+          <span class="tag">Paper Writing</span>
+        </div>
       </div>
     </div>
   </section>
@@ -429,7 +495,6 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
     </div>
     <div class="nav-center">
       <ul class="nav-links">
-        <li><a href="#skills">skills</a></li>
         <li><a href="#education">edu</a></li>
         <li><a href="#projects">works</a></li>
         <li><a href="#contact">contact</a></li>
@@ -443,51 +508,11 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
     </div>
   </nav>
 
-  <!-- SKILLS -->
-  <section id="skills">
-    <div class="sec-head">
-      <div class="sec-head-text">
-        <div class="sec-n">01 /</div>
-        <div class="sec-sub">专业技能</div>
-        <h2>CAPABILITIES</h2>
-      </div>
-    </div>
-    <div class="skills-grid">
-      <div class="skill-card">
-        <h3>设计</h3>
-        <div class="tags">
-          <span class="tag">原型设计</span>
-          <span class="tag">Figma</span>
-          <span class="tag">用户研究</span>
-          <span class="tag">信息架构</span>
-        </div>
-      </div>
-      <div class="skill-card">
-        <h3>开发</h3>
-        <div class="tags">
-          <span class="tag">Python</span>
-          <span class="tag">React</span>
-          <span class="tag">PydenticAgent</span>
-          <span class="tag">LangGraph</span>
-        </div>
-      </div>
-      <div class="skill-card">
-        <h3>研究</h3>
-        <div class="tags">
-          <span class="tag">LLM4Vis</span>
-          <span class="tag">Agent4Vis</span>
-          <span class="tag">Chart Generation</span>
-          <span class="tag">Paper Writing</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- EDUCATION & INTERNSHIP -->
   <section id="education">
     <div class="sec-head">
       <div class="sec-head-text">
-        <div class="sec-n">02 /</div>
+        <div class="sec-n">01 /</div>
         <div class="sec-sub">教育 &amp; 实习</div>
         <h2>EXPERIENCE</h2>
       </div>
@@ -545,7 +570,7 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
   <section id="projects">
     <div class="sec-head">
       <div class="sec-head-text">
-        <div class="sec-n">03 /</div>
+        <div class="sec-n">02 /</div>
         <div class="sec-sub">项目 &amp; 论文</div>
         <h2>WORKS</h2>
       </div>
@@ -681,7 +706,7 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
   <section id="contact">
     <div class="sec-head">
       <div class="sec-head-text">
-        <div class="sec-n">04 /</div>
+        <div class="sec-n">03 /</div>
         <div class="sec-sub">保持联系</div>
         <h2>CONTACT</h2>
       </div>
@@ -729,15 +754,6 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
     setTimeout(typeTag, 800);
   }
 
-  // 导航：滚过首屏 showreel 后从顶部滑入
-  const navEl = document.querySelector('nav');
-  const featuredEl = document.getElementById('reel');
-  if (navEl && featuredEl) {
-    new IntersectionObserver(([entry]) => {
-      navEl.classList.toggle('is-visible', entry.boundingClientRect.bottom < 0);
-    }, { threshold: 0 }).observe(featuredEl);
-  }
-
   // 项目卡整卡点击跳转
   document.querySelectorAll('.project-card.clickable').forEach(card => {
     card.addEventListener('click', e => {
@@ -748,48 +764,50 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
   });
 </script>
 <script>
-  // 首屏 showreel：iframe（/showreel/?embed）只负责按时间画面（renderFrame），时钟、配乐与控件都在这里。
-  // 静音自动播放；开声音后以音频时间为准，声画不漂。滚出首屏或切走标签页即暂停。
-  // 手机竖屏画面太小：停在开场画面，点开后用 MP4 全屏播放；系统要求减少动态效果：不自动播放。
+  // 首屏 showreel：iframe（/showreel/?embed）只按时间画画面（renderFrame），时钟、配乐与控件都在这里。
+  // intro：先播首页的入场 → menu：停在首页（名字、简介、技能、目录），底部耳机提示，由观众选择开不开声音
+  // → play：从首页接着播；开声音时以音频时间为准 → end：停在片尾。「目录」或点动画左上角的名字回到首页。
+  // 滚出首屏或切走标签页即暂停。手机竖屏停在首页，点开后用 MP4 全屏播放；减少动态效果：直接停在首页。
   const reelEl = document.getElementById('reel');
   const frame = reelEl?.querySelector<HTMLIFrameElement>('.reel-frame');
   if (reelEl && frame) {
     const btn = (k: string) => reelEl.querySelector<HTMLButtonElement>(`[data-reel="${k}"]`)!;
-    const btnSound = btn('sound'), btnPlay = btn('play'), btnStart = btn('start');
+    const btnSound = btn('sound'), btnPlay = btn('play');
     const video = reelEl.querySelector<HTMLVideoElement>('.reel-video')!;
     const audio = new Audio('/showreel/soundtrack.mp3');
     audio.preload = 'none';
     const small = matchMedia('(max-width: 767px)').matches;
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const POSTER = 3.6; // 开场名字与目录都已出现的一刻
-    let R: any = null, dur = 0, t = 0, last = performance.now();
-    let playing = false, ended = false, sound = false, inView = true;
+    let R: any = null, dur = 0, menuT = 0, startT = 0, t = 0, last = performance.now();
+    let mode: 'intro' | 'menu' | 'play' | 'end' = 'intro', playing = false, sound = false, inView = true;
 
     const running = () => playing && inView && !document.hidden;
     const sync = () => {
+      reelEl.dataset.mode = mode;
       btnSound.textContent = sound ? '关闭声音' : '开启声音';
       btnSound.setAttribute('aria-pressed', String(sound));
-      btnPlay.textContent = ended ? '重播' : playing ? '暂停' : '播放';
-      if (sound && running()) {
+      btnPlay.textContent = mode === 'end' ? '重播' : playing ? '暂停' : '继续';
+      if (sound && mode === 'play' && running()) {
         if (audio.paused) { audio.currentTime = t; audio.play().catch(() => { sound = false; sync(); }); }
       } else if (!audio.paused) audio.pause();
     };
-    const play = () => { if (ended) { t = 0; ended = false; } playing = true; sync(); };
-    const pause = () => { playing = false; sync(); };
-    const seek = (x: number) => {
-      t = Math.max(0, Math.min(dur, x)); ended = false;
-      if (sound && !audio.paused) audio.currentTime = t;
-      R?.renderFrame(t); btnStart.hidden = true; play();
-    };
-    btnPlay.addEventListener('click', () => (playing ? pause() : play()));
-    btnSound.addEventListener('click', () => { sound = !sound; if (sound && !playing) play(); else sync(); });
+    const draw = () => R?.renderFrame(t);
+    const toMenu = () => { mode = 'menu'; playing = false; t = menuT; draw(); sync(); };
+    const playFrom = (x: number) => { mode = 'play'; t = x; playing = true; draw(); sync(); };
+
+    btn('go-sound').addEventListener('click', () => { sound = true; playFrom(startT); });
+    btn('go-mute').addEventListener('click', () => { sound = false; playFrom(startT); });
+    btn('menu').addEventListener('click', toMenu);
+    btnPlay.addEventListener('click', () => { if (mode === 'end') playFrom(startT); else { playing = !playing; sync(); } });
+    btnSound.addEventListener('click', () => { sound = !sound; sync(); });
 
     const tick = (now: number) => {
       if (R && running()) {
-        if (sound && !audio.paused && !audio.seeking && audio.readyState >= 3) t = audio.currentTime;
+        if (sound && mode === 'play' && !audio.paused && !audio.seeking && audio.readyState >= 3) t = audio.currentTime;
         else t += Math.min(0.1, (now - last) / 1000);
-        if (t >= dur) { t = dur; playing = false; ended = true; sync(); }
-        R.renderFrame(t);
+        if (mode === 'intro' && t >= menuT) toMenu();
+        else if (t >= dur) { t = dur; playing = false; mode = 'end'; sync(); }
+        draw();
       }
       last = now;
       requestAnimationFrame(tick);
@@ -801,28 +819,25 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
     const init = () => {
       const w = frame.contentWindow as any;
       if (R || !w || !w.__ready) return;
-      R = w; dur = w.SHOWREEL.duration;
-      btnStart.textContent = `▶ 播放 Showreel · ${Math.floor(dur / 60)}:${String(Math.round(dur % 60)).padStart(2, '0')}`;
-      reelEl.classList.add('is-ready');
-      if (small || still) { t = POSTER; R.renderFrame(t); btnStart.hidden = false; }
-      else play();
+      R = w; ({ duration: dur, menu: menuT, start: startT } = w.SHOWREEL);
+      btn('start').append(` · ${Math.floor(dur / 60)}:${String(Math.round(dur % 60)).padStart(2, '0')}`);
+      if (small || still) toMenu();
+      else { mode = 'intro'; t = 0; playing = true; sync(); }
     };
     addEventListener('message', (e) => {
       if (e.origin !== location.origin || e.source !== frame.contentWindow) return;
       if (e.data?.reel === 'ready') init();
-      if (e.data?.reel === 'seek') seek(e.data.t);
+      if (e.data?.reel === 'seek') playFrom(e.data.t);
+      if (e.data?.reel === 'menu') toMenu();
     });
     frame.addEventListener('load', init);
     init();
 
-    btnStart.addEventListener('click', () => {
-      if (small) { // 手机：系统播放器全屏播 MP4（iPhone 不支持网页元素全屏）
-        const v = video as any;
-        video.hidden = false; video.play().catch(() => {});
-        if (v.requestFullscreen) v.requestFullscreen().catch(() => {}); else v.webkitEnterFullscreen?.();
-        return;
-      }
-      btnStart.hidden = true; t = 0; play();
+    // 手机：系统播放器全屏播 MP4（iPhone 不支持网页元素全屏）
+    btn('start').addEventListener('click', () => {
+      const v = video as any;
+      video.hidden = false; video.play().catch(() => {});
+      if (v.requestFullscreen) v.requestFullscreen().catch(() => {}); else v.webkitEnterFullscreen?.();
     });
     const closeVideo = () => { video.pause(); video.hidden = true; };
     document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) closeVideo(); });

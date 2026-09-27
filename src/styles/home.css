@@ -136,8 +136,8 @@ footer { font-size: var(--text-meta); }
 
 /* 明暗切换：两颗圆形色块（深色块 / 浅色块），当前主题套高亮环 */
 .theme-dots { display: flex; align-items: center; gap: 8px; }
-/* 深色模式暂时隐藏：各页固定浅色，切换按钮先不显示（样式与脚本保留） */
-.theme-dots { display: none; }
+/* 深色模式暂时隐藏：各页固定浅色，只留浅色圆点（深色圆点与切换脚本保留） */
+.theme-dot[data-set-theme="dark"] { display: none; }
 .theme-dot {
   width: 14px; height: 14px; border-radius: 50%; border: none; padding: 0; cursor: pointer;
   transition: transform 0.18s, box-shadow 0.18s;
