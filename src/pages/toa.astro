@@ -75,20 +75,17 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
     .behavior-item:last-child { border-bottom: none; }
     .behavior-item h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
 
-    /* 在线 Demo：点击才加载（不在每次打开页面时请求演示服务器），也可新窗口打开 */
+    /* 在线 Demo：iframe 写在页面里，快滚到时才加载（loading="lazy"），加载完成前只显示「加载中」 */
     .demo-frame {
       position: relative; width: 100%; aspect-ratio: 16/10; margin-top: 1.5rem;
       border: 1px solid var(--border); background: var(--chip); overflow: hidden;
     }
-    .demo-frame img { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; }
-    .demo-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
-    .demo-load {
-      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-      font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.05em; font-weight: 500;
-      padding: 0.6rem 1.1rem; border: none; cursor: pointer;
-      color: var(--accent); background: var(--chip-accent);
+    .demo-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .demo-loading {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.1em; color: var(--text-dimmer);
     }
-    .demo-load:hover { color: var(--accent-hi); }
+    .demo-frame.is-loaded .demo-loading { display: none; }
     .demo-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.9rem; }
 
     .video-wrap { width: 100%; aspect-ratio: 16/9; margin-top: 1.5rem; overflow: hidden; border: 1px solid var(--border); background: #000; }
@@ -134,10 +131,10 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
   <section id="demo">
     <p class="sec-label">Live Demo</p>
     <h2>在线体验</h2>
-    <p>ToA 的在线 Demo 已部署，可以直接在下面试用。点击后才会连接演示服务器；想要更大的画面，可以在新窗口打开。</p>
-    <div class="demo-frame" data-demo-src="https://118.25.51.150/toa/">
-      <img src="/images/toa/Interface.png" alt="" aria-hidden="true" />
-      <button type="button" class="demo-load">▶ 加载在线 Demo</button>
+    <p>ToA 的在线 Demo 已部署，可以直接在下面试用；想要更大的画面，可以在新窗口打开。</p>
+    <div class="demo-frame">
+      <div class="demo-loading">加载中…</div>
+      <iframe src="https://118.25.51.150/toa/" loading="lazy" title="ToA 在线 Demo" allow="clipboard-write" onload="this.parentElement.classList.add('is-loaded')"></iframe>
     </div>
     <div class="demo-actions">
       <a href="https://118.25.51.150/toa/" target="_blank" rel="noopener" class="btn-link">新窗口打开 ↗</a>
@@ -408,17 +405,6 @@ import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
   <footer>© 2026 屈非塬 · State Key Lab of CAD&amp;CG, ZJU</footer>
 
 </body>
-<script>
-  // 在线 Demo：点击才加载 iframe
-  const demoFrame = document.querySelector<HTMLElement>('.demo-frame');
-  demoFrame?.querySelector('.demo-load')?.addEventListener('click', () => {
-    const f = document.createElement('iframe');
-    f.src = demoFrame.dataset.demoSrc ?? '';
-    f.title = 'ToA 在线 Demo';
-    f.allow = 'clipboard-write';
-    demoFrame.replaceChildren(f);
-  });
-</script>
 <script>
   const themeDots = document.querySelectorAll('.theme-dot');
   if (themeDots.length) {

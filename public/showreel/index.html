@@ -17,10 +17,11 @@
   @font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url('fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 500; src: url('fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: url('fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2'); }
-  @font-face { font-family: 'PingFang SC'; font-weight: 400; src: url('../fonts/PingFangSC-Regular.woff2') format('woff2'); }
-  @font-face { font-family: 'PingFang SC'; font-weight: 500; src: url('../fonts/PingFangSC-Medium.woff2') format('woff2'); }
-  @font-face { font-family: 'PingFang SC'; font-weight: 700; src: url('../fonts/PingFangSC-Bold.woff2') format('woff2'); }
-  /* only for the few characters the site's PingFang subset lacks (built by subset-fonts.py) */
+  /* the site's font, declared as the site does (src/styles/tokens.css): the system PingFang first, else the site's subset */
+  @font-face { font-family: 'PingFang SC'; font-weight: 400; src: local('PingFang SC'), local('PingFangSC-Regular'), url('../fonts/PingFangSC-Regular.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 500; src: local('PingFang SC Medium'), local('PingFangSC-Medium'), url('../fonts/PingFangSC-Medium.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 700; src: local('PingFang SC Bold'), local('PingFangSC-Bold'), url('../fonts/PingFangSC-Bold.woff2') format('woff2'); }
+  /* only for the few characters the site's PingFang subset lacks (built by subset-fonts.py); the site falls back to Noto Sans SC too */
   @font-face { font-family: 'Noto Sans SC Fallback'; font-weight: 400; src: url('fonts/noto-sans-sc-fallback-400.woff2') format('woff2'); }
   @font-face { font-family: 'Noto Sans SC Fallback'; font-weight: 500; src: url('fonts/noto-sans-sc-fallback-500.woff2') format('woff2'); }
 
@@ -50,7 +51,7 @@
   .embed #hud { pointer-events: none; }
   .embed #hud .seg { pointer-events: auto; cursor: pointer; }
   .embed #hud .seg::before { content: ''; position: absolute; left: 0; right: 0; top: -16px; bottom: -22px; }
-  .embed .toc .rw { cursor: pointer; }
+  .embed .toc .rw, .embed #hud > .kick:first-child { cursor: pointer; pointer-events: auto; }
   .embed .toc .rw:hover .n { color: var(--accent); }
   .demo-cta { position: absolute; left: 150px; top: 858px; font-size: 14px; padding: 7px 16px; border-radius: 18px; color: var(--accent); background: var(--accent-soft); text-decoration: none; white-space: nowrap; }
   .demo-cta:hover { background: rgba(194,65,12,0.16); }
@@ -349,7 +350,7 @@ function warp(x, map) {
   for (let i = 1; i < map.length; i++) if (x <= map[i][0]) return lerp(map[i - 1][1], map[i][1], (x - map[i - 1][0]) / (map[i][0] - map[i - 1][0]));
   return map[map.length - 1][1] + (x - map[map.length - 1][0]);
 }
-const PLAN = {}, T = { intro: [0, 12 * BEAT] };
+const PLAN = {}, T = { intro: [0, 16 * BEAT] };
 { let cur = T.intro[1]; KEYS.forEach(k => { PLAN[k] = plan(COPY[k]); T[k] = [cur, cur + PLAN[k].dur]; cur = T[k][1]; }); T.outro = [cur, cur + 8 * BEAT]; }
 const DUR = T.outro[1];
 const INTRO_CLOCK = [[0, 0], [2.2 / SPEED, 2.2], [T.intro[1] - .45, 2.2], [T.intro[1], 2.5]];
@@ -456,14 +457,22 @@ const INTRO = (() => {
   const en = $('div', 'abs nowrap', r, 'QU FEIYUAN'); at(en, 122, 456); st(en, { fontFamily: 'var(--display)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.34em', color: 'var(--dim)' });
   const hl = $('div', 'abs', r); at(hl, 122, 500); st(hl, { height: '2px', background: 'var(--accent)', width: '0px' });
   const role = $('div', 'abs nowrap', r, '设计 · 工程 · AI'); at(role, 120, 526); st(role, { fontSize: '22px' });
-  const aff = $('div', 'abs', r, '浙江大学 CAD&amp;CG 全国重点实验室 · 人机交互与数据可视化方向硕士研究生<br>阿里巴巴淘天集团 · AI 设计工程师（实习）'); at(aff, 120, 580); st(aff, { fontSize: '16px', lineHeight: '1.8', color: 'var(--dim)', whiteSpace: 'nowrap' });
+  // the site's introduction and skills (src/pages/index.astro keeps the same text for phones and screen readers)
+  const bio = $('div', 'abs', r, '本科毕业于湖南大学工业设计专业，现为浙江大学 CAD&amp;CG 全国重点实验室人机交互与数据可视化方向硕士研究生，同时在阿里巴巴淘天集团实习，任 AI 设计工程师。懂 AI，懂设计，也懂工程，主要关注如何用 AI 更好地赋能设计。主导过对话式可视分析工具、数据叙事 Agent、舆情分析平台等数据产品，完成从产品定义、交互设计到开发落地的全过程。');
+  at(bio, 120, 580); st(bio, { width: '560px', fontSize: '15px', lineHeight: '1.85', color: 'var(--dim)' });
+  const SKILLS = [['设计', ['原型设计', 'Figma', '用户研究', '信息架构']], ['开发', ['Python', 'React', 'PydenticAgent', 'LangGraph']], ['研究', ['LLM4Vis', 'Agent4Vis', 'Chart Generation', 'Paper Writing']]];
+  const skills = SKILLS.map(([k, tags]) => { const e = $('div', 'abs nowrap', r, `<span style="display:inline-block;width:46px;font-size:13px;font-weight:500">${k}</span>` +
+    tags.map(g => `<span class="chipx" style="font-size:12px">${g}</span>`).join('')); return e; });
   const toc = $('div', 'toc', r);
   const h = $('div', 'h cap', toc, '精选项目 &nbsp;·&nbsp; 背景 / 解法 / 结果');
   const rows = KEYS.map(k => { const [n, d, y] = COPY[k].toc; return $('div', 'rw', toc, `<span class="i">${COPY[k].idx}</span><span class="n">${n}</span><span class="d">${d}</span><span class="y">${y}</span>`); });
   return {
     // the name block and the contents are each centred on the grid's axis (y 540); the contents sit on the panel column
     layout() { vis(r, true); const s0 = document.getElementById('stage').getBoundingClientRect();
-      const left = [nm, en, hl, role, aff], b = unionRect(left, s0), dy = GRID.cy - (b.y + b.h / 2);
+      // the introduction under the role line, the skills under it, one row each
+      let y = parseFloat(bio.style.top) + bio.getBoundingClientRect().height + 26;
+      skills.forEach(e => { at(e, 120, y); y += e.getBoundingClientRect().height + 10; });
+      const left = [nm, en, hl, role, bio, ...skills], b = unionRect(left, s0), dy = GRID.cy - (b.y + b.h / 2);
       left.forEach(e => { e.style.top = parseFloat(e.style.top) + dy + 'px'; });
       st(toc, { left: '780px', width: '1020px' }); const th = toc.getBoundingClientRect().height; st(toc, { top: GRID.cy - th / 2 + 'px' }); vis(r, false); },
     render(tr) {
@@ -474,7 +483,8 @@ const INTRO = (() => {
       const p = oQ(P(t, .05, .7)); st(name, { transform: `translateY(${(1 - p) * 105}%)` });
       rise(en, t, .25, .5, 8);
       st(hl, { width: 48 * oQ(P(t, .35, .8)) + 'px' });
-      rise(role, t, .4, .5, 10); rise(aff, t, .55, .5, 10);
+      rise(role, t, .4, .5, 10); rise(bio, t, .55, .5, 10);
+      skills.forEach((e, i) => rise(e, t, .7 + i * .08, .45, 8));
       rise(h, t, .6, .5, 8);
       rows.forEach((rw, i) => rise(rw, t, .75 + i * .16, .5, 10));
     },
@@ -1519,7 +1529,8 @@ async function boot() {
   INTRO.layout(); P4.layout(); P5.layout(); OUTRO.layout();
   window.renderFrame = renderFrame;
   // the score (soundtrack.py) reads these cues so its chimes and ticks land on the same beats
-  window.SHOWREEL = { duration: DUR, fps: FPS, beat: BEAT, intro: T.intro, outro: T.outro,
+  // menu: the opening page fully drawn (the site's first page); start: where playing on from it leads into 01
+  window.SHOWREEL = { duration: DUR, fps: FPS, beat: BEAT, intro: T.intro, outro: T.outro, menu: 2.2 / SPEED + .15, start: T.intro[1] - .45,
     chapters: KEYS.map(k => ({ id: k, start: T[k][0], end: T[k][1], steps: PLAN[k].steps.map(s => T[k][0] + s) })) };
   const q = new URLSearchParams(location.search);
   if (EMBED) {
@@ -1531,6 +1542,7 @@ async function boot() {
     const seek = t => parent.postMessage({ reel: 'seek', t }, location.origin);
     document.querySelectorAll('#hud .seg').forEach((e, i) => e.addEventListener('click', () => seek(T[KEYS[i]][0] + .01)));
     document.querySelectorAll('.toc .rw').forEach((e, i) => e.addEventListener('click', () => seek(T[KEYS[i]][0] + .01)));
+    document.querySelector('#hud .kick').addEventListener('click', () => parent.postMessage({ reel: 'menu' }, location.origin));
     renderFrame(0);
     document.documentElement.classList.add('is-ready');
   } else if (q.has('play')) {
