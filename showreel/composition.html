@@ -826,7 +826,8 @@ const P2 = (() => {
    → 解法: the blueprint becomes the app, built end to end (write-up §3.1): a front-end editor (React · GrapesJS), a PPT agent
            built on the design agent, a back end (FastAPI) and a template admin. At its heart DSL + 模板: the agent only
            writes DSL and a template gives it its look, so generation stays stable and a template switches in an instant —
-           the DSL stays put while the deck re-skins (the DSL's fields are illustrative)
+           the DSL stays put while the deck re-skins (the DSL's fields are illustrative). The editor closes the loop: an
+           element referenced there goes back to the agent, which rewrites only its part
    → 结果: the app folds back into the figure's Apps bar, and the internship's three parts light up together */
 const P3 = (() => {
   const c = COPY.p3, sc = Scene(T.p3);
@@ -864,8 +865,8 @@ const P3 = (() => {
   // 解法 · what each part is, at its place in the built app (rows at y 306 / 390 / 734; text centred on each row's cap)
   const txt = (x, y, html, cls = 'zh14') => box(pn, 'abs ' + cls, x, y, 0, 0, html);
   const right = (e, x) => { st(e, { left: 'auto', right: W - x + 'px' }); return e; };
-  const feMain = txt(964, 325, '画布编辑与预览'); st(feMain, { fontWeight: 500 });
-  const feDes = box(pn, 'abs chipx', 1078, 325, 0, 0, '设计 · 编辑交互');
+  const feMain = txt(964, 325, '画布编辑 · 预览一体'); st(feMain, { fontWeight: 500 });
+  const feDes = box(pn, 'abs chipx', 1104, 325, 0, 0, '设计 · 编辑交互');
   const feTech = right(txt(0, 327, 'React · GrapesJS', 'mono tech'), 1676);
   const beMain = txt(964, 753, '会话管理与数据持久化'); st(beMain, { fontWeight: 500 });
   const beTech = right(txt(0, 755, 'FastAPI', 'mono tech'), 1260);
@@ -879,8 +880,8 @@ const P3 = (() => {
   const dslLines = [['title', [96]], ['points', [84]], ['', [66]], ['', [76]], ['chart', null]].map(([key, ws], i) => {
     const y = 46 + i * 24;
     const k = box(dsl, 'abs mono', 14, y - 5, 0, 0, key); st(k, { fontSize: '11px', color: 'var(--dimmer)' });
-    const bars = ws ? ws.map(w => { const e = box(dsl, 'abs', 66, y, 0, 6); st(e, { background: '#c3c8d3', borderRadius: '3px' }); return [e, w]; })
-      : [[10, '#d5d9e1'], [16, '#c2410c'], [12, '#d5d9e1']].map(([h, col], j) => { const e = box(dsl, 'abs', 66 + j * 11, y + 6 - h, 0, h); st(e, { background: col, borderRadius: '1px' }); return [e, 7]; });
+    const bars = ws ? ws.map(w => { const e = box(dsl, 'abs', 66, y, 0, 6); st(e, { background: '#c3c8d3', borderRadius: '3px' }); return [e, w, '#c3c8d3']; })
+      : [[10, '#d5d9e1'], [16, '#c2410c'], [12, '#d5d9e1']].map(([h, col], j) => { const e = box(dsl, 'abs', 66 + j * 11, y + 6 - h, 0, h); st(e, { background: col, borderRadius: '1px' }); return [e, 7, col]; });
     return { k, bars }; });
   const plus = txt(1296, 530, '+', 'mono'); st(plus, { fontSize: '20px', color: 'var(--dim)' });
   const tp = box(pn, 'abs', 1324, 452, 160, 184); st(tp, { background: 'var(--panel)', borderRadius: '8px' });
@@ -895,6 +896,13 @@ const P3 = (() => {
   const capOf = (x, a, b) => { const e = txt(x, 650, `<b style="color:var(--accent);font-weight:500">${a}</b><br>${b}`, 'zh13'); st(e, { lineHeight: '1.6' }); return e; };
   const capStable = capOf(1094, '稳定生成', 'Agent 只写 DSL');
   const capSwitch = capOf(1522, '快速切换', 'DSL 不变，换模板即换样式');
+  // 解法 · the loop back: an element referenced in the editor goes back to the agent, which rewrites only its part.
+  // Per template: the referenced element's box (300 × 169 grid), its name, and the DSL line it comes from
+  const REF = [[174, 70, 106, 76, '图表', 4], [106, 70, 172, 50, '正文', 1], [154, 44, 136, 102, '图表', 4], [156, 24, 132, 22, '标题', 0]];
+  const refBox = box(outW, 'abs', 0, 0, 0, 0); st(refBox, { border: '1.5px solid var(--accent)', borderRadius: '2px', boxSizing: 'border-box', zIndex: 3 });
+  const refFill = box(outW, 'abs', 0, 0, 0, 0); st(refFill, { background: 'rgba(194,65,12,0.2)', zIndex: 3 });
+  const refChip = box(pn, 'abs chipx', 1420, 325, 0, 0, ''); st(refChip, { color: 'var(--accent)', background: 'var(--accent-soft)' });
+  const backLab = txt(990, 466, '引用元素<br>交回 Agent 修改', 'zh13'); st(backLab, { fontSize: '12px', lineHeight: '1.6', color: 'var(--accent)' });
   // arrows sit above the parts' cards
   const svg = S('svg', { class: 'full' }, pn);
   const arrow = (d, col = '#171b26') => S('path', { d, stroke: col, 'stroke-width': col === '#171b26' ? 1.1 : 1.6, fill: 'none', 'marker-end': col === '#171b26' ? 'url(#arr)' : 'url(#arrA)' }, svg);
@@ -902,10 +910,15 @@ const P3 = (() => {
   const a2 = arrow('M1488,544 L1518,544'), a2hot = arrow('M1488,544 L1518,544', '#c2410c');
   const up = arrow('M1602,495 L1602,374');        // the deck opens in the editor
   const adUp = arrow('M1404,730 L1404,640');      // the admin keeps the templates
+  const back = arrow('M979,374 L979,520', '#c2410c');  // the editor's reference goes back to the agent
+  const refGlow = S('circle', { r: 10, fill: 'rgba(194,65,12,0.16)' }, svg), refDot = S('circle', { r: 4.5, fill: '#c2410c', stroke: '#fff', 'stroke-width': 1.5 }, svg);
+  const REFPATH = [[1460, 350], [1460, 380], [979, 380], [979, 518]];  // chip → out of the editor → down the loop to the agent
+  const along = (pts, p) => { const seg = pts.slice(1).map((q, i) => Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1])); let d = p * seg.reduce((a, b) => a + b, 0);
+    for (let i = 0; i < seg.length; i++) { if (d <= seg[i] || i === seg.length - 1) { const k = seg[i] ? Math.min(1, d / seg[i]) : 0; return [lerp(pts[i][0], pts[i + 1][0], k), lerp(pts[i][1], pts[i + 1][1], k)]; } d -= seg[i]; } };
 
   const t0 = T.p3[0];
   const sw0 = PLAN.p3.steps[1] + 1.7 / SPEED;  // real time the templates start switching (the app is drawn by then)
-  const SW = 1.2;                               // seconds per template
+  const SW = 1.2, CYC = 4.8;                    // a cycle: two template switches (SW each), then one reference (the rest)
   return {
     render(t) {
       if (!sc.on(t)) return;
@@ -955,12 +968,31 @@ const P3 = (() => {
       [beMain, beTech, adMain, adSub].forEach((e, i) => cIn(e, s1 + 1.35 + i * .04, .4, 6));
       line(adUp, s1 + 1.45, s1 + 1.6);
       cIn(capSwitch, s1 + 1.5, .35, 6);
-      // while the step is read, the template switches: the DSL stays, the deck re-renders in the next look
-      const run = t - t0 - sw0, n = run > 0 ? Math.floor(run / SW) + 1 : 0, since = run > 0 ? run - (n - 1) * SW : 99;
+      line(back, s1 + 1.5, s1 + 1.65); cIn(backLab, s1 + 1.55, .35, 6);
+      // while the step is read, two things take turns. 快速切换: the template switches twice — the DSL stays, the deck
+      // re-renders in the next look. 引用: an element is referenced in the editor and goes back to the agent, which rewrites
+      // only its line of DSL, and only that element changes
+      const run = t - t0 - sw0, cyc = run > 0 ? Math.floor(run / CYC) : 0, ph = run > 0 ? run - cyc * CYC : -1;
+      const n = run > 0 ? 2 * cyc + (ph < SW ? 1 : 2) : 0, since = run > 0 ? (ph < SW ? ph : ph - SW) : 99;
       const cur = n % SEQ.length, prev = (n + SEQ.length - 1) % SEQ.length;
       outs.forEach((e, j) => st(e, { zIndex: j === cur ? 2 : j === prev ? 1 : 0, opacity: j === cur ? (n ? Math.min(1, since / .25) : 1) : (j === prev && n ? 1 : 0) }));
       thumbs.forEach((e, j) => st(e, { boxShadow: j === cur ? '0 0 0 2px var(--accent)' : '0 0 0 1px var(--line)' }));
-      a2hot.style.opacity = n && since < .5 ? (1 - since / .5) * rOut : 0;
+      const r = run > 0 ? ph - 2 * SW : -1, ref = REF[cur], K = 160 / 300;   // r ≥ 0: the reference turn
+      const selOn = r >= 0 ? P(r, 0, .2) * (1 - P(r, 2.0, 2.3)) : 0;
+      place(refBox, { x: ref[0] * K, y: ref[1] * K, w: ref[2] * K, h: ref[3] * K }); place(refFill, { x: ref[0] * K, y: ref[1] * K, w: ref[2] * K, h: ref[3] * K });
+      st(refBox, { opacity: selOn * rOut, transform: `scale(${1.08 - .08 * oQ(P(r, 0, .2))})` });
+      refChip.textContent = '引用 · ' + ref[4];
+      refChip.style.opacity = (r >= 0 ? P(r, .25, .4) * (1 - P(r, 2.0, 2.3)) : 0) * rOut;
+      const [dx, dy] = along(REFPATH, ioC(P(r, .45, 1.25)));
+      const dOn = r >= 0 ? P(r, .45, .55) * (1 - P(r, 1.2, 1.3)) * rOut : 0;
+      [refDot, refGlow].forEach(e => { e.setAttribute('cx', dx); e.setAttribute('cy', dy); e.style.opacity = dOn; });
+      st(agentN, { background: r >= 1.25 && r < 1.6 ? 'var(--accent)' : '' });
+      const line0 = dslLines[ref[5]];   // the agent rewrites that element's line of DSL
+      if (r >= 1.4 && r < 2.3) line0.bars.forEach(([e, w, col]) => st(e, { width: w * oC(P(r, 1.4, 1.7)) + 'px', background: r < 2.0 ? '#c2410c' : col }));
+      else line0.bars.forEach(([e, , col]) => st(e, { background: col }));
+      refFill.style.opacity = (r >= 0 ? P(r, 1.75, 1.85) * (1 - P(r, 1.95, 2.35)) : 0) * rOut;
+      const hot = n && since < .5 && ph < 2 * SW ? 1 - since / .5 : r >= 1.7 && r < 2.2 ? 1 - (r - 1.7) / .5 : 0;
+      a2hot.style.opacity = hot * rOut;
     },
   };
 })();
