@@ -249,31 +249,31 @@ const vline = (svg, x, y0, y1, both = true, col = '#171b26') => S('path', { d: `
    Every chapter: 背景 → 解法 → 结果. Steps are kept short; on-screen time is derived from their length. */
 const COPY = {
   p1: {
-    idx: '01', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'Skill 的治理、评测与优化',
-    sub: '主导搭建中台设计 Agent 的技能治理与评测体系',
+    idx: '01', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '技能的治理、评测与优化',
+    sub: '为中台设计 Agent 主导搭建技能治理与评测体系',
     steps: ['设计师各自开发的技能接入设计 Agent：<br>体量大、功能重叠，调用耗时且难以维护',
             '拆成基座 / 业务双层原子技能，按需组合调用；<br>与设计师共定过程检查点与理想输出，让技能并发评测、自我迭代'],
     metrics: [['30+', '完成治理的 Skill'], ['1000+', '团队内使用量'], ['−21%', '典型技能耗时']],
     look: [0, 2, 0],
-    toc: ['Skill 的治理、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'SKILL 治理',
+    toc: ['技能的治理、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '技能治理',
   },
   p2: {
-    idx: '02', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '视觉输出组件库的建立、评测与优化',
-    sub: '让中台设计 Agent 的所有视觉输出动态符合视觉规范',
+    idx: '02', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '视觉输出的规范、评测与优化',
+    sub: '为中台设计 Agent 封装视觉组件库，让所有视觉输出动态符合规范',
     steps: ['Agent 的各类视觉输出没有统一规范：<br>每次生成的风格都不一样',
             '封装设计组件库 + design.md，Agent 按需组合、动态输出；<br>DOM · CV · LLM 多模态评测，反向迭代组件库与 design.md'],
     result: 'Agent 的所有 HTML 类输出<br>统一为同一套视觉风格',
     look: [0.5, 1, 0],
-    toc: ['视觉输出组件库的建立、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '视觉组件库',
+    toc: ['视觉输出的规范、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '视觉输出',
   },
   p3: {
-    idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'PPT 生成模式',
+    idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'PPT 生成模式的设计与开发',
     sub: '为中台设计 Agent 上线 PPT 生成模式与多套模板',
-    steps: ['在技能之外，从 App 维度扩展 Agent：<br>把 PPT 生成做成一个可直接编辑的完整应用',
+    steps: ['团队日常需要做大量 PPT，<br>所以从 App 维度扩展 Agent，做一个可编辑的 PPT 应用',
             '开发：前端编辑器、PPT 专用 Agent、后端与模板管理后台；<br>DSL + 模板：模板快速切换，生成稳定'],
     result: '设计与前后端从 0 到 1 独立完成，<br>作为 App 接入中台设计 Agent',
     look: [0.5, 1.5, 0.5],
-    toc: ['PPT 生成模式', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成模式',
+    toc: ['PPT 生成模式的设计与开发', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成模式',
   },
   p4: {
     idx: '04', kicker: '研究生 · CHI\'27 在投 · 第一作者 · 2026.01 — 04', title: 'NarraSteer', latin: 1,
@@ -481,7 +481,7 @@ function Arch(parent) {
   const acc = (a, b) => S('path', { d: `M1650,${a + 3} L1650,${b - 3}`, stroke: '#c2410c', 'stroke-width': 1.6, fill: 'none', 'marker-start': 'url(#arrA)', 'marker-end': 'url(#arrA)' }, svg);
   // lit: 01 the Skills bar · 02 the output path, skills → agent → users · 03 the Apps bar
   const hi = [
-    [box(root, 'abar acc', 1310, 328, 410, 40, B[3][0]), tag('<b>01</b>治理 · 评测', 1706, 339)],
+    [box(root, 'abar acc', 1310, 328, 410, 40, B[3][0]), tag('<b>01</b>技能治理', 1706, 339)],
     [acc(236, 262), acc(302, 328), tag('<b>02</b>视觉输出', 1638, 240)],
     [box(root, 'abar acc', 860, 328, 410, 40, B[2][0]), tag('<b>03</b>PPT 生成模式', 1256, 339)],
   ];
@@ -497,7 +497,7 @@ function Arch(parent) {
   };
 }
 
-/* ============================================================ 01 · Skill 的治理、评测与优化
+/* ============================================================ 01 · 技能的治理、评测与优化
    背景: designer-made skills plugged into the design agent arrive bloated, overlapping and slow
    → 解法: 治理 — 基座 / 业务 atomic skills, combined on demand; 评测 · 优化 — the concurrent test platform (redrawn from the
            write-up's figure): test prompts × checks agreed with designers (process checkpoints, ideal outputs), a checker
@@ -673,7 +673,7 @@ const P1 = (() => {
   };
 })();
 
-/* ============================================================ 02 · 视觉输出组件库的建立、评测与优化
+/* ============================================================ 02 · 视觉输出的规范、评测与优化
    背景: on the internship's figure, the output path (skills → agent → users); the agent's visual outputs follow no shared
          spec — every run looks different
    → 解法: 封装 — a design component library + design.md that the agent composes its outputs from;
@@ -820,9 +820,9 @@ const P2 = (() => {
   };
 })();
 
-/* ============================================================ 03 · PPT 生成模式
-   背景: past Skills, the agent grows along the figure's other dimension, Apps — the chapter opens on the internship's figure
-         with Apps lit, over the blueprint of the app still to be built
+/* ============================================================ 03 · PPT 生成模式的设计与开发
+   背景: the team makes a lot of decks, so the agent grows along the figure's other dimension, Apps — the chapter opens on
+         the internship's figure with Apps lit, over the blueprint of the app still to be built
    → 解法: the blueprint becomes the app, built end to end (write-up §3.1): a front-end editor (React · GrapesJS), a PPT agent
            built on the design agent, a back end (FastAPI) and a template admin. At its heart DSL + 模板: the agent only
            writes DSL and a template gives it its look, so generation stays stable and a template switches in an instant —
