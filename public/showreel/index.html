@@ -138,7 +138,7 @@
   .mod2.acc { box-shadow: 0 0 0 1.5px var(--accent); color: var(--accent); font-weight: 500; }
   .mod2.dash { box-shadow: none; border: 1px dashed var(--faint); background: rgba(255,255,255,0.6); }
 
-  /* 03 · NarraSteer, 04 · ToA, 05 · public opinion */
+  /* 04 · ToA, 05 · NarraSteer, 06 · public opinion */
   .tile { position: absolute; width: 58px; height: 36px; border-radius: 6px; background: var(--card); border: 1px solid var(--line2); box-sizing: border-box;
           font-family: var(--mono); font-size: 10px; color: var(--dimmer); text-align: center; line-height: 34px; }
   /* agent trace, drawn like today's agent transcripts: a status dot, the tool call, its result on an elbow */
@@ -293,7 +293,7 @@ const COPY = {
     toc: ['PPT 生成模式的设计与开发', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成模式',
   },
   p4: {
-    idx: '04', kicker: '研究生 · CHI\'27 在投 · 第一作者 · 2026.01 — 04', title: 'NarraSteer', latin: 1,
+    idx: '05', kicker: '研究生 · CHI\'27 在投 · 第一作者 · 2026.01 — 04', title: 'NarraSteer', latin: 1,
     sub: '面向数据叙事的 Agent 交互产品设计',
     steps: ['Agent 过程不透明，用户只能被动等待：<br><em>74%</em> 的时间在等，<em>5/8</em> 的人最后才发现跑偏',
             '把执行轨迹重构为叙事空间中的故事线：<br>位置即数据维度，拖拽节点即可引导 Agent'],
@@ -302,7 +302,7 @@ const COPY = {
     toc: ['NarraSteer', '数据叙事 Agent · CHI\'27 在投', '2026'], hud: 'NARRASTEER',
   },
   p5: {
-    idx: '05', kicker: '研究生 · CHI\'26 收录 · 第一作者 · 2025.07 — 11', title: 'ToA · Tree-of-Analysis', latin: 1,
+    idx: '04', kicker: '研究生 · CHI\'26 收录 · 第一作者 · 2025.07 — 11', title: 'ToA · Tree-of-Analysis', latin: 1,
     sub: '对话式可视分析产品设计',
     steps: ['新手在多轮可视分析对话中容易迷路：<br>线性对话难回溯，<em>4/6</em> 名新手任务失败',
             '把对话重组为分析树：回答是节点，提问是边；<br>识别图表信号，推荐后续节点'],
@@ -319,7 +319,7 @@ const COPY = {
     toc: ['跨社交媒体舆情分析与治理平台', 'G 端产品负责人', '2024'], hud: '舆情平台',
   },
 };
-const KEYS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
+const KEYS = ['p1', 'p2', 'p3', 'p5', 'p4', 'p6'];  // chapter order: ToA (04) before NarraSteer (05)
 
 /* ============================================================ timeline — paced by reading
    Scene code is authored on a compact "animation clock": 背景 at STEP[0], 解法 at STEP[1], 结果 at STEP[2],
@@ -350,7 +350,9 @@ function warp(x, map) {
   for (let i = 1; i < map.length; i++) if (x <= map[i][0]) return lerp(map[i - 1][1], map[i][1], (x - map[i - 1][0]) / (map[i][0] - map[i - 1][0]));
   return map[map.length - 1][1] + (x - map[map.length - 1][0]);
 }
-const PLAN = {}, T = { intro: [0, 16 * BEAT] };
+// the MP4's opening page carries the introduction and skills and holds long enough to read them; the site's (just the
+// contents) holds briefly. The site has its own cue sheet and score for this timing (build.sh)
+const PLAN = {}, T = { intro: [0, (EMBED ? 8 : 16) * BEAT] };
 { let cur = T.intro[1]; KEYS.forEach(k => { PLAN[k] = plan(COPY[k]); T[k] = [cur, cur + PLAN[k].dur]; cur = T[k][1]; }); T.outro = [cur, cur + 8 * BEAT]; }
 const DUR = T.outro[1];
 const INTRO_CLOCK = [[0, 0], [2.2 / SPEED, 2.2], [T.intro[1] - .45, 2.2], [T.intro[1], 2.5]];
@@ -1029,7 +1031,7 @@ const P3 = (() => {
   };
 })();
 
-/* ============================================================ 04 · NARRASTEER
+/* ============================================================ 05 · NARRASTEER
    背景: the agent works opaquely; users idle 74% of the time, 5/8 only saw the drift at the end
    → 解法: the trace, a line of steps in time, maps into the narrative-space disc — each step flies to the attribute
            it analyses and the storyline is drawn through them; then a drag steers the agent
@@ -1228,7 +1230,7 @@ const P4 = (() => {
   };
 })();
 
-/* ============================================================ 05 · TOA
+/* ============================================================ 04 · TOA
    背景: novices lose their way in linear multi-turn chat; 4/6 novices failed in the formative study
    → 解法: the conversation, numbered, is re-laid out as an analysis tree: each answer's chart flies into a node and each
            question's number onto the edge into it (answers = nodes, queries = edges); chat order 1–5 lands on different
@@ -1387,7 +1389,7 @@ const P5 = (() => {
   };
 })();
 
-/* on the site only: while 05 plays, a link to ToA's live demo (embedded on the ToA page) */
+/* on the site only: while 04 (ToA) plays, a link to its live demo (embedded on the ToA page) */
 const DEMO = EMBED ? (() => {
   const sc = Scene(T.p5);
   const a = $('a', 'demo-cta', sc.root, '在线体验 ToA Demo ↗'); a.href = '/toa#demo'; a.target = '_top';

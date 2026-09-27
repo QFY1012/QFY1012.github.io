@@ -169,7 +169,7 @@ PATTERNS = [  # eighth-note figures, indices into the chord's arpeggio tones
     [0, 1, 3, 1, 2, 1, 3, 1],
     [0, 3, 2, 3, 1, 3, 2, 3],
 ]
-RESEARCH = {3, 4}                          # NarraSteer, ToA: the softer voice
+RESEARCH = {3, 4}                          # ToA, NarraSteer (the 4th and 5th chapters): the softer voice
 LEVEL = [0.86, 0.93, 1.0, 0.84, 0.92, 1.0]  # the arc across the reel
 SECTION = {'title': .75, 'bg': 1.0, 'sol': 1.0, 'res': 1.06}
 PHRASE = [1.0, 0.92, 1.0, 0.78]            # four-bar phrases breathe on the last bar
