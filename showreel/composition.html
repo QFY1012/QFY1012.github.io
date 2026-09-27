@@ -136,7 +136,6 @@
   .trow .tr { position: relative; padding-left: 16px; color: var(--dimmer); }
   .trow .tr::before { content: ''; position: absolute; left: 3px; top: 1px; width: 7px; height: 8px; border-left: 1px solid var(--faint); border-bottom: 1px solid var(--faint); }
   .trow.tnew { overflow: hidden; }
-  .tcard .trow { font-size: 11.5px; }
   .twork { position: relative; padding-left: 16px; font-family: var(--mono); font-size: 12px; color: var(--accent); }
   .twork i { position: absolute; left: 1px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
   .logl { font-family: var(--mono); font-size: 13px; color: var(--dim); margin: 0 0 13px; white-space: nowrap; }
@@ -972,7 +971,7 @@ const P4 = (() => {
   // 解法: the narrative-space disc (attribute labels and link types from the real system)
   const disc = $('div', 'layer', pn);
   const svg = S('svg', { class: 'full' }, disc);
-  const C = { x: 1460, y: 548 }, R = 262;
+  const C = { x: 1440, y: 548 }, R = 262;
   const pol = (a, r) => [C.x + Math.cos(a * Math.PI / 180) * r, C.y + Math.sin(a * Math.PI / 180) * r];
   const face = S('circle', { cx: C.x, cy: C.y, r: R, fill: '#fff', stroke: 'rgba(23,27,38,0.16)', 'stroke-width': 1.2 }, svg);
   const ATTR = ['GDP', 'Country', 'Unemployment', 'Inflation', 'Country code', 'GDP per Capita', 'Oil Price', 'Life Expectancy', 'FDI', 'Exports', 'GDP Growth'];
@@ -981,8 +980,10 @@ const P4 = (() => {
   const hub = S('g', {}, svg); S('circle', { cx: C.x, cy: C.y, r: 40, fill: '#fff', stroke: 'rgba(23,27,38,0.2)' }, hub);
   S('text', { x: C.x, y: C.y + 5, 'text-anchor': 'middle', style: 'font: 500 13px JetBrains Mono', fill: '#171b26' }, hub).textContent = 'Year';
   function arc(nodes) { let d = ''; nodes.forEach((n, k) => { if (k === nodes.length - 1) return; const [a0, r0] = n, [a1, r1] = nodes[k + 1]; for (let s = 0; s <= 20; s++) { const f = s / 20; const [x, y] = pol(lerp(a0, a1, f), lerp(r0, r1, f) * R + Math.sin(f * Math.PI) * 10); d += (d ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1); } }); return d; }
-  const qa = [[122, .80], [158, .84], [210, .86], [262, .86], [310, .82], [340, .76]];
-  const il = [[128, .58], [165, .62], [218, .62], [262, .56]];
+  // every node sits on a spoke — it explores that rim attribute together with the focus (Year) at the centre
+  const A = n => ((ang(ATTR.indexOf(n)) % 360) + 360) % 360;
+  const qa = [[A('Oil Price'), .80], [A('Life Expectancy'), .84], [A('FDI'), .86], [A('Exports'), .86], [A('GDP'), .82], [A('Unemployment'), .76]];
+  const il = [[A('Life Expectancy'), .58], [A('FDI'), .62], [A('Exports'), .62], [A('GDP'), .56]];
   const qBand = S('path', { d: arc(qa), fill: 'none', stroke: 'rgba(23,27,38,0.07)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
   const qLine = S('path', { d: arc(qa), fill: 'none', stroke: '#171b26', 'stroke-width': 1.6 }, svg);
   const iBand = S('path', { d: arc(il), fill: 'none', stroke: 'rgba(194,65,12,0.14)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
@@ -991,7 +992,7 @@ const P4 = (() => {
   const qN = qa.map(([a, r]) => node(a, r, '#171b26'));
   const iN = il.map(([a, r]) => node(a, r, '#c2410c'));
   const linkLab = [['q', 1, 'cause-effect'], ['q', 3, 'cause-effect'], ['i', 0, 'elaboration'], ['i', 2, 'contrast']].map(([w, k, s]) => {
-    const arr = w === 'q' ? qa : il; const [a0, r0] = arr[k], [a1, r1] = arr[k + 1]; const [x, y] = pol((a0 + a1) / 2, ((r0 + r1) / 2 + (w === 'q' ? .08 : -.09)) * R);
+    const arr = w === 'q' ? qa : il; const [a0, r0] = arr[k], [a1, r1] = arr[k + 1]; const [x, y] = pol((a0 + a1) / 2, ((r0 + r1) / 2 + (w === 'q' ? -.08 : -.09)) * R);
     const e = S('text', { x, y, 'text-anchor': 'middle', style: 'font: italic 500 11px JetBrains Mono', fill: w === 'q' ? '#666d7e' : '#c2410c' }, svg); e.textContent = s; return { e, w, k };
   });
   const pills = ATTR.map((n, i) => { const [x, y] = pol(ang(i), R); const g = S('g', {}, svg); const w = n.length * 7.4 + 18;
@@ -1009,16 +1010,13 @@ const P4 = (() => {
   const go = pop.querySelector('.go');
   // 解法 · the mapping: the agent's trace is a line of steps in time; each step moves to where its data dimension sits on
   // the disc (angle = the attribute it analyses), and the storyline is drawn through them as they land
-  // each step's measure and dimension, matching where its node sits on the disc (between the two anchors, or on the
-  // measure's own spoke when the dimension is the focus, Year); filters don't place nodes, so none are steps here
-  // every step includes the focus (Year, the centre); its other one or two attributes place it — between their anchors,
-  // or on the attribute's own spoke when there is only one. Filters don't place nodes, so none are steps here
-  const STEPS = [[['Oil Price', 'Life Expectancy'], 'line chart'], [['FDI', 'Life Expectancy'], 'line chart'], [['Exports'], 'line chart'],
-                 [['GDP'], 'line chart'], [['Unemployment', 'Country'], 'bar chart'], [['Unemployment'], 'line chart']];
-  const MAPI = STEPS.map(([a]) => ATTR.indexOf(a[0])), MAPD = STEPS.map(([a]) => a[1] ? ATTR.indexOf(a[1]) : -1);   // -1: only the focus
+  // each step explores one rim attribute with the focus (Year), so its node sits on that attribute's spoke
+  const STEPS = [['Oil Price', 'line chart'], ['Life Expectancy', 'line chart'], ['FDI', 'bar chart'],
+                 ['Exports', 'line chart'], ['GDP', 'line chart'], ['Unemployment', 'line chart']];
+  const MAPI = STEPS.map(([a]) => ATTR.indexOf(a)), MAPD = STEPS.map(() => -1);   // -1: the focus at the centre
   const tl = $('div', 'layer', pn);
-  const TRACE = STEPS.map(([a, c]) => ['Analyze', a.join(', '), `by Year · ${c}`]);
-  const tcard = box(tl, 'card tcard', 860, 290, 296, 0); st(tcard, { padding: '16px 18px 14px' });
+  const TRACE = STEPS.map(([a, c]) => ['Analyze', a, `by Year · ${c}`]);
+  const tcard = box(tl, 'card', 860, 290, 272, 0); st(tcard, { padding: '16px 18px 14px' });
   tcard.innerHTML = '<div class="cap" style="margin-bottom:10px">AGENT 执行轨迹</div>' +
     TRACE.map(([f, a, r]) => `<div class="trow"><i class="td"></i><b>${f}</b><span class="ta">(${a})</span><div class="tr">${r}</div></div>`).join('') +
     // what the drag writes back: the user's steer, then the agent carrying on from it
@@ -1031,7 +1029,7 @@ const P4 = (() => {
   const back = S('g', {}, tsvg); S('rect', { x: -8, y: -8, width: 16, height: 16, fill: '#fff', stroke: '#c2410c', 'stroke-width': 2.5, transform: 'rotate(45)' }, back);
   let rowAt = rows.map(() => ({ x: 884, y: 340 }));                   // each row's status dot, measured in layout()
   const flyers = MAPI.map((ai, i) => { const g = S('g', {}, tsvg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: '#171b26', 'stroke-width': 2, transform: 'rotate(45)' }, g);
-    const lab = S('text', { x: 14, y: 4, style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); lab.textContent = STEPS[i][0].join(' · '); return { g, lab }; });
+    const lab = S('text', { x: 14, y: 4, style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); lab.textContent = `${STEPS[i][0]} · Year`; return { g, lab }; });
   const ray = (i, t) => S('line', { x1: qN[i].x, y1: qN[i].y, x2: t.x, y2: t.y, stroke: '#c2410c', 'stroke-width': 1.1, 'stroke-dasharray': '3 3' }, svg);
   const rays = STEPS.map((_, i) => [ray(i, pills[MAPI[i]]), ray(i, MAPD[i] < 0 ? C : pills[MAPD[i]])]);
   const nsLab = box(tl, 'abs cap', 1180, 880, 0, 0, '<span style="color:var(--accent)">叙事空间</span> · 位置 = 数据维度 · 连线 = 叙事关系');
@@ -1101,7 +1099,7 @@ const P4 = (() => {
       const pi = ioC(P(sr, 2.9, 3.4)); draw(iLine, pi); draw(iBand, pi);
       iN.forEach((n, i) => { const k = i === 3 ? 0 : oB(P(sr, 2.9 + i * .14, 3.15 + i * .14)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`); });
       // the drag stays on the inner orbit (inside the black storyline) so the two never cross; the rim label shows the direction
-      const [ex, ey] = pol(-32, .6 * R), tx = lerp(from.x, ex, d), ty = lerp(from.y, ey, d) - Math.sin(d * Math.PI) * 12;
+      const [ex, ey] = pol(A('Unemployment'), .56 * R), tx = lerp(from.x, ex, d), ty = lerp(from.y, ey, d) - Math.sin(d * Math.PI) * 12;
       dragN.setAttribute('transform', `translate(${tx},${ty}) scale(${oB(P(sr, d0, d0 + .2))})`); dragN.style.opacity = P(sr, d0, d0 + .07);
       ghost.style.opacity = P(sr, d0 + .28, d0 + .38);
       trail.setAttribute('d', `M${from.x},${from.y} Q${(from.x + tx) / 2},${Math.min(from.y, ty) - 22} ${tx},${ty}`); trail.style.opacity = P(sr, d0 + .3, d0 + .38);
