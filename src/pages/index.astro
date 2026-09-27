@@ -8,6 +8,8 @@ import icPlay from 'lucide-static/icons/play.svg?raw';
 import icDownload from 'lucide-static/icons/download.svg?raw';
 import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
 import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
+// 耳机图标要一笔描出：路径长度归一，描线动画只需 dasharray/offset 从 1 到 0
+const icHeadphonesDraw = icHeadphones.replace('<path ', '<path pathLength="1" ');
 ---
 
 <html lang="zh">
@@ -20,11 +22,17 @@ import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
   <style>
     /* ── index 专有样式（新视觉语言：克制 · 深色唯一） ── */
 
-    /* NAV：常驻顶部，首屏 showreel 以卡片嵌在其下 */
+    /* NAV：首屏卡片还在视野里时隐藏，卡片滚出后从顶部滑入；两端与卡片左右边缘对齐 */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding-left: max(1.5rem, calc((100% - var(--reel-w)) / 2));
+      padding-right: max(1.5rem, calc((100% - var(--reel-w)) / 2));
       backdrop-filter: blur(12px);
+      transform: translateY(-110%);
+      opacity: 0;
+      transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.4s ease;
     }
+    nav.is-visible { transform: translateY(0); opacity: 1; }
     /* 导航左侧：打字机（不显示姓名）；blink 关键帧复用 tokens.css */
     .logo { display: flex; align-items: center; gap: 2px; }
     /* 不设 min-width：光标必须紧跟最后一个字符 */
@@ -50,102 +58,107 @@ import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
     }
     .nav-links a:hover { color: var(--text); border-bottom-color: var(--text-dimmer); }
 
-    /* 首屏 REEL：showreel 实时播放（/showreel/?embed），白底与动画一致。
-       data-mode：intro 首页入场 → menu 停在首页（耳机提示）→ play 播放中 → end 片尾 */
-    .reel-wrap {
-      position: relative; box-sizing: border-box;
-      height: 100vh; height: 100svh;
-      padding: 60px 24px 44px; /* 上：常驻导航；下：SCROLL 提示 */
-      display: grid; place-items: center;
+    /* 首屏：居中的名字与引导语，下面是 showreel 卡片（16:9，约七成屏高）。
+       卡片里先是引子「来都来了，先看个视频吧」，过渡到耳机提示，点了才开始播放。
+       data-mode：gate 提示 → play 播放中 → menu 回到目录 → end 片尾 */
+    :root { --reel-w: min(calc(100vw - 48px), calc(70vh * 16 / 9)); }
+    .hero-reel {
+      box-sizing: border-box; min-height: 100vh; min-height: 100svh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: clamp(1.75rem, 4.5vh, 3rem);
+      padding: 2.5rem 24px;
     }
+    .hero-head { text-align: center; }
+    .hero-head h1 {
+      font-family: var(--font-body); font-size: var(--text-title); font-weight: 400;
+      letter-spacing: 0.3em; padding-left: 0.3em; /* 字距在末字后也留一份，左侧补齐才真正居中 */
+      line-height: 1.4; color: var(--text);
+    }
+    .hero-head h1 .en {
+      display: block; margin-top: 0.35rem;
+      font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.3em; color: var(--text-dimmer);
+    }
+    .hero-head p { margin-top: 1.1rem; font-size: var(--text-body); letter-spacing: 0.08em; color: var(--text-dim); text-wrap: balance; }
+
     .reel {
       position: relative; overflow: hidden; background: #fff;
-      aspect-ratio: 16 / 9;
-      width: min(100%, calc((100vh - 104px) * 16 / 9));
-      width: min(100%, calc((100svh - 104px) * 16 / 9));
+      width: min(100%, calc(70vh * 16 / 9)); aspect-ratio: 16 / 9;
       border-radius: 16px;
-      box-shadow: 0 1px 0 rgba(10, 12, 18, 0.04), 0 18px 50px rgba(10, 12, 18, 0.07);
+      box-shadow: 0 0 0 1px rgba(10, 12, 18, 0.05), 0 4px 18px rgba(10, 12, 18, 0.025);
     }
+    .reel:fullscreen { width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
+    .reel::backdrop { background: #fff; }
     .reel-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
-    .reel-video { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; object-fit: contain; }
-    .reel-ctrl button, .reel-gate button, .reel-start {
+    .reel-video { position: absolute; inset: 0; width: 100%; height: 100%; background: #fff; object-fit: contain; }
+    .reel button {
       font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.05em;
-      padding: 4px 10px; border: none; cursor: pointer;
-      background: var(--chip); color: var(--text-dim);
-      transition: color 0.18s, background 0.18s;
+      border: none; cursor: pointer; transition: color 0.18s, background 0.18s;
     }
-    .reel-ctrl button:hover, .reel-gate button:hover { color: var(--text); background: var(--chip-hover); }
-    .reel-ctrl button[aria-pressed="true"], .reel-gate .go, .reel-start { color: var(--accent); background: var(--chip-accent); font-weight: 500; }
-    .reel-gate .go:hover { color: var(--accent-hi); background: var(--chip-accent); }
-    .reel svg { width: 13px; height: 13px; vertical-align: -2px; margin-right: 4px; }
-    /* 播放中的控件：右上角，动画画面顶部这条是空的 */
+
+    /* 播放中的控件：卡片右上角（动画画面顶部这条是空的） */
     .reel-ctrl {
-      position: absolute; top: 1.25rem; right: 1.5rem; z-index: 1;
+      position: absolute; top: 1rem; right: 1.25rem; z-index: 1;
       display: flex; gap: 8px;
       opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
     }
-    .reel[data-mode="play"] .reel-ctrl, .reel[data-mode="end"] .reel-ctrl { opacity: 1; pointer-events: auto; }
-    /* 首页停住时的耳机提示：底部居中 */
+    .reel:not([data-mode="gate"]) .reel-ctrl { opacity: 1; pointer-events: auto; }
+    .reel-ctrl button { padding: 4px 10px; background: var(--chip); color: var(--text-dim); }
+    .reel-ctrl button:hover { color: var(--text); background: var(--chip-hover); }
+    .reel-ctrl button[aria-pressed="true"] { color: var(--accent); background: var(--chip-accent); }
+
+    /* 播放前：铺满卡片的纯白提示。引子与耳机提示叠在同一格里，前者淡出、后者接上 */
     .reel-gate {
-      position: absolute; left: 0; right: 0; bottom: 3.25rem; z-index: 1;
-      display: flex; justify-content: center; align-items: center; gap: 10px;
-      opacity: 0; pointer-events: none; transform: translateY(6px);
-      transition: opacity 0.45s ease, transform 0.45s ease;
+      position: absolute; inset: 0; z-index: 2; background: #fff;
+      display: grid; place-items: center; text-align: center;
+      transition: opacity 0.6s ease, visibility 0s linear 0.6s;
     }
-    .reel[data-mode="menu"] .reel-gate { opacity: 1; pointer-events: auto; transform: none; }
-    .reel-hint { font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.05em; color: var(--text-dim); margin-right: 6px; }
-    .reel-gate button { padding: 0.5rem 1rem; }
-    .reel-start { display: none; }
-    .reel-cue {
-      position: absolute; left: 0; right: 0; bottom: 14px;
-      text-align: center; pointer-events: none;
-      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3em; color: var(--text-dimmer);
+    .reel:not([data-mode="gate"]) .reel-gate { opacity: 0; visibility: hidden; }
+    .g-lead, .g-prompt { grid-area: 1 / 1; }
+    .g-lead, .g-title {
+      font-size: var(--text-title); font-weight: 400; color: var(--text);
+      letter-spacing: 0.12em; padding-left: 0.12em;
     }
-    /* 手机：卡片占满宽度，停在首页；点开后用 MP4 全屏播放 */
+    .g-lead { transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1); }
+    .g-lead span { display: inline-block; opacity: 0; transform: translateY(8px); animation: g-in 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+    .g-lead .a { animation-delay: 0.3s; }
+    .g-lead .b { animation-delay: 0.9s; }
+    .g-lead .tri { animation-delay: 1.35s; color: var(--accent); font-size: 0.7em; margin-left: 0.5em; }
+    @keyframes g-in { to { opacity: 1; transform: none; } }
+    .is-prompt .g-lead { opacity: 0; transform: translateY(-14px); }
+    .g-prompt { display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+    .is-prompt .g-prompt { pointer-events: auto; }
+    .g-prompt > * { opacity: 0; transform: translateY(6px); transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1); }
+    .is-prompt .g-prompt > * { opacity: 1; transform: none; }
+    .is-prompt .g-prompt > :nth-child(2) { transition-delay: 0.25s; }
+    .is-prompt .g-prompt > :nth-child(3) { transition-delay: 0.4s; }
+    .is-prompt .g-prompt > :nth-child(4) { transition-delay: 0.55s; }
+    .is-prompt .g-prompt > :nth-child(5) { transition-delay: 0.7s; }
+    /* 耳机图标一笔描出（路径长度归一，见 frontmatter）。图标是 set:html 插入的，不带 Astro 的作用域标记，
+       所以用 :global() 选中它 */
+    .g-icon :global(svg) { width: 22px; height: 22px; color: var(--accent); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+    .is-prompt .g-icon :global(svg) { animation: g-draw 1.1s ease 0.1s forwards; }
+    @keyframes g-draw { to { stroke-dashoffset: 0; } }
+    /* 与动画首页名字下的强调色短线同一根 */
+    .g-prompt > .g-rule { width: 48px; height: 1px; margin: 1rem 0 1.15rem; background: var(--accent); opacity: 1; transform: scaleX(0); }
+    .is-prompt .g-prompt > .g-rule { transform: scaleX(1); }
+    .g-sub { margin-top: 0.6rem; font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.08em; color: var(--text-dimmer); }
+    .g-btns { display: flex; align-items: center; gap: 1.5rem; margin-top: 1.75rem; }
+    .g-btns .go { padding: 0.55rem 1.1rem; font-weight: 500; color: var(--accent); background: var(--chip-accent); }
+    .g-btns .go:hover { color: var(--accent-hi); }
+    .g-btns .quiet { padding: 0.55rem 0.1rem; background: none; color: var(--text-dim); border-bottom: 1px solid var(--border-hi); }
+    .g-btns .quiet:hover { color: var(--text); border-bottom-color: var(--text-dimmer); }
+
+    /* 手机：卡片里放 MP4，用系统播放器（可全屏、可放大）；提示收紧 */
     @media (max-width: 767px) {
-      .reel-wrap { height: auto; padding: 60px 12px 0; }
+      .hero-reel { min-height: 0; padding: 4.5rem 12px 1rem; gap: 1.75rem; }
       .reel { width: 100%; border-radius: 12px; }
-      .reel-ctrl, .reel-gate, .reel-cue { display: none; }
-      .reel-start {
-        display: block; position: absolute; left: 50%; bottom: 0.75rem; transform: translateX(-50%); z-index: 1;
-        padding: 0.45rem 0.9rem; white-space: nowrap;
-      }
+      .reel-frame, .reel-ctrl, .g-sub { display: none; }
+      .g-prompt > .g-rule { margin: 0.6rem 0 0.7rem; }
+      .g-btns { margin-top: 1rem; gap: 1.25rem; }
     }
 
-    /* ABOUT：名字、简介与技能。桌面端在首屏动画的首页里，这里只供读屏与搜索；手机上直接显示 */
-    .about .skills-grid { margin-top: 2.5rem; }
-    @media (min-width: 768px) {
-      .about { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-    }
-    .hero-copy { max-width: 620px; }
-    .hero-role {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: var(--text-meta); letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 1.75rem;
-    }
-    .about h1 { line-height: 1.1; display: flex; flex-direction: column; align-items: flex-start; }
-    .about h1 .en {
-      font-family: var(--font-mono);
-      font-size: var(--text-meta); font-weight: 400; letter-spacing: 0.3em;
-      color: var(--text-dimmer); margin-bottom: 0.9rem;
-    }
-    .about h1 .zh {
-      font-family: var(--font-body);
-      font-size: var(--text-display);
-      font-weight: 400; letter-spacing: 0.06em; color: var(--text);
-    }
-    /* 每排字一块填充矩形：inline + clone 让折行的每一段都带自己的底色 */
-    .hero-role, .about h1 .en, .about h1 .zh, .hero-desc p {
-      background: var(--strip-bg);
-      padding: 0.3rem 0.6rem 0.3rem 0; /* 固定值而非 em：各排字号不同，字形左缘才能对齐 */
-    }
-    .hero-desc { margin: 2.5rem 0 0; max-width: 580px; }
-    .hero-desc p {
-      display: inline;
-      box-decoration-break: clone; -webkit-box-decoration-break: clone;
-      font-size: var(--text-body); color: var(--text-dim); line-height: 2;
-    }
+    /* ABOUT：简介与技能的文字版，只供读屏与搜索（首屏上方是名字与引导语，完整内容在 showreel 里） */
+    .about { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
     /* 滚动提示：底部中央，微标 + 细线内 accent 小段循环下落 */
     .scroll-cue {
@@ -340,7 +353,6 @@ import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
 
     /* ── 自适应：1024 / 860 / 768 / 640 / 480 五档 ── */
     @media (max-width: 1024px) {
-      .hero-inner { padding-left: 2rem; padding-right: 2rem; }
       section { padding-left: 2rem; padding-right: 2rem; }
     }
     @media (max-width: 860px) {
@@ -365,38 +377,46 @@ import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
     }
     @media (max-width: 640px) {
       nav { padding: 0.75rem 1.25rem; }
-      .hero-inner { padding: 6.5rem 1.25rem 4rem; }
       section { padding: clamp(3rem, 7vw, 4rem) 1.25rem; }
       .tl-item { grid-template-columns: 1fr; gap: 0.3rem; }
       .pg-label { flex-wrap: wrap; gap: 0.5rem; }
       footer { padding: 1.5rem 1.25rem 3.5rem; flex-direction: column; align-items: flex-start; }
     }
-    @media (max-width: 480px) {
-      .hero-role { letter-spacing: 0.14em; }
-    }
   </style>
 </head>
 <body>
 
-  <!-- 首屏 REEL：showreel 在 iframe 里实时播放，只负责画面；时钟、配乐与控件在本页（见底部脚本） -->
-  <div class="reel-wrap">
-  <div class="reel" id="reel" data-mode="intro">
-    <iframe class="reel-frame" src="/showreel/?embed" title="屈非塬 · Showreel：六个项目的背景、解法与结果"></iframe>
-    <video class="reel-video" src="/videos/showreel.mp4" controls playsinline preload="none" hidden></video>
-    <div class="reel-ctrl">
-      <button type="button" data-reel="sound" aria-pressed="false">开启声音</button>
-      <button type="button" data-reel="play">暂停</button>
-      <button type="button" data-reel="menu">目录</button>
+  <!-- 首屏：居中的名字与引导语，下面是 showreel 卡片。桌面端卡片里是实时播放的网站版（/showreel/?embed，首页只有目录），
+       只负责画面，时钟、配乐与控件在本页（见底部脚本）；手机上卡片里是 MP4，用系统播放器 -->
+  <div class="hero-reel">
+    <header class="hero-head">
+      <h1>屈非塬<span class="en">QU FEIYUAN</span></h1>
+      <p>懂 AI，懂设计，也懂工程，专注产品创新与 AI 赋能设计</p>
+    </header>
+    <div class="reel" id="reel" data-mode="gate">
+      <iframe class="reel-frame" data-src="/showreel/?embed" title="屈非塬 · Showreel：六个项目的背景、解法与结果"></iframe>
+      <video class="reel-video" src="/videos/showreel.mp4" playsinline preload="none" hidden></video>
+      <div class="reel-ctrl">
+        <button type="button" data-reel="sound" aria-pressed="false">开启声音</button>
+        <button type="button" data-reel="play">暂停</button>
+        <button type="button" data-reel="menu">目录</button>
+        <button type="button" data-reel="full">全屏</button>
+      </div>
+      <!-- 播放前：引子过渡到耳机提示，观众点了才开始 -->
+      <div class="reel-gate">
+        <p class="g-lead" aria-hidden="true"><span class="a">来都来了，</span><span class="b">先看个视频吧</span><span class="tri">▶</span></p>
+        <div class="g-prompt">
+          <span class="g-icon" aria-hidden="true"><Fragment set:html={icHeadphonesDraw} /></span>
+          <span class="g-rule" aria-hidden="true"></span>
+          <p class="g-title">戴上耳机，沉浸体验</p>
+          <p class="g-sub">SHOWREEL · <span data-dur>2:14</span> · 六个项目的背景、解法与结果</p>
+          <div class="g-btns">
+            <button type="button" class="go" data-reel="go-sound">▶ 开启声音播放</button>
+            <button type="button" class="quiet" data-reel="go-mute">静音播放</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- 首页停住时：由观众决定开不开声音 -->
-    <div class="reel-gate">
-      <span class="reel-hint"><Fragment set:html={icHeadphones} /> 戴上耳机，沉浸体验</span>
-      <button type="button" class="go" data-reel="go-sound">▶ 开启声音播放</button>
-      <button type="button" data-reel="go-mute">静音播放</button>
-    </div>
-    <button type="button" class="reel-start" data-reel="start"><Fragment set:html={icHeadphones} /> 播放 Showreel</button>
-  </div>
-  <div class="reel-cue" aria-hidden="true">SCROLL ↓</div>
   </div>
 
   {/* 粒子首屏：已停用（整块保留待恢复；脚本 src/scripts/hero-*.ts 未删，画布不在页面上时脚本不运行）
@@ -407,18 +427,9 @@ import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
   </div>
   */}
 
-  <!-- ABOUT：名字、简介与技能。桌面端它们在首屏动画的首页里，这里只留给读屏与搜索；手机上动画太小，直接显示 -->
-  <section id="about" class="about">
-    <div class="hero-copy">
-      <div class="hero-role">Design · Engineering · AI</div>
-      <h1>
-        <span class="en">QU FEIYUAN</span>
-        <span class="zh">屈非塬</span>
-      </h1>
-      <div class="hero-desc">
-        <p>本科毕业于湖南大学工业设计专业，现为浙江大学 CAD&amp;CG 全国重点实验室人机交互与数据可视化方向硕士研究生，同时在阿里巴巴淘天集团实习，任 AI 设计工程师。懂 AI，懂设计，也懂工程，主要关注如何用 AI 更好地赋能设计。主导过对话式可视分析工具、数据叙事 Agent、舆情分析平台等数据产品，完成从产品定义、交互设计到开发落地的全过程。</p>
-      </div>
-    </div>
+  <!-- ABOUT：简介与技能的文字版，只供读屏与搜索（首屏上方是名字与引导语，完整内容在 showreel 里） -->
+  <section id="about" class="about" aria-label="简介">
+    <p>本科毕业于湖南大学工业设计专业，现为浙江大学 CAD&amp;CG 全国重点实验室人机交互与数据可视化方向硕士研究生，同时在阿里巴巴淘天集团实习，任 AI 设计工程师。懂 AI，懂设计，也懂工程，主要关注如何用 AI 更好地赋能设计。主导过对话式可视分析工具、数据叙事 Agent、舆情分析平台等数据产品，完成从产品定义、交互设计到开发落地的全过程。</p>
     <div class="skills-grid">
       <div class="skill-card">
         <h3>设计</h3>
@@ -754,6 +765,15 @@ import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
     setTimeout(typeTag, 800);
   }
 
+  // 导航：首屏卡片滚出视野后从顶部滑入
+  const navEl = document.querySelector('nav');
+  const reelCard = document.getElementById('reel');
+  if (navEl && reelCard) {
+    new IntersectionObserver(([entry]) => {
+      navEl.classList.toggle('is-visible', entry.boundingClientRect.bottom < 0);
+    }, { threshold: 0 }).observe(reelCard);
+  }
+
   // 项目卡整卡点击跳转
   document.querySelectorAll('.project-card.clickable').forEach(card => {
     card.addEventListener('click', e => {
@@ -764,84 +784,99 @@ import icHeadphones from 'lucide-static/icons/headphones.svg?raw';
   });
 </script>
 <script>
-  // 首屏 showreel：iframe（/showreel/?embed）只按时间画画面（renderFrame），时钟、配乐与控件都在这里。
-  // intro：先播首页的入场 → menu：停在首页（名字、简介、技能、目录），底部耳机提示，由观众选择开不开声音
-  // → play：从首页接着播；开声音时以音频时间为准 → end：停在片尾。「目录」或点动画左上角的名字回到首页。
-  // 滚出首屏或切走标签页即暂停。手机竖屏停在首页，点开后用 MP4 全屏播放；减少动态效果：直接停在首页。
+  // 首屏 showreel。播放前：引子「来都来了，先看个视频吧」约 2.4 秒后过渡到耳机提示，点了才开始。
+  // 桌面：卡片里的 iframe（/showreel/?embed）只按时间画画面（renderFrame），时钟、配乐与控件都在这里；
+  //   gate 提示 → play 从头播（开声音时以音频时间为准）→ menu「目录」或点动画左上角的名字回到目录 → end 片尾。
+  //   滚出视野或切走标签页即暂停。
+  // 手机：卡片里是 MP4，用系统播放器（可全屏、可放大）。
   const reelEl = document.getElementById('reel');
-  const frame = reelEl?.querySelector<HTMLIFrameElement>('.reel-frame');
-  if (reelEl && frame) {
+  if (reelEl) {
     const btn = (k: string) => reelEl.querySelector<HTMLButtonElement>(`[data-reel="${k}"]`)!;
-    const btnSound = btn('sound'), btnPlay = btn('play');
+    const gate = reelEl.querySelector<HTMLElement>('.reel-gate')!;
     const video = reelEl.querySelector<HTMLVideoElement>('.reel-video')!;
-    const audio = new Audio('/showreel/soundtrack.mp3');
-    audio.preload = 'none';
+    const frame = reelEl.querySelector<HTMLIFrameElement>('.reel-frame')!;
     const small = matchMedia('(max-width: 767px)').matches;
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let R: any = null, dur = 0, menuT = 0, startT = 0, t = 0, last = performance.now();
-    let mode: 'intro' | 'menu' | 'play' | 'end' = 'intro', playing = false, sound = false, inView = true;
+    const clock = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
+    if (still) gate.classList.add('is-prompt');
+    else setTimeout(() => gate.classList.add('is-prompt'), 2400);
 
-    const running = () => playing && inView && !document.hidden;
-    const sync = () => {
-      reelEl.dataset.mode = mode;
-      btnSound.textContent = sound ? '关闭声音' : '开启声音';
-      btnSound.setAttribute('aria-pressed', String(sound));
-      btnPlay.textContent = mode === 'end' ? '重播' : playing ? '暂停' : '继续';
-      if (sound && mode === 'play' && running()) {
-        if (audio.paused) { audio.currentTime = t; audio.play().catch(() => { sound = false; sync(); }); }
-      } else if (!audio.paused) audio.pause();
-    };
-    const draw = () => R?.renderFrame(t);
-    const toMenu = () => { mode = 'menu'; playing = false; t = menuT; draw(); sync(); };
-    const playFrom = (x: number) => { mode = 'play'; t = x; playing = true; draw(); sync(); };
+    if (small) {
+      const go = (withSound: boolean) => {
+        reelEl.dataset.mode = 'play';
+        video.hidden = false; video.controls = true; video.muted = !withSound;
+        video.play().catch(() => {});
+      };
+      btn('go-sound').addEventListener('click', () => go(true));
+      btn('go-mute').addEventListener('click', () => go(false));
+    } else {
+      frame.src = frame.dataset.src!;
+      const btnSound = btn('sound'), btnPlay = btn('play'), btnFull = btn('full');
+      const audio = new Audio('/showreel/soundtrack.mp3');
+      audio.preload = 'none';
+      let R: any = null, dur = 0, menuT = 0, startT = 0, t = 0, last = performance.now();
+      let mode: 'gate' | 'play' | 'menu' | 'end' = 'gate', playing = false, sound = false, inView = true, pending = false;
 
-    btn('go-sound').addEventListener('click', () => { sound = true; playFrom(startT); });
-    btn('go-mute').addEventListener('click', () => { sound = false; playFrom(startT); });
-    btn('menu').addEventListener('click', toMenu);
-    btnPlay.addEventListener('click', () => { if (mode === 'end') playFrom(startT); else { playing = !playing; sync(); } });
-    btnSound.addEventListener('click', () => { sound = !sound; sync(); });
+      const running = () => playing && inView && !document.hidden;
+      const sync = () => {
+        reelEl.dataset.mode = mode;
+        btnSound.textContent = sound ? '关闭声音' : '开启声音';
+        btnSound.setAttribute('aria-pressed', String(sound));
+        btnPlay.textContent = mode === 'end' ? '重播' : playing ? '暂停' : '继续';
+        if (sound && mode === 'play' && running()) {
+          if (audio.paused) { audio.currentTime = t; audio.play().catch(() => { sound = false; sync(); }); }
+        } else if (!audio.paused) audio.pause();
+      };
+      const draw = () => R?.renderFrame(t);
+      // 跳转时画面与音频一起移动（播放中以音频时间为准，只挪画面会被拉回）
+      const jump = (x: number) => { t = x; if (!audio.paused) audio.currentTime = x; draw(); };
+      const playFrom = (x: number) => { mode = 'play'; playing = true; jump(x); sync(); };
+      const toMenu = () => { mode = 'menu'; playing = false; jump(menuT); sync(); };
+      // 观众点了才开始；动画若还没准备好，准备好后立即开始
+      const start = (withSound: boolean) => { sound = withSound; if (R) playFrom(0); else { pending = true; mode = 'play'; sync(); } };
 
-    const tick = (now: number) => {
-      if (R && running()) {
-        if (sound && mode === 'play' && !audio.paused && !audio.seeking && audio.readyState >= 3) t = audio.currentTime;
-        else t += Math.min(0.1, (now - last) / 1000);
-        if (mode === 'intro' && t >= menuT) toMenu();
-        else if (t >= dur) { t = dur; playing = false; mode = 'end'; sync(); }
-        draw();
-      }
-      last = now;
+      btn('go-sound').addEventListener('click', () => start(true));
+      btn('go-mute').addEventListener('click', () => start(false));
+      btn('menu').addEventListener('click', toMenu);
+      btnPlay.addEventListener('click', () => {
+        if (mode === 'end') playFrom(0);
+        else if (mode === 'menu') playFrom(startT);
+        else { playing = !playing; sync(); }
+      });
+      btnSound.addEventListener('click', () => { sound = !sound; sync(); });
+      btnFull.addEventListener('click', () => (document.fullscreenElement ? document.exitFullscreen() : reelEl.requestFullscreen()).catch(() => {}));
+      document.addEventListener('fullscreenchange', () => { btnFull.textContent = document.fullscreenElement ? '退出全屏' : '全屏'; });
+
+      const tick = (now: number) => {
+        if (R && running()) {
+          if (sound && !audio.paused && !audio.seeking && audio.readyState >= 3) t = audio.currentTime;
+          else t += Math.min(0.1, (now - last) / 1000);
+          if (t >= dur) { t = dur; playing = false; mode = 'end'; sync(); }
+          draw();
+        }
+        last = now;
+        requestAnimationFrame(tick);
+      };
       requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-    new IntersectionObserver(([e]) => { inView = e.isIntersecting; sync(); }, { threshold: 0.25 }).observe(reelEl);
-    document.addEventListener('visibilitychange', sync);
+      new IntersectionObserver(([e]) => { inView = e.isIntersecting; sync(); }, { threshold: 0.25 }).observe(reelEl);
+      document.addEventListener('visibilitychange', sync);
 
-    const init = () => {
-      const w = frame.contentWindow as any;
-      if (R || !w || !w.__ready) return;
-      R = w; ({ duration: dur, menu: menuT, start: startT } = w.SHOWREEL);
-      btn('start').append(` · ${Math.floor(dur / 60)}:${String(Math.round(dur % 60)).padStart(2, '0')}`);
-      if (small || still) toMenu();
-      else { mode = 'intro'; t = 0; playing = true; sync(); }
-    };
-    addEventListener('message', (e) => {
-      if (e.origin !== location.origin || e.source !== frame.contentWindow) return;
-      if (e.data?.reel === 'ready') init();
-      if (e.data?.reel === 'seek') playFrom(e.data.t);
-      if (e.data?.reel === 'menu') toMenu();
-    });
-    frame.addEventListener('load', init);
-    init();
-
-    // 手机：系统播放器全屏播 MP4（iPhone 不支持网页元素全屏）
-    btn('start').addEventListener('click', () => {
-      const v = video as any;
-      video.hidden = false; video.play().catch(() => {});
-      if (v.requestFullscreen) v.requestFullscreen().catch(() => {}); else v.webkitEnterFullscreen?.();
-    });
-    const closeVideo = () => { video.pause(); video.hidden = true; };
-    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) closeVideo(); });
-    video.addEventListener('webkitendfullscreen', closeVideo);
+      const init = () => {
+        const w = frame.contentWindow as any;
+        if (R || !w || !w.__ready) return;
+        R = w; ({ duration: dur, menu: menuT, start: startT } = w.SHOWREEL);
+        reelEl.querySelector('[data-dur]')!.textContent = clock(dur);
+        draw();
+        if (pending) playFrom(0);
+      };
+      addEventListener('message', (e) => {
+        if (e.origin !== location.origin || e.source !== frame.contentWindow) return;
+        if (e.data?.reel === 'ready') init();
+        if (e.data?.reel === 'seek') playFrom(e.data.t);
+        if (e.data?.reel === 'menu') toMenu();
+      });
+      frame.addEventListener('load', init);
+    }
   }
 </script>
 <script>

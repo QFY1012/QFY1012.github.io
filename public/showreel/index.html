@@ -466,15 +466,21 @@ const INTRO = (() => {
   const toc = $('div', 'toc', r);
   const h = $('div', 'h cap', toc, '精选项目 &nbsp;·&nbsp; 背景 / 解法 / 结果');
   const rows = KEYS.map(k => { const [n, d, y] = COPY[k].toc; return $('div', 'rw', toc, `<span class="i">${COPY[k].idx}</span><span class="n">${n}</span><span class="d">${d}</span><span class="y">${y}</span>`); });
+  // on the site the page above the reel already carries the name and a line about the work, so there the opening page
+  // is just the contents, centred on the stage
+  const left = [nm, en, hl, role, bio, ...skills];
+  if (EMBED) left.forEach(e => { e.style.display = 'none'; });
   return {
     // the name block and the contents are each centred on the grid's axis (y 540); the contents sit on the panel column
     layout() { vis(r, true); const s0 = document.getElementById('stage').getBoundingClientRect();
-      // the introduction under the role line, the skills under it, one row each
-      let y = parseFloat(bio.style.top) + bio.getBoundingClientRect().height + 26;
-      skills.forEach(e => { at(e, 120, y); y += e.getBoundingClientRect().height + 10; });
-      const left = [nm, en, hl, role, bio, ...skills], b = unionRect(left, s0), dy = GRID.cy - (b.y + b.h / 2);
-      left.forEach(e => { e.style.top = parseFloat(e.style.top) + dy + 'px'; });
-      st(toc, { left: '780px', width: '1020px' }); const th = toc.getBoundingClientRect().height; st(toc, { top: GRID.cy - th / 2 + 'px' }); vis(r, false); },
+      if (!EMBED) {
+        // the introduction under the role line, the skills under it, one row each
+        let y = parseFloat(bio.style.top) + bio.getBoundingClientRect().height + 26;
+        skills.forEach(e => { at(e, 120, y); y += e.getBoundingClientRect().height + 10; });
+        const b = unionRect(left, s0), dy = GRID.cy - (b.y + b.h / 2);
+        left.forEach(e => { e.style.top = parseFloat(e.style.top) + dy + 'px'; });
+      }
+      st(toc, { left: (EMBED ? (W - 1020) / 2 : 780) + 'px', width: '1020px' }); const th = toc.getBoundingClientRect().height; st(toc, { top: GRID.cy - th / 2 + 'px' }); vis(r, false); },
     render(tr) {
       if (!sc.on(tr)) return;
       const t = warp(tr, INTRO_CLOCK);
