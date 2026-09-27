@@ -136,6 +136,7 @@
   .trow .tr { position: relative; padding-left: 16px; color: var(--dimmer); }
   .trow .tr::before { content: ''; position: absolute; left: 3px; top: 1px; width: 7px; height: 8px; border-left: 1px solid var(--faint); border-bottom: 1px solid var(--faint); }
   .trow.tnew { overflow: hidden; }
+  .tcard .trow { font-size: 11.5px; }
   .twork { position: relative; padding-left: 16px; font-family: var(--mono); font-size: 12px; color: var(--accent); }
   .twork i { position: absolute; left: 1px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
   .logl { font-family: var(--mono); font-size: 13px; color: var(--dim); margin: 0 0 13px; white-space: nowrap; }
@@ -971,7 +972,7 @@ const P4 = (() => {
   // 解法: the narrative-space disc (attribute labels and link types from the real system)
   const disc = $('div', 'layer', pn);
   const svg = S('svg', { class: 'full' }, disc);
-  const C = { x: 1440, y: 548 }, R = 262;
+  const C = { x: 1460, y: 548 }, R = 262;
   const pol = (a, r) => [C.x + Math.cos(a * Math.PI / 180) * r, C.y + Math.sin(a * Math.PI / 180) * r];
   const face = S('circle', { cx: C.x, cy: C.y, r: R, fill: '#fff', stroke: 'rgba(23,27,38,0.16)', 'stroke-width': 1.2 }, svg);
   const ATTR = ['GDP', 'Country', 'Unemployment', 'Inflation', 'Country code', 'GDP per Capita', 'Oil Price', 'Life Expectancy', 'FDI', 'Exports', 'GDP Growth'];
@@ -1010,17 +1011,19 @@ const P4 = (() => {
   // the disc (angle = the attribute it analyses), and the storyline is drawn through them as they land
   // each step's measure and dimension, matching where its node sits on the disc (between the two anchors, or on the
   // measure's own spoke when the dimension is the focus, Year); filters don't place nodes, so none are steps here
-  const STEPS = [['Oil Price', 'Life Expectancy', 'scatter'], ['FDI', 'Life Expectancy', 'scatter'], ['Exports', 'Year', 'line chart'],
-                 ['GDP', 'Year', 'line chart'], ['Unemployment', 'Country', 'bar chart'], ['Unemployment', 'Year', 'line chart']];
-  const MAPI = STEPS.map(([m]) => ATTR.indexOf(m)), MAPD = STEPS.map(([, d]) => ATTR.indexOf(d));   // -1: the focus (hub)
+  // every step includes the focus (Year, the centre); its other one or two attributes place it — between their anchors,
+  // or on the attribute's own spoke when there is only one. Filters don't place nodes, so none are steps here
+  const STEPS = [[['Oil Price', 'Life Expectancy'], 'line chart'], [['FDI', 'Life Expectancy'], 'line chart'], [['Exports'], 'line chart'],
+                 [['GDP'], 'line chart'], [['Unemployment', 'Country'], 'bar chart'], [['Unemployment'], 'line chart']];
+  const MAPI = STEPS.map(([a]) => ATTR.indexOf(a[0])), MAPD = STEPS.map(([a]) => a[1] ? ATTR.indexOf(a[1]) : -1);   // -1: only the focus
   const tl = $('div', 'layer', pn);
-  const TRACE = STEPS.map(([m, d, c]) => ['Analyze', m, `by ${d} · ${c}`]);
-  const tcard = box(tl, 'card', 860, 290, 272, 0); st(tcard, { padding: '16px 18px 14px' });
+  const TRACE = STEPS.map(([a, c]) => ['Analyze', a.join(', '), `by Year · ${c}`]);
+  const tcard = box(tl, 'card tcard', 860, 290, 296, 0); st(tcard, { padding: '16px 18px 14px' });
   tcard.innerHTML = '<div class="cap" style="margin-bottom:10px">AGENT 执行轨迹</div>' +
     TRACE.map(([f, a, r]) => `<div class="trow"><i class="td"></i><b>${f}</b><span class="ta">(${a})</span><div class="tr">${r}</div></div>`).join('') +
     // what the drag writes back: the user's steer, then the agent carrying on from it
     '<div class="trow tnew"><i class="td" style="background:var(--accent)"></i><b style="color:var(--accent)">用户引导</b><span class="ta"> GDP → Unemployment</span><div class="tr">Year ≤ 2008 · Israel</div></div>' +
-    '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(Unemployment)</span><div class="tr">line chart</div></div>' +
+    '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(Unemployment)</span><div class="tr">by Year · line chart</div></div>' +
     '<div class="twork"><i></i>Analyzing…</div>';
   const rows = [...tcard.querySelectorAll('.trow:not(.tnew)')], news = [...tcard.querySelectorAll('.tnew')], work = tcard.querySelector('.twork'), workDot = work.querySelector('i');
   let newAt = { x: 884, y: 640 };
@@ -1028,7 +1031,7 @@ const P4 = (() => {
   const back = S('g', {}, tsvg); S('rect', { x: -8, y: -8, width: 16, height: 16, fill: '#fff', stroke: '#c2410c', 'stroke-width': 2.5, transform: 'rotate(45)' }, back);
   let rowAt = rows.map(() => ({ x: 884, y: 340 }));                   // each row's status dot, measured in layout()
   const flyers = MAPI.map((ai, i) => { const g = S('g', {}, tsvg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: '#171b26', 'stroke-width': 2, transform: 'rotate(45)' }, g);
-    const lab = S('text', { x: 14, y: 4, style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); lab.textContent = `${STEPS[i][0]} · ${STEPS[i][1]}`; return { g, lab }; });
+    const lab = S('text', { x: 14, y: 4, style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); lab.textContent = STEPS[i][0].join(' · '); return { g, lab }; });
   const ray = (i, t) => S('line', { x1: qN[i].x, y1: qN[i].y, x2: t.x, y2: t.y, stroke: '#c2410c', 'stroke-width': 1.1, 'stroke-dasharray': '3 3' }, svg);
   const rays = STEPS.map((_, i) => [ray(i, pills[MAPI[i]]), ray(i, MAPD[i] < 0 ? C : pills[MAPD[i]])]);
   const nsLab = box(tl, 'abs cap', 1180, 880, 0, 0, '<span style="color:var(--accent)">叙事空间</span> · 位置 = 数据维度 · 连线 = 叙事关系');
