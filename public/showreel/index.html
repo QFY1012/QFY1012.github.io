@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>屈非塬 · Showreel</title>
+<script>if (new URLSearchParams(location.search).has('embed')) document.documentElement.classList.add('embed');</script>
+<!--
+  Résumé showreel. Everything is drawn here (no screenshots) and driven by window.renderFrame(t),
+  so render.mjs can step it frame by frame. Open with ?play for a realtime preview, ?t=12 to freeze.
+  ?embed is how the site's home page shows it: the stage is scaled to the frame, the host page drives renderFrame(t)
+  (it owns the clock and the score), and chapter clicks are posted back to it.
+  Six chapters, each told as 背景 → 解法 → 结果; on-screen time follows reading speed (see plan()).
+  Facts come from the site (index / toa / narrasteer / resume) and the internship defence write-up.
+-->
+<style>
+  @font-face { font-family: 'Syne'; font-weight: 700; src: url('fonts/syne-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url('fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'JetBrains Mono'; font-weight: 500; src: url('fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: url('fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 400; src: url('../fonts/PingFangSC-Regular.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 500; src: url('../fonts/PingFangSC-Medium.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 700; src: url('../fonts/PingFangSC-Bold.woff2') format('woff2'); }
+  /* only for the few characters the site's PingFang subset lacks (built by subset-fonts.py) */
+  @font-face { font-family: 'Noto Sans SC Fallback'; font-weight: 400; src: url('fonts/noto-sans-sc-fallback-400.woff2') format('woff2'); }
+  @font-face { font-family: 'Noto Sans SC Fallback'; font-weight: 500; src: url('fonts/noto-sans-sc-fallback-500.woff2') format('woff2'); }
+
+  /* the site's light theme (src/styles/home.css [data-theme="light"]) */
+  :root {
+    --page: #ffffff; --panel: #f5f6f8; --card: #ffffff;
+    --ink: #171b26; --dim: #666d7e; --dimmer: #8a92a6; --faint: #c3c8d3;
+    --line: rgba(23,27,38,0.12); --line2: rgba(23,27,38,0.22);
+    --accent: #c2410c; --accent-soft: rgba(194,65,12,0.10); --accent-mid: rgba(194,65,12,0.45);
+    --sans: 'PingFang SC', 'Noto Sans SC Fallback', sans-serif;
+    --mono: 'JetBrains Mono', 'PingFang SC', 'Noto Sans SC Fallback', monospace;
+    --display: 'Syne', 'PingFang SC', 'Noto Sans SC Fallback', sans-serif;
+  }
+  html, body { margin: 0; background: #e9ebef; }
+  body.preview { display: grid; place-items: center; min-height: 100vh; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--page); color: var(--ink);
+           font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  .abs { position: absolute; }
+  .nowrap { white-space: nowrap; }
+  svg.full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+  /* ?embed: scaled to the frame; the progress bar and the opening contents jump to a chapter */
+  .embed, .embed body { overflow: hidden; background: #fff; }
+  .embed #stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; visibility: hidden; }
+  .embed.is-ready #stage { visibility: visible; }  /* shown once fitted and the first frame is drawn */
+  .embed #hud { pointer-events: none; }
+  .embed #hud .seg { pointer-events: auto; cursor: pointer; }
+  .embed #hud .seg::before { content: ''; position: absolute; left: 0; right: 0; top: -16px; bottom: -22px; }
+  .embed .toc .rw { cursor: pointer; }
+  .embed .toc .rw:hover .n { color: var(--accent); }
+  .demo-cta { position: absolute; left: 150px; top: 858px; font-size: 14px; padding: 7px 16px; border-radius: 18px; color: var(--accent); background: var(--accent-soft); text-decoration: none; white-space: nowrap; }
+  .demo-cta:hover { background: rgba(194,65,12,0.16); }
+
+  .mono { font-family: var(--mono); }
+  .kick { font-family: var(--mono); font-size: 13px; letter-spacing: 0.12em; color: var(--dim); white-space: nowrap; }
+  .kick b { color: var(--accent); font-weight: 500; margin-right: 14px; }
+  .title { font-family: var(--sans); font-weight: 500; font-size: 40px; line-height: 1.25; letter-spacing: 0.01em; white-space: nowrap; }
+  .title.latin { font-family: var(--display); font-weight: 700; letter-spacing: 0.01em; }
+  .sub { font-size: 17px; line-height: 1.6; color: var(--dim); width: 560px; }
+  .mask { overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .mask > * { will-change: transform; }
+
+  .steps { position: absolute; left: 120px; top: 440px; width: 600px; }
+  .rail { position: absolute; left: 0; top: 10px; width: 1px; background: var(--line); }
+  .dot { position: absolute; left: -4px; width: 9px; height: 9px; border-radius: 50%; background: var(--page); border: 1.5px solid var(--faint); box-sizing: border-box; }
+  .step { position: absolute; left: 30px; width: 560px; }
+  .step .lab { font-size: 15px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+  .step .lab i { font-style: normal; font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; color: var(--dimmer); margin-left: 12px; }
+  .step .txt { margin-top: 8px; font-size: 20px; line-height: 1.6; color: var(--ink); white-space: nowrap; }
+  .step .txt em { font-style: normal; color: var(--accent); }
+  .step .txt small { display: block; margin-top: 10px; font-family: var(--mono); font-size: 13px; letter-spacing: 0.04em; color: var(--dimmer); }
+  .metrics { display: flex; gap: 40px; margin-top: 10px; }
+  .metric .v { font-family: var(--mono); font-weight: 500; font-size: 34px; letter-spacing: -0.02em; color: var(--accent); line-height: 1.1; white-space: nowrap; }
+  .metric .l { font-size: 13px; color: var(--dim); margin-top: 6px; white-space: nowrap; }
+
+  /* right-hand illustration panel */
+  #panel { position: absolute; left: 780px; top: 150px; width: 1020px; height: 780px; border-radius: 20px; background: var(--panel); }
+  .card { position: absolute; background: var(--card); border-radius: 10px; box-shadow: 0 1px 0 rgba(23,27,38,0.04), 0 10px 30px rgba(23,27,38,0.06); box-sizing: border-box; }
+  .cap { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--dimmer); white-space: nowrap; }
+  .zh13 { font-size: 13px; color: var(--dim); white-space: nowrap; }
+  .zh14 { font-size: 14px; color: var(--ink); white-space: nowrap; }
+  .x { color: var(--accent); font-family: var(--mono); margin-right: 6px; }
+  .chipx { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 10px; background: var(--panel); color: var(--dim); margin-right: 6px; white-space: nowrap; }
+
+  /* 01–03 · the internship's figure (each chapter's part is tagged), and 03's app */
+  .atag { font-size: 12px; line-height: 18px; color: var(--accent); white-space: nowrap; }
+  .atag b { font-family: var(--mono); font-weight: 500; margin-right: 6px; }
+  .appc { position: absolute; border-radius: 12px; box-sizing: border-box; border: 1.5px solid var(--accent); background: rgba(255,255,255,0.35); }
+  .appc.dash { border: 1.5px dashed var(--accent-mid); background: none; }
+  .appr { position: absolute; border-radius: 8px; box-sizing: border-box; border: 1px dashed var(--faint); }
+  .tech { font-size: 13px; color: var(--accent); white-space: nowrap; }
+
+  /* 01 · skill governance, 02 · output component library */
+  .abar { position: absolute; height: 40px; line-height: 40px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line); font-size: 15px; box-sizing: border-box; }
+  .abar.dark { background: var(--ink); color: #fff; box-shadow: none; font-weight: 500; }
+  .abar.acc { box-shadow: 0 0 0 1.5px var(--accent); color: var(--accent); }
+  .mcard { position: absolute; background: var(--card); box-shadow: 0 0 0 1px var(--line2), 0 8px 20px rgba(23,27,38,0.06); overflow: hidden; box-sizing: border-box; }
+  .mcard .mh { height: 28px; line-height: 28px; padding-left: 12px; color: #fff; font-size: 13px; }
+  .mcard .ml { height: 6px; margin: 12px 14px 0; background: #e3e6eb; border-radius: 3px; }
+  .mcard .mb { height: 38px; margin: 12px 14px 0; border-radius: 3px; }
+  .fl2 { height: 5px; margin: 0 18px 8px; background: #e3e6eb; border-radius: 3px; }
+  .wf { position: absolute; background: #eef0f3; border-radius: 3px; }
+  .cvb { position: absolute; border: 1.5px dashed var(--accent); border-radius: 4px; box-sizing: border-box; }
+  .cvt { position: absolute; font-family: var(--mono); font-size: 9px; font-weight: 700; color: #fff; background: var(--accent); padding: 0 4px; line-height: 13px; border-radius: 2px; white-space: nowrap; }
+  .ucard { position: absolute; width: 380px; height: 82px; background: var(--card); border-radius: 8px; box-shadow: 0 0 0 1px var(--line), 0 6px 18px rgba(23,27,38,0.05); box-sizing: border-box; padding: 12px 14px; }
+  .ucard .uh { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; }
+  .ucard .ut { font-family: var(--mono); font-size: 10px; color: var(--accent); background: var(--accent-soft); padding: 1px 7px; border-radius: 8px; font-weight: 500; }
+  .ucard .ul { height: 5px; margin-top: 9px; background: #e3e6eb; border-radius: 3px; }
+  .lay { position: absolute; border-radius: 10px; background: rgba(255,255,255,0.55); box-shadow: 0 0 0 1px var(--line); box-sizing: border-box; }
+  .lay .lt { position: absolute; left: 14px; top: 10px; font-size: 12px; color: var(--dim); white-space: nowrap; }
+  .sk { position: absolute; width: 124px; height: 38px; line-height: 38px; text-align: center; font-size: 14px; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2); white-space: nowrap; }
+  .pc { position: absolute; width: 124px; height: 44px; line-height: 44px; text-align: center; font-size: 14px; background: var(--card); border-radius: 8px; box-shadow: 0 0 0 1px var(--line2); white-space: nowrap; box-sizing: border-box; }
+  .pc.on { box-shadow: 0 0 0 1.5px var(--accent), 0 8px 20px rgba(194,65,12,0.12); color: var(--accent); }
+  .ptag { position: absolute; width: 124px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; color: var(--dimmer); }
+  .lnode { position: absolute; width: 96px; height: 40px; line-height: 40px; text-align: center; border-radius: 20px; background: var(--card); box-shadow: 0 4px 14px rgba(23,27,38,0.06); font-size: 15px; font-weight: 500; }
+  .cost { position: absolute; width: 860px; padding: 22px 28px; }
+  .cost .hd { display: flex; justify-content: space-between; align-items: baseline; }
+  .cost .tt { font-size: 16px; font-weight: 500; }
+  .cost .lg { font-size: 12px; color: var(--dim); white-space: nowrap; }
+  .cost .lg span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 6px 0 16px; vertical-align: -1px; }
+  .cost .gl { font-size: 13px; color: var(--dim); margin: 18px 0 8px; }
+  .cost .row { position: relative; height: 26px; margin: 8px 0; }
+  .cost .rl { position: absolute; left: 0; top: 4px; font-size: 13px; color: var(--ink); width: 56px; }
+  .cost .seg { position: absolute; top: 0; height: 26px; font-family: var(--mono); font-size: 11px; line-height: 26px; text-align: right; box-sizing: border-box; padding-right: 7px; overflow: hidden; white-space: nowrap; }
+  .cost .tot { position: absolute; top: 0; font-family: var(--mono); font-size: 16px; font-weight: 500; line-height: 26px; }
+  .cost .bd { position: absolute; top: 18px; right: 0; font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--accent); background: var(--accent-soft); padding: 6px 14px; border-radius: 16px; white-space: nowrap; }
+
+  /* 02 · component library, 03 · PPT */
+  .sl { position: absolute; background: var(--card); box-shadow: 0 0 0 1px var(--line); overflow: hidden; }
+  .sl i { position: absolute; display: block; border-radius: 2px; }
+  .dk { position: absolute; height: 40px; line-height: 40px; text-align: center; background: var(--ink); color: #fff; border-radius: 6px; font-size: 14px; font-weight: 500; white-space: nowrap; }
+  .mod2 { position: absolute; width: 170px; height: 40px; line-height: 40px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2); font-size: 14px; white-space: nowrap; box-sizing: border-box; }
+  .mod2.acc { box-shadow: 0 0 0 1.5px var(--accent); color: var(--accent); font-weight: 500; }
+  .mod2.dash { box-shadow: none; border: 1px dashed var(--faint); background: rgba(255,255,255,0.6); }
+
+  /* 03 · NarraSteer, 04 · ToA, 05 · public opinion */
+  .tile { position: absolute; width: 58px; height: 36px; border-radius: 6px; background: var(--card); border: 1px solid var(--line2); box-sizing: border-box;
+          font-family: var(--mono); font-size: 10px; color: var(--dimmer); text-align: center; line-height: 34px; }
+  /* agent trace, drawn like today's agent transcripts: a status dot, the tool call, its result on an elbow */
+  .trow { position: relative; margin: 0 -8px 6px; padding: 4px 8px 4px 24px; border-radius: 5px; font-family: var(--mono); font-size: 12px; line-height: 18px; white-space: nowrap; color: var(--ink); }
+  .trow .td { position: absolute; left: 9px; top: 10px; width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
+  .trow b { font-weight: 500; }
+  .trow .ta { color: var(--dim); }
+  .trow .tr { position: relative; padding-left: 16px; color: var(--dimmer); }
+  .trow .tr::before { content: ''; position: absolute; left: 3px; top: 1px; width: 7px; height: 8px; border-left: 1px solid var(--faint); border-bottom: 1px solid var(--faint); }
+  .trow.tnew { overflow: hidden; }
+  .twork { position: relative; padding-left: 16px; font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .twork i { position: absolute; left: 1px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .logl { font-family: var(--mono); font-size: 13px; color: var(--dim); margin: 0 0 13px; white-space: nowrap; }
+  .logl i { display: inline-block; width: 15px; height: 15px; border-radius: 50%; background: var(--panel); color: var(--dimmer); font-style: normal; font-size: 10px; line-height: 15px; text-align: center; margin-right: 10px; vertical-align: 1px; }
+  .pdot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 7px; background: var(--faint); }
+  .npop { position: absolute; width: 300px; background: var(--card); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--ink); box-shadow: 0 14px 40px rgba(23,27,38,0.14); box-sizing: border-box; }
+  .npop .cols { display: flex; gap: 8px; align-items: center; }
+  .npop .col { flex: 1; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; }
+  .npop .col b { display: block; margin-bottom: 4px; font-weight: 500; font-family: var(--mono); font-size: 12px; }
+  .npop .fl { color: var(--dim); font-family: var(--mono); font-size: 11px; line-height: 1.6; }
+  .npop .btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; font-family: var(--mono); font-size: 11px; }
+  .npop .btn { padding: 3px 10px; border: 1px solid var(--line2); border-radius: 3px; color: var(--dim); }
+  .npop .btn.go { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .tnode { position: absolute; width: 176px; padding: 8px 10px; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2); box-sizing: border-box;
+           font-family: var(--mono); font-size: 11px; color: var(--dimmer); }
+  .tnode.dash { box-shadow: none; border: 1px dashed var(--faint); background: rgba(255,255,255,0.6); }
+  .tnode.focus { box-shadow: 0 0 0 1.5px var(--accent), 0 8px 24px rgba(194,65,12,0.12); }
+  .tnode .row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 2px 0; }
+  .tnode .c { color: var(--ink); background: var(--panel); border-radius: 8px; padding: 0 6px; line-height: 16px; }
+  .tnode .c.f { color: var(--accent); background: var(--accent-soft); }
+  .troot { position: absolute; width: 110px; height: 34px; line-height: 34px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2);
+           font-family: var(--mono); font-size: 13px; color: var(--ink); }
+  /* 05 · each question-answer pair and the tree share a number */
+  .qb { display: inline-block; width: 16px; height: 16px; border-radius: 8px; background: var(--accent); color: #fff; font: 500 10px/16px var(--mono); text-align: center; vertical-align: 1px; }
+  .qa { position: relative; margin: 0 -8px 10px; padding: 6px 8px 6px 32px; border-radius: 6px; }
+  .qa .qb { position: absolute; left: 8px; top: 9px; }
+  .qa.qnew { overflow: hidden; }
+  .qa .qq { font-family: var(--mono); font-size: 11px; line-height: 1.45; color: var(--ink); background: var(--panel); border-radius: 8px; padding: 5px 9px; }
+  .qa .qc { margin-top: 6px; width: 96px; padding: 5px 7px; border-radius: 6px; box-shadow: 0 0 0 1px var(--line); }
+  .mbars { display: flex; align-items: flex-end; gap: 3px; height: 22px; }
+  .mbars i { display: block; width: 8px; background: #d5d9e1; border-radius: 1px 1px 0 0; }
+  .mbars i.hi { background: var(--accent); }
+  .elab { position: absolute; font: italic 11px var(--mono); color: var(--dimmer); white-space: nowrap; background: var(--panel); padding: 1px 5px; border-radius: 9px; }
+  .elab .qb { font-style: normal; margin-right: 5px; }
+  .msgq { margin: 0 0 12px auto; width: fit-content; max-width: 330px; padding: 8px 12px; background: var(--panel); border-radius: 8px; font-size: 13px; line-height: 1.45; color: var(--ink); font-family: var(--mono); }
+  .msga { margin: 0 0 16px; padding: 12px; border-radius: 8px; box-shadow: 0 0 0 1px var(--line); font-size: 12px; color: var(--dim); line-height: 1.5; font-family: var(--mono); }
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 60px; margin-top: 8px; border-bottom: 1px solid var(--line2); }
+  .bars i { display: block; width: 24px; background: #d5d9e1; border-radius: 2px 2px 0 0; }
+  .bars i.hi { background: var(--accent); }
+  .sigp { position: absolute; width: 236px; background: var(--card); border-radius: 8px; padding: 8px; box-shadow: 0 14px 40px rgba(23,27,38,0.14); box-sizing: border-box; }
+  .sig { padding: 6px 8px; margin: 3px 0; background: var(--panel); border-radius: 4px; font-size: 11px; color: var(--dim); line-height: 1.4; position: relative; font-family: var(--mono); }
+  .sig b { display: block; color: var(--ink); font-weight: 500; }
+  .sig .rec { position: absolute; right: 6px; bottom: 6px; background: var(--ink); color: #fff; font-size: 9px; font-weight: 700; padding: 0 6px; border-radius: 2px; }
+  .cmp { position: absolute; width: 360px; padding: 26px 28px; box-sizing: border-box; }
+  .cmp .hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .cmp .lg { font-size: 12px; color: var(--dim); white-space: nowrap; }
+  .cmp .lg span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 6px 0 14px; vertical-align: -1px; }
+  .cmp .r { margin: 0 0 18px; }
+  .cmp .rl { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink); margin-bottom: 8px; white-space: nowrap; }
+  .cmp .rl b { font-family: var(--mono); font-weight: 500; color: var(--accent); font-size: 14px; }
+  .cmp .bar { position: relative; height: 12px; margin: 5px 0; }
+  .cmp .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+  .cmp .bar span { position: absolute; top: -2px; font-family: var(--mono); font-size: 11px; color: var(--dim); white-space: nowrap; }
+  .plane { position: absolute; width: 340px; height: 214px; border-radius: 10px; background: var(--card); box-shadow: 0 0 0 1px var(--line), 0 20px 40px rgba(23,27,38,0.08); transform: rotateX(58deg) rotateZ(-42deg); }
+  .modl { position: absolute; width: 132px; height: 44px; border-radius: 8px; background: var(--card); box-shadow: 0 0 0 1px var(--line2); box-sizing: border-box;
+          font-size: 13px; color: var(--dim); text-align: center; line-height: 44px; white-space: nowrap; }
+  .stg { position: absolute; width: 120px; height: 44px; border-radius: 22px; background: var(--card); box-shadow: 0 6px 18px rgba(23,27,38,0.06); text-align: center; line-height: 44px; font-size: 16px; font-weight: 500; }
+
+  .toc { position: absolute; left: 1000px; top: 330px; width: 800px; }
+  .toc .h { margin-bottom: 18px; }
+  .toc .rw { display: flex; align-items: baseline; gap: 22px; padding: 17px 0; border-top: 1px solid var(--line); white-space: nowrap; }
+  .toc .rw:last-child { border-bottom: 1px solid var(--line); }
+  .toc .i { font-family: var(--mono); font-size: 13px; color: var(--accent); width: 24px; }
+  .toc .n { font-size: 20px; font-weight: 500; width: 340px; }
+  .toc .d { font-size: 15px; color: var(--dim); flex: 1; }
+  .toc .y { font-family: var(--mono); font-size: 13px; color: var(--dimmer); }
+
+  #hud .seg { position: absolute; top: 1004px; height: 20px; }
+  #hud .seg .l { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--dimmer); white-space: nowrap; }
+  #hud .seg .t { position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--line); }
+  #hud .seg .f { position: absolute; left: 0; top: 22px; height: 2px; background: var(--accent); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="panel"></div>
+  <div id="world" class="layer"></div>
+  <div id="hud" class="layer"></div>
+</div>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="#171b26" stroke-width="1.6"/></marker>
+    <marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="#c2410c" stroke-width="1.6"/></marker>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#eef0f3"/><line x1="0" y1="0" x2="0" y2="6" stroke="#c3c8d3" stroke-width="2"/></pattern>
+  </defs>
+</svg>
+
+<script>
+/* ============================================================ utilities */
+const W = 1920, H = 1080, FPS = 60;
+const EMBED = new URLSearchParams(location.search).has('embed');  // shown on the site (see boot)
+const clamp = (x, a = 0, b = 1) => x < a ? a : x > b ? b : x;
+const lerp = (a, b, t) => a + (b - a) * t;
+const P = (t, a, b) => clamp((t - a) / (b - a));
+const oQ = x => 1 - Math.pow(1 - x, 4);
+const oC = x => 1 - Math.pow(1 - x, 3);
+const ioC = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const oB = (x, s = 1.2) => x <= 0 ? 0 : 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6d2b79f5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+const $ = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; (parent || document.body).appendChild(e); return e; };
+const NS = 'http://www.w3.org/2000/svg';
+const S = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const st = (e, o) => { for (const k in o) e.style[k] = o[k]; };
+const at = (e, x, y) => st(e, { left: x + 'px', top: y + 'px' });
+const box = (parent, cls, x, y, w, h, html) => { const e = $('div', cls, parent, html); st(e, { left: x + 'px', top: y + 'px', ...(w ? { width: w + 'px' } : {}), ...(h ? { height: h + 'px' } : {}) }); return e; };  // w / h = 0 → size from CSS or content
+const vis = (e, on) => { e.style.visibility = on ? 'visible' : 'hidden'; };
+/* soft entrance: fade + small rise; returns progress */
+const rise = (e, t, t0, d = .5, dy = 14) => { const p = oQ(P(t, t0, t0 + d)); st(e, { opacity: p, transform: `translateY(${(1 - p) * dy}px)` }); return p; };
+/* line draw-on (arrowhead markers ignore dashing, so hide the path until it starts) */
+const draw = (el, p) => { const L = el.getTotalLength(); st(el, { strokeDasharray: `${L} ${L}`, strokeDashoffset: L * (1 - p), opacity: p > .01 ? 1 : 0 }); };
+const vline = (svg, x, y0, y1, both = true, col = '#171b26') => S('path', { d: `M${x},${y0} L${x},${y1}`, stroke: col, 'stroke-width': 1.1, fill: 'none', ...(both ? { 'marker-start': 'url(#arr)' } : {}), 'marker-end': 'url(#arr)' }, svg);
+
+/* ============================================================ copy
+   Every chapter: 背景 → 解法 → 结果. Steps are kept short; on-screen time is derived from their length. */
+const COPY = {
+  p1: {
+    idx: '01', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '技能的治理、评测与优化',
+    sub: '为中台设计 Agent 主导搭建技能治理与评测体系',
+    steps: ['设计师各自开发的技能接入设计 Agent：<br>体量大、功能重叠，调用耗时且难以维护',
+            '拆成基座 / 业务双层原子技能，按需组合调用；<br>与设计师共定过程检查点与理想输出，让技能并发评测、自我迭代'],
+    metrics: [['30+', '完成治理的 Skill'], ['1000+', '团队内使用量'], ['−21%', '典型技能耗时']],
+    look: [0, 2, 0],
+    toc: ['技能的治理、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '技能治理',
+  },
+  p2: {
+    idx: '02', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '视觉输出的规范、评测与优化',
+    sub: '为中台设计 Agent 封装视觉组件库，让所有视觉输出动态符合规范',
+    steps: ['Agent 的各类视觉输出没有统一规范：<br>每次生成的风格都不一样',
+            '封装设计组件库 + design.md，Agent 按需组合、动态输出；<br>DOM · CV · LLM 多模态评测，反向迭代组件库与 design.md'],
+    result: 'Agent 的所有 HTML 类输出<br>统一为同一套视觉风格',
+    look: [0.5, 1, 0],
+    toc: ['视觉输出的规范、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '视觉输出',
+  },
+  p3: {
+    idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'PPT 生成模式的设计与开发',
+    sub: '为中台设计 Agent 上线 PPT 生成模式与多套模板',
+    steps: ['为团队日常大量的 PPT 需求，<br>设计并开发 PPT 小工具，作为 App 接入中台设计 Agent',
+            '开发：前端编辑器、PPT 专用 Agent、后端与模板管理后台；<br>DSL + 模板：模板快速切换，生成稳定'],
+    result: '设计与前后端从 0 到 1 独立完成',
+    look: [0.5, 1.5, 0.5],
+    toc: ['PPT 生成模式的设计与开发', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成模式',
+  },
+  p4: {
+    idx: '04', kicker: '研究生 · CHI\'27 在投 · 第一作者 · 2026.01 — 04', title: 'NarraSteer', latin: 1,
+    sub: '面向数据叙事的 Agent 交互产品设计',
+    steps: ['Agent 过程不透明，用户只能被动等待：<br><em>74%</em> 的时间在等，<em>5/8</em> 的人最后才发现跑偏',
+            '把执行轨迹重构为叙事空间中的故事线：<br>位置即数据维度，拖拽节点即可引导 Agent'],
+    metrics: [['+13.2%', '叙事洞察数'], ['15/16', '主动拖拽引导 Agent'], ['p<.05', '心理负荷显著下降']],
+    look: [0, 3.5, 0],
+    toc: ['NarraSteer', '数据叙事 Agent · CHI\'27 在投', '2026'], hud: 'NARRASTEER',
+  },
+  p5: {
+    idx: '05', kicker: '研究生 · CHI\'26 收录 · 第一作者 · 2025.07 — 11', title: 'ToA · Tree-of-Analysis', latin: 1,
+    sub: '对话式可视分析产品设计',
+    steps: ['新手在多轮可视分析对话中容易迷路：<br>线性对话难回溯，<em>4/6</em> 名新手任务失败',
+            '把对话重组为分析树：回答是节点，提问是边；<br>识别图表信号，推荐后续节点'],
+    metrics: [['+58.3%', '每轮洞察数'], ['+17.7%', '每轮深度思考时间'], ['−23%', '总对话轮次']],
+    look: [0, 4, 0],
+    toc: ['ToA', '对话式可视分析 · CHI\'26 收录', '2025'], hud: 'TOA',
+  },
+  p6: {
+    idx: '06', kicker: '研究生 · G 端产品负责人 · 2024.09 — 2025.04', title: '跨社交媒体舆情分析与治理平台',
+    sub: '承接国家重点研发计划（3000w），主导平台从 0 到 1 的产品设计',
+    steps: ['舆情监控、研判、处置中信息分散、流程割裂；<br>五大模块的算法能力需要从零变成产品',
+            '规划大屏、仪表盘、中台三层信息架构；<br>协调五大技术团队，完成原型与设计规范'],
+    metrics: [['0 → 1', '平台完整落地'], ['3 层', '信息架构'], ['5 个', '技术团队协同交付']],
+    toc: ['跨社交媒体舆情分析与治理平台', 'G 端产品负责人', '2024'], hud: '舆情平台',
+  },
+};
+const KEYS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
+
+/* ============================================================ timeline — paced by reading
+   Scene code is authored on a compact "animation clock": 背景 at STEP[0], 解法 at STEP[1], 结果 at STEP[2],
+   hand-off at OUT. plan() gives every step enough real time to read its text (READ_CPS characters a second
+   plus LEAD to take in the drawing), rounded to whole beats of the 96 BPM score. The animation plays at
+   SPEED of its authored pace, then holds until the reader is done. */
+const BEAT = 0.625;
+const READ_CPS = 7.5, LEAD = 1.0, SPEED = 0.75;
+const STEP = [0.625, 2.5, 4.375], OUT = 6.0, END = 6.25, HANDOFF = 0.4;
+const readLoad = html => { const s = html.replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' '); return (s.match(/[㐀-鿿]/g) || []).length + (s.match(/[A-Za-z0-9][\w.+%\/−-]*/g) || []).length; };
+const beats = (sec, min) => Math.max(min, Math.ceil(sec / BEAT - 1e-6)) * BEAT;
+function plan(c) {
+  const look = c.look || [0, 0, 0];  // extra seconds for denser drawings
+  const r = [2 * BEAT,
+    beats(LEAD + look[0] + readLoad(c.steps[0]) / READ_CPS, 7),
+    beats(LEAD + look[1] + readLoad(c.steps[1]) / READ_CPS, 8),
+    beats(LEAD + look[2] + 1.0 + readLoad(c.metrics ? c.metrics.flat().join(' ') : c.result) / READ_CPS, 8)];
+  const segs = [[0, STEP[0], r[0]], [STEP[0], STEP[1], r[1]], [STEP[1], STEP[2], r[2]], [STEP[2], OUT, r[3] - HANDOFF]];
+  const map = [[0, 0]]; let x = 0;
+  // play at SPEED, then hold the clock still (not creeping, or the next step's fade-outs would start early).
+  // The title beat never holds: 背景's drawing starts fading in before it ends, and a hold would freeze it half-drawn.
+  segs.forEach(([a0, a1, R], i) => { const act = Math.min(R, (a1 - a0) / SPEED), h = a0 + (a1 - a0) * .97;
+    if (i > 0 && act < R - .15) map.push([x + act, h], [x + R - .1, h]); x += R; map.push([x, a1]); });
+  x += HANDOFF; map.push([x, END]);
+  return { map, dur: x, steps: [r[0], r[0] + r[1], r[0] + r[1] + r[2]] };
+}
+function warp(x, map) {
+  for (let i = 1; i < map.length; i++) if (x <= map[i][0]) return lerp(map[i - 1][1], map[i][1], (x - map[i - 1][0]) / (map[i][0] - map[i - 1][0]));
+  return map[map.length - 1][1] + (x - map[map.length - 1][0]);
+}
+const PLAN = {}, T = { intro: [0, 12 * BEAT] };
+{ let cur = T.intro[1]; KEYS.forEach(k => { PLAN[k] = plan(COPY[k]); T[k] = [cur, cur + PLAN[k].dur]; cur = T[k][1]; }); T.outro = [cur, cur + 8 * BEAT]; }
+const DUR = T.outro[1];
+const INTRO_CLOCK = [[0, 0], [2.2 / SPEED, 2.2], [T.intro[1] - .45, 2.2], [T.intro[1], 2.5]];
+const OUTRO_CLOCK = [[0, 0], [1.4 / SPEED, 1.4], [T.outro[1] - T.outro[0], 2.5]];
+
+const world = document.getElementById('world');
+const panelBg = document.getElementById('panel');
+
+/* ============================================================ left column: header + 背景 / 解法 / 结果 */
+function LeftCol(parent, c) {
+  const root = $('div', 'layer', parent);
+  const kick = $('div', 'kick abs', root, `<b>${c.idx}</b>${c.kicker}`); at(kick, 120, 236);
+  const tm = $('div', 'mask abs', root); at(tm, 120, 264);
+  const title = $('div', 'title' + (c.latin ? ' latin' : ''), tm, c.title);
+  const sub = $('div', 'sub abs', root, c.sub); at(sub, 120, 326);
+  const wrap = $('div', 'steps', root);
+  const tops = [0, 150, 300];
+  const rail = $('div', 'rail', wrap); st(rail, { height: tops[2] + 'px' });
+  const railFill = $('div', 'rail', wrap); st(railFill, { background: 'var(--accent)', height: '0px' });
+  const labels = [['背景', 'BACKGROUND'], ['解法', 'SOLUTION'], ['结果', 'RESULT']];
+  const steps = labels.map(([zh, en], i) => {
+    const s = $('div', 'step', wrap); st(s, { top: tops[i] + 'px' });
+    const lab = $('div', 'lab', s, `${zh}<i>${en}</i>`);
+    const body = i < 2 ? $('div', 'txt', s, c.steps[i])
+      : c.metrics ? $('div', 'metrics', s, c.metrics.map(m => `<div class="metric"><div class="v">${m[0]}</div><div class="l">${m[1]}</div></div>`).join(''))
+      : $('div', 'txt', s, c.result);
+    const dot = $('div', 'dot', wrap); st(dot, { top: tops[i] + 6 + 'px' });
+    return { s, lab, body, dot, parts: i < 2 || !c.metrics ? [body] : [...body.children] };
+  });
+  return {
+    render(u) {
+      const out = oC(P(u, OUT, OUT + .25));
+      st(root, { opacity: 1 - out, transform: `translateY(${-out * 16}px)` });
+      rise(kick, u, 0, .45, 10);
+      const tp = oQ(P(u, .05, .65)); st(title, { transform: `translateY(${(1 - tp) * 105}%)` });
+      rise(sub, u, .2, .5, 10);
+      steps.forEach((s, i) => {
+        const t0 = STEP[i];
+        rise(s.lab, u, t0, .45, 10);
+        s.parts.forEach((m, k) => rise(m, u, t0 + .1 + k * .14, .55, 12));
+        // once the next step arrives, earlier ones recede but stay readable
+        const next = i < 2 ? P(u, STEP[i + 1], STEP[i + 1] + .4) : 0;
+        st(s.s, { filter: `opacity(${1 - .45 * next})` });
+        const on = P(u, t0, t0 + .3);
+        st(s.dot, { background: on > 0 ? `rgba(194,65,12,${on})` : 'var(--page)', borderColor: on > 0 ? 'var(--accent)' : 'var(--faint)', opacity: P(u, .45, .7) });
+      });
+      st(rail, { opacity: P(u, .45, .7) });
+      const fill = u < STEP[1] ? 0 : u < STEP[2] ? 150 * oQ(P(u, STEP[1], STEP[1] + .5)) : 150 + 150 * oQ(P(u, STEP[2], STEP[2] + .5));
+      st(railFill, { height: fill + 'px', opacity: P(u, .45, .7) });
+    },
+  };
+}
+
+/* layout grid: the panel's inner box is x 860–1720 (80 in from the panel), centred on y 540. In a result frame the
+   comparison card is right-aligned at the inner edge and centred on 540; the visual beside it is scaled to fill the rest
+   of the row (a 40px gutter) and centred on 540 too */
+const GRID = { x0: 860, x1: 1720, cy: 540, gutter: 40, card: 360 };
+// transform (origin 0 0) that fits a box of the untransformed layout into [x0, x1] × centred on cy
+function fitBox(b, x0, x1, cy, maxH = 700) {
+  const s = Math.min(1, (x1 - x0) / b.w, maxH / b.h);
+  return { s, tx: (x0 + x1) / 2 - s * (b.x + b.w / 2), ty: cy - s * (b.y + b.h / 2) };
+}
+const fitCss = (f, k) => `translate(${f.tx * k}px, ${f.ty * k}px) scale(${1 + (f.s - 1) * k})`;
+const unionRect = (els, s0) => { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  els.forEach(e => { const r = e.getBoundingClientRect(); if (!r.width && !r.height) return; x0 = Math.min(x0, r.left - s0.left); y0 = Math.min(y0, r.top - s0.top); x1 = Math.max(x1, r.right - s0.left); y1 = Math.max(y1, r.bottom - s0.top); });
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 }; };
+
+/* comparison card: accent = our system, grey = baseline (real study numbers) */
+function Compare(parent, x, y, sys, rows) {
+  const c = $('div', 'card cmp', parent); at(c, x, y);
+  $('div', 'hd', c, `<div class="cap">对照实验</div><div class="lg"><span style="background:var(--accent)"></span>${sys}<span style="background:#d5d9e1"></span>基线</div>`);
+  const W0 = 222;
+  const rs = rows.map(r => {
+    const e = $('div', 'r', c);
+    $('div', 'rl', e, `<span>${r.label}</span><b>${r.delta}</b>`);
+    const mk = (v, col, txt) => { const b = $('div', 'bar', e); const i = $('i', '', b); st(i, { background: col }); const s = $('span', '', b, txt); return { i, s, w: v / r.max * W0 }; };
+    return { a: mk(r.a, 'var(--accent)', r.at), b: mk(r.b, '#d5d9e1', r.bt) };
+  });
+  return {
+    el: c,
+    // right-aligned at the grid's inner edge, centred on its axis (call once fonts are in)
+    place() { const h = c.getBoundingClientRect().height; at(c, GRID.x1 - GRID.card, GRID.cy - h / 2); },
+    render(u, t0) {
+      rise(c, u, t0, .5, 16);
+      rs.forEach((r, k) => [r.a, r.b].forEach((b, j) => {
+        const p = oQ(P(u, t0 + .15 + k * .12 + j * .05, t0 + .75 + k * .12 + j * .05));
+        st(b.i, { width: b.w * p + 'px' }); st(b.s, { left: b.w * p + 10 + 'px', opacity: P(u, t0 + .45 + k * .12, t0 + .7 + k * .12) });
+      }));
+    },
+  };
+}
+
+function Scene(range) {
+  const root = $('div', 'layer', world);
+  return { root, on(t) { const on = t >= range[0] - .01 && t < range[1] + .01; vis(root, on); return on; } };
+}
+
+/* ============================================================ INTRO */
+const INTRO = (() => {
+  const sc = Scene(T.intro);
+  const r = sc.root;
+  const nm = $('div', 'mask abs', r); at(nm, 120, 372);
+  const name = $('div', '', nm, '屈非塬'); st(name, { fontSize: '56px', fontWeight: 500, letterSpacing: '0.12em', whiteSpace: 'nowrap' });
+  const en = $('div', 'abs nowrap', r, 'QU FEIYUAN'); at(en, 122, 456); st(en, { fontFamily: 'var(--display)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.34em', color: 'var(--dim)' });
+  const hl = $('div', 'abs', r); at(hl, 122, 500); st(hl, { height: '2px', background: 'var(--accent)', width: '0px' });
+  const role = $('div', 'abs nowrap', r, '设计 · 工程 · AI'); at(role, 120, 526); st(role, { fontSize: '22px' });
+  const aff = $('div', 'abs', r, '浙江大学 CAD&amp;CG 全国重点实验室 · 人机交互与数据可视化方向硕士研究生<br>阿里巴巴淘天集团 · AI 设计工程师（实习）'); at(aff, 120, 580); st(aff, { fontSize: '16px', lineHeight: '1.8', color: 'var(--dim)', whiteSpace: 'nowrap' });
+  const toc = $('div', 'toc', r);
+  const h = $('div', 'h cap', toc, '精选项目 &nbsp;·&nbsp; 背景 / 解法 / 结果');
+  const rows = KEYS.map(k => { const [n, d, y] = COPY[k].toc; return $('div', 'rw', toc, `<span class="i">${COPY[k].idx}</span><span class="n">${n}</span><span class="d">${d}</span><span class="y">${y}</span>`); });
+  return {
+    // the name block and the contents are each centred on the grid's axis (y 540); the contents sit on the panel column
+    layout() { vis(r, true); const s0 = document.getElementById('stage').getBoundingClientRect();
+      const left = [nm, en, hl, role, aff], b = unionRect(left, s0), dy = GRID.cy - (b.y + b.h / 2);
+      left.forEach(e => { e.style.top = parseFloat(e.style.top) + dy + 'px'; });
+      st(toc, { left: '780px', width: '1020px' }); const th = toc.getBoundingClientRect().height; st(toc, { top: GRID.cy - th / 2 + 'px' }); vis(r, false); },
+    render(tr) {
+      if (!sc.on(tr)) return;
+      const t = warp(tr, INTRO_CLOCK);
+      const out = oC(P(t, 2.2, 2.5));
+      st(r, { opacity: 1 - out, transform: `translateY(${-out * 16}px)` });
+      const p = oQ(P(t, .05, .7)); st(name, { transform: `translateY(${(1 - p) * 105}%)` });
+      rise(en, t, .25, .5, 8);
+      st(hl, { width: 48 * oQ(P(t, .35, .8)) + 'px' });
+      rise(role, t, .4, .5, 10); rise(aff, t, .55, .5, 10);
+      rise(h, t, .6, .5, 8);
+      rows.forEach((rw, i) => rise(rw, t, .75 + i * .16, .5, 10));
+    },
+  };
+})();
+
+/* ============================================================ the internship's figure
+   Redrawn from the write-up's architecture figure: the design agent between its users and its knowledge, extended along
+   two dimensions, Skills and Apps. Chapters 01–03 open on it at the same spot, each lighting its own part (01 the skills,
+   02 the visual output that reaches the users, 03 the apps); 03 closes on it with all three lit. */
+function Arch(parent) {
+  const root = $('div', 'layer', parent);
+  const svg = S('svg', { class: 'full' }, root);
+  const B = [['Users · 用户', 860, 196, 860], ['中台设计 Agent', 1060, 262, 660, 'dark'], ['Apps · 小工具', 860, 328, 410], ['Skills · 技能', 1310, 328, 410], ['Knowledge · 知识', 860, 394, 860]];
+  const bars = B.map(([n, x, y, w, k]) => box(root, 'abar ' + (k || ''), x, y, w, 40, n));
+  const arrows = [[900, 236, 328], [1170, 302, 328], [1650, 236, 262], [1650, 302, 328], [1060, 368, 394], [1650, 368, 394]].map(([x, a, b]) => vline(svg, x, a + 3, b - 3));
+  const cap = box(root, 'abs zh13', 860, 452, 0, 0, '从技能与小工具两个维度，扩展设计 Agent 的能力边界');
+  // a chapter's tag, right-aligned at x
+  const tag = (html, x, y) => { const e = box(root, 'abs atag', 0, y, 0, 0, html); st(e, { left: 'auto', right: W - x + 'px' }); return e; };
+  const acc = (a, b) => S('path', { d: `M1650,${a + 3} L1650,${b - 3}`, stroke: '#c2410c', 'stroke-width': 1.6, fill: 'none', 'marker-start': 'url(#arrA)', 'marker-end': 'url(#arrA)' }, svg);
+  // lit: 01 the Skills bar · 02 the output path, skills → agent → users · 03 the Apps bar
+  const hi = [
+    [box(root, 'abar acc', 1310, 328, 410, 40, B[3][0]), tag('<b>01</b>技能治理', 1706, 339)],
+    [acc(236, 262), acc(302, 328), tag('<b>02</b>视觉输出', 1638, 240)],
+    [box(root, 'abar acc', 860, 328, 410, 40, B[2][0]), tag('<b>03</b>PPT 生成模式', 1256, 339)],
+  ];
+  return {
+    root,
+    // a0: when the bars start rising · k: overall opacity · lit: how far each chapter's part is lit (0–1)
+    render(u, a0, k, lit) {
+      bars.forEach((b, i) => { b.style.opacity = rise(b, u, a0 + i * .07, .5, 10) * k; });
+      arrows.forEach((a, i) => { a.style.opacity = P(u, a0 + .35 + i * .04, a0 + .55 + i * .04) * k; });
+      cap.style.opacity = rise(cap, u, a0 + .5, .45, 6) * k;
+      hi.forEach((els, i) => els.forEach(e => { e.style.opacity = lit[i] * k; }));
+    },
+  };
+}
+
+/* ============================================================ 01 · 技能的治理、评测与优化
+   背景: designer-made skills plugged into the design agent arrive bloated, overlapping and slow
+   → 解法: 治理 — 基座 / 业务 atomic skills, combined on demand; 评测 · 优化 — the concurrent test platform (redrawn from the
+           write-up's figure): test prompts × checks agreed with designers (process checkpoints, ideal outputs), a checker
+           that reads the execution trace, and a revisor that proposes a change — kept, and the version bumped, only
+           when the re-run beats the previous version
+   → 结果: 30+ skills governed, 1000+ team uses; typical skills: Token −20.47%, time −21.21% */
+const P1 = (() => {
+  const c = COPY.p1, sc = Scene(T.p1);
+  const L = LeftCol(sc.root, c);
+  const pn = $('div', 'layer', sc.root);
+  const svg = S('svg', { class: 'full' }, pn);
+  const arrow = (d, col = '#171b26', head = true) => S('path', { d, stroke: col, 'stroke-width': 1.1, fill: 'none', ...(head ? { 'marker-end': col === '#171b26' ? 'url(#arr)' : 'url(#arrA)' } : {}) }, svg);
+  // 背景 · where skills sit in the design agent
+  const arch = Arch(pn);
+  // 背景 · what arrived: every skill re-implements the same basics, in one bloated file
+  const dup = ['眼动分析', 'CTR 预测'].map((n, i) => {
+    const e = box(pn, 'card', 860 + i * 212, 520, 196, 0); st(e, { padding: '14px 14px 8px' });
+    e.innerHTML = `<div class="zh14" style="font-weight:500;margin-bottom:10px">${n}</div>` +
+      ['界面识别', '坐标提取', '业务逻辑', '结果输出'].map((b, j) => `<div style="font-size:12px;padding:6px 8px;margin-bottom:6px;border-radius:4px;${j < 2 ? 'border:1px dashed var(--accent);color:var(--accent)' : 'background:var(--panel);color:var(--dim)'}">${b}</div>`).join('');
+    return e; });
+  const dupCap = box(pn, 'abs zh13', 860, 862, 0, 0, '<span class="x">✕</span>功能重叠：各自重复实现底层能力');
+  const fat = box(pn, 'card', 1300, 520, 420, 322);
+  const rf = mulberry32(21);
+  fat.innerHTML = '<div class="cap" style="padding:16px 18px 12px">SKILL.md</div>' + Array.from({ length: 22 }, () => `<div class="fl2" style="width:${35 + rf() * 55}%"></div>`).join('');
+  const fatCap = box(pn, 'abs zh13', 1300, 862, 0, 0, '<span class="x">✕</span>体量大 · 调用耗时 · 难以维护');
+  // 解法 · 治理: two layers of atomic skills, combined on demand
+  const govLab = box(pn, 'abs cap', 860, 170, 0, 0, '<span style="color:var(--accent)">治理</span> · 双层原子技能');
+  const biz = box(pn, 'lay', 860, 196, 860, 80); $('div', 'lt', biz, '业务技能 · 提供设计判断');
+  const base = box(pn, 'lay', 860, 300, 860, 80); $('div', 'lt', base, '基座技能 · 支撑底层能力');
+  const bizSk = ['视觉热力预测', 'CTR 预测', '字号规范检测', '方案对比', '信息密度分析', '……'].map((n, i) => box(pn, 'sk', 876 + i * 138, 228, 0, 0, n));
+  const baseSk = ['界面标注', '元素识别', '坐标提取', '……'].map((n, i) => box(pn, 'sk', 876 + i * 138, 332, 0, 0, n));
+  const holds = [1007, 1283, 1559].map(x => arrow(`M${x},298 L${x},279`));
+  const holdLab = box(pn, 'abs', 1015, 280, 0, 0, '支撑'); st(holdLab, { fontSize: '12px', color: 'var(--dim)' });
+  // 解法 · 评测 · 优化: the concurrent test platform, redrawn as a clockwise cycle around the skill it improves.
+  // The Revisor only proposes a candidate; it is re-run and judged, and the version moves only when it beats the last one.
+  const loopLab = box(pn, 'abs cap', 860, 404, 0, 0, '<span style="color:var(--accent)">评测 · 优化</span> · 技能并发测试平台');
+  const suite = box(pn, 'card', 860, 430, 860, 116);
+  const colHd = t => `<div class="mono" style="font-size:11px;letter-spacing:.1em;color:var(--dimmer)">${t}</div>`;
+  const dimLab = t => `<span style="display:inline-block;width:118px;color:var(--dim)">${t}</span>`;
+  suite.innerHTML = '<div class="cap" style="position:absolute;left:20px;top:14px">测试集 · 与设计师共定</div>' +
+    `<div style="position:absolute;left:20px;top:42px">${colHd('PROMPT 1…N')}<div class="zh13" style="margin-top:10px;color:var(--ink)">“检测下字号…” &nbsp;·&nbsp; “字号合适吗…” &nbsp;·&nbsp; …</div></div>` +
+    '<div class="mono" style="position:absolute;left:398px;top:62px;font-size:16px;color:var(--dim)">×</div>' +
+    `<div style="position:absolute;left:440px;top:42px">${colHd('检测项 1…N')}<div class="zh13" style="margin-top:10px;color:var(--ink)">${dimLab('过程 · 关键检查点')}按流程执行？ &nbsp;有多余步骤？</div>` +
+    `<div class="zh13" style="margin-top:6px;color:var(--ink)">${dimLab('结果 · 理想输出')}与理想输出一致？</div></div>`;
+  // the cycle: ① run → ② judge → ③ revise → ①, on an ellipse around the skill
+  const CX = 1290, CY = 675, RX = 330, RY = 95;
+  const ep = th => [CX + RX * Math.cos(th), CY + RY * Math.sin(th)];
+  const arc = (a0, a1, col) => { const [x0, y0] = ep(a0), [x1, y1] = ep(a1);
+    return S('path', { d: `M${x0},${y0} A${RX},${RY} 0 0 1 ${x1},${y1}`, stroke: col, 'stroke-width': 1.3, fill: 'none', 'marker-end': col === '#171b26' ? 'url(#arr)' : 'url(#arrA)' }, svg); };
+  const arcs = [arc(Math.PI + .38, 2 * Math.PI - .38, '#171b26'), arc(.42, Math.PI / 2 - .3, '#171b26'), arc(Math.PI / 2 + .3, Math.PI - .42, '#c2410c')];
+  const arcLabs = [[1242, 571, '执行轨迹与结果', 0], [1487, 733, '运行时问题', 0], [1027, 733, '候选修改', 1]].map(([x, y, t, acc]) => {
+    const e = box(pn, 'abs', x, y, 0, 0, t); st(e, { fontSize: '12px', lineHeight: '18px', padding: '0 6px', background: 'var(--panel)', color: acc ? 'var(--accent)' : 'var(--dim)' }); return e; });
+  const node = (cx, cy, k, b) => { const e = box(pn, 'abs', cx - 90, cy - 28, 180, 56);
+    st(e, { background: 'var(--ink)', color: '#fff', borderRadius: '8px', boxSizing: 'border-box', padding: '9px 14px' });
+    e.innerHTML = `<div class="mono" style="font-size:11px;letter-spacing:.06em;color:#8a92a6;white-space:nowrap">${k}</div><div class="nb" style="font-size:14px;margin-top:3px;white-space:nowrap">${b}</div>`; return e; };
+  const n1 = node(960, 675, '① 并发执行', '中台设计 Agent');
+  const n2 = node(1620, 675, '② 评判 · CHECKER', '比上一版更好？');
+  const n3 = node(1290, 770, '③ 修改 · REVISOR', '提出候选修改');
+  const n2b = n2.querySelector('.nb');
+  const skill = box(pn, 'card', 1190, 626, 200, 62);
+  skill.innerHTML = '<div class="cap" style="position:absolute;left:16px;top:11px">SKILL</div><div style="position:absolute;left:16px;top:30px;font-size:15px;font-weight:500;white-space:nowrap">字号规范检测</div>';
+  const ver = box(skill, 'abs mono', 0, 31, 0, 0, 'v2'); st(ver, { left: 'auto', right: '14px', fontSize: '12px', lineHeight: '20px', padding: '0 8px', borderRadius: '10px', color: 'var(--accent)', background: 'var(--accent-soft)' });
+  const cand = box(pn, 'abs', 1259, 698, 0, 0, '候选修改'); st(cand, { fontSize: '11px', lineHeight: '17px', padding: '0 8px', borderRadius: '9px', color: 'var(--accent)', border: '1px dashed var(--accent)', background: '#fff', opacity: 0 });
+  const feeds = [arrow('M960,550 L960,644'), arrow('M1620,550 L1620,644')];
+  // version line: the version only advances on the main line; a discarded round branches off and ends
+  const verLab = box(pn, 'abs cap', 860, 806, 0, 0, '版本记录 · 结果变好才更新版本号');
+  const TY = 848;
+  const seg12 = S('path', { d: `M920,${TY} L1150,${TY}`, stroke: '#171b26', 'stroke-width': 1.4, fill: 'none' }, svg);
+  const seg23 = S('path', { d: `M1150,${TY} L1480,${TY}`, stroke: '#171b26', 'stroke-width': 1.4, fill: 'none' }, svg);
+  const tails = [1150, 1480].map(x => S('path', { d: `M${x},${TY} L1700,${TY}`, stroke: '#c3c8d3', 'stroke-width': 1.4, 'stroke-dasharray': '3 5', fill: 'none' }, svg));
+  const rej = S('path', { d: `M1150,${TY} C1215,${TY} 1240,822 1304,822`, stroke: '#8a92a6', 'stroke-width': 1.2, 'stroke-dasharray': '4 4', fill: 'none' }, svg);
+  const rejDot = S('circle', { cx: 1310, cy: 822, r: 6, fill: '#fff', stroke: '#8a92a6', 'stroke-width': 1.2 }, svg);
+  const rejLab = box(pn, 'abs', 1324, 813, 0, 0, '第 2 轮 <span style="margin:0 4px">✕</span>未变好 · 丢弃'); st(rejLab, { fontSize: '12px', color: 'var(--dimmer)', whiteSpace: 'nowrap' });
+  const vdots = [920, 1150, 1480].map(x => S('circle', { cx: x, cy: TY, r: 6, fill: '#171b26' }, svg));
+  const vlabs = [[912, 'v1'], [1142, 'v2 · 第 1 轮 ✓ 变好'], [1472, 'v3 · 第 3 轮 ✓ 变好']].map(([x, t]) => { const e = box(pn, 'abs', x, 862, 0, 0, t); st(e, { fontSize: '12px', color: 'var(--ink)', whiteSpace: 'nowrap' }); return e; });
+  // a pulse keeps travelling the cycle while the step is read, from ③ (a new candidate) round to ② (the verdict)
+  const glow = S('circle', { r: 11, fill: 'rgba(194,65,12,0.16)' }, svg);
+  const dot = S('circle', { r: 4.5, fill: '#c2410c', stroke: '#fff', 'stroke-width': 1.5 }, svg);
+  const LAP = 2.6, JUDGE = .75;  // a lap starts at ③; the verdict comes three quarters of the way round, at ②
+  const VERD = [false, true, true, false, true];  // rounds 2, 3, …: kept only when better
+  // 结果 · typical skills, before vs after the refactor
+  const cost = box(pn, 'card cost', 860, 486, 0, 0);
+  const SEGC = ['#171b26', '#8a92a6', '#d5d9e1'], SEGT = ['#fff', '#fff', '#171b26'];
+  cost.innerHTML = `<div class="hd"><span class="tt">典型技能成本 · 改造前后</span><span class="lg"><span style="background:${SEGC[0]}"></span>链路分析<span style="background:${SEGC[1]}"></span>行为数据预测<span style="background:${SEGC[2]}"></span>竞品分析</span></div>`;
+  const GROUPS = [
+    { label: '合计 Token 消耗（万）', rows: [['改造前', [278.1, 267.6, 475.6], '1,021'], ['改造后', [106.8, 314.5, 390.9], '812.2']], badge: '↓ 20.47%' },
+    { label: '合计耗时（秒）', rows: [['改造前', [1811, 859.4, 1708], '4,378'], ['改造后', [1266, 928.6, 1255], '3,450']], badge: '↓ 21.21%' },
+  ];
+  const BW = 470, BX = 64;
+  const groups = GROUPS.map(g => {
+    const wrap = $('div', '', cost); st(wrap, { position: 'relative' });
+    $('div', 'gl', wrap, g.label);
+    const max = g.rows[0][1].reduce((a, b) => a + b, 0);
+    const rows = g.rows.map(([n, vals, tot]) => {
+      const row = $('div', 'row', wrap); $('div', 'rl', row, n);
+      let x = BX; const segs = vals.map((v, j) => { const w = v / max * BW; const sg = $('div', 'seg', row, v.toLocaleString('en-US')); st(sg, { left: x + 'px', background: SEGC[j], color: SEGT[j], width: '0px', borderRadius: j === 0 ? '3px 0 0 3px' : j === 2 ? '0 3px 3px 0' : '0' }); x += w; return { s: sg, w }; });
+      const t = $('div', 'tot', row, tot); st(t, { left: x + 14 + 'px' });
+      return { segs, t };
+    });
+    const bd = $('div', 'bd', wrap, '合计 ' + g.badge);
+    return { rows, bd };
+  });
+
+  const t0 = T.p1[0];  // real start; scene code below runs on the animation clock
+  const dot0 = PLAN.p1.steps[1] + 1.8 / SPEED;  // real time the pulse sets off (the loop is drawn by then)
+  return {
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - t0, PLAN.p1.map);
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景
+      const bgOut = 1 - oC(P(u, s1 - .05, s1 + .3));
+      arch.render(u, .55, bgOut, [P(u, 1.1, 1.3), 0, 0]);
+      dup.forEach((e, i) => { e.style.opacity = rise(e, u, 1.0 + i * .12, .5, 14) * bgOut; });
+      dupCap.style.opacity = rise(dupCap, u, 1.45, .45, 6) * bgOut;
+      fat.style.opacity = rise(fat, u, 1.2, .5, 14) * bgOut;
+      fatCap.style.opacity = rise(fatCap, u, 1.55, .45, 6) * bgOut;
+      // 解法 · 治理 (stays through 结果)
+      rise(govLab, u, s1 + .05, .4, 6);
+      rise(biz, u, s1 + .1, .45, 10); rise(base, u, s1 + .18, .45, 10);
+      const pop = (e, a) => { const k = oB(P(u, a, a + .3)); st(e, { opacity: Math.min(1, k * 2), transform: `scale(${Math.max(0, k)})` }); };
+      bizSk.forEach((e, i) => pop(e, s1 + .2 + i * .05));
+      baseSk.forEach((e, i) => pop(e, s1 + .3 + i * .05));
+      holds.forEach((h, i) => draw(h, oQ(P(u, s1 + .55 + i * .05, s1 + .7 + i * .05))));
+      holdLab.style.opacity = P(u, s1 + .65, s1 + .8);
+      // 解法 · 评测 · 优化 (hands over to the cost chart at 结果)
+      const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
+      const fade = (e, a, d = .4, dy = 8) => { e.style.opacity = rise(e, u, a, d, dy) * pOut; };
+      const line = (a, p0, p1) => { draw(a, oQ(P(u, p0, p1))); a.style.opacity = +a.style.opacity * pOut; };
+      loopLab.style.opacity = P(u, s1 + .5, s1 + .8) * pOut;
+      fade(suite, s1 + .55, .4, 10);
+      feeds.forEach(f => line(f, s1 + .8, s1 + .95));
+      fade(n1, s1 + .85, .35, 6); fade(skill, s1 + .9, .35, 6); fade(n2, s1 + .95, .35, 6); fade(n3, s1 + 1.05, .35, 6);
+      line(arcs[0], s1 + 1.05, s1 + 1.25); line(arcs[1], s1 + 1.25, s1 + 1.4); line(arcs[2], s1 + 1.4, s1 + 1.55);
+      arcLabs.forEach((e, i) => { e.style.opacity = P(u, s1 + 1.2 + i * .15, s1 + 1.4 + i * .15) * pOut; });
+      fade(verLab, s1 + 1.45, .3, 4);
+      line(seg12, s1 + 1.5, s1 + 1.65);
+      // the pulse, the verdicts and the version line run on real time, so they keep going while the clock holds
+      const run = t - t0 - dot0, lap = Math.max(0, run) / LAP;
+      const [dx, dy] = ep(Math.PI / 2 + lap * 2 * Math.PI);
+      const on = run > 0 ? Math.min(1, run / .3) * pOut : 0;
+      [dot, glow].forEach(e => { e.setAttribute('cx', dx); e.setAttribute('cy', dy); e.style.opacity = on; });
+      const judged = run > 0 && lap >= JUDGE ? Math.floor(lap - JUDGE) + 1 : 0;   // verdicts so far
+      const last = judged ? VERD[(judged - 1) % VERD.length] : null;
+      const since = judged ? (lap - JUDGE - (judged - 1)) * LAP : 99;              // seconds since the last verdict
+      ver.textContent = 'v' + (2 + VERD.slice(0, judged).filter(Boolean).length);
+      st(ver, { transform: `scale(${last ? 1 + .3 * Math.max(0, 1 - since / .4) : 1})` });
+      const inLap = lap % 1;
+      cand.style.opacity = (run > 0 && inLap < JUDGE ? Math.min(1, inLap * LAP / .25) : last === false ? Math.max(0, 1 - since / .35) : 0) * pOut;
+      const flash = since < .9;
+      n2b.textContent = flash ? (last ? '✓ 变好 · 采纳' : '✕ 未变好 · 丢弃') : '比上一版更好？';
+      st(n2, { background: flash && last ? 'var(--accent)' : 'var(--ink)' });
+      const kv = k => run > 0 ? clamp((run - (k - 1 + JUDGE) * LAP) / .45) : 0;   // how far decision k has played in
+      const k1 = kv(1), k2 = kv(2);                                                 // round 2 (discarded), round 3 (kept)
+      const v12 = P(u, s1 + 1.5, s1 + 1.65) * pOut;
+      rej.style.opacity = oQ(k1) * pOut; rejDot.style.opacity = P(k1, .5, 1) * pOut; rejLab.style.opacity = P(k1, .5, 1) * pOut;
+      draw(seg23, oQ(k2)); seg23.style.opacity = +seg23.style.opacity * pOut;
+      tails[0].style.opacity = P(u, s1 + 1.6, s1 + 1.75) * (1 - P(k2, 0, .3)) * pOut; tails[1].style.opacity = P(k2, .7, 1) * pOut;
+      vdots.forEach((c, i) => { c.style.opacity = (i < 2 ? v12 : P(k2, .6, 1) * pOut); c.setAttribute('fill', i === (k2 > .6 ? 2 : 1) ? '#c2410c' : '#171b26'); });
+      vlabs.forEach((e, i) => { e.style.opacity = (i < 2 ? P(u, s1 + 1.55, s1 + 1.75) : P(k2, .6, 1)) * pOut; });
+      // 结果
+      rise(cost, u, s2 + .1, .5, 16);
+      groups.forEach((g, gi) => {
+        g.rows.forEach((r, ri) => {
+          r.segs.forEach((sg, j) => { const k0 = s2 + .3 + gi * .3 + ri * .12 + j * .07; st(sg.s, { width: sg.w * oQ(P(u, k0, k0 + .35)) + 'px' }); });
+          r.t.style.opacity = P(u, s2 + .6 + gi * .3 + ri * .12, s2 + .75 + gi * .3 + ri * .12);
+        });
+        rise(g.bd, u, s2 + .85 + gi * .3, .4, 6);
+      });
+    },
+  };
+})();
+
+/* ============================================================ 02 · 视觉输出的规范、评测与优化
+   背景: on the internship's figure, the output path (skills → agent → users); the agent's visual outputs follow no shared
+         spec — every run looks different
+   → 解法: 封装 — a design component library + design.md that the agent composes its outputs from;
+           评测 · 迭代 — DOM + CV + LLM checks, whose findings feed back into both the library and design.md
+   → 结果: every HTML output of the agent shares one visual style */
+const P2 = (() => {
+  const c = COPY.p2, sc = Scene(T.p2);
+  const L = LeftCol(sc.root, c);
+  const pn = $('div', 'layer', sc.root);
+  const svg = S('svg', { class: 'full' }, pn);
+  // one HTML output — 分析报告 / 文档 — in a given style
+  const out = (parent, x, y, w, h, kind, col, f, rad, rot = 0) => {
+    const e = box(parent, 'mcard', x, y, w, h); st(e, { borderRadius: rad + 'px', transform: `rotate(${rot}deg)` });
+    const body = kind === '文档'
+      ? `<div class="ml" style="width:44%;height:7px;background:#171b26"></div>` + [90, 96, 72, 86, 64].map(w => `<div class="ml" style="width:${w}%;margin-top:7px"></div>`).join('')
+      : `<div class="ml" style="width:78%"></div><div class="ml" style="width:60%"></div><div class="mb" style="background:${col}26"></div>`;
+    e.innerHTML = `<div class="mh" style="background:${col};font-family:${f}">${kind}</div>` + body;
+    return e; };
+  const SAME = ['#171b26', 'var(--sans)', 8];
+  // 背景 · where the output sits: from the skills through the agent to the users
+  const arch = Arch(pn);
+  // 背景 · each kind of output in its own style
+  const MESSY = [[884, 534, -4, '分析报告', '#5b7cfa', 'Georgia, serif', 2], [936, 636, 3.5, '文档', '#2fae7a', 'var(--mono)', 14]];
+  const messy = MESSY.map(([x, y, r, k, col, f, rad]) => ({ e: out(pn, x, y, 290, 150, k, col, f, rad, r), r }));
+  const messyCap = box(pn, 'abs zh13', 860, 862, 0, 0, '<span class="x">✕</span>各类输出，样式各异');
+  // 背景 · the same request, three different looks
+  const ask = box(pn, 'dk', 1446, 520, 124, 0, '中台设计 Agent');
+  const drift = [[1300, '#5b7cfa', 'Georgia, serif', 2], [1446, '#c2410c', 'var(--sans)', 12], [1592, '#2fae7a', 'var(--mono)', 6]].map(([x, col, f, rad]) => out(pn, x, 636, 124, 150, '分析报告', col, f, rad));
+  const driftA = [1362, 1508, 1654].map(x => S('path', { d: `M1508,562 C1508,598 ${x},600 ${x},630`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const driftCap = box(pn, 'abs zh13', 1300, 862, 0, 0, '<span class="x">✕</span>同一需求，每次生成都不一样');
+  // 解法 · 封装: the component library + design.md, composed by the agent into every output
+  const labA = box(pn, 'abs cap', 860, 170, 0, 0, '<span style="color:var(--accent)">封装</span> · 设计组件库 + DESIGN.MD');
+  const lib = box(pn, 'card', 860, 196, 300, 164);
+  $('div', 'cap', lib, '设计组件库').style.cssText = 'position:absolute;left:18px;top:14px';
+  const glyph = {
+    Header: '<i style="left:8px;top:27px;width:52px;height:6px;background:#171b26"></i>',
+    Tag: '<i style="left:8px;top:25px;width:32px;height:10px;border-radius:5px;background:rgba(194,65,12,0.15)"></i>',
+    Metric: '<i style="left:8px;top:24px;width:22px;height:12px;background:#c2410c"></i><i style="left:34px;top:30px;width:34px;height:4px;background:#d5d9e1"></i>',
+    Chart: '<i style="left:8px;top:32px;width:7px;height:8px;background:#d5d9e1"></i><i style="left:19px;top:25px;width:7px;height:15px;background:#c2410c"></i><i style="left:30px;top:29px;width:7px;height:11px;background:#d5d9e1"></i>',
+    Table: '<i style="left:8px;top:26px;width:68px;height:1px;background:#c3c8d3"></i><i style="left:8px;top:32px;width:68px;height:1px;background:#c3c8d3"></i><i style="left:8px;top:38px;width:68px;height:1px;background:#c3c8d3"></i>',
+    Note: '<i style="left:8px;top:26px;width:60px;height:4px;background:#e3e6eb"></i><i style="left:8px;top:34px;width:42px;height:4px;background:#e3e6eb"></i>',
+  };
+  const atomEls = Object.keys(glyph).map((n, i) => { const e = box(lib, 'abs', 18 + (i % 3) * 92, 42 + Math.floor(i / 3) * 58, 84, 48);
+    st(e, { borderRadius: '6px', boxShadow: '0 0 0 1px var(--line2)', background: '#fff' });
+    e.innerHTML = `<span class="mono" style="position:absolute;left:8px;top:6px;font-size:9px;color:var(--dimmer);letter-spacing:.08em">${n}</span><span style="position:absolute;inset:0">${glyph[n].replace(/<i style="/g, '<i style="position:absolute;display:block;border-radius:2px;')}</span>`;
+    return e; });
+  const dmd = box(pn, 'card', 860, 376, 300, 100);
+  const TOK = [
+    ['色彩', '<i style="left:0;top:4px;width:12px;height:12px;border-radius:6px;background:#171b26"></i><i style="left:16px;top:4px;width:12px;height:12px;border-radius:6px;background:#c2410c"></i><i style="left:32px;top:4px;width:12px;height:12px;border-radius:6px;background:#d5d9e1"></i>'],
+    ['字号', '<span style="position:absolute;left:0;top:-2px;font-size:17px;font-weight:500">Aa</span><span style="position:absolute;left:24px;top:4px;font-size:11px;color:var(--dim)">Aa</span>'],
+    ['间距', '<i style="left:0;top:2px;width:6px;height:16px;background:#d5d9e1"></i><i style="left:14px;top:2px;width:6px;height:16px;background:#d5d9e1"></i><i style="left:28px;top:2px;width:6px;height:16px;background:#c2410c"></i>'],
+    ['版式', '<i style="left:0;top:1px;width:16px;height:8px;box-shadow:inset 0 0 0 1px #8a92a6"></i><i style="left:20px;top:1px;width:16px;height:8px;box-shadow:inset 0 0 0 1px #8a92a6"></i><i style="left:0;top:12px;width:36px;height:8px;box-shadow:inset 0 0 0 1px #8a92a6"></i>'],
+  ];
+  dmd.innerHTML = '<div class="cap" style="position:absolute;left:18px;top:14px">DESIGN.MD</div>' + TOK.map(([n, g], i) =>
+    `<div style="position:absolute;left:${18 + i * 70}px;top:42px;width:60px;height:22px">${g.replace(/<i style="/g, '<i style="position:absolute;display:block;border-radius:2px;')}</div><div class="zh13" style="position:absolute;left:${18 + i * 70}px;top:70px;font-size:12px">${n}</div>`).join('');
+  const agent = box(pn, 'dk', 1216, 316, 120, 0, '中台设计 Agent');
+  const feed = [S('path', { d: 'M1162,278 C1192,278 1188,330 1212,330', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg),
+                S('path', { d: 'M1162,426 C1192,426 1188,342 1212,342', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg)];
+  const outs = ['分析报告', '文档'].map((k, i) => out(pn, 1420, 232 + i * 112, 300, 96, k, ...SAME));
+  const fan = [280, 392].map(y => S('path', { d: `M1338,336 C1380,336 1378,${y} 1416,${y}`, stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const outCap = box(pn, 'abs zh13', 1420, 470, 0, 0, '<span style="color:var(--accent);margin-right:6px">✓</span>按需组合，动态输出');
+  // 解法 · 评测 · 迭代: an output is checked three ways; the findings go back into the library and design.md
+  const labB = box(pn, 'abs cap', 860, 512, 0, 0, '<span style="color:var(--accent)">评测 · 迭代</span> · 多模态评测');
+  const down = S('path', { d: 'M1640,494 L1640,544', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg);
+  const pg = box(pn, 'card', 1460, 548, 260, 180);
+  const blocks = [[16, 16, 150, 12], [16, 38, 96, 7], [16, 60, 110, 88], [138, 60, 106, 38], [138, 108, 106, 40], [16, 160, 52, 10], [76, 160, 44, 10]];
+  blocks.forEach(([x, y, w, h]) => box(pg, 'wf', x, y, w, h));
+  const cvs = [[2, 'DOM'], [3, 'CV'], [4, 'LLM']].map(([k, lab]) => { const [x, y, w, h] = blocks[k]; const b = box(pg, 'cvb', x - 4, y - 4, w + 8, h + 8); const g = box(pg, 'cvt', x - 4, y - 16, 0, 0, lab); return { b, g }; });
+  const evals = [['DOM · 结构', 556], ['CV · 视觉', 612], ['LLM · 判断', 668]].map(([n, y]) => { const e = box(pn, 'mod2', 1196, y, 210, 0, n); return e; });
+  const toEval = [576, 632, 688].map(y => S('path', { d: `M1458,638 C1434,638 1436,${y} 1410,${y}`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const toIssue = [576, 632, 688].map(y => S('path', { d: `M1194,${y} C1170,${y} 1172,622 1148,622`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const iss = box(pn, 'card', 860, 548, 284, 0);
+  st(iss, { padding: '16px 20px' });
+  iss.innerHTML = '<div class="cap" style="margin-bottom:8px">问题清单</div>' + ['组件使用', '间距', '留白'].map(n => `<div class="zh14" style="padding:7px 0;border-top:1px solid var(--line)"><span class="mk" style="display:inline-block;width:14px;color:var(--accent);margin-right:8px">✕</span>${n}</div>`).join('');
+  const marks = [...iss.querySelectorAll('.mk')];
+  // the key point: findings feed back into BOTH assets
+  const backD = S('path', { d: 'M1100,546 L1100,481', stroke: '#c2410c', 'stroke-width': 1.3, fill: 'none', 'marker-end': 'url(#arrA)' }, svg);
+  const backL = S('path', { d: 'M858,626 L834,626 L834,278 L855,278', stroke: '#c2410c', 'stroke-width': 1.3, fill: 'none', 'marker-end': 'url(#arrA)' }, svg);
+  const backLab = box(pn, 'abs', 1110, 500, 0, 0, '反向迭代'); st(backLab, { fontSize: '12px', color: 'var(--accent)' });
+  const badge = card => { const b = box(card, 'abs', 0, 12, 0, 0, '↻ 迭代'); st(b, { left: 'auto', right: '14px', fontSize: '11px', lineHeight: '18px', padding: '0 8px', borderRadius: '9px', color: 'var(--accent)', background: 'var(--accent-soft)' }); return b; };
+  const badges = [badge(lib), badge(dmd)];
+  // 结果 · before / after: every kind of HTML output in one style
+  const res = box(pn, 'card', 860, 520, 860, 356);
+  $('div', 'cap', res, '改造前 → 改造后').style.cssText = 'position:absolute;left:24px;top:20px';
+  const before = MESSY.map(([, , r, k, col, f, rad], i) => out(res, [44, 92][i], [72, 168][i], 250, 130, k, col, f, rad, r));
+  const rsvg = S('svg', { width: 860, height: 356, style: 'position:absolute;left:0;top:0;overflow:visible' }, res);
+  const arrowR = S('path', { d: 'M364,186 L436,186', stroke: '#c2410c', 'stroke-width': 1.4, fill: 'none', 'marker-end': 'url(#arrA)' }, rsvg);
+  const after = ['分析报告', '文档'].map((k, i) => out(res, 460, 66 + i * 140, 370, 120, k, ...SAME));
+
+  const t0 = T.p2[0];
+  const loop0 = PLAN.p2.steps[1] + 1.8 / SPEED;
+  return {
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - t0, PLAN.p2.map);
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景
+      const bgOut = 1 - oC(P(u, s1 - .05, s1 + .3));
+      arch.render(u, .55, bgOut, [0, P(u, 1.1, 1.3), 0]);
+      messy.forEach(({ e, r }, i) => { const p = oQ(P(u, 1.0 + i * .1, 1.5 + i * .1)); st(e, { opacity: p * bgOut, transform: `translateY(${(1 - p) * 14}px) rotate(${r}deg)` }); });
+      messyCap.style.opacity = rise(messyCap, u, 1.5, .45, 6) * bgOut;
+      ask.style.opacity = rise(ask, u, 1.3, .45, 8) * bgOut;
+      driftA.forEach((a, i) => { draw(a, oQ(P(u, 1.45 + i * .08, 1.7 + i * .08))); a.style.opacity = +a.style.opacity * bgOut; });
+      drift.forEach((e, i) => { e.style.opacity = rise(e, u, 1.55 + i * .1, .45, 10) * bgOut; });
+      driftCap.style.opacity = rise(driftCap, u, 1.9, .45, 6) * bgOut;
+      // 解法 · 封装 (stays through 结果)
+      rise(labA, u, s1 + .05, .4, 6);
+      rise(lib, u, s1 + .1, .45, 12);
+      atomEls.forEach((e, i) => rise(e, u, s1 + .2 + i * .04, .35, 6));
+      rise(dmd, u, s1 + .2, .45, 12);
+      feed.forEach((a, i) => draw(a, oQ(P(u, s1 + .4 + i * .05, s1 + .6 + i * .05))));
+      rise(agent, u, s1 + .45, .4, 8);
+      fan.forEach((a, i) => draw(a, oQ(P(u, s1 + .6 + i * .05, s1 + .8 + i * .05))));
+      outs.forEach((e, i) => rise(e, u, s1 + .65 + i * .07, .4, 10));
+      rise(outCap, u, s1 + .85, .35, 6);
+      // 解法 · 评测 · 迭代 (hands over to the before / after card at 结果)
+      const eOut = 1 - oC(P(u, s2 - .05, s2 + .25));
+      const fade = (e, a, d = .4, dy = 8) => { e.style.opacity = rise(e, u, a, d, dy) * eOut; };
+      const line = (a, p0, p1) => { draw(a, oQ(P(u, p0, p1))); a.style.opacity = +a.style.opacity * eOut; };
+      labB.style.opacity = P(u, s1 + .8, s1 + 1.0) * eOut;
+      line(down, s1 + .85, s1 + 1.0);
+      fade(pg, s1 + .9, .4, 10);
+      cvs.forEach((cv, i) => { const p = P(u, s1 + 1.0 + i * .06, s1 + 1.12 + i * .06); st(cv.b, { opacity: p, transform: `scale(${1.15 - .15 * oQ(p)})` }); cv.g.style.opacity = p; });
+      toEval.forEach((a, i) => line(a, s1 + 1.05 + i * .04, s1 + 1.2 + i * .04));
+      evals.forEach((e, i) => fade(e, s1 + 1.1 + i * .05, .35, 8));
+      toIssue.forEach((a, i) => line(a, s1 + 1.25 + i * .04, s1 + 1.4 + i * .04));
+      fade(iss, s1 + 1.3, .35, 8);
+      line(backD, s1 + 1.42, s1 + 1.6); line(backL, s1 + 1.42, s1 + 1.66);
+      fade(backLab, s1 + 1.5, .25, 4);
+      badges.forEach((b, i) => { const k = oB(P(u, s1 + 1.58 + i * .04, s1 + 1.76 + i * .04)); st(b, { opacity: Math.min(1, k * 2) * eOut, transform: `scale(${Math.max(0, k)})` }); });
+      // while the step is read, the loop keeps turning: the return lines march and the findings clear
+      const run = t - t0 - loop0;
+      if (run > 0) [backD, backL].forEach(a => st(a, { strokeDasharray: '5 4', strokeDashoffset: -run * 18 }));
+      const cleared = run > 0 ? Math.floor(run / .8) : 0;
+      marks.forEach((m, i) => { m.textContent = i < cleared ? '✓' : '✕'; });
+      // 结果
+      rise(res, u, s2 + .1, .5, 16);
+      before.forEach((e, i) => { e.style.opacity = P(u, s2 + .3 + i * .06, s2 + .5 + i * .06); });
+      draw(arrowR, oQ(P(u, s2 + .5, s2 + .75)));
+      after.forEach((e, i) => rise(e, u, s2 + .6 + i * .1, .45, 10));
+    },
+  };
+})();
+
+/* ============================================================ 03 · PPT 生成模式的设计与开发
+   背景: the team makes a lot of decks, so a PPT tool (an App, the figure's other dimension) is designed and built — it opens on
+         the internship's figure with Apps lit, over the blueprint of the app still to be built
+   → 解法: the blueprint becomes the app, built end to end (write-up §3.1): a front-end editor (React · GrapesJS), a PPT agent
+           built on the design agent, a back end (FastAPI) and a template admin. At its heart DSL + 模板: the agent only
+           writes DSL and a template gives it its look, so generation stays stable and a template switches in an instant —
+           the DSL stays put while the deck re-skins (the DSL's fields are illustrative). The editor closes the loop: an
+           element referenced there goes back to the agent, which rewrites only its part
+   → 结果: the app folds back into the figure's Apps bar, and the internship's three parts light up together */
+const P3 = (() => {
+  const c = COPY.p3, sc = Scene(T.p3);
+  const L = LeftCol(sc.root, c);
+  const pn = $('div', 'layer', sc.root);
+  const arch = Arch(pn);
+  // the templates (six layouts, one restrained palette each), drawn on a 300 × 169 grid
+  const TPL = [
+    { bg: '#fff', el: [[0, 0, 300, 22, '#c2410c'], [16, 36, 150, 10, '#171b26'], [16, 56, 110, 6, '#d5d9e1'], [16, 80, 120, 6, '#e3e6eb'], [16, 96, 100, 6, '#e3e6eb'], [180, 100, 16, 40, '#d5d9e1'], [206, 76, 16, 64, '#c2410c'], [232, 110, 16, 30, '#d5d9e1'], [258, 88, 16, 52, '#d5d9e1']] },
+    { bg: '#171b26', el: [[24, 58, 30, 3, '#c2410c'], [24, 70, 170, 12, '#ffffff'], [24, 92, 110, 6, '#8a92a6'], [24, 140, 60, 5, '#666d7e']] },
+    { bg: '#fff', el: [[0, 0, 92, 169, '#3b5b8c'], [16, 24, 50, 8, '#ffffff'], [112, 28, 150, 10, '#171b26'], [112, 50, 100, 6, '#d5d9e1'], [112, 76, 160, 6, '#e3e6eb'], [112, 92, 140, 6, '#e3e6eb'], [112, 108, 150, 6, '#e3e6eb']] },
+    { bg: '#fff', el: [[16, 20, 120, 8, '#171b26'], [16, 50, 96, 40, '#2f6f5e'], [16, 100, 110, 6, '#d5d9e1'], [16, 114, 80, 6, '#e3e6eb'], [160, 50, 124, 90, '#2f6f5e22'], [176, 110, 14, 20, '#2f6f5e'], [198, 94, 14, 36, '#2f6f5e'], [220, 102, 14, 28, '#2f6f5e88'], [242, 84, 14, 46, '#2f6f5e']] },
+    { bg: '#fff', el: [[16, 16, 130, 137, '#b08a4a33'], [162, 30, 120, 10, '#171b26'], [162, 50, 90, 6, '#b08a4a'], [162, 74, 120, 6, '#e3e6eb'], [162, 90, 110, 6, '#e3e6eb'], [162, 106, 116, 6, '#e3e6eb']] },
+    { bg: '#f7f6fa', el: [[75, 64, 150, 12, '#6b5b95'], [105, 86, 90, 6, '#b3a9cc'], [140, 104, 20, 2, '#6b5b95']] },
+  ];
+  const tpl = (parent, x, y, w, v) => {
+    const h = Math.round(w * 169 / 300), k = w / 300;
+    const s = box(parent, 'sl', x, y, w, h); st(s, { background: TPL[v].bg });
+    TPL[v].el.forEach(([l, t, ww, hh, bg]) => { const e = $('i', '', s); st(e, { left: l * k + 'px', top: t * k + 'px', width: ww * k + 'px', height: hh * k + 'px', background: bg }); });
+    return s;
+  };
+  // the app: a blueprint under the figure (背景) that becomes the built app (解法) and folds into the Apps bar (结果).
+  // Its box and its four parts are laid out in both states (parts relative to the box) and interpolated.
+  const BP = { x: 860, y: 520, w: 860, h: 360, rows: [[24, 48, 812, 52], [24, 114, 812, 156], [24, 284, 396, 52], [440, 284, 396, 52]] };
+  const AP = { x: 860, y: 258, w: 860, h: 564, rows: [[24, 48, 812, 64], [24, 132, 812, 324], [24, 476, 396, 64], [440, 476, 396, 64]] };
+  const DF = 207;  // 结果: the figure moves down to sit centred on the grid's axis
+  const FB = { x: 860, y: 328 + DF, w: 410, h: 40 };  // … where the app lands on its Apps bar
+  const mix = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
+  const place = (e, r) => st(e, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
+  const cDash = box(pn, 'appc dash', 0, 0, 0, 0), cSolid = box(pn, 'appc', 0, 0, 0, 0);
+  const title = box(pn, 'abs atag', 0, 0, 0, 0, '<b>03</b>PPT 生成模式');
+  const rows = ['前端', 'Agent', '后端', '后台'].map(n => {
+    const d = box(pn, 'appr', 0, 0, 0, 0), s = box(pn, 'card', 0, 0, 0, 0); st(s, { borderRadius: '8px' });
+    return { d, s, cap: box(pn, 'abs cap', 0, 0, 0, 0, n) }; });
+  // 解法 · what each part is, at its place in the built app (rows at y 306 / 390 / 734; text centred on each row's cap)
+  const txt = (x, y, html, cls = 'zh14') => box(pn, 'abs ' + cls, x, y, 0, 0, html);
+  const right = (e, x) => { st(e, { left: 'auto', right: W - x + 'px' }); return e; };
+  const feMain = txt(964, 325, '画布编辑 · 预览一体'); st(feMain, { fontWeight: 500 });
+  const feDes = box(pn, 'abs chipx', 1104, 325, 0, 0, '设计 · 编辑交互');
+  const feTech = right(txt(0, 327, 'React · GrapesJS', 'mono tech'), 1676);
+  const beMain = txt(964, 753, '会话管理与数据持久化'); st(beMain, { fontWeight: 500 });
+  const beTech = right(txt(0, 755, 'FastAPI', 'mono tech'), 1260);
+  const adMain = txt(1380, 753, '模板管理后台'); st(adMain, { fontWeight: 500 });
+  const adSub = right(txt(0, 755, '入库 · 共创', 'zh13'), 1676);
+  // 解法 · the agent part: PPT agent → DSL + 模板 → rendered deck
+  const agentN = box(pn, 'dk', 904, 524, 150, 0, 'PPT 专用 Agent');
+  const agentSub = txt(904, 574, '基于中台设计 Agent<br>二次开发', 'zh13'); st(agentSub, { fontSize: '12px', lineHeight: '1.6' });
+  const dsl = box(pn, 'abs', 1094, 452, 190, 184); st(dsl, { background: 'var(--panel)', borderRadius: '8px' });
+  $('div', 'cap', dsl, 'DSL').style.cssText = 'position:absolute;left:14px;top:12px';
+  const dslLines = [['title', [96]], ['points', [84]], ['', [66]], ['', [76]], ['chart', null]].map(([key, ws], i) => {
+    const y = 46 + i * 24;
+    const k = box(dsl, 'abs mono', 14, y - 5, 0, 0, key); st(k, { fontSize: '11px', color: 'var(--dimmer)' });
+    const bars = ws ? ws.map(w => { const e = box(dsl, 'abs', 66, y, 0, 6); st(e, { background: '#c3c8d3', borderRadius: '3px' }); return [e, w, '#c3c8d3']; })
+      : [[10, '#d5d9e1'], [16, '#c2410c'], [12, '#d5d9e1']].map(([h, col], j) => { const e = box(dsl, 'abs', 66 + j * 11, y + 6 - h, 0, h); st(e, { background: col, borderRadius: '1px' }); return [e, 7, col]; });
+    return { k, bars }; });
+  const plus = txt(1296, 530, '+', 'mono'); st(plus, { fontSize: '20px', color: 'var(--dim)' });
+  const tp = box(pn, 'abs', 1324, 452, 160, 184); st(tp, { background: 'var(--panel)', borderRadius: '8px' });
+  $('div', 'cap', tp, '模板').style.cssText = 'position:absolute;left:14px;top:12px';
+  const SEQ = [0, 2, 3, 4];
+  const thumbs = SEQ.map((v, i) => tpl(tp, 14 + (i % 2) * 72, 40 + Math.floor(i / 2) * 44, 60, v));
+  const tpDes = box(tp, 'abs chipx', 14, 146, 0, 0, '设计 · 多套模板');
+  const renLab = txt(1491, 522, '渲染', 'zh13'); st(renLab, { fontSize: '12px' });
+  const outLab = box(pn, 'abs cap', 1522, 473, 0, 0, 'PPT');
+  const outW = box(pn, 'abs', 1522, 499, 160, 90);
+  const outs = SEQ.map(v => tpl(outW, 0, 0, 160, v));
+  const capOf = (x, a, b) => { const e = txt(x, 650, `<b style="color:var(--accent);font-weight:500">${a}</b><br>${b}`, 'zh13'); st(e, { lineHeight: '1.6' }); return e; };
+  const capStable = capOf(1094, '稳定生成', 'Agent 只写 DSL');
+  const capSwitch = capOf(1522, '快速切换', 'DSL 不变，换模板即换样式');
+  // 解法 · the loop back: an element referenced in the editor goes back to the agent, which rewrites only its part.
+  // Per template: the referenced element's box (300 × 169 grid), its name, and the DSL line it comes from
+  const REF = [[174, 70, 106, 76, '图表', 4], [106, 70, 172, 50, '正文', 1], [154, 44, 136, 102, '图表', 4], [156, 24, 132, 22, '标题', 0]];
+  const refBox = box(outW, 'abs', 0, 0, 0, 0); st(refBox, { border: '1.5px solid var(--accent)', borderRadius: '2px', boxSizing: 'border-box', zIndex: 3 });
+  const refFill = box(outW, 'abs', 0, 0, 0, 0); st(refFill, { background: 'rgba(194,65,12,0.2)', zIndex: 3 });
+  const refChip = box(pn, 'abs chipx', 1420, 325, 0, 0, ''); st(refChip, { color: 'var(--accent)', background: 'var(--accent-soft)' });
+  const backLab = txt(990, 466, '引用元素<br>交回 Agent 修改', 'zh13'); st(backLab, { fontSize: '12px', lineHeight: '1.6', color: 'var(--accent)' });
+  // arrows sit above the parts' cards
+  const svg = S('svg', { class: 'full' }, pn);
+  const arrow = (d, col = '#171b26') => S('path', { d, stroke: col, 'stroke-width': col === '#171b26' ? 1.1 : 1.6, fill: 'none', 'marker-end': col === '#171b26' ? 'url(#arr)' : 'url(#arrA)' }, svg);
+  const a1 = arrow('M1058,544 L1090,544');
+  const a2 = arrow('M1488,544 L1518,544'), a2hot = arrow('M1488,544 L1518,544', '#c2410c');
+  const up = arrow('M1602,495 L1602,374');        // the deck opens in the editor
+  const adUp = arrow('M1404,730 L1404,640');      // the admin keeps the templates
+  const back = arrow('M979,374 L979,520', '#c2410c');  // the editor's reference goes back to the agent
+  const refGlow = S('circle', { r: 10, fill: 'rgba(194,65,12,0.16)' }, svg), refDot = S('circle', { r: 4.5, fill: '#c2410c', stroke: '#fff', 'stroke-width': 1.5 }, svg);
+  const REFPATH = [[1460, 350], [1460, 380], [979, 380], [979, 518]];  // chip → out of the editor → down the loop to the agent
+  const along = (pts, p) => { const seg = pts.slice(1).map((q, i) => Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1])); let d = p * seg.reduce((a, b) => a + b, 0);
+    for (let i = 0; i < seg.length; i++) { if (d <= seg[i] || i === seg.length - 1) { const k = seg[i] ? Math.min(1, d / seg[i]) : 0; return [lerp(pts[i][0], pts[i + 1][0], k), lerp(pts[i][1], pts[i + 1][1], k)]; } d -= seg[i]; } };
+
+  const t0 = T.p3[0];
+  const sw0 = PLAN.p3.steps[1] + 1.7 / SPEED;  // real time the templates start switching (the app is drawn by then)
+  const SW = 1.2, CYC = 4.8;                    // a cycle: two template switches (SW each), then one reference (the rest)
+  return {
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - t0, PLAN.p3.map);
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // the figure: Apps lit at 背景; back at 结果, centred on the axis, with all three parts lit
+      const fin = u >= s2;
+      st(arch.root, { transform: `translateY(${fin ? DF : 0}px)` });
+      if (!fin) arch.render(u, .55, 1 - oC(P(u, s1 - .05, s1 + .3)), [0, 0, P(u, 1.1, 1.3)]);
+      else arch.render(u, s2 + .2, 1, [P(u, s2 + .75, s2 + .95), P(u, s2 + .9, s2 + 1.1), P(u, s2 + .45, s2 + .6)]);
+      // the app box: blueprint → built → folded onto the Apps bar
+      const m = ioC(P(u, s1 + .05, s1 + .55)), f = ioC(P(u, s2 + .05, s2 + .5));
+      const org = mix(BP, AP, m), cr = f > 0 ? mix(AP, FB, f) : org;
+      const bpIn = P(u, 1.25, 1.5), solid = P(u, s1 + .25, s1 + .55);
+      place(cDash, cr); place(cSolid, cr);
+      cDash.style.opacity = bpIn * (1 - solid);
+      st(cSolid, { opacity: solid * (1 - P(u, s2 + .45, s2 + .6)), borderRadius: lerp(12, 6, f) + 'px' });
+      at(title, cr.x + 24, cr.y + 15);
+      title.style.opacity = bpIn * (1 - P(u, s2 - .05, s2 + .15));
+      const rOut = 1 - oC(P(u, s2 - .05, s2 + .2));
+      rows.forEach((r, i) => {
+        const a = BP.rows[i], b = AP.rows[i];
+        const rr = { x: org.x + lerp(a[0], b[0], m), y: org.y + lerp(a[1], b[1], m), w: lerp(a[2], b[2], m), h: lerp(a[3], b[3], m) };
+        place(r.d, rr); place(r.s, rr); at(r.cap, rr.x + 20, rr.y + 22);
+        const rin = P(u, 1.35 + i * .06, 1.6 + i * .06);
+        r.d.style.opacity = rin * (1 - solid);
+        r.s.style.opacity = solid * rOut;
+        r.cap.style.opacity = rin * rOut;
+      });
+      // 解法 · the parts fill in, the agent part last
+      const cIn = (e, a, d = .4, dy = 8) => { e.style.opacity = rise(e, u, a, d, dy) * rOut; };
+      const line = (a, p0, p1) => { draw(a, oQ(P(u, p0, p1))); a.style.opacity = +a.style.opacity * rOut; };
+      [feMain, feDes, feTech].forEach((e, i) => cIn(e, s1 + .55 + i * .05, .4, 6));
+      cIn(agentN, s1 + .6); cIn(agentSub, s1 + .68, .35, 6);
+      line(a1, s1 + .7, s1 + .8);
+      cIn(dsl, s1 + .72, .4, 10);
+      dslLines.forEach(({ k, bars }, i) => { const a = s1 + .82 + i * .07; k.style.opacity = P(u, a, a + .06); bars.forEach(([e, w]) => st(e, { width: w * oC(P(u, a, a + .12)) + 'px' })); });
+      cIn(plus, s1 + .95, .3, 4); cIn(tp, s1 + .95, .4, 10);
+      thumbs.forEach((e, i) => { const k = oB(P(u, s1 + 1.02 + i * .04, s1 + 1.2 + i * .04)); st(e, { opacity: Math.min(1, k * 2), transform: `scale(${Math.max(0, k)})` }); });
+      rise(tpDes, u, s1 + 1.15, .3, 4);
+      line(a2, s1 + 1.15, s1 + 1.25); cIn(renLab, s1 + 1.2, .3, 4);
+      cIn(outLab, s1 + 1.2, .3, 4); cIn(outW, s1 + 1.22, .4, 10);
+      cIn(capStable, s1 + 1.3, .35, 6);
+      line(up, s1 + 1.3, s1 + 1.45);
+      [beMain, beTech, adMain, adSub].forEach((e, i) => cIn(e, s1 + 1.35 + i * .04, .4, 6));
+      line(adUp, s1 + 1.45, s1 + 1.6);
+      cIn(capSwitch, s1 + 1.5, .35, 6);
+      line(back, s1 + 1.5, s1 + 1.65); cIn(backLab, s1 + 1.55, .35, 6);
+      // while the step is read, two things take turns. 快速切换: the template switches twice — the DSL stays, the deck
+      // re-renders in the next look. 引用: an element is referenced in the editor and goes back to the agent, which rewrites
+      // only its line of DSL, and only that element changes
+      const run = t - t0 - sw0, cyc = run > 0 ? Math.floor(run / CYC) : 0, ph = run > 0 ? run - cyc * CYC : -1;
+      const n = run > 0 ? 2 * cyc + (ph < SW ? 1 : 2) : 0, since = run > 0 ? (ph < SW ? ph : ph - SW) : 99;
+      const cur = n % SEQ.length, prev = (n + SEQ.length - 1) % SEQ.length;
+      outs.forEach((e, j) => st(e, { zIndex: j === cur ? 2 : j === prev ? 1 : 0, opacity: j === cur ? (n ? Math.min(1, since / .25) : 1) : (j === prev && n ? 1 : 0) }));
+      thumbs.forEach((e, j) => st(e, { boxShadow: j === cur ? '0 0 0 2px var(--accent)' : '0 0 0 1px var(--line)' }));
+      const r = run > 0 ? ph - 2 * SW : -1, ref = REF[cur], K = 160 / 300;   // r ≥ 0: the reference turn
+      const selOn = r >= 0 ? P(r, 0, .2) * (1 - P(r, 2.0, 2.3)) : 0;
+      place(refBox, { x: ref[0] * K, y: ref[1] * K, w: ref[2] * K, h: ref[3] * K }); place(refFill, { x: ref[0] * K, y: ref[1] * K, w: ref[2] * K, h: ref[3] * K });
+      st(refBox, { opacity: selOn * rOut, transform: `scale(${1.08 - .08 * oQ(P(r, 0, .2))})` });
+      refChip.textContent = '引用 · ' + ref[4];
+      refChip.style.opacity = (r >= 0 ? P(r, .25, .4) * (1 - P(r, 2.0, 2.3)) : 0) * rOut;
+      const [dx, dy] = along(REFPATH, ioC(P(r, .45, 1.25)));
+      const dOn = r >= 0 ? P(r, .45, .55) * (1 - P(r, 1.2, 1.3)) * rOut : 0;
+      [refDot, refGlow].forEach(e => { e.setAttribute('cx', dx); e.setAttribute('cy', dy); e.style.opacity = dOn; });
+      st(agentN, { background: r >= 1.25 && r < 1.6 ? 'var(--accent)' : '' });
+      const line0 = dslLines[ref[5]];   // the agent rewrites that element's line of DSL
+      if (r >= 1.4 && r < 2.3) line0.bars.forEach(([e, w, col]) => st(e, { width: w * oC(P(r, 1.4, 1.7)) + 'px', background: r < 2.0 ? '#c2410c' : col }));
+      else line0.bars.forEach(([e, , col]) => st(e, { background: col }));
+      refFill.style.opacity = (r >= 0 ? P(r, 1.75, 1.85) * (1 - P(r, 1.95, 2.35)) : 0) * rOut;
+      const hot = n && since < .5 && ph < 2 * SW ? 1 - since / .5 : r >= 1.7 && r < 2.2 ? 1 - (r - 1.7) / .5 : 0;
+      a2hot.style.opacity = hot * rOut;
+    },
+  };
+})();
+
+/* ============================================================ 04 · NARRASTEER
+   背景: the agent works opaquely; users idle 74% of the time, 5/8 only saw the drift at the end
+   → 解法: the trace, a line of steps in time, maps into the narrative-space disc — each step flies to the attribute
+           it analyses and the storyline is drawn through them; then a drag steers the agent
+   → 结果: N=16 · +13.2% insights · 15/16 steered by drag · 10/16 intervened mid-run */
+const P4 = (() => {
+  const sc = Scene(T.p4);
+  const L = LeftCol(sc.root, COPY.p4);
+  const pn = $('div', 'layer', sc.root);
+  // 背景: an opaque execution log + the waiting time
+  const log = $('div', 'card', pn); st(log, { width: '470px', padding: '22px 24px' }); at(log, 852, 220);
+  const LOG = ['Reading CSV with 1,031 rows…', 'Computing sales statistics by brand…', 'Writing script to rank brands by sales…', 'Generating bar chart for brand sales…', 'Filtering data for Xiaomi models…', 'Sorting Xiaomi models by average sales…'];
+  log.innerHTML = '<div class="cap" style="margin-bottom:12px">AGENT 执行日志</div>' + LOG.map(s => `<div class="trow"><i class="td"></i>${s}</div>`).join('');
+  const logLines = [...log.querySelectorAll('.trow')];
+  const who = $('div', 'card', pn); st(who, { width: '330px', padding: '22px 24px' }); at(who, 1392, 220);
+  who.innerHTML = '<div class="cap" style="margin-bottom:14px">形成性研究 · N = 8</div><div>' + Array.from({ length: 8 }, (_, i) => `<span class="pdot"${i < 5 ? ' style="background:var(--accent)"' : ''}></span>`).join('') + '</div><div class="zh13" style="margin-top:12px">5 / 8 的人到最后才发现方向跑偏</div>';
+  const wait = $('div', 'card', pn); st(wait, { width: '870px', padding: '22px 24px' }); at(wait, 852, 560);
+  wait.innerHTML = '<div style="display:flex;justify-content:space-between"><span class="cap">AGENT 运行期间 · 用户的时间</span><span class="zh13"><span style="color:var(--accent);font-family:var(--mono);font-size:15px">74%</span> 在等待</span></div>' +
+    '<svg width="822" height="26" style="display:block;margin-top:14px"><rect class="w1" x="0" y="0" height="26" rx="3" fill="url(#hatch)"/><rect class="w2" y="0" height="26" rx="3" fill="#171b26" opacity=".85"/></svg>' +
+    '<div style="display:flex;justify-content:space-between;margin-top:8px"><span class="zh13">等待</span><span class="zh13">操作 / 查看</span></div>';
+  const w1 = wait.querySelector('.w1'), w2 = wait.querySelector('.w2');
+  // 解法: the narrative-space disc (attribute labels and link types from the real system)
+  const disc = $('div', 'layer', pn);
+  const svg = S('svg', { class: 'full' }, disc);
+  const C = { x: 1431, y: 548 }, R = 250;   // rim labels end at the inner edge (1720)
+  const pol = (a, r) => [C.x + Math.cos(a * Math.PI / 180) * r, C.y + Math.sin(a * Math.PI / 180) * r];
+  const face = S('circle', { cx: C.x, cy: C.y, r: R, fill: '#fff', stroke: 'rgba(23,27,38,0.16)', 'stroke-width': 1.2 }, svg);
+  const ATTR = ['GDP', 'Country', 'Unemployment', 'Inflation', 'Country code', 'GDP per Capita', 'Oil Price', 'Life Expectancy', 'FDI', 'Exports', 'GDP Growth'];
+  const ang = i => -90 + i * 360 / ATTR.length;
+  const spokes = ATTR.map((_, i) => { const [x0, y0] = pol(ang(i), 44), [x1, y1] = pol(ang(i), R); return S('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: 'rgba(23,27,38,0.08)', 'stroke-dasharray': '4 5' }, svg); });
+  const hub = S('g', {}, svg); S('circle', { cx: C.x, cy: C.y, r: 40, fill: '#fff', stroke: 'rgba(23,27,38,0.2)' }, hub);
+  S('text', { x: C.x, y: C.y + 5, 'text-anchor': 'middle', style: 'font: 500 13px JetBrains Mono', fill: '#171b26' }, hub).textContent = 'Year';
+  function arc(nodes) { let d = ''; nodes.forEach((n, k) => { if (k === nodes.length - 1) return; const [a0, r0] = n, [a1, r1] = nodes[k + 1]; for (let s = 0; s <= 20; s++) { const f = s / 20; const [x, y] = pol(lerp(a0, a1, f), lerp(r0, r1, f) * R + Math.sin(f * Math.PI) * 10); d += (d ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1); } }); return d; }
+  // every node sits on a spoke — it explores that rim attribute together with the focus (Year) at the centre
+  const A = n => ((ang(ATTR.indexOf(n)) % 360) + 360) % 360;
+  const qa = [[A('Oil Price'), .80], [A('Life Expectancy'), .84], [A('FDI'), .86], [A('Exports'), .86], [A('GDP'), .82], [A('Unemployment'), .76]];
+  const qBand = S('path', { d: arc(qa), fill: 'none', stroke: 'rgba(23,27,38,0.07)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
+  const qLine = S('path', { d: arc(qa), fill: 'none', stroke: '#171b26', 'stroke-width': 1.6 }, svg);
+  const node = (a, r, col) => { const [x, y] = pol(a, r * R); const g = S('g', {}, svg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: col, 'stroke-width': 2, transform: 'rotate(45)' }, g); return { g, x, y }; };
+  const qN = qa.map(([a, r]) => node(a, r, '#171b26'));
+  const linkLab = [['q', 1, 'cause-effect'], ['q', 3, 'cause-effect']].map(([w, k, s]) => {
+    const arr = qa; const [a0, r0] = arr[k], [a1, r1] = arr[k + 1]; const [x, y] = pol((a0 + a1) / 2, ((r0 + r1) / 2 + (w === 'q' ? -.08 : -.09)) * R);
+    const e = S('text', { x, y, 'text-anchor': 'middle', style: 'font: italic 500 11px JetBrains Mono', fill: w === 'q' ? '#666d7e' : '#c2410c' }, svg); e.textContent = s; return { e, w, k };
+  });
+  const pills = ATTR.map((n, i) => { const [x, y] = pol(ang(i), R); const g = S('g', {}, svg); const w = n.length * 7.4 + 18;
+    const r = S('rect', { x: -w / 2, y: -12, width: w, height: 24, rx: 12, fill: '#fff', stroke: 'rgba(23,27,38,0.2)' }, g);
+    const tx = S('text', { x: 0, y: 4, 'text-anchor': 'middle', style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); tx.textContent = n;
+    g.setAttribute('transform', `translate(${x},${y})`); return { g, r, tx, x, y }; });
+  // steering by chaining (paper, Fig. 2d4): press on the storyline's head and drag. A candidate the pointer passes over,
+  // mouse still down, is taken as a temporary selection and at once grows the next candidates from it, so one gesture
+  // chains several steps; releasing commits the chain. Candidates sit on spokes and step inward, like every node
+  const from = qN[5];
+  const CAND = [
+    { a: 'Inflation', r: .64, p: -1, pick: 1 }, { a: 'Country', r: .64, p: -1 },
+    { a: 'Country code', r: .52, p: 0 }, { a: 'GDP per Capita', r: .52, p: 0, pick: 2 },
+    { a: 'Oil Price', r: .40, p: 3 }, { a: 'Life Expectancy', r: .40, p: 3 },
+  ];
+  CAND.forEach(c => { [c.x, c.y] = pol(A(c.a), c.r * R); const q = c.p < 0 ? from : CAND[c.p];
+    const mx = (q.x + c.x) / 2 - C.x, my = (q.y + c.y) / 2 - C.y, ml = Math.hypot(mx, my) || 1;
+    c.d = `M${q.x},${q.y} Q${(q.x + c.x) / 2 + mx / ml * 12},${(q.y + c.y) / 2 + my / ml * 12} ${c.x},${c.y}`;
+    c.dash = S('path', { d: c.d, fill: 'none', stroke: '#8a92a6', 'stroke-width': 1.2, 'stroke-dasharray': '4 4' }, svg);
+    if (c.pick) { c.band = S('path', { d: c.d, fill: 'none', stroke: 'rgba(23,27,38,0.07)', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg);
+                  c.line = S('path', { d: c.d, fill: 'none', stroke: '#171b26', 'stroke-width': 1.6 }, svg); }
+    c.g = S('g', {}, svg);
+    c.sq = S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#e3e6eb', stroke: '#c3c8d3', 'stroke-width': 1.5, transform: 'rotate(45)' }, c.g); });
+  const trail = S('path', { fill: 'none', stroke: '#c2410c', 'stroke-width': 1.4, 'stroke-dasharray': '5 5' }, svg);
+  const dragN = S('g', {}, svg); S('circle', { r: 10, fill: 'rgba(194,65,12,0.14)', stroke: '#c2410c', 'stroke-width': 1.5 }, dragN);
+  const cursor = S('path', { d: 'M0,0 L0,20 L5.5,15 L9.5,23.5 L13,22 L9,13.5 L16,13.5 Z', fill: '#171b26', stroke: '#fff', 'stroke-width': 1.2 }, svg);
+  const gestLab = box(disc, 'abs', 1180, 832, 0, 0, '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px"></span>拖拽不松手 · 经过候选即临时选中，并立即生成后续候选');
+  st(gestLab, { fontSize: '12px', color: 'var(--accent)', whiteSpace: 'nowrap' });
+  // 解法 · the mapping: the agent's trace is a line of steps in time; each step moves to where its data dimension sits on
+  // the disc (angle = the attribute it analyses), and the storyline is drawn through them as they land
+  // each step explores one rim attribute with the focus (Year), so its node sits on that attribute's spoke
+  const STEPS = [['Oil Price', 'line chart'], ['Life Expectancy', 'line chart'], ['FDI', 'bar chart'],
+                 ['Exports', 'line chart'], ['GDP', 'line chart'], ['Unemployment', 'line chart']];
+  const MAPI = STEPS.map(([a]) => ATTR.indexOf(a)), MAPD = STEPS.map(() => -1);   // -1: the focus at the centre
+  const tl = $('div', 'layer', pn);
+  const TRACE = STEPS.map(([a, c]) => ['Analyze', a, `by Year · ${c}`]);
+  const tcard = box(tl, 'card', 860, C.y - R - 12, 272, 0); st(tcard, { padding: '16px 18px 14px' });   // top = the disc's top label
+  tcard.innerHTML = '<div class="cap" style="margin-bottom:10px">AGENT 执行轨迹</div>' +
+    TRACE.map(([f, a, r]) => `<div class="trow"><i class="td"></i><b>${f}</b><span class="ta">(${a})</span><div class="tr">${r}</div></div>`).join('') +
+    // what the drag writes back: the user's steer, then the agent carrying on from it
+    '<div class="trow tnew"><i class="td" style="background:var(--accent)"></i><b style="color:var(--accent)">用户引导</b><span class="ta"> · 一次拖拽</span><div class="tr">→ Inflation → GDP per Capita</div></div>' +
+    '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(Inflation)</span><div class="tr">by Year · line chart</div></div>' +
+    '<div class="trow tnew"><i class="td"></i><b>Analyze</b><span class="ta">(GDP per Capita)</span><div class="tr">by Year · line chart</div></div>' +
+    '<div class="twork"><i></i>Analyzing…</div>';
+  const rows = [...tcard.querySelectorAll('.trow:not(.tnew)')], news = [...tcard.querySelectorAll('.tnew')], work = tcard.querySelector('.twork'), workDot = work.querySelector('i');
+  let newAt = { x: 884, y: 640 };
+  const tsvg = S('svg', { class: 'full' }, tl);
+  const back = S('g', {}, tsvg); S('rect', { x: -8, y: -8, width: 16, height: 16, fill: '#fff', stroke: '#c2410c', 'stroke-width': 2.5, transform: 'rotate(45)' }, back);
+  let rowAt = rows.map(() => ({ x: 884, y: 340 }));                   // each row's status dot, measured in layout()
+  const flyers = MAPI.map((ai, i) => { const g = S('g', {}, tsvg); S('rect', { x: -7, y: -7, width: 14, height: 14, fill: '#fff', stroke: '#171b26', 'stroke-width': 2, transform: 'rotate(45)' }, g);
+    const lab = S('text', { x: 14, y: 4, style: 'font: 400 11px JetBrains Mono', fill: '#666d7e' }, g); lab.textContent = `${STEPS[i][0]} · Year`; return { g, lab }; });
+  const ray = (i, t) => S('line', { x1: qN[i].x, y1: qN[i].y, x2: t.x, y2: t.y, stroke: '#c2410c', 'stroke-width': 1.1, 'stroke-dasharray': '3 3' }, svg);
+  const rays = STEPS.map((_, i) => [ray(i, pills[MAPI[i]]), ray(i, MAPD[i] < 0 ? C : pills[MAPD[i]])]);
+  const nsLab = box(tl, 'abs cap', 1180, 880, 0, 0, '<span style="color:var(--accent)">叙事空间</span> · 位置 = 数据维度 · 连线 = 叙事关系');
+  const FLY = i => [.75 + i * .28, 1.3 + i * .28];                   // seconds into 解法: a step leaves the line, lands
+  // 结果: controlled study
+  const cmp = Compare(pn, 0, 0, 'NarraSteer', [
+    { label: '叙事洞察数', delta: '+13.2%', a: 6.4, b: 5.7, max: 7, at: '6.4', bt: '5.7' },
+    { label: '主动拖拽引导 Agent', delta: '15/16', a: 15, b: 9, max: 16, at: '15/16', bt: '9/16' },
+    { label: '执行中途主动介入', delta: '10/16', a: 10, b: 5, max: 16, at: '10/16', bt: '5/16' },
+  ]);
+
+  const t0 = T.p4[0];
+  let FIT = { s: 1, tx: 0, ty: 0 };
+  return {
+    layout() { vis(sc.root, true); const s0 = document.getElementById('stage').getBoundingClientRect();
+      cmp.place(); FIT = fitBox(unionRect([face, ...pills.map(p => p.g)], s0), GRID.x0, GRID.x1 - GRID.card - GRID.gutter, GRID.cy);
+      rowAt = rows.map(e => { const d = e.querySelector('.td').getBoundingClientRect(); return { x: d.left - s0.left + d.width / 2, y: d.top - s0.top + d.height / 2 }; });
+      const dn = news[0].querySelector('.td').getBoundingClientRect(); newAt = { x: dn.left - s0.left + dn.width / 2, y: dn.top - s0.top + dn.height / 2 }; vis(sc.root, false); },
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - t0, PLAN.p4.map);
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景
+      const bgOut = 1 - oC(P(u, s1 - .05, s1 + .35));
+      log.style.opacity = rise(log, u, .55, .5, 14) * bgOut;
+      logLines.forEach((l, i) => { const p = P(u, .75 + i * .18, .9 + i * .18); l.style.opacity = .25 + .75 * p; l.querySelector('i').style.background = p >= 1 ? 'var(--ink)' : 'var(--faint)'; });
+      who.style.opacity = rise(who, u, .8, .5, 14) * bgOut;
+      wait.style.opacity = rise(wait, u, 1.0, .5, 14) * bgOut;
+      const wp = oQ(P(u, 1.2, 2.0)); w1.setAttribute('width', 822 * .741 * wp); w2.setAttribute('x', 822 * .741 * wp + 3); w2.setAttribute('width', Math.max(0, 822 * .259 * P(u, 1.7, 2.1) - 3));
+      // 解法: runs on real seconds (sr) — the mapping needs more time than the compact clock gives
+      const sr = t - t0 - PLAN.p4.steps[1];
+      const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
+      const shift = ioC(P(u, s2, s2 + .6));
+      st(disc, { opacity: P(sr, 0, .35), transform: fitCss(FIT, shift), transformOrigin: '0 0' });
+      face.setAttribute('r', R * oQ(P(sr, 0, .6)));
+      spokes.forEach((s, i) => s.style.opacity = P(sr, .15 + i * .02, .45 + i * .02));
+      st(hub, { opacity: P(sr, .1, .35) });
+      // the trace, in time order
+      st(tl, { opacity: pOut });
+      rise(tcard, sr, .05, .4, 12);
+      rows.forEach((e, i) => { const [f0, f1] = FLY(i); e.style.opacity = P(sr, .15 + i * .08, .3 + i * .08);
+        const on = P(sr, f0 - .05, f0 + .05) * (1 - P(sr, f1, f1 + .15)); e.style.background = on > .01 ? `rgba(194,65,12,${.1 * on})` : ''; });
+      work.style.opacity = P(sr, .6, .75) * (.55 + .45 * Math.abs(Math.cos(Math.max(0, sr) * 3)));
+      const flash = MAPI.map(() => 0);
+      // each step flies to its place on the disc
+      let pq = 0;
+      flyers.forEach((f, i) => { const [f0, f1] = FLY(i), p = ioC(P(sr, f0, f1)), n = qN[i];
+        const x0 = rowAt[i].x, y0 = rowAt[i].y, cx = (x0 + n.x) / 2, cy = Math.min(y0, n.y) - 60;
+        const x = (1 - p) ** 2 * x0 + 2 * (1 - p) * p * cx + p * p * n.x, y = (1 - p) ** 2 * y0 + 2 * (1 - p) * p * cy + p * p * n.y;
+        f.g.setAttribute('transform', `translate(${x},${y})`); f.g.style.opacity = sr > f0 && sr < f1 + .05 ? 1 : 0; f.lab.style.opacity = 1 - P(p, .6, 1);
+        const k = oB(P(sr, f1 - .05, f1 + .2)); n.g.setAttribute('transform', `translate(${n.x},${n.y}) scale(${Math.max(0, k)})`);
+        flash[i] = P(sr, f1, f1 + .12) * (1 - P(sr, f1 + .6, f1 + .9));
+        rays[i].forEach(r => r.style.opacity = flash[i]);
+        if (i > 0) pq += P(sr, f1 - .35, f1) / 5; });
+      draw(qLine, pq); draw(qBand, pq);
+      // dimension labels on the rim light up as their step lands (and Unemployment again when the drag reaches it)
+      const d0 = 3.1, T1 = d0 + .85, T2 = d0 + 1.55, REL = d0 + 1.9;   // press on the head · reach Inflation · reach GDP per Capita · release
+      const chainLit = n => (n === 'Inflation' && sr > T1 - .05 || n === 'GDP per Capita' && sr > T2 - .05) && sr < REL + .6 ? 1 : 0;
+      pills.forEach((p, i) => { const k = oB(P(sr, .2 + i * .03, .5 + i * .03)); p.g.style.opacity = Math.min(1, k * 2); p.g.setAttribute('transform', `translate(${p.x},${p.y}) scale(${Math.max(0, k)})`);
+        const on = Math.max(...STEPS.map((_, j) => MAPI[j] === i || MAPD[j] === i ? flash[j] : 0), chainLit(ATTR[i])) > .5;
+        p.r.setAttribute('stroke', on ? '#c2410c' : 'rgba(23,27,38,0.2)'); p.tx.setAttribute('fill', on ? '#c2410c' : '#666d7e'); });
+      hub.firstChild.setAttribute('stroke', STEPS.some((_, j) => MAPD[j] < 0 && flash[j] > .5) ? '#c2410c' : 'rgba(23,27,38,0.2)');
+      linkLab.forEach(l => { const s = FLY(l.k + 1)[1]; l.e.style.opacity = P(sr, s, s + .2); });
+      rise(nsLab, sr, 2.75, .4, 6);
+      // steer by chaining: press on the head, drag across candidates (each one passed is selected and grows the next),
+      // release to commit the chain
+      const c0 = CAND[0], c3 = CAND[3];
+      const p1 = ioC(P(sr, d0 + .35, T1)), p2 = ioC(P(sr, d0 + 1.05, T2));
+      let px = from.x, py = from.y;
+      if (sr > d0 + .35) { px = lerp(from.x, c0.x, p1); py = lerp(from.y, c0.y, p1); }
+      if (sr > d0 + 1.05) { px = lerp(c0.x, c3.x, p2); py = lerp(c0.y, c3.y, p2); }
+      const held = P(sr, d0, d0 + .1) * (1 - P(sr, REL, REL + .1)), committed = P(sr, REL, REL + .15);
+      const wave = [d0 + .15, T1, T2];                                   // when each generation of candidates grows
+      CAND.forEach((c, i) => { const w = wave[i < 2 ? 0 : i < 4 ? 1 : 2], k = oB(P(sr, w, w + .25));
+        const sel = c.pick === 1 ? P(sr, T1 - .05, T1 + .05) : c.pick === 2 ? P(sr, T2 - .05, T2 + .05) : 0;
+        const gone = c.pick ? 0 : P(sr, REL, REL + .3), solid = c.pick && committed > .5;
+        c.g.setAttribute('transform', `translate(${c.x},${c.y}) scale(${Math.max(0, k) * (1 + .2 * sel * (1 - committed))})`);
+        c.g.style.opacity = Math.min(1, k * 2) * (1 - gone);
+        c.sq.setAttribute('fill', solid || sel > .5 ? '#fff' : '#e3e6eb');
+        c.sq.setAttribute('stroke', solid ? '#171b26' : sel > .5 ? '#c2410c' : '#c3c8d3');
+        c.sq.setAttribute('stroke-width', solid || sel > .5 ? 2 : 1.5);
+        c.dash.style.opacity = P(sr, w, w + .15) * (1 - gone) * (c.pick ? 1 - committed : 1);
+        if (c.pick) { const a = REL + .05 + (c.pick - 1) * .15, q = oC(P(sr, a, a + .25)); draw(c.line, q); draw(c.band, q); } });
+      dragN.setAttribute('transform', `translate(${px},${py})`); dragN.style.opacity = held;
+      trail.setAttribute('d', sr > d0 + 1.05 ? `M${from.x},${from.y} L${c0.x},${c0.y} L${px},${py}` : `M${from.x},${from.y} L${px},${py}`);
+      trail.style.opacity = held * P(sr, d0 + .35, d0 + .45);
+      let cx = lerp(1620, from.x, oC(P(sr, d0 - .45, d0 - .05))), cy = lerp(760, from.y, oC(P(sr, d0 - .45, d0 - .05)));
+      if (sr > d0) { cx = px; cy = py; }
+      cursor.setAttribute('transform', `translate(${cx + 3},${cy + 3}) scale(${1 - .12 * held})`); cursor.style.opacity = P(sr, d0 - .45, d0 - .35) * (1 - P(sr, REL + .3, REL + .5));
+      gestLab.style.opacity = P(sr, d0 + .2, d0 + .45) * pOut;
+      // …and the chain acts back on the trace as one user turn; the agent carries on through it
+      const b0 = REL + .3, b1 = b0 + .6, bp = ioC(P(sr, b0, b1));
+      const bx0 = c3.x, by0 = c3.y, bcx = (bx0 + newAt.x) / 2, bcy = Math.min(by0, newAt.y) - 90;
+      back.setAttribute('transform', `translate(${(1 - bp) ** 2 * bx0 + 2 * (1 - bp) * bp * bcx + bp * bp * newAt.x},${(1 - bp) ** 2 * by0 + 2 * (1 - bp) * bp * bcy + bp * bp * newAt.y})`);
+      back.style.opacity = sr > b0 && sr < b1 + .05 ? 1 : 0;
+      news.forEach((e, i) => { const a = b1 - .05 + i * .4, p = oQ(P(sr, a, a + .35));
+        st(e, { maxHeight: p * 48 + 'px', paddingTop: 4 * p + 'px', paddingBottom: 4 * p + 'px', marginBottom: 6 * p + 'px', opacity: P(sr, a + .1, a + .35),
+                background: i === 0 ? `rgba(194,65,12,${.1 * p})` : '' }); });
+      // 结果
+      cmp.render(u, s2 + .15);
+    },
+  };
+})();
+
+/* ============================================================ 05 · TOA
+   背景: novices lose their way in linear multi-turn chat; 4/6 novices failed in the formative study
+   → 解法: the conversation, numbered, is re-laid out as an analysis tree: each answer's chart flies into a node and each
+           question's number onto the edge into it (answers = nodes, queries = edges); chat order 1–5 lands on different
+           branches. ⑤'s chart signals then grow two recommended follow-up nodes that were never asked (dashed); clicking
+           one asks it — a new turn ⑥ appears in the chat
+   → 结果: N=12 · +58.3% insights per turn · +17.7% thinking time · −23% turns */
+const P5 = (() => {
+  const sc = Scene(T.p5);
+  const L = LeftCol(sc.root, COPY.p5);
+  const pn = $('div', 'layer', sc.root);
+  // 背景: a long linear chat (queries from the real demo)
+  const chatCard = $('div', 'card', pn); st(chatCard, { width: '440px', height: '690px', overflow: 'hidden', padding: '0 22px' }); at(chatCard, 852, 195);
+  const chat = $('div', '', chatCard); st(chat, { paddingTop: '24px' });
+  const Q = [['Show me phone sales.', [7, 45, 100, 21, 79], 2], ['Show only Poco phones with their models and sales numbers', [60, 30, 92, 70, 46], 2],
+             ['Add price ranges to compare premium vs budget brand sales', [30, 88, 64, 40, 72], 1], ['What processors does Poco use and how do they perform?', [80, 55, 35, 66, 28], 0],
+             ['Show Poco phones priced under $20,000', [44, 76, 58, 90, 36], 3], ['Show me phone sales.', [7, 45, 100, 21, 79], 2]];
+  Q.forEach(([q, v, hi]) => { $('div', 'msgq', chat, q); $('div', 'msga', chat, '<div class="bars">' + v.map((h, i) => `<i style="height:${h}%"${i === hi ? ' class="hi"' : ''}></i>`).join('') + '</div>'); });
+  const fade = $('div', 'abs', chatCard); st(fade, { left: 0, right: 0, top: '0px', height: '120px', background: 'linear-gradient(#fff, rgba(255,255,255,0))' });
+  const fs = $('div', 'card', pn); st(fs, { width: '350px', padding: '22px 24px' }); at(fs, 1360, 300);
+  const dots = (n, bad) => Array.from({ length: n }, (_, i) => `<span class="pdot" style="${i < bad ? 'background:none;box-shadow:inset 0 0 0 1.5px var(--accent)' : 'background:var(--ink)'}"></span>`).join('');
+  fs.innerHTML = '<div class="cap" style="margin-bottom:16px">形成性研究 · N = 12</div>' +
+    `<div class="zh13" style="margin-bottom:8px">新手</div><div>${dots(6, 4)}</div><div class="zh13" style="margin:14px 0 8px">专家</div><div>${dots(6, 0)}</div>` +
+    '<div class="zh13" style="margin-top:16px"><span style="color:var(--accent)">○</span> 任务失败 &nbsp; <span>●</span> 完成</div>';
+  // 解法: the same conversation, numbered — each answer becomes a node, each question the edge into it
+  const bars = (v, hi) => `<div class="mbars">${v.map((h, i) => `<i style="height:${Math.max(8, h)}%"${i === hi ? ' class="hi"' : ''}></i>`).join('')}</div>`;
+  const NEWQ = ['Show battery capacity of Poco models under $20,000', [52, 70, 38, 88, 45], 3];   // the turn a clicked recommendation adds
+  const qaCard = box(pn, 'card', 860, 221, 308, 0); st(qaCard, { padding: '18px 18px 8px' });   // top = the root's top
+  const qaHtml = ([q, v, hi], i, cls = '') => `<div class="qa${cls}"><span class="qb">${i + 1}</span><div class="qq">${q}</div><div class="qc">${bars(v, hi)}</div></div>`;
+  qaCard.innerHTML = '<div class="cap" style="margin-bottom:12px">对话 · 按时间线性排列</div>' + Q.slice(0, 5).map((x, i) => qaHtml(x, i)).join('') + qaHtml(NEWQ, 5, ' qnew');
+  const qas = [...qaCard.querySelectorAll('.qa')], qa6 = qas[5];
+  // the analysis tree (node contents from the paper's figure)
+  const tree = $('div', 'layer', pn);
+  const tsvg = S('svg', { class: 'full' }, tree);
+  const root = $('div', 'troot', tree, 'Root'); const RX = 1510, RY = 238; at(root, RX - 55, RY - 17);
+  const chip = (s, f) => `<span class="c${f ? ' f' : ''}">${s}</span>`;
+  const mk = (a, f) => `<div class="row">Attr: ${a.map(x => chip(x)).join('')}</div><div class="row">Filter: ${f ? chip(f, 1) : 'none'}</div>`;
+  const NODES = [   // q: which question-answer pair it comes from
+    { id: 'B', p: 'root', x: 1400, y: 360, e: 'Start new', q: 0, h: mk(['brand', 'num_of_sales']) },
+    { id: 'B1', p: 'B', x: 1400, y: 510, e: 'Slice', q: 1, h: mk(['models', 'num_of_sales'], "brand='Poco'") },
+    { id: 'C', p: 'root', x: 1628, y: 360, e: 'Start new', q: 2, h: mk(['sales_price', 'battery_capacity']) },
+    { id: 'B2', p: 'B1', x: 1292, y: 672, e: 'Elaborate', q: 3, h: mk(['models', 'processor'], "brand='Poco'") },
+    { id: 'B3', p: 'B1', x: 1512, y: 672, e: 'Dice', q: 4, h: mk(['models', 'num_of_sales'], 'sales_price<=20000') },
+    // not asked yet: follow-ups ToA recommends from ⑤'s chart signals (illustrative attributes). Clicking R1 asks it as ⑥
+    { id: 'R1', p: 'B3', x: 1416, y: 836, e: 'Elaborate', q: 5, rec: 1, h: mk(['models', 'battery_capacity'], 'sales_price<=20000') },
+    { id: 'R2', p: 'B3', x: 1628, y: 836, e: 'Elaborate', rec: 1, h: mk(['models', 'screen_size'], 'sales_price<=20000') },
+  ];
+  const byId = { root: { x: RX, y: RY, h: 34 } };
+  NODES.forEach((n, i) => { n.i = i; n.el = $('div', 'tnode', tree, n.h); st(n.el, { width: '184px', paddingRight: '44px' });
+    const qa = n.q === 5 ? NEWQ : Q[n.q];
+    if (qa) { n.g = $('div', '', n.el, bars(qa[1], qa[2])); st(n.g, { position: 'absolute', right: '8px', top: '8px', transform: 'scale(.72)', transformOrigin: 'right top' }); }
+    if (n.rec) { n.el.classList.add('dash'); n.tag = $('div', '', n.el, 'REC.'); st(n.tag, { position: 'absolute', right: '8px', top: '9px', background: 'var(--ink)', color: '#fff', font: '700 9px var(--mono)', padding: '1px 6px', borderRadius: '2px' }); } });
+  const edges = [];
+  // what travels: the question's number to its edge, the answer's chart to its node (and back, for ⑥)
+  const qFly = NODES.map(n => box(tree, 'abs', 0, 0, 0, 0, `<span class="qb">${(n.q ?? 0) + 1}</span>`));
+  const aFly = NODES.map(n => { const qa = n.q === 5 ? NEWQ : Q[n.q ?? 0]; const e = box(tree, 'abs', 0, 0, 0, 0, bars(qa[1], qa[2])); st(e, { background: '#fff', padding: '5px 7px', borderRadius: '6px', boxShadow: '0 4px 14px rgba(23,27,38,0.14)' }); return e; });
+  let qaAt = NODES.map(() => ({ q: { x: 870, y: 260 }, a: { x: 900, y: 300 } }));
+  const MAP = i => .6 + i * .6;              // seconds into 解法 when pair i (①–⑤) maps in
+  const REC = 3.9, CLICK = 5.1;              // ⑤'s chart signals grow the recommendations; R1 is clicked
+  const sigLab = box(tree, 'abs', 1616, 652, 0, 0, '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:7px;vertical-align:1px"></span>图表信号<br><span style="padding-left:14px">→ 推荐后续节点</span>');
+  st(sigLab, { fontSize: '13px', lineHeight: '20px', color: 'var(--accent)', whiteSpace: 'nowrap' });   // two lines: stays inside the grid's inner edge
+  const cursor = S('path', { d: 'M0,0 L0,20 L5.5,15 L9.5,23.5 L13,22 L9,13.5 L16,13.5 Z', fill: '#171b26', stroke: '#fff', 'stroke-width': 1.2 }, tsvg);
+  // 结果
+  const cmp = Compare(pn, 0, 0, 'ToA', [
+    { label: '每轮洞察数', delta: '+58.3%', a: 1.583, b: 1, max: 1.7, at: '', bt: '' },
+    { label: '每轮深度思考时间', delta: '+17.7%', a: 71.3, b: 60.6, max: 80, at: '71.3s', bt: '60.6s' },
+    { label: '总对话轮次', delta: '−23%', a: 14.4, b: 18.8, max: 20, at: '14.4', bt: '18.8' },
+  ]);
+
+  const t0 = T.p5[0];
+  let FIT = { s: 1, tx: 0, ty: 0 };
+  return {
+    layout() {
+      vis(sc.root, true);
+      const s0 = document.getElementById('stage').getBoundingClientRect();
+      NODES.forEach(n => { const b = n.el.getBoundingClientRect(); n.hh = b.height; at(n.el, n.x - 92, n.y - n.hh / 2); byId[n.id] = { x: n.x, y: n.y, h: n.hh }; });
+      NODES.forEach(n => {
+        const p = byId[n.p]; const y0 = p.y + p.h / 2, y1 = n.y - n.hh / 2, my = (y0 + y1) / 2;
+        const d = `M${p.x},${y0} C${p.x},${my} ${n.x},${my} ${n.x},${y1}`;
+        const dash = n.rec ? S('path', { d, fill: 'none', stroke: 'rgba(23,27,38,0.35)', 'stroke-width': 1.2, 'stroke-dasharray': '4 4' }, tsvg) : null;
+        const path = S('path', { d, fill: 'none', stroke: 'rgba(23,27,38,0.35)', 'stroke-width': 1.2 }, tsvg);
+        const lab = box(tree, 'elab', 0, 0, 0, 0, (n.q != null ? `<span class="qb">${n.q + 1}</span>` : '') + n.e);
+        const w = lab.getBoundingClientRect().width, lx = p.x === n.x ? n.x + 10 : (p.x + n.x) / 2 - w / 2;
+        at(lab, lx, my - 10); edges.push({ n, path, dash, lab, badge: lab.querySelector('.qb'), lx: lx + 8, ly: my - 1 });
+      });
+      qaAt = NODES.map(n => { const e = qas[n.q ?? 0], q = e.querySelector('.qb').getBoundingClientRect(), a = e.querySelector('.qc').getBoundingClientRect();
+        return { q: { x: q.left - s0.left, y: q.top - s0.top }, a: { x: a.left - s0.left, y: a.top - s0.top } }; });
+      cmp.place(); FIT = fitBox(unionRect([root, ...NODES.map(n => n.el)], s0), GRID.x0, GRID.x1 - GRID.card - GRID.gutter, GRID.cy);
+      vis(sc.root, false);
+    },
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - t0, PLAN.p5.map);
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景
+      const bgOut = 1 - oC(P(u, s1 - .05, s1 + .35));
+      chatCard.style.opacity = rise(chatCard, u, .55, .5, 14) * bgOut;
+      st(chat, { transform: `translateY(${-Math.max(0, u - .6) * 150}px)` });
+      fs.style.opacity = rise(fs, u, 1.0, .5, 14) * bgOut;
+      // 解法 · on real seconds: each pair lights up, its number flies to the edge and its chart to the node
+      const sr = t - t0 - PLAN.p5.steps[1];
+      const pOut = 1 - oC(P(u, s2 - .05, s2 + .25));
+      qaCard.style.opacity = rise(qaCard, sr, 0, .45, 12) * pOut;
+      const shift = ioC(P(u, s2, s2 + .6));
+      st(tree, { opacity: P(sr, 0, .25), transform: fitCss(FIT, shift), transformOrigin: '0 0' });
+      const rp = oB(P(sr, .1, .4)); st(root, { transform: `scale(${Math.max(0, rp)})` });
+      const bez = (a, b, p, lift) => { const cx = (a.x + b.x) / 2, cy = Math.min(a.y, b.y) - lift; return [(1 - p) ** 2 * a.x + 2 * (1 - p) * p * cx + p * p * b.x, (1 - p) ** 2 * a.y + 2 * (1 - p) * p * cy + p * p * b.y]; };
+      edges.forEach(({ n, path, dash, lab, badge, lx, ly }) => {
+        const from = qaAt[n.i];
+        if (!n.rec) {   // ①–⑤: chat → tree
+          const f0 = MAP(n.i);
+          const on = P(sr, f0 - .05, f0 + .1) * (1 - P(sr, f0 + .8, f0 + 1.0)); qas[n.q].style.background = on > .01 ? `rgba(194,65,12,${.1 * on})` : '';
+          const pq = ioC(P(sr, f0, f0 + .5)), [qx, qy] = bez(from.q, { x: lx, y: ly }, pq, 60);
+          st(qFly[n.i], { left: qx + 'px', top: qy + 'px', opacity: sr > f0 && sr < f0 + .52 ? 1 : 0 });
+          const nodeAt = { x: n.x + 92 - 44, y: n.y - n.hh / 2 + 4 };
+          const pa = ioC(P(sr, f0 + .1, f0 + .6)), [ax, ay] = bez(from.a, nodeAt, pa, 40);
+          st(aFly[n.i], { left: ax + 'px', top: ay + 'px', opacity: sr > f0 + .1 && sr < f0 + .62 ? 1 : 0, transform: `scale(${1 - .3 * pa})`, transformOrigin: 'left top' });
+          draw(path, oC(P(sr, f0 + .2, f0 + .5)));
+          lab.style.opacity = P(sr, f0 + .48, f0 + .6);
+          const k = oB(P(sr, f0 + .5, f0 + .75)); st(n.el, { transform: `scale(${Math.max(0, k)})`, opacity: Math.min(1, k * 2) });
+          return;
+        }
+        // recommendations: new nodes, dashed; clicking R1 asks it — tree → chat, as ⑥
+        const r0 = REC + .25 + (n.i - 5) * .15, taken = n.q === 5 ? P(sr, CLICK + .05, CLICK + .2) : 0;
+        dash.style.opacity = P(sr, r0, r0 + .25) * (1 - taken); lab.style.opacity = P(sr, r0 + .15, r0 + .35);
+        const k = oB(P(sr, r0 + .1, r0 + .35)); st(n.el, { transform: `scale(${Math.max(0, k) * (1 + .06 * Math.sin(taken * Math.PI))})`, opacity: Math.min(1, k * 2) });
+        n.el.classList.toggle('dash', taken < .5);
+        n.tag.style.opacity = 1 - taken;
+        if (n.q !== 5) { qFly[n.i].style.opacity = 0; aFly[n.i].style.opacity = 0; path.style.opacity = 0; return; }
+        draw(path, oC(P(sr, CLICK + .05, CLICK + .3)));
+        if (badge) badge.style.opacity = P(sr, CLICK + .2, CLICK + .35);
+        n.g.style.opacity = P(sr, CLICK + .1, CLICK + .25);
+        const pa = ioC(P(sr, CLICK + .3, CLICK + .85)), nodeAt = { x: n.x + 92 - 44, y: n.y - n.hh / 2 + 4 }, [ax, ay] = bez(nodeAt, from.a, pa, 50);
+        st(aFly[n.i], { left: ax + 'px', top: ay + 'px', opacity: sr > CLICK + .3 && sr < CLICK + .87 ? 1 : 0, transform: `scale(${.7 + .3 * pa})`, transformOrigin: 'left top' });
+        const pq = ioC(P(sr, CLICK + .2, CLICK + .7)), [qx, qy] = bez({ x: lx, y: ly }, from.q, pq, 60);
+        st(qFly[n.i], { left: qx + 'px', top: qy + 'px', opacity: sr > CLICK + .2 && sr < CLICK + .72 ? 1 : 0 });
+      });
+      NODES.forEach(n => { if (n.g && !n.rec) n.g.style.opacity = 1; });
+      // ⑥ opens at the bottom of the chat
+      const g6 = oQ(P(sr, CLICK + .15, CLICK + .5));
+      st(qa6, { maxHeight: g6 * 110 + 'px', paddingTop: 6 * g6 + 'px', paddingBottom: 6 * g6 + 'px', marginBottom: 10 * g6 + 'px', opacity: P(sr, CLICK + .3, CLICK + .55),
+                background: `rgba(194,65,12,${.1 * g6 * (1 - P(sr, CLICK + 1.6, CLICK + 2.0))})` });
+      qa6.querySelector('.qc').style.opacity = P(sr, CLICK + .82, CLICK + .9);
+      // ⑤'s chart signals → recommended follow-up nodes
+      const b3 = NODES[4].el, sg = P(sr, REC, REC + .2) * (1 - P(sr, REC + 1.2, REC + 1.6));
+      b3.style.boxShadow = sg > .01 ? `0 0 0 ${1 + sg}px rgba(194,65,12,${.9 * sg}), 0 8px 24px rgba(194,65,12,${.14 * sg})` : '';
+      st(sigLab, { opacity: P(sr, REC, REC + .2) * pOut, transform: `translateX(${(1 - oQ(P(sr, REC, REC + .4))) * 10}px)` });
+      // the click on R1
+      const r1 = NODES[5], cxy = [lerp(1720, r1.x - 20, ioC(P(sr, CLICK - .6, CLICK - .1))), lerp(900, r1.y - 4, ioC(P(sr, CLICK - .6, CLICK - .1)))];
+      cursor.setAttribute('transform', `translate(${cxy[0]},${cxy[1]}) scale(${1 - .15 * Math.sin(P(sr, CLICK - .05, CLICK + .1) * Math.PI)})`);
+      cursor.style.opacity = P(sr, CLICK - .6, CLICK - .45) * (1 - P(sr, CLICK + .6, CLICK + .8));
+      // 结果
+      cmp.render(u, s2 + .15);
+    },
+  };
+})();
+
+/* on the site only: while 05 plays, a link to ToA's live demo (embedded on the ToA page) */
+const DEMO = EMBED ? (() => {
+  const sc = Scene(T.p5);
+  const a = $('a', 'demo-cta', sc.root, '在线体验 ToA Demo ↗'); a.href = '/toa#demo'; a.target = '_top';
+  return {
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - T.p5[0], PLAN.p5.map);
+      a.style.opacity = rise(a, u, STEP[0] + .6, .5, 8) * (1 - oC(P(u, OUT, OUT + .25)));
+    },
+  };
+})() : null;
+
+/* ============================================================ 06 · 跨社交媒体舆情分析与治理平台
+   背景: monitoring / assessment / handling fragmented; five modules' algorithms not yet a product
+   → 解法: three-layer IA (大屏 / 仪表盘 / 中台), five tech teams coordinated
+   → 结果: delivered 0 → 1, supporting the National Key R&D Program milestone */
+const P6 = (() => {
+  const sc = Scene(T.p6);
+  const L = LeftCol(sc.root, COPY.p6);
+  const pn = $('div', 'layer', sc.root);
+  const svg = S('svg', { class: 'full' }, pn);
+  // workflow stages
+  const stages = [['监控', 930], ['研判', 1230], ['处置', 1530]].map(([n, x]) => { const e = $('div', 'stg', pn, n); at(e, x, 214); return { e, x }; });
+  const brk = [[1050, 1230], [1350, 1530]].map(([a, b]) => ({
+    dash: S('line', { x1: a + 6, y1: 236, x2: b - 6, y2: 236, stroke: 'rgba(23,27,38,0.3)', 'stroke-dasharray': '3 6' }, svg),
+    solid: S('path', { d: `M${a + 6},236 L${b - 8},236`, fill: 'none', stroke: '#c2410c', 'stroke-width': 1.6, 'marker-end': 'url(#arrA)' }, svg),
+    x: (a + b) / 2,
+  }));
+  const cuts = brk.map(b => { const g = S('g', {}, svg); S('line', { x1: b.x - 6, y1: 226, x2: b.x + 6, y2: 246, stroke: '#c2410c', 'stroke-width': 1.6 }, g); return g; });
+  // five technical modules
+  const rnd = mulberry32(9);
+  const mods = Array.from({ length: 5 }, (_, i) => {
+    const e = $('div', 'modl', pn, `技术模块 0${i + 1}`);
+    return { e, sx: 900 + (i % 3) * 300 + rnd() * 90, sy: 430 + Math.floor(i / 3) * 190 + rnd() * 70, rot: (rnd() - .5) * 10, cx: 870, cy: 360 + i * 84 };
+  });
+  const feeds = mods.map(() => S('path', { fill: 'none', stroke: 'rgba(194,65,12,0.5)', 'stroke-width': 1.2 }, svg));
+  const scat = $('div', 'abs zh13', pn, '信息分散 · 流程割裂'); at(scat, 1230, 300);
+  // three-layer information architecture (drawn, isometric)
+  const stack = $('div', 'layer', pn);
+  const LAYERS = [
+    { n: '可视化大屏', y: 330, draw: g => { const r = mulberry32(5); for (let k = 0; k < 42; k++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * 70; S('circle', { cx: 190 + Math.cos(a) * d * 1.5, cy: 120 + Math.sin(a) * d * .8, r: 4 + r() * 9, fill: k % 11 === 0 ? '#c2410c' : '#d5d9e1', opacity: .9 }, g); } } },
+    { n: '工作台仪表盘', y: 470, draw: g => { [0, 1, 2].forEach(k => S('rect', { x: 24 + k * 116, y: 24, width: 104, height: 56, rx: 6, fill: '#eef0f3' }, g)); S('path', { d: 'M24,190 C80,150 120,176 170,140 S270,110 356,128', fill: 'none', stroke: '#c2410c', 'stroke-width': 2 }, g); S('line', { x1: 24, y1: 208, x2: 356, y2: 208, stroke: '#d5d9e1' }, g); } },
+    { n: '可视化中台', y: 610, draw: g => { for (let k = 0; k < 6; k++) { const x = 24 + (k % 3) * 116, y = 24 + Math.floor(k / 3) * 100; S('rect', { x, y, width: 104, height: 88, rx: 6, fill: '#eef0f3' }, g); for (let b = 0; b < 4; b++) { const h = 10 + ((k * 7 + b * 13) % 40); S('rect', { x: x + 14 + b * 20, y: y + 70 - h, width: 12, height: h, fill: b === 1 ? '#c2410c' : '#c3c8d3' }, g); } } } },
+  ];
+  const planes = LAYERS.map((l, i) => {
+    const holder = $('div', 'abs', stack); at(holder, 1240, l.y - 60); st(holder, { width: '340px', height: '214px', zIndex: 3 - i });
+    const p = $('div', 'plane', holder); st(p, { left: 0, top: 0 });
+    const g = S('svg', { width: 380, height: 240, style: 'transform:scale(0.895);transform-origin:0 0' }, p); l.draw(g);
+    const lab = $('div', 'abs', stack, `<span class="mono" style="color:var(--accent);font-size:12px;margin-right:10px">L${i + 1}</span>${l.n}`); at(lab, 1590, l.y + 40); st(lab, { fontSize: '15px', whiteSpace: 'nowrap', zIndex: 5 });
+    return { holder, lab };
+  });
+  const done = $('div', 'abs', pn, '<span style="font-family:var(--mono);font-size:22px;color:var(--accent)">✓</span>&nbsp; 完整落地 · 支撑国家重点研发计划交付'); at(done, 1120, 830); st(done, { fontSize: '15px', whiteSpace: 'nowrap' });
+
+  const t0 = T.p6[0];
+  return {
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - t0, PLAN.p6.map);
+      L.render(u);
+      st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
+      const s1 = STEP[1], s2 = STEP[2];
+      // 背景: stages that don't connect, modules adrift
+      stages.forEach((s, i) => rise(s.e, u, .55 + i * .1, .5, 10));
+      brk.forEach((b, i) => { b.dash.style.opacity = P(u, .8, 1.0) * (1 - P(u, s1 + .3, s1 + .5)); draw(b.solid, oQ(P(u, s1 + .35 + i * .15, s1 + .7 + i * .15))); });
+      cuts.forEach(c => c.style.opacity = P(u, .9, 1.1) * (1 - P(u, s1 + .25, s1 + .4)));
+      scat.style.opacity = rise(scat, u, 1.2, .5, 6) * (1 - P(u, s1, s1 + .3));
+      mods.forEach((m, i) => {
+        const inn = oQ(P(u, .9 + i * .1, 1.4 + i * .1));
+        const g = ioC(P(u, s1 + .1 + i * .06, s1 + .7 + i * .06));
+        const x = lerp(m.sx, m.cx, g), y = lerp(m.sy + Math.sin(u * 1.4 + i) * 4, m.cy, g);
+        st(m.e, { left: x + 'px', top: y + 'px', opacity: inn, transform: `rotate(${m.rot * (1 - g)}deg)`, color: g >= 1 ? 'var(--ink)' : 'var(--dim)' });
+        const f = feeds[i], fp = oQ(P(u, s1 + .8 + i * .06, s1 + 1.3 + i * .06));
+        f.setAttribute('d', `M${m.cx + 132},${m.cy + 22} C${m.cx + 220},${m.cy + 22} 1170,680 1262,680`); draw(f, fp);
+      });
+      // 解法: the stack assembles layer by layer
+      planes.forEach((p, i) => {
+        const k = oQ(P(u, s1 + .3 + i * .18, s1 + .9 + i * .18));
+        st(p.holder, { opacity: k, transform: `translateY(${(1 - k) * 40}px)` });
+        rise(p.lab, u, s1 + .6 + i * .18, .45, 8);
+      });
+      // 结果
+      rise(done, u, s2 + .3, .5, 10);
+    },
+  };
+})();
+
+/* ============================================================ OUTRO */
+const OUTRO = (() => {
+  const sc = Scene(T.outro);
+  const r = sc.root;
+  const nm = $('div', 'mask abs', r);
+  const name = $('div', '', nm, '屈非塬'); st(name, { fontSize: '56px', fontWeight: 500, letterSpacing: '0.12em', whiteSpace: 'nowrap' });
+  const en = $('div', 'abs nowrap', r, 'QU FEIYUAN'); st(en, { fontFamily: 'var(--display)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.34em', color: 'var(--dim)' });
+  const hl = $('div', 'abs', r); st(hl, { height: '2px', background: 'var(--accent)', width: '0px', top: '552px' });
+  const role = $('div', 'abs nowrap', r, '设计 · 工程 · AI'); st(role, { fontSize: '22px' });
+  const ct = $('div', 'abs nowrap mono', r, 'feiyuan_qu@zju.edu.cn &nbsp; · &nbsp; qfy1012.github.io'); st(ct, { fontSize: '15px', color: 'var(--dim)', letterSpacing: '0.04em' });
+  const center = (e, y) => { const w = e.getBoundingClientRect().width; at(e, (W - w) / 2, y); };
+  return {
+    layout() { vis(r, true); center(nm, 424); center(en, 508); center(role, 574); center(ct, 626); vis(r, false); },
+    render(t) {
+      if (!sc.on(t)) return;
+      const u = warp(t - T.outro[0], OUTRO_CLOCK);
+      const p = oQ(P(u, .1, .8)); st(name, { transform: `translateY(${(1 - p) * 105}%)` });
+      rise(en, u, .35, .5, 8);
+      const w = 48 * oQ(P(u, .45, .9)); st(hl, { width: w + 'px', left: (W - w) / 2 + 'px' });
+      rise(role, u, .55, .5, 10); rise(ct, u, .75, .5, 10);
+    },
+  };
+})();
+
+/* ============================================================ HUD: name, chapter index, progress */
+const HUD = (() => {
+  const h = document.getElementById('hud');
+  const tl = $('div', 'abs kick', h, '屈非塬 &nbsp;·&nbsp; QU FEIYUAN'); at(tl, 120, 70);
+  const tr = $('div', 'abs kick', h); st(tr, { right: '120px', top: '70px' });
+  const n = KEYS.length, span = 1680, gap = 20, w = (span - gap * (n - 1)) / n;
+  const segs = KEYS.map((k, i) => { const s = $('div', 'seg', h); st(s, { left: 120 + i * (w + gap) + 'px', width: w + 'px' }); const l = $('div', 'l', s, `${COPY[k].idx}&nbsp;&nbsp;${COPY[k].hud}`); $('div', 't', s); const f = $('div', 'f', s); return { l, f, r: T[k] }; });
+  return {
+    render(t) {
+      h.style.opacity = P(t, T.p1[0] - .2, T.p1[0] + .25) * (1 - P(t, T.outro[0] - .25, T.outro[0] + .2));
+      if (EMBED) h.style.visibility = +h.style.opacity > .05 ? 'visible' : 'hidden';
+      const cur = KEYS.findIndex(k => t >= T[k][0] && t < T[k][1]);
+      tr.innerHTML = cur >= 0 ? `<b style="color:var(--accent);font-weight:500">${COPY[KEYS[cur]].idx}</b> &nbsp;/&nbsp; 0${n}` : '';
+      segs.forEach(s => {
+        s.f.style.width = P(t, s.r[0], s.r[1]) * 100 + '%';
+        s.f.style.background = t >= s.r[1] ? 'var(--faint)' : 'var(--accent)';
+        s.l.style.color = t >= s.r[0] && t < s.r[1] ? 'var(--ink)' : 'var(--dimmer)';
+      });
+    },
+  };
+})();
+
+/* ============================================================ frame */
+function renderFrame(t) {
+  t = clamp(t, 0, DUR - 1e-6);
+  st(panelBg, { opacity: P(t, T.p1[0] - .3, T.p1[0] + .3) * (1 - P(t, T.outro[0] - .3, T.outro[0] + .2)), transform: `translateY(${(1 - oQ(P(t, T.p1[0] - .3, T.p1[0] + .3))) * 20}px)` });
+  INTRO.render(t); P1.render(t); P2.render(t); P3.render(t); P4.render(t); P5.render(t); P6.render(t); OUTRO.render(t);
+  if (DEMO) DEMO.render(t);
+  HUD.render(t);
+}
+
+async function boot() {
+  await document.fonts.ready;
+  await Promise.all(['Syne', 'JetBrains Mono', 'PingFang SC', 'Noto Sans SC Fallback'].flatMap(f => [400, 500, 700].map(w => document.fonts.load(`${w} 40px "${f}"`, '屈非塬设计热皮肤Aa'))));
+  INTRO.layout(); P4.layout(); P5.layout(); OUTRO.layout();
+  window.renderFrame = renderFrame;
+  // the score (soundtrack.py) reads these cues so its chimes and ticks land on the same beats
+  window.SHOWREEL = { duration: DUR, fps: FPS, beat: BEAT, intro: T.intro, outro: T.outro,
+    chapters: KEYS.map(k => ({ id: k, start: T[k][0], end: T[k][1], steps: PLAN[k].steps.map(s => T[k][0] + s) })) };
+  const q = new URLSearchParams(location.search);
+  if (EMBED) {
+    const stage = document.getElementById('stage');
+    const fit = () => { const s = Math.min(innerWidth / W, innerHeight / H);
+      st(stage, { transform: `translate(${(innerWidth - W * s) / 2}px, ${(innerHeight - H * s) / 2}px) scale(${s})` }); };
+    addEventListener('resize', fit); fit();
+    // chapter jumps from the progress bar and the opening contents; the host page owns the clock
+    const seek = t => parent.postMessage({ reel: 'seek', t }, location.origin);
+    document.querySelectorAll('#hud .seg').forEach((e, i) => e.addEventListener('click', () => seek(T[KEYS[i]][0] + .01)));
+    document.querySelectorAll('.toc .rw').forEach((e, i) => e.addEventListener('click', () => seek(T[KEYS[i]][0] + .01)));
+    renderFrame(0);
+    document.documentElement.classList.add('is-ready');
+  } else if (q.has('play')) {
+    document.body.classList.add('preview');
+    const start = performance.now();
+    const loop = () => { renderFrame(((performance.now() - start) / 1000) % DUR); requestAnimationFrame(loop); };
+    loop();
+  } else renderFrame(parseFloat(q.get('t') || '0'));
+  window.__ready = true;
+  if (EMBED) parent.postMessage({ reel: 'ready' }, location.origin);
+}
+boot();
+</script>
+</body>
+</html>
