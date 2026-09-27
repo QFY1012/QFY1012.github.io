@@ -17,13 +17,11 @@
   @font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url('fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 500; src: url('fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2'); }
   @font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: url('fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2'); }
-  /* the site's font, declared as the site does (src/styles/tokens.css): the system PingFang first, else the site's subset */
+  /* the site's font, declared as the site does (src/styles/tokens.css): the system PingFang first, else the site's subset,
+     which holds every character of the site and this reel (scripts/subset-pingfang.py) */
   @font-face { font-family: 'PingFang SC'; font-weight: 400; src: local('PingFang SC'), local('PingFangSC-Regular'), url('../fonts/PingFangSC-Regular.woff2') format('woff2'); }
   @font-face { font-family: 'PingFang SC'; font-weight: 500; src: local('PingFang SC Medium'), local('PingFangSC-Medium'), url('../fonts/PingFangSC-Medium.woff2') format('woff2'); }
-  @font-face { font-family: 'PingFang SC'; font-weight: 600 700; src: local('PingFang SC Semibold'), local('PingFangSC-Semibold'), url('../fonts/PingFangSC-Semibold.woff2') format('woff2'); }
-  /* only for the few characters the site's PingFang subset lacks (built by subset-fonts.py); the site falls back to Noto Sans SC too */
-  @font-face { font-family: 'Noto Sans SC Fallback'; font-weight: 400; src: url('fonts/noto-sans-sc-fallback-400.woff2') format('woff2'); }
-  @font-face { font-family: 'Noto Sans SC Fallback'; font-weight: 500; src: url('fonts/noto-sans-sc-fallback-500.woff2') format('woff2'); }
+  @font-face { font-family: 'PingFang SC'; font-weight: 700; src: local('PingFang SC Bold'), local('PingFangSC-Bold'), url('../fonts/PingFangSC-Bold.woff2') format('woff2'); }
 
   /* the site's light theme (src/styles/home.css [data-theme="light"]) */
   :root {
@@ -31,9 +29,9 @@
     --ink: #171b26; --dim: #666d7e; --dimmer: #8a92a6; --faint: #c3c8d3;
     --line: rgba(23,27,38,0.12); --line2: rgba(23,27,38,0.22);
     --accent: #c2410c; --accent-soft: rgba(194,65,12,0.10); --accent-mid: rgba(194,65,12,0.45);
-    --sans: 'PingFang SC', 'Noto Sans SC Fallback', sans-serif;
-    --mono: 'JetBrains Mono', 'PingFang SC', 'Noto Sans SC Fallback', monospace;
-    --display: 'Syne', 'PingFang SC', 'Noto Sans SC Fallback', sans-serif;
+    --sans: 'PingFang SC', sans-serif;
+    --mono: 'JetBrains Mono', 'PingFang SC', monospace;
+    --display: 'Syne', 'PingFang SC', sans-serif;
   }
   html, body { margin: 0; background: #e9ebef; }
   body.preview { display: grid; place-items: center; min-height: 100vh; }
@@ -1533,7 +1531,7 @@ function renderFrame(t) {
 
 async function boot() {
   await document.fonts.ready;
-  await Promise.all(['Syne', 'JetBrains Mono', 'PingFang SC', 'Noto Sans SC Fallback'].flatMap(f => [400, 500, 700].map(w => document.fonts.load(`${w} 40px "${f}"`, '屈非塬设计热皮肤Aa'))));
+  await Promise.all(['Syne', 'JetBrains Mono', 'PingFang SC'].flatMap(f => [400, 500, 700].map(w => document.fonts.load(`${w} 40px "${f}"`, '屈非塬设计热皮肤Aa'))));
   INTRO.layout(); P4.layout(); P5.layout(); OUTRO.layout();
   window.renderFrame = renderFrame;
   // the score (soundtrack.py) reads these cues so its chimes and ticks land on the same beats

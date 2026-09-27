@@ -61,8 +61,8 @@ screen height, a hairline edge and a very light shadow). The nav stays hidden un
 - Phones: the card holds the MP4 in the system player (full screen, zoom).
 - During 04 (ToA) a link opens ToA's live demo on the ToA page (an iframe loaded as it nears the view).
 - The introduction and skills are in the MP4's opening page, and in the page as text for screen readers and search.
-- Type: the site's PingFang, declared as the site does (the system PingFang first, else the site's subset); the few
-  characters the subset lacks fall back to Noto Sans SC, as they do on the site.
+- Type: the site's PingFang, declared as the site does (the system PingFang first, else the site's subset). The subset
+  holds every character of the site and the reel, so all Chinese is PingFang everywhere, the MP4 included.
 
 ## Build
 
@@ -81,8 +81,8 @@ FFMPEG=ffmpeg ./showreel/build.sh
 - `soundtrack.py` — synthesises the score from `out/timeline.json`. The harmony changes on every step (and every two
   bars within one), each chapter has its own arpeggio figure, density builds from 背景 to 解法 to 结果, and the level
   arcs across the reel; chapter chimes and step ticks mark the cuts.
-- `subset-fonts.py` — the reel is set in the site's PingFang (`public/fonts`), which only covers the site's characters.
-  This builds a few-KB Noto Sans SC fallback for the characters it lacks (热, 皮肤, 诊断 …). Re-run it after changing
-  the Chinese copy.
+- Fonts: the reel is set in the site's PingFang (`public/fonts`), cut to the characters the built site uses, the reel
+  included. After changing the Chinese copy, run `npm run build` and `scripts/subset-pingfang.py` (see the script) before
+  rendering, so no character falls outside it.
 
-Fonts: Syne, JetBrains Mono and Noto Sans SC are SIL OFL (licences in `public/showreel/fonts/`).
+Fonts: Syne and JetBrains Mono are SIL OFL (licences in `public/showreel/fonts/`).
