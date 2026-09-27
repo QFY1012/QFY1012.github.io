@@ -70,8 +70,14 @@
   .zh14 { font-size: 14px; color: var(--ink); white-space: nowrap; }
   .x { color: var(--accent); font-family: var(--mono); margin-right: 6px; }
   .chipx { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 10px; background: var(--panel); color: var(--dim); margin-right: 6px; white-space: nowrap; }
-  .pill { position: absolute; font-size: 14px; padding: 7px 16px 7px 30px; border-radius: 18px; background: var(--card); box-shadow: 0 4px 14px rgba(23,27,38,0.06); white-space: nowrap; }
-  .pill::before { content: ''; position: absolute; left: 14px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--accent); }
+
+  /* 01–03 · the internship's figure (each chapter's part is tagged), and 03's app */
+  .atag { font-size: 12px; line-height: 18px; color: var(--accent); white-space: nowrap; }
+  .atag b { font-family: var(--mono); font-weight: 500; margin-right: 6px; }
+  .appc { position: absolute; border-radius: 12px; box-sizing: border-box; border: 1.5px solid var(--accent); background: rgba(255,255,255,0.35); }
+  .appc.dash { border: 1.5px dashed var(--accent-mid); background: none; }
+  .appr { position: absolute; border-radius: 8px; box-sizing: border-box; border: 1px dashed var(--faint); }
+  .tech { font-size: 13px; color: var(--accent); white-space: nowrap; }
 
   /* 01 · skill governance, 02 · output component library */
   .abar { position: absolute; height: 40px; line-height: 40px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line); font-size: 15px; box-sizing: border-box; }
@@ -108,22 +114,13 @@
   .cost .tot { position: absolute; top: 0; font-family: var(--mono); font-size: 16px; font-weight: 500; line-height: 26px; }
   .cost .bd { position: absolute; top: 18px; right: 0; font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--accent); background: var(--accent-soft); padding: 6px 14px; border-radius: 16px; white-space: nowrap; }
 
-  /* 02 · document app */
-  .bub { border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
-  .bl { height: 6px; background: #d9dde4; border-radius: 3px; margin: 5px 0; }
+  /* 02 · component library, 03 · PPT */
   .sl { position: absolute; background: var(--card); box-shadow: 0 0 0 1px var(--line); overflow: hidden; }
   .sl i { position: absolute; display: block; border-radius: 2px; }
   .dk { position: absolute; height: 40px; line-height: 40px; text-align: center; background: var(--ink); color: #fff; border-radius: 6px; font-size: 14px; font-weight: 500; white-space: nowrap; }
   .mod2 { position: absolute; width: 170px; height: 40px; line-height: 40px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2); font-size: 14px; white-space: nowrap; box-sizing: border-box; }
   .mod2.acc { box-shadow: 0 0 0 1.5px var(--accent); color: var(--accent); font-weight: 500; }
   .mod2.dash { box-shadow: none; border: 1px dashed var(--faint); background: rgba(255,255,255,0.6); }
-  .edu { position: absolute; border: 1.5px dashed var(--accent-mid); border-radius: 4px; box-sizing: border-box; }
-  .edu.sel { border: 1.5px solid var(--accent); }
-  .hdl { position: absolute; width: 7px; height: 7px; background: #fff; border: 1.5px solid var(--accent); box-sizing: border-box; }
-  .tlab { position: absolute; font-size: 13px; color: var(--dim); white-space: nowrap; }
-  .tlab small { display: block; font-family: var(--mono); font-size: 10px; color: var(--dimmer); margin-top: 2px; letter-spacing: 0.06em; }
-  .tb { position: absolute; height: 36px; line-height: 36px; text-align: center; background: var(--card); border-radius: 6px; box-shadow: 0 0 0 1px var(--line2); font-size: 13px; white-space: nowrap; box-sizing: border-box; }
-  .tgroup { position: absolute; border: 1px dashed var(--faint); border-radius: 8px; box-sizing: border-box; }
 
   /* 03 · NarraSteer, 04 · ToA, 05 · public opinion */
   .tile { position: absolute; width: 58px; height: 36px; border-radius: 6px; background: var(--card); border: 1px solid var(--line2); box-sizing: border-box;
@@ -266,16 +263,16 @@ const COPY = {
     steps: ['Agent 的各类视觉输出没有统一规范：<br>每次生成的风格都不一样',
             '封装设计组件库 + design.md，Agent 按需组合、动态输出；<br>DOM · CV · LLM 多模态评测，反向迭代组件库与 design.md'],
     result: 'Agent 的所有 HTML 类输出<br>统一为同一套视觉风格',
-    look: [0, 1, 0],
+    look: [0.5, 1, 0],
     toc: ['视觉输出组件库的建立、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '视觉组件库',
   },
   p3: {
     idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'PPT 生成模式',
-    sub: '为中台设计 Agent 上线 PPT 生成模式与多套模板，设计与前后端独立完成',
-    steps: ['产品、运营日常要做大量 PPT：<br>希望 AI 生成后直接微调，而不是从零排版',
-            '设计：定义编辑交互，打造多套 PPT 模板；<br>开发：前端编辑器、后端生成服务、PPT 模板管理后台'],
-    result: '设计与前后端从 0 到 1 独立完成<small>React · GrapesJS / FastAPI</small>',
-    look: [0, 1, 0.5],
+    sub: '为中台设计 Agent 上线 PPT 生成模式与多套模板',
+    steps: ['在技能之外，从 App 维度扩展 Agent：<br>把 PPT 生成做成一个可直接编辑的完整应用',
+            '开发：前端编辑器、PPT 专用 Agent、后端与模板管理后台；<br>DSL + 模板：模板快速切换，生成稳定'],
+    result: '设计与前后端从 0 到 1 独立完成，<br>作为 App 接入中台设计 Agent',
+    look: [0.5, 1.5, 0.5],
     toc: ['PPT 生成模式', '阿里巴巴淘天集团 · 实习', '2026'], hud: 'PPT 生成模式',
   },
   p4: {
@@ -468,6 +465,38 @@ const INTRO = (() => {
   };
 })();
 
+/* ============================================================ the internship's figure
+   Redrawn from the write-up's architecture figure: the design agent between its users and its knowledge, extended along
+   two dimensions, Skills and Apps. Chapters 01–03 open on it at the same spot, each lighting its own part (01 the skills,
+   02 the visual output that reaches the users, 03 the apps); 03 closes on it with all three lit. */
+function Arch(parent) {
+  const root = $('div', 'layer', parent);
+  const svg = S('svg', { class: 'full' }, root);
+  const B = [['Users · 用户', 860, 196, 860], ['中台设计 Agent', 1060, 262, 660, 'dark'], ['Apps · 小工具', 860, 328, 410], ['Skills · 技能', 1310, 328, 410], ['Knowledge · 知识', 860, 394, 860]];
+  const bars = B.map(([n, x, y, w, k]) => box(root, 'abar ' + (k || ''), x, y, w, 40, n));
+  const arrows = [[900, 236, 328], [1170, 302, 328], [1650, 236, 262], [1650, 302, 328], [1060, 368, 394], [1650, 368, 394]].map(([x, a, b]) => vline(svg, x, a + 3, b - 3));
+  const cap = box(root, 'abs zh13', 860, 452, 0, 0, '从技能与小工具两个维度，扩展设计 Agent 的能力边界');
+  // a chapter's tag, right-aligned at x
+  const tag = (html, x, y) => { const e = box(root, 'abs atag', 0, y, 0, 0, html); st(e, { left: 'auto', right: W - x + 'px' }); return e; };
+  const acc = (a, b) => S('path', { d: `M1650,${a + 3} L1650,${b - 3}`, stroke: '#c2410c', 'stroke-width': 1.6, fill: 'none', 'marker-start': 'url(#arrA)', 'marker-end': 'url(#arrA)' }, svg);
+  // lit: 01 the Skills bar · 02 the output path, skills → agent → users · 03 the Apps bar
+  const hi = [
+    [box(root, 'abar acc', 1310, 328, 410, 40, B[3][0]), tag('<b>01</b>治理 · 评测', 1706, 339)],
+    [acc(236, 262), acc(302, 328), tag('<b>02</b>视觉输出', 1638, 240)],
+    [box(root, 'abar acc', 860, 328, 410, 40, B[2][0]), tag('<b>03</b>PPT 生成模式', 1256, 339)],
+  ];
+  return {
+    root,
+    // a0: when the bars start rising · k: overall opacity · lit: how far each chapter's part is lit (0–1)
+    render(u, a0, k, lit) {
+      bars.forEach((b, i) => { b.style.opacity = rise(b, u, a0 + i * .07, .5, 10) * k; });
+      arrows.forEach((a, i) => { a.style.opacity = P(u, a0 + .35 + i * .04, a0 + .55 + i * .04) * k; });
+      cap.style.opacity = rise(cap, u, a0 + .5, .45, 6) * k;
+      hi.forEach((els, i) => els.forEach(e => { e.style.opacity = lit[i] * k; }));
+    },
+  };
+}
+
 /* ============================================================ 01 · Skill 的治理、评测与优化
    背景: designer-made skills plugged into the design agent arrive bloated, overlapping and slow
    → 解法: 治理 — 基座 / 业务 atomic skills, combined on demand; 评测 · 优化 — the concurrent test platform (redrawn from the
@@ -481,13 +510,8 @@ const P1 = (() => {
   const pn = $('div', 'layer', sc.root);
   const svg = S('svg', { class: 'full' }, pn);
   const arrow = (d, col = '#171b26', head = true) => S('path', { d, stroke: col, 'stroke-width': 1.1, fill: 'none', ...(head ? { 'marker-end': col === '#171b26' ? 'url(#arr)' : 'url(#arrA)' } : {}) }, svg);
-  // 背景 · where skills sit in the design agent (redrawn from the architecture figure)
-  const arch = $('div', 'layer', pn);
-  const asvg = S('svg', { class: 'full' }, arch);
-  const bars = [['Users · 用户', 860, 196, 860, ''], ['中台设计 Agent', 1060, 262, 660, 'dark'], ['Apps · 小工具', 860, 328, 410, ''], ['Skills · 技能', 1310, 328, 410, 'acc'], ['Knowledge · 知识', 860, 394, 860, '']]
-    .map(([n, x, y, w, k]) => box(arch, 'abar ' + k, x, y, w, 40, n));
-  const archArrows = [[900, 236, 328], [1170, 302, 328], [1650, 236, 262], [1650, 302, 328], [1060, 368, 394], [1650, 368, 394]].map(([x, a, b]) => vline(asvg, x, a + 3, b - 3));
-  const archCap = box(arch, 'abs zh13', 860, 452, 0, 0, '从技能与小工具两个维度，扩展设计 Agent 的能力边界');
+  // 背景 · where skills sit in the design agent
+  const arch = Arch(pn);
   // 背景 · what arrived: every skill re-implements the same basics, in one bloated file
   const dup = ['眼动分析', 'CTR 预测'].map((n, i) => {
     const e = box(pn, 'card', 860 + i * 212, 520, 196, 0); st(e, { padding: '14px 14px 8px' });
@@ -588,9 +612,7 @@ const P1 = (() => {
       const s1 = STEP[1], s2 = STEP[2];
       // 背景
       const bgOut = 1 - oC(P(u, s1 - .05, s1 + .3));
-      bars.forEach((b, i) => { b.style.opacity = rise(b, u, .55 + i * .07, .5, 10) * bgOut; });
-      archArrows.forEach((a, i) => { a.style.opacity = P(u, .9 + i * .04, 1.1 + i * .04) * bgOut; });
-      archCap.style.opacity = rise(archCap, u, 1.05, .45, 6) * bgOut;
+      arch.render(u, .55, bgOut, [P(u, 1.1, 1.3), 0, 0]);
       dup.forEach((e, i) => { e.style.opacity = rise(e, u, 1.0 + i * .12, .5, 14) * bgOut; });
       dupCap.style.opacity = rise(dupCap, u, 1.45, .45, 6) * bgOut;
       fat.style.opacity = rise(fat, u, 1.2, .5, 14) * bgOut;
@@ -652,7 +674,8 @@ const P1 = (() => {
 })();
 
 /* ============================================================ 02 · 视觉输出组件库的建立、评测与优化
-   背景: the agent's visual outputs follow no shared spec — every run looks different
+   背景: on the internship's figure, the output path (skills → agent → users); the agent's visual outputs follow no shared
+         spec — every run looks different
    → 解法: 封装 — a design component library + design.md that the agent composes its outputs from;
            评测 · 迭代 — DOM + CV + LLM checks, whose findings feed back into both the library and design.md
    → 结果: every HTML output of the agent shares one visual style */
@@ -670,15 +693,17 @@ const P2 = (() => {
     e.innerHTML = `<div class="mh" style="background:${col};font-family:${f}">${kind}</div>` + body;
     return e; };
   const SAME = ['#171b26', 'var(--sans)', 8];
+  // 背景 · where the output sits: from the skills through the agent to the users
+  const arch = Arch(pn);
   // 背景 · each kind of output in its own style
-  const MESSY = [[884, 318, -4, '分析报告', '#5b7cfa', 'Georgia, serif', 2], [936, 420, 3.5, '文档', '#2fae7a', 'var(--mono)', 14]];
+  const MESSY = [[884, 534, -4, '分析报告', '#5b7cfa', 'Georgia, serif', 2], [936, 636, 3.5, '文档', '#2fae7a', 'var(--mono)', 14]];
   const messy = MESSY.map(([x, y, r, k, col, f, rad]) => ({ e: out(pn, x, y, 290, 150, k, col, f, rad, r), r }));
-  const messyCap = box(pn, 'abs zh13', 860, 646, 0, 0, '<span class="x">✕</span>各类输出，样式各异');
+  const messyCap = box(pn, 'abs zh13', 860, 862, 0, 0, '<span class="x">✕</span>各类输出，样式各异');
   // 背景 · the same request, three different looks
-  const ask = box(pn, 'dk', 1446, 300, 124, 0, '设计 Agent');
-  const drift = [[1300, '#5b7cfa', 'Georgia, serif', 2], [1446, '#c2410c', 'var(--sans)', 12], [1592, '#2fae7a', 'var(--mono)', 6]].map(([x, col, f, rad]) => out(pn, x, 420, 124, 150, '分析报告', col, f, rad));
-  const driftA = [1362, 1508, 1654].map(x => S('path', { d: `M1508,342 C1508,380 ${x},382 ${x},414`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
-  const driftCap = box(pn, 'abs zh13', 1300, 646, 0, 0, '<span class="x">✕</span>同一需求，每次生成都不一样');
+  const ask = box(pn, 'dk', 1446, 520, 124, 0, '中台设计 Agent');
+  const drift = [[1300, '#5b7cfa', 'Georgia, serif', 2], [1446, '#c2410c', 'var(--sans)', 12], [1592, '#2fae7a', 'var(--mono)', 6]].map(([x, col, f, rad]) => out(pn, x, 636, 124, 150, '分析报告', col, f, rad));
+  const driftA = [1362, 1508, 1654].map(x => S('path', { d: `M1508,562 C1508,598 ${x},600 ${x},630`, stroke: '#8a92a6', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg));
+  const driftCap = box(pn, 'abs zh13', 1300, 862, 0, 0, '<span class="x">✕</span>同一需求，每次生成都不一样');
   // 解法 · 封装: the component library + design.md, composed by the agent into every output
   const labA = box(pn, 'abs cap', 860, 170, 0, 0, '<span style="color:var(--accent)">封装</span> · 设计组件库 + DESIGN.MD');
   const lib = box(pn, 'card', 860, 196, 300, 164);
@@ -704,7 +729,7 @@ const P2 = (() => {
   ];
   dmd.innerHTML = '<div class="cap" style="position:absolute;left:18px;top:14px">DESIGN.MD</div>' + TOK.map(([n, g], i) =>
     `<div style="position:absolute;left:${18 + i * 70}px;top:42px;width:60px;height:22px">${g.replace(/<i style="/g, '<i style="position:absolute;display:block;border-radius:2px;')}</div><div class="zh13" style="position:absolute;left:${18 + i * 70}px;top:70px;font-size:12px">${n}</div>`).join('');
-  const agent = box(pn, 'dk', 1216, 316, 120, 0, '设计 Agent');
+  const agent = box(pn, 'dk', 1216, 316, 120, 0, '中台设计 Agent');
   const feed = [S('path', { d: 'M1162,278 C1192,278 1188,330 1212,330', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg),
                 S('path', { d: 'M1162,426 C1192,426 1188,342 1212,342', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, svg)];
   const outs = ['分析报告', '文档'].map((k, i) => out(pn, 1420, 232 + i * 112, 300, 96, k, ...SAME));
@@ -749,12 +774,13 @@ const P2 = (() => {
       const s1 = STEP[1], s2 = STEP[2];
       // 背景
       const bgOut = 1 - oC(P(u, s1 - .05, s1 + .3));
-      messy.forEach(({ e, r }, i) => { const p = oQ(P(u, .6 + i * .1, 1.1 + i * .1)); st(e, { opacity: p * bgOut, transform: `translateY(${(1 - p) * 14}px) rotate(${r}deg)` }); });
-      messyCap.style.opacity = rise(messyCap, u, 1.1, .45, 6) * bgOut;
-      ask.style.opacity = rise(ask, u, .9, .45, 8) * bgOut;
-      driftA.forEach((a, i) => { draw(a, oQ(P(u, 1.05 + i * .08, 1.3 + i * .08))); a.style.opacity = +a.style.opacity * bgOut; });
-      drift.forEach((e, i) => { e.style.opacity = rise(e, u, 1.15 + i * .1, .45, 10) * bgOut; });
-      driftCap.style.opacity = rise(driftCap, u, 1.5, .45, 6) * bgOut;
+      arch.render(u, .55, bgOut, [0, P(u, 1.1, 1.3), 0]);
+      messy.forEach(({ e, r }, i) => { const p = oQ(P(u, 1.0 + i * .1, 1.5 + i * .1)); st(e, { opacity: p * bgOut, transform: `translateY(${(1 - p) * 14}px) rotate(${r}deg)` }); });
+      messyCap.style.opacity = rise(messyCap, u, 1.5, .45, 6) * bgOut;
+      ask.style.opacity = rise(ask, u, 1.3, .45, 8) * bgOut;
+      driftA.forEach((a, i) => { draw(a, oQ(P(u, 1.45 + i * .08, 1.7 + i * .08))); a.style.opacity = +a.style.opacity * bgOut; });
+      drift.forEach((e, i) => { e.style.opacity = rise(e, u, 1.55 + i * .1, .45, 10) * bgOut; });
+      driftCap.style.opacity = rise(driftCap, u, 1.9, .45, 6) * bgOut;
       // 解法 · 封装 (stays through 结果)
       rise(labA, u, s1 + .05, .4, 6);
       rise(lib, u, s1 + .1, .45, 12);
@@ -795,27 +821,19 @@ const P2 = (() => {
 })();
 
 /* ============================================================ 03 · PPT 生成模式
-   背景: product and operations staff make a lot of decks; they want to tweak an AI draft, not lay slides out from scratch
-   → 解法: 设计 — the editing interaction (edit-first, limited editable units, edit = preview) and a set of PPT templates;
-           开发 — a front-end editor, a generation service (a PPT agent built on the design agent) and a template admin
-   → 结果: the mode end to end — enter PPT mode → pick a template → generate → tweak */
+   背景: past Skills, the agent grows along the figure's other dimension, Apps — the chapter opens on the internship's figure
+         with Apps lit, over the blueprint of the app still to be built
+   → 解法: the blueprint becomes the app, built end to end (write-up §3.1): a front-end editor (React · GrapesJS), a PPT agent
+           built on the design agent, a back end (FastAPI) and a template admin. At its heart DSL + 模板: the agent only
+           writes DSL and a template gives it its look, so generation stays stable and a template switches in an instant —
+           the DSL stays put while the deck re-skins (the DSL's fields are illustrative)
+   → 结果: the app folds back into the figure's Apps bar, and the internship's three parts light up together */
 const P3 = (() => {
   const c = COPY.p3, sc = Scene(T.p3);
   const L = LeftCol(sc.root, c);
   const pn = $('div', 'layer', sc.root);
-  const svg = S('svg', { class: 'full' }, pn);
-  const arrow = (d, both = false) => S('path', { d, stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)', ...(both ? { 'marker-start': 'url(#arr)' } : {}) }, svg);
-  // a slide drawn on a 300 × 169 grid, scaled to w
-  const slide = (parent, x, y, w, h, head, cls = '') => {
-    const s = box(parent, 'sl ' + cls, x, y, w, h);
-    const k = w / 300;
-    const i = (l, t, ww, hh, bg) => { const e = $('i', '', s); st(e, { left: l * k + 'px', top: t * k + 'px', width: ww * k + 'px', height: hh * k + 'px', background: bg }); return e; };
-    i(0, 0, 300, 22, head); i(16, 36, 150, 10, '#171b26'); i(16, 56, 110, 6, '#d5d9e1');
-    [0, 1, 2].forEach(r => i(16, 80 + r * 16, 120 - r * 20, 6, '#e3e6eb'));
-    [0, 1, 2, 3].forEach(b => i(180 + b * 26, 140 - [40, 64, 30, 52][b], 16, [40, 64, 30, 52][b], b === 1 ? head : '#d5d9e1'));
-    return s;
-  };
-  // the templates (six layouts, one restrained palette each), same 300 × 169 grid
+  const arch = Arch(pn);
+  // the templates (six layouts, one restrained palette each), drawn on a 300 × 169 grid
   const TPL = [
     { bg: '#fff', el: [[0, 0, 300, 22, '#c2410c'], [16, 36, 150, 10, '#171b26'], [16, 56, 110, 6, '#d5d9e1'], [16, 80, 120, 6, '#e3e6eb'], [16, 96, 100, 6, '#e3e6eb'], [180, 100, 16, 40, '#d5d9e1'], [206, 76, 16, 64, '#c2410c'], [232, 110, 16, 30, '#d5d9e1'], [258, 88, 16, 52, '#d5d9e1']] },
     { bg: '#171b26', el: [[24, 58, 30, 3, '#c2410c'], [24, 70, 170, 12, '#ffffff'], [24, 92, 110, 6, '#8a92a6'], [24, 140, 60, 5, '#666d7e']] },
@@ -830,85 +848,64 @@ const P3 = (() => {
     TPL[v].el.forEach(([l, t, ww, hh, bg]) => { const e = $('i', '', s); st(e, { left: l * k + 'px', top: t * k + 'px', width: ww * k + 'px', height: hh * k + 'px', background: bg }); });
     return s;
   };
-  // 背景 · the people who make decks, and what they want
-  const need = box(pn, 'card', 860, 196, 860, 240);
-  $('div', 'cap', need, '日常 PPT 需求').style.cssText = 'position:absolute;left:24px;top:20px';
-  const who = ['产品', '运营'].map((n, i) => { const e = box(need, 'abs', 24, 62 + i * 46, 0, 0, n); st(e, { fontSize: '14px', padding: '6px 16px', borderRadius: '16px', background: 'var(--panel)' }); return e; });
-  const pile = [0, 1, 2, 3, 4, 5, 6].map(i => slide(need, 150 + i * 84, 62 + i * 12, 180, 101, '#c3c8d3'));
-  const needCap = box(need, 'abs zh13', 24, 204, 0, 0, '大量、重复的排版工作');
-  const scratch = box(pn, 'card', 860, 472, 420, 230);
-  $('div', 'cap', scratch, '从零排版').style.cssText = 'position:absolute;left:24px;top:20px';
-  const blank = box(scratch, 'abs', 60, 48, 300, 169); st(blank, { boxShadow: '0 0 0 1px var(--line)', background: 'repeating-linear-gradient(90deg, transparent 0 49px, rgba(23,27,38,0.06) 49px 50px), repeating-linear-gradient(0deg, transparent 0 41px, rgba(23,27,38,0.06) 41px 42px)' });
-  const ghost = box(blank, 'edu', 24, 30, 140, 22); st(ghost, { borderColor: 'var(--faint)' });
-  const cursor = box(blank, 'abs', 170, 58, 0, 0, '<svg width="14" height="18" viewBox="0 0 14 18"><path d="M1,1 L1,15 L5,11 L8,17 L10,16 L7,10 L12,10 Z" fill="#171b26" stroke="#fff" stroke-width="1"/></svg>');
-  const scratchCap = box(pn, 'abs zh13', 860, 716, 0, 0, '<span class="x">✕</span>从零排版：耗时、重复');
-  const tweak = box(pn, 'card', 1300, 472, 420, 230);
-  $('div', 'cap', tweak, 'AI 生成 → 直接微调').style.cssText = 'position:absolute;left:24px;top:20px';
-  const gen0 = tpl(tweak, 60, 48, 300, 0);
-  const pick = box(tweak, 'edu sel', 60 + 16 - 6, 48 + 36 - 6, 150 + 12, 10 + 12);
-  const tweakCap = box(pn, 'abs zh13', 1300, 716, 0, 0, '<span style="color:var(--accent);margin-right:6px">✓</span>期望：AI 生成后直接微调');
-  // 解法 · 设计: the editor's interaction, and the templates
-  const labD = box(pn, 'abs cap', 860, 170, 0, 0, '<span style="color:var(--accent)">设计</span> · 编辑交互');
-  const ed = box(pn, 'card', 860, 196, 540, 264);
-  const edTop = box(ed, 'abs', 0, 0, 540, 36); st(edTop, { borderBottom: '1px solid var(--line)' });
-  edTop.innerHTML = '<span class="cap" style="position:absolute;left:16px;top:12px">PPT 编辑器</span><span style="position:absolute;right:14px;top:7px;font-size:12px;padding:2px 10px;border-radius:10px;background:var(--panel);color:var(--dim)">编辑即预览</span>';
-  const thumbs = [0, 1, 2, 3].map(i => { const s = tpl(ed, 14, 50 + i * 50, 72, 0); if (i === 1) st(s, { boxShadow: '0 0 0 1.5px var(--accent)' }); return s; });
-  const canvas = tpl(ed, 100, 50, 300, 0);
-  const units = [[16, 36, 150, 10], [16, 80, 120, 22], [180, 76, 94, 64]].map(([l, t, w, h], i) => box(ed, 'edu' + (i === 0 ? ' sel' : ''), 100 + l - 6, 50 + t - 6, w + 12, h + 12));
-  const handles = [[0, 0], [1, 0], [0, 1], [1, 1]].map(([a, b]) => box(ed, 'hdl', 100 + 10 + a * 162 - 4, 50 + 30 + b * 22 - 4, 0, 0));
-  const side = box(ed, 'abs', 414, 50, 112, 0);
-  side.innerHTML = '<div class="cap" style="margin-bottom:8px">可编辑单元</div>' + ['标题', '正文', '图表'].map((n, i) => `<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:7px 0;border-top:1px solid var(--line)"><span>${n}</span><span style="width:22px;height:12px;border-radius:6px;background:${i === 0 ? 'var(--accent)' : 'var(--faint)'}"></span></div>`).join('');
-  const agentBtn = box(ed, 'abs', 100, 228, 300, 26, '选中元素 · 交给 Agent 修改'); st(agentBtn, { lineHeight: '26px', textAlign: 'center', fontSize: '12px', borderRadius: '6px', color: '#fff', background: 'var(--accent)' });
-  const princ = ['编辑为主', '有限编辑', '编辑预览一体'].map((n, i) => box(pn, 'pill', [860, 1000, 1140][i], 474, 0, 0, n));
-  const labT = box(pn, 'abs cap', 1434, 170, 0, 0, '<span style="color:var(--accent)">设计</span> · 多套 PPT 模板');
-  const tpls = [0, 1, 2, 3, 4, 5].map(v => tpl(pn, 1434 + (v % 2) * 147, 196 + Math.floor(v / 2) * 88, 135, v));
-  // 解法 · 开发: front end, back end, and the template admin
-  const labV = box(pn, 'abs cap', 860, 532, 0, 0, '<span style="color:var(--accent)">开发</span> · 前端 / 后端 / 模板管理后台');
-  const mode = box(pn, 'dk', 860, 562, 540, 0, '中台设计 Agent · PPT 生成模式');
-  const svc = (x, cap, title, rows) => { const e = box(pn, 'card', x, 642, 240, 0); st(e, { padding: '14px 18px' });
-    e.innerHTML = `<div class="cap" style="margin-bottom:8px">${cap}</div><div class="zh14" style="font-weight:500;margin-bottom:6px">${title}</div>` + rows.map(r => `<div class="zh13" style="padding:6px 0;border-top:1px solid var(--line)">${r}</div>`).join(''); return e; };
-  const fe = svc(860, '前端', 'PPT 编辑器', ['画布编辑与预览', '模板内的有限可编辑单元']);
-  const be = svc(1160, '后端', 'PPT Agent 生成服务', ['基于设计 Agent 二次开发', '会话管理与数据持久化']);
-  const devA = [arrow('M980,602 L980,638'), arrow('M1280,602 L1280,638'), arrow('M1104,712 L1156,712', true)];
-  const admin = box(pn, 'card', 1440, 562, 280, 300);
-  admin.innerHTML = '<div class="zh14" style="position:absolute;left:18px;top:16px;font-weight:500">PPT 模板管理后台</div>';
-  const chips = [['自定义模板', 18], ['管理员入库', 156]].map(([n, x]) => box(admin, 'tb', x, 50, 106, 0, n));
-  const asvg = S('svg', { width: 280, height: 300, style: 'position:absolute;left:0;top:0;overflow:visible' }, admin);
-  const chipA = S('path', { d: 'M127,68 L151,68', stroke: '#171b26', 'stroke-width': 1.1, fill: 'none', 'marker-end': 'url(#arr)' }, asvg);
-  const libCap = box(admin, 'abs cap', 18, 104, 0, 0, '模板库');
-  const libT = [1, 2, 3, 4].map((v, i) => tpl(admin, 18 + (i % 2) * 128, 126 + Math.floor(i / 2) * 76, 116, v));
-  const adminCap = box(admin, 'abs zh13', 18, 272, 0, 0, '多套模板统一管理 · 支持共创');
-  const toBe = arrow('M1438,712 L1404,712');
-  const toBeLab = box(pn, 'abs', 1408, 690, 0, 0, '模板'); st(toBeLab, { fontSize: '12px', color: 'var(--dim)' });
-  // 结果 · the mode, end to end
-  const FL = ['进入 PPT 模式', '选择模板', 'Agent 生成', '编辑器里微调'];
-  const frames = FL.map((n, i) => {
-    const f = box(pn, 'card', 860 + i * 220, 600, 200, 170);
-    const lab = box(pn, 'abs', 860 + i * 220, 784, 0, 0, `<span class="mono" style="color:var(--accent);font-size:12px;margin-right:8px">0${i + 1}</span>${n}`); st(lab, { fontSize: '14px', whiteSpace: 'nowrap' });
-    return { f, lab };
-  });
-  // 01 · the design agent's input, switched to PPT mode
-  frames[0].f.innerHTML = '<div class="bub" style="background:var(--panel);width:58%;margin:18px 16px 0 auto"><div class="bl" style="width:90%"></div><div class="bl" style="width:55%"></div></div>' +
-    '<div style="position:absolute;left:14px;right:14px;bottom:14px;height:62px;border-radius:8px;box-shadow:0 0 0 1px var(--line2)"><div class="bl" style="position:absolute;left:12px;top:8px;width:90px"></div>' +
-    '<span style="position:absolute;left:10px;bottom:9px;font-size:11px;padding:2px 8px;border-radius:9px;background:var(--panel);color:var(--dim)">对话</span><span class="mpick" style="position:absolute;left:52px;bottom:9px;font-size:11px;padding:2px 8px;border-radius:9px">PPT 模式</span></div>';
-  const mpick = frames[0].f.querySelector('.mpick');
-  // 02 · a template picked from the library
-  const pickT = [2, 0, 3, 5].map((v, i) => tpl(frames[1].f, 16 + (i % 2) * 88, 22 + Math.floor(i / 2) * 64, 80, v));
-  // 03 · the agent writes the deck
-  const genS = tpl(frames[2].f, 16, 22, 168, 0);
-  const genBar = box(frames[2].f, 'abs', 16, 132, 168, 4); st(genBar, { background: 'var(--panel)', borderRadius: '2px' });
-  const genFill = box(genBar, 'abs', 0, 0, 0, 4); st(genFill, { background: 'var(--accent)', borderRadius: '2px' });
-  const genLab = box(frames[2].f, 'abs mono', 16, 144, 0, 0, 'PPT AGENT'); st(genLab, { fontSize: '10px', letterSpacing: '0.12em', color: 'var(--dimmer)' });
-  // 04 · one element tweaked in the editor
-  const twS = tpl(frames[3].f, 16, 22, 168, 0);
-  const twK = 168 / 300;
-  const twSel = box(frames[3].f, 'edu sel', 16 + 16 * twK - 4, 22 + 36 * twK - 4, 150 * twK + 8, 10 * twK + 8);
-  const twTool = box(frames[3].f, 'abs', 16 + 166 * twK + 10, 22 + 36 * twK - 5, 0, 0, '<span style="display:inline-block;width:12px;height:3px;background:#171b26;margin:0 4px"></span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c2410c;margin:0 4px"></span>');
-  st(twTool, { background: '#fff', boxShadow: '0 4px 12px rgba(23,27,38,0.14)', borderRadius: '5px', padding: '4px 2px', lineHeight: '8px' });
-  const twBtn = box(frames[3].f, 'abs', 16, 132, 168, 22, '交给 Agent 修改'); st(twBtn, { lineHeight: '22px', textAlign: 'center', fontSize: '11px', borderRadius: '5px', color: '#fff', background: 'var(--accent)' });
-  const flowA = [0, 1, 2].map(i => arrow(`M${1062 + i * 220},685 L${1078 + i * 220},685`));
+  // the app: a blueprint under the figure (背景) that becomes the built app (解法) and folds into the Apps bar (结果).
+  // Its box and its four parts are laid out in both states (parts relative to the box) and interpolated.
+  const BP = { x: 860, y: 520, w: 860, h: 360, rows: [[24, 48, 812, 52], [24, 114, 812, 156], [24, 284, 396, 52], [440, 284, 396, 52]] };
+  const AP = { x: 860, y: 258, w: 860, h: 564, rows: [[24, 48, 812, 64], [24, 132, 812, 324], [24, 476, 396, 64], [440, 476, 396, 64]] };
+  const DF = 207;  // 结果: the figure moves down to sit centred on the grid's axis
+  const FB = { x: 860, y: 328 + DF, w: 410, h: 40 };  // … where the app lands on its Apps bar
+  const mix = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
+  const place = (e, r) => st(e, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
+  const cDash = box(pn, 'appc dash', 0, 0, 0, 0), cSolid = box(pn, 'appc', 0, 0, 0, 0);
+  const title = box(pn, 'abs atag', 0, 0, 0, 0, '<b>03</b>PPT 生成模式');
+  const rows = ['前端', 'Agent', '后端', '后台'].map(n => {
+    const d = box(pn, 'appr', 0, 0, 0, 0), s = box(pn, 'card', 0, 0, 0, 0); st(s, { borderRadius: '8px' });
+    return { d, s, cap: box(pn, 'abs cap', 0, 0, 0, 0, n) }; });
+  // 解法 · what each part is, at its place in the built app (rows at y 306 / 390 / 734; text centred on each row's cap)
+  const txt = (x, y, html, cls = 'zh14') => box(pn, 'abs ' + cls, x, y, 0, 0, html);
+  const right = (e, x) => { st(e, { left: 'auto', right: W - x + 'px' }); return e; };
+  const feMain = txt(964, 325, '画布编辑与预览'); st(feMain, { fontWeight: 500 });
+  const feDes = box(pn, 'abs chipx', 1078, 325, 0, 0, '设计 · 编辑交互');
+  const feTech = right(txt(0, 327, 'React · GrapesJS', 'mono tech'), 1676);
+  const beMain = txt(964, 753, '会话管理与数据持久化'); st(beMain, { fontWeight: 500 });
+  const beTech = right(txt(0, 755, 'FastAPI', 'mono tech'), 1260);
+  const adMain = txt(1380, 753, '模板管理后台'); st(adMain, { fontWeight: 500 });
+  const adSub = right(txt(0, 755, '入库 · 共创', 'zh13'), 1676);
+  // 解法 · the agent part: PPT agent → DSL + 模板 → rendered deck
+  const agentN = box(pn, 'dk', 904, 524, 150, 0, 'PPT 专用 Agent');
+  const agentSub = txt(904, 574, '基于中台设计 Agent<br>二次开发', 'zh13'); st(agentSub, { fontSize: '12px', lineHeight: '1.6' });
+  const dsl = box(pn, 'abs', 1094, 452, 190, 184); st(dsl, { background: 'var(--panel)', borderRadius: '8px' });
+  $('div', 'cap', dsl, 'DSL').style.cssText = 'position:absolute;left:14px;top:12px';
+  const dslLines = [['title', [96]], ['points', [84]], ['', [66]], ['', [76]], ['chart', null]].map(([key, ws], i) => {
+    const y = 46 + i * 24;
+    const k = box(dsl, 'abs mono', 14, y - 5, 0, 0, key); st(k, { fontSize: '11px', color: 'var(--dimmer)' });
+    const bars = ws ? ws.map(w => { const e = box(dsl, 'abs', 66, y, 0, 6); st(e, { background: '#c3c8d3', borderRadius: '3px' }); return [e, w]; })
+      : [[10, '#d5d9e1'], [16, '#c2410c'], [12, '#d5d9e1']].map(([h, col], j) => { const e = box(dsl, 'abs', 66 + j * 11, y + 6 - h, 0, h); st(e, { background: col, borderRadius: '1px' }); return [e, 7]; });
+    return { k, bars }; });
+  const plus = txt(1296, 530, '+', 'mono'); st(plus, { fontSize: '20px', color: 'var(--dim)' });
+  const tp = box(pn, 'abs', 1324, 452, 160, 184); st(tp, { background: 'var(--panel)', borderRadius: '8px' });
+  $('div', 'cap', tp, '模板').style.cssText = 'position:absolute;left:14px;top:12px';
+  const SEQ = [0, 2, 3, 4];
+  const thumbs = SEQ.map((v, i) => tpl(tp, 14 + (i % 2) * 72, 40 + Math.floor(i / 2) * 44, 60, v));
+  const tpDes = box(tp, 'abs chipx', 14, 146, 0, 0, '设计 · 多套模板');
+  const renLab = txt(1491, 522, '渲染', 'zh13'); st(renLab, { fontSize: '12px' });
+  const outLab = box(pn, 'abs cap', 1522, 473, 0, 0, 'PPT');
+  const outW = box(pn, 'abs', 1522, 499, 160, 90);
+  const outs = SEQ.map(v => tpl(outW, 0, 0, 160, v));
+  const capOf = (x, a, b) => { const e = txt(x, 650, `<b style="color:var(--accent);font-weight:500">${a}</b><br>${b}`, 'zh13'); st(e, { lineHeight: '1.6' }); return e; };
+  const capStable = capOf(1094, '稳定生成', 'Agent 只写 DSL');
+  const capSwitch = capOf(1522, '快速切换', 'DSL 不变，换模板即换样式');
+  // arrows sit above the parts' cards
+  const svg = S('svg', { class: 'full' }, pn);
+  const arrow = (d, col = '#171b26') => S('path', { d, stroke: col, 'stroke-width': col === '#171b26' ? 1.1 : 1.6, fill: 'none', 'marker-end': col === '#171b26' ? 'url(#arr)' : 'url(#arrA)' }, svg);
+  const a1 = arrow('M1058,544 L1090,544');
+  const a2 = arrow('M1488,544 L1518,544'), a2hot = arrow('M1488,544 L1518,544', '#c2410c');
+  const up = arrow('M1602,495 L1602,374');        // the deck opens in the editor
+  const adUp = arrow('M1404,730 L1404,640');      // the admin keeps the templates
 
   const t0 = T.p3[0];
+  const sw0 = PLAN.p3.steps[1] + 1.7 / SPEED;  // real time the templates start switching (the app is drawn by then)
+  const SW = 1.2;                               // seconds per template
   return {
     render(t) {
       if (!sc.on(t)) return;
@@ -916,55 +913,54 @@ const P3 = (() => {
       L.render(u);
       st(pn, { opacity: 1 - oC(P(u, OUT, OUT + .25)) });
       const s1 = STEP[1], s2 = STEP[2];
-      // 背景
-      const bgOut = 1 - oC(P(u, s1 - .05, s1 + .3));
-      need.style.opacity = rise(need, u, .55, .5, 14) * bgOut;
-      who.forEach((e, i) => rise(e, u, .7 + i * .08, .4, 6));
-      pile.forEach((e, i) => rise(e, u, .75 + i * .06, .4, 10));
-      rise(needCap, u, 1.2, .4, 6);
-      scratch.style.opacity = rise(scratch, u, 1.0, .5, 14) * bgOut;
-      tweak.style.opacity = rise(tweak, u, 1.1, .5, 14) * bgOut;
-      st(cursor, { transform: `translate(${-40 * (1 - oQ(P(u, 1.2, 1.7)))}px, ${30 * (1 - oQ(P(u, 1.2, 1.7)))}px)` });
-      ghost.style.opacity = P(u, 1.55, 1.7);
-      const pk = P(u, 1.45, 1.6); st(pick, { opacity: pk, transform: `scale(${1.06 - .06 * oQ(pk)})` });
-      scratchCap.style.opacity = rise(scratchCap, u, 1.4, .45, 6) * bgOut;
-      tweakCap.style.opacity = rise(tweakCap, u, 1.5, .45, 6) * bgOut;
-      // 解法 · 设计 (stays through 结果)
-      rise(labD, u, s1 + .05, .4, 6); rise(labT, u, s1 + .3, .4, 6);
-      rise(ed, u, s1 + .1, .45, 14);
-      thumbs.forEach((s, i) => rise(s, u, s1 + .2 + i * .04, .35, 6));
-      rise(canvas, u, s1 + .25, .4, 8);
-      rise(side, u, s1 + .35, .4, 8);
-      units.forEach((e, i) => { const p = P(u, s1 + .45 + i * .06, s1 + .6 + i * .06); st(e, { opacity: p, transform: `scale(${1.06 - .06 * oQ(p)})` }); });
-      handles.forEach(h => h.style.opacity = P(u, s1 + .62, s1 + .7));
-      rise(agentBtn, u, s1 + .7, .35, 6);
-      princ.forEach((e, i) => rise(e, u, s1 + .6 + i * .07, .35, 8));
-      tpls.forEach((e, i) => rise(e, u, s1 + .35 + i * .05, .35, 10));
-      // 解法 · 开发 (hands over to the end-to-end flow at 结果)
-      const dOut = 1 - oC(P(u, s2 - .05, s2 + .25));
-      const fade = (e, a, d = .4, dy = 8) => { e.style.opacity = rise(e, u, a, d, dy) * dOut; };
-      const line = (a, p0, p1) => { draw(a, oQ(P(u, p0, p1))); a.style.opacity = +a.style.opacity * dOut; };
-      labV.style.opacity = P(u, s1 + .9, s1 + 1.1) * dOut;
-      fade(mode, s1 + .95, .35, 8);
-      line(devA[0], s1 + 1.1, s1 + 1.25); line(devA[1], s1 + 1.1, s1 + 1.25);
-      fade(fe, s1 + 1.1); fade(be, s1 + 1.18);
-      line(devA[2], s1 + 1.35, s1 + 1.5);
-      fade(admin, s1 + 1.2, .4, 10);
-      chips.forEach((e, i) => rise(e, u, s1 + 1.35 + i * .07, .3, 6));
-      draw(chipA, oQ(P(u, s1 + 1.4, s1 + 1.5)));
-      rise(libCap, u, s1 + 1.35, .3, 4);
-      libT.forEach((e, i) => rise(e, u, s1 + 1.35 + i * .04, .3, 6));
-      rise(adminCap, u, s1 + 1.5, .3, 4);
-      line(toBe, s1 + 1.5, s1 + 1.65); fade(toBeLab, s1 + 1.55, .2, 4);
-      // 结果 · enter → pick → generate → tweak
-      frames.forEach((fr, i) => { rise(fr.f, u, s2 + .2 + i * .15, .45, 12); rise(fr.lab, u, s2 + .3 + i * .15, .4, 6); });
-      flowA.forEach((a, i) => draw(a, oQ(P(u, s2 + .45 + i * .15, s2 + .6 + i * .15))));
-      const mp = P(u, s2 + .5, s2 + .65); st(mpick, { background: mp > .5 ? 'var(--accent)' : 'var(--panel)', color: mp > .5 ? '#fff' : 'var(--dim)' });
-      pickT.forEach((e, i) => { st(e, { boxShadow: i === 1 && u > s2 + .75 ? '0 0 0 2px var(--accent)' : '0 0 0 1px var(--line)' }); });
-      st(genFill, { width: 168 * oC(P(u, s2 + .7, s2 + 1.1)) + 'px' });
-      genS.style.opacity = .25 + .75 * P(u, s2 + .8, s2 + 1.1);
-      const tw = P(u, s2 + 1.05, s2 + 1.2); st(twSel, { opacity: tw, transform: `scale(${1.08 - .08 * oQ(tw)})` });
-      rise(twTool, u, s2 + 1.15, .3, 4); rise(twBtn, u, s2 + 1.2, .3, 4);
+      // the figure: Apps lit at 背景; back at 结果, centred on the axis, with all three parts lit
+      const fin = u >= s2;
+      st(arch.root, { transform: `translateY(${fin ? DF : 0}px)` });
+      if (!fin) arch.render(u, .55, 1 - oC(P(u, s1 - .05, s1 + .3)), [0, 0, P(u, 1.1, 1.3)]);
+      else arch.render(u, s2 + .2, 1, [P(u, s2 + .75, s2 + .95), P(u, s2 + .9, s2 + 1.1), P(u, s2 + .45, s2 + .6)]);
+      // the app box: blueprint → built → folded onto the Apps bar
+      const m = ioC(P(u, s1 + .05, s1 + .55)), f = ioC(P(u, s2 + .05, s2 + .5));
+      const org = mix(BP, AP, m), cr = f > 0 ? mix(AP, FB, f) : org;
+      const bpIn = P(u, 1.25, 1.5), solid = P(u, s1 + .25, s1 + .55);
+      place(cDash, cr); place(cSolid, cr);
+      cDash.style.opacity = bpIn * (1 - solid);
+      st(cSolid, { opacity: solid * (1 - P(u, s2 + .45, s2 + .6)), borderRadius: lerp(12, 6, f) + 'px' });
+      at(title, cr.x + 24, cr.y + 15);
+      title.style.opacity = bpIn * (1 - P(u, s2 - .05, s2 + .15));
+      const rOut = 1 - oC(P(u, s2 - .05, s2 + .2));
+      rows.forEach((r, i) => {
+        const a = BP.rows[i], b = AP.rows[i];
+        const rr = { x: org.x + lerp(a[0], b[0], m), y: org.y + lerp(a[1], b[1], m), w: lerp(a[2], b[2], m), h: lerp(a[3], b[3], m) };
+        place(r.d, rr); place(r.s, rr); at(r.cap, rr.x + 20, rr.y + 22);
+        const rin = P(u, 1.35 + i * .06, 1.6 + i * .06);
+        r.d.style.opacity = rin * (1 - solid);
+        r.s.style.opacity = solid * rOut;
+        r.cap.style.opacity = rin * rOut;
+      });
+      // 解法 · the parts fill in, the agent part last
+      const cIn = (e, a, d = .4, dy = 8) => { e.style.opacity = rise(e, u, a, d, dy) * rOut; };
+      const line = (a, p0, p1) => { draw(a, oQ(P(u, p0, p1))); a.style.opacity = +a.style.opacity * rOut; };
+      [feMain, feDes, feTech].forEach((e, i) => cIn(e, s1 + .55 + i * .05, .4, 6));
+      cIn(agentN, s1 + .6); cIn(agentSub, s1 + .68, .35, 6);
+      line(a1, s1 + .7, s1 + .8);
+      cIn(dsl, s1 + .72, .4, 10);
+      dslLines.forEach(({ k, bars }, i) => { const a = s1 + .82 + i * .07; k.style.opacity = P(u, a, a + .06); bars.forEach(([e, w]) => st(e, { width: w * oC(P(u, a, a + .12)) + 'px' })); });
+      cIn(plus, s1 + .95, .3, 4); cIn(tp, s1 + .95, .4, 10);
+      thumbs.forEach((e, i) => { const k = oB(P(u, s1 + 1.02 + i * .04, s1 + 1.2 + i * .04)); st(e, { opacity: Math.min(1, k * 2), transform: `scale(${Math.max(0, k)})` }); });
+      rise(tpDes, u, s1 + 1.15, .3, 4);
+      line(a2, s1 + 1.15, s1 + 1.25); cIn(renLab, s1 + 1.2, .3, 4);
+      cIn(outLab, s1 + 1.2, .3, 4); cIn(outW, s1 + 1.22, .4, 10);
+      cIn(capStable, s1 + 1.3, .35, 6);
+      line(up, s1 + 1.3, s1 + 1.45);
+      [beMain, beTech, adMain, adSub].forEach((e, i) => cIn(e, s1 + 1.35 + i * .04, .4, 6));
+      line(adUp, s1 + 1.45, s1 + 1.6);
+      cIn(capSwitch, s1 + 1.5, .35, 6);
+      // while the step is read, the template switches: the DSL stays, the deck re-renders in the next look
+      const run = t - t0 - sw0, n = run > 0 ? Math.floor(run / SW) + 1 : 0, since = run > 0 ? run - (n - 1) * SW : 99;
+      const cur = n % SEQ.length, prev = (n + SEQ.length - 1) % SEQ.length;
+      outs.forEach((e, j) => st(e, { zIndex: j === cur ? 2 : j === prev ? 1 : 0, opacity: j === cur ? (n ? Math.min(1, since / .25) : 1) : (j === prev && n ? 1 : 0) }));
+      thumbs.forEach((e, j) => st(e, { boxShadow: j === cur ? '0 0 0 2px var(--accent)' : '0 0 0 1px var(--line)' }));
+      a2hot.style.opacity = n && since < .5 ? (1 - since / .5) * rOut : 0;
     },
   };
 })();
