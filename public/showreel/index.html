@@ -1389,18 +1389,18 @@ const P5 = (() => {
   };
 })();
 
-/* on the site only: while 04 (ToA) plays, a link to its live demo (embedded on the ToA page) */
-const DEMO = EMBED ? (() => {
-  const sc = Scene(T.p5);
-  const a = $('a', 'demo-cta', sc.root, '在线体验 ToA Demo ↗'); a.href = '/toa#demo'; a.target = '_top';
+/* on the site only: while 04 (ToA) or 05 (NarraSteer) plays, a link to its live demo (embedded on its page) */
+const DEMOS = EMBED ? [['p5', 'ToA', '/toa#demo'], ['p4', 'NarraSteer', '/narrasteer#demo']].map(([k, name, href]) => {
+  const sc = Scene(T[k]);
+  const a = $('a', 'demo-cta', sc.root, `在线体验 ${name} Demo ↗`); a.href = href; a.target = '_top';
   return {
     render(t) {
       if (!sc.on(t)) return;
-      const u = warp(t - T.p5[0], PLAN.p5.map);
+      const u = warp(t - T[k][0], PLAN[k].map);
       a.style.opacity = rise(a, u, STEP[0] + .6, .5, 8) * (1 - oC(P(u, OUT, OUT + .25)));
     },
   };
-})() : null;
+}) : [];
 
 /* ============================================================ 06 · 跨社交媒体舆情分析与治理平台
    背景: monitoring / assessment / handling fragmented; five modules' algorithms not yet a product
@@ -1527,7 +1527,7 @@ function renderFrame(t) {
   t = clamp(t, 0, DUR - 1e-6);
   st(panelBg, { opacity: P(t, T.p1[0] - .3, T.p1[0] + .3) * (1 - P(t, T.outro[0] - .3, T.outro[0] + .2)), transform: `translateY(${(1 - oQ(P(t, T.p1[0] - .3, T.p1[0] + .3))) * 20}px)` });
   INTRO.render(t); P1.render(t); P2.render(t); P3.render(t); P4.render(t); P5.render(t); P6.render(t); OUTRO.render(t);
-  if (DEMO) DEMO.render(t);
+  DEMOS.forEach(d => d.render(t));
   HUD.render(t);
 }
 

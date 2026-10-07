@@ -7,6 +7,10 @@ import icLayers from 'lucide-static/icons/layers.svg?raw';
 import icOrbit from 'lucide-static/icons/orbit.svg?raw';
 import icHand from 'lucide-static/icons/hand.svg?raw';
 import icLink from 'lucide-static/icons/link.svg?raw';
+import icDemo from 'lucide-static/icons/monitor-play.svg?raw';
+
+// 在线 Demo 地址：占位（与 ToA 同机部署的约定路径），demo 上线后在这里改成真实地址
+const demoUrl = 'https://118.25.51.150/narrasteer/';
 ---
 <html lang="zh">
 <head>
@@ -64,6 +68,19 @@ import icLink from 'lucide-static/icons/link.svg?raw';
     .behavior-item:last-child { border-bottom: none; }
     .behavior-item h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
 
+    /* 在线 Demo：iframe 写在页面里，快滚到时才加载（loading="lazy"），加载完成前只显示「加载中」 */
+    .demo-frame {
+      position: relative; width: 100%; aspect-ratio: 16/10; margin-top: 1.5rem;
+      border: 1px solid var(--border); background: var(--chip); overflow: hidden;
+    }
+    .demo-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .demo-loading {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.1em; color: var(--text-dimmer);
+    }
+    .demo-frame.is-loaded .demo-loading { display: none; }
+    .demo-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.9rem; }
+
     .video-wrap { width: 100%; aspect-ratio: 16/9; margin-top: 1.5rem; overflow: hidden; border: 1px solid var(--border); background: #000; }
     .video-wrap video { width: 100%; height: 100%; object-fit: contain; }
 
@@ -88,6 +105,7 @@ import icLink from 'lucide-static/icons/link.svg?raw';
     <div class="subtitle">NarraSteer：在叙事空间里引导数据 Agent</div>
     <div class="authors">屈非塬 · 独立一作 · State Key Lab of CAD&amp;CG, ZJU · 2026.01—2026.04</div>
     <div class="hero-actions">
+      <a href="#demo" class="btn-link video"><Fragment set:html={icDemo} /> 在线体验</a>
       <a href="/papers/narrasteer-uist26.pdf" target="_blank" class="btn-link paper"><Fragment set:html={icFile} /> Paper</a>
       <a href="/images/narrasteer/usecase.mp4" target="_blank" class="btn-link video"><Fragment set:html={icPlay} /> Demo Video</a>
     </div>
@@ -103,6 +121,19 @@ import icLink from 'lucide-static/icons/link.svg?raw';
       NarraSteer 的解决方案是：把 Agent 每一步的行动，重新整理成你能看懂的<strong style="color:var(--text);">叙事节点</strong>，并且布局在一个圆盘状的<strong style="color:var(--text);">叙事空间</strong>里。你不用读代码，只要看节点落在圆盘的哪个位置，就知道 Agent 在探索什么——然后直接拖拽，告诉它往哪走。
     </p>
   </div>
+
+  <section id="demo">
+    <p class="sec-label">Live Demo</p>
+    <h2>在线体验</h2>
+    <p>NarraSteer 的在线 Demo 已部署，可以直接在下面试用；想要更大的画面，可以在新窗口打开。</p>
+    <div class="demo-frame">
+      <div class="demo-loading">加载中…</div>
+      <iframe src={demoUrl} loading="lazy" title="NarraSteer 在线 Demo" allow="clipboard-write" onload="this.parentElement.classList.add('is-loaded')"></iframe>
+    </div>
+    <div class="demo-actions">
+      <a href={demoUrl} target="_blank" rel="noopener" class="btn-link">新窗口打开 ↗</a>
+    </div>
+  </section>
 
   <section>
     <p class="sec-label">Research Background</p>

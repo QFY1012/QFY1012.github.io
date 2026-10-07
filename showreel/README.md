@@ -58,7 +58,8 @@ screen height, a hairline edge and a very light shadow). The nav stays hidden un
   chapters and the progress bar jump to a chapter. It pauses out of view or in a hidden tab and stops on the outro with
   a replay button.
 - Phones: the card holds the MP4 in the system player (full screen, zoom).
-- During 04 (ToA) a link opens ToA's live demo on the ToA page (an iframe loaded as it nears the view).
+- During 04 (ToA) and 05 (NarraSteer) a link opens that project's live demo on its page (an iframe loaded as it nears
+  the view). The links exist only in `?embed`, so the rendered MP4 is unchanged.
 - The introduction and skills are in the MP4's opening page, and in the page as text for screen readers and search.
 - Type: the site's PingFang, declared as the site does (the system PingFang first, else the site's subset); the few
   characters the subset lacks fall back to Noto Sans SC, as they do on the site.
