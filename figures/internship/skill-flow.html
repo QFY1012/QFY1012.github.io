@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill 层自迭代</title>
+<style>
+  /* 取自官网 home.css 浅色主题;直接铺在页面上。图标:Lucide(ISC) */
+  :root {
+    --bg: #f6f7f9;
+    --ink: #171b26;
+    --text-dim: #666d7e;
+    --text-dimmer: #8a92a6;
+    --track: #b9bfcb;
+    --supply: #b9bfcb;
+    --accent: #c2410c;
+    --data: #ffffff;
+    --data-ink: #666d7e;
+    --font-body: 'PingFang SC', 'Noto Sans SC', 'WenQuanYi Zen Hei', 'Microsoft YaHei', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-body); padding: 48px 16px; -webkit-font-smoothing: antialiased; }
+  figure { max-width: 1000px; margin: 0 auto; }
+
+  .d svg { display: block; width: 100%; height: auto; font-family: var(--font-body); overflow: visible; }
+  .ko { fill: var(--bg); }
+  .flow { fill: none; stroke: var(--track); stroke-width: 1.6; }
+  .flow.ac { stroke: var(--accent); }
+  .mk { fill: var(--track); } .mk.ac { fill: var(--accent); } .mk.soft { fill: var(--supply); }
+  .info { font-size: 11.5px; fill: var(--text-dim); text-anchor: middle; }
+  .info.mono { font-family: var(--font-mono); font-size: 11px; }
+  .info.ac { fill: var(--accent); }
+  .side-t { font-size: 12.5px; font-weight: 500; fill: var(--ink); }
+  .side-s { font-size: 11px; fill: var(--text-dim); }
+  .side-t.ac, .side-s.ac { fill: var(--accent); }
+
+  .hatch { fill: url(#hatch); }
+  .hatch-bg { fill: #f1f2f5; } .hatch-ln { stroke: #e3e5ea; stroke-width: 2; }
+  .core-t { font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .core-k { font: 600 10px var(--font-mono); letter-spacing: .16em; fill: var(--text-dim); }
+  .core-s { font-size: 11px; fill: var(--text-dim); }
+  .cell.data { fill: var(--data); }
+  .cell.rub { fill: #fff; }
+  .bar { fill: var(--accent); }
+  .cell-t { font-size: 12.5px; font-weight: 500; fill: var(--ink); }
+  .cell-s { font: 11px var(--font-mono); fill: var(--text-dim); }
+  .store-bg { fill: #e4e7ec; }
+  .store-t { font-size: 12px; font-weight: 500; fill: var(--ink); }
+  .store-s { font-size: 10.5px; fill: var(--text-dim); text-anchor: middle; }
+  .ic.store { color: var(--text-dim); }
+  .data-s { fill: var(--data-ink); }
+  .ic.data { color: var(--data-ink); }
+  .bar.data { fill: var(--data-ink); opacity: .55; }
+  .supply { fill: none; stroke: var(--supply); stroke-width: 1.2; stroke-dasharray: 2 3; }
+
+  .st { stroke: none; }
+  .st.ag { fill: var(--ink); }
+  .st.it { fill: var(--accent); }
+  .st.gate { fill: var(--bg); stroke: var(--ink); stroke-width: 1.5; }
+  .halo { fill: var(--accent); opacity: .12; }
+  .ic { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .ic.wh { color: #fff; } .ic.ink { color: var(--ink); } .ic.dim { color: var(--text-dimmer); } .ic.acc { color: var(--accent); }
+  .st-n { font-size: 14px; font-weight: 500; fill: var(--ink); text-anchor: middle; }
+  .st-k { font: 600 10px var(--font-mono); letter-spacing: .16em; fill: var(--text-dimmer); text-anchor: middle; }
+  .st-n.ac, .st-k.ac { fill: var(--accent); }
+
+  .on { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 4 3; }
+  .on-st { fill: var(--accent); }
+  .on-n { font-size: 12.5px; font-weight: 500; fill: var(--ink); text-anchor: middle; }
+  .on-s { font-size: 11px; fill: var(--text-dim); text-anchor: middle; }
+  .on-l { font-size: 11px; fill: var(--accent); }
+  .on-k { font-size: 11.5px; font-weight: 600; letter-spacing: .06em; fill: var(--accent); }
+
+  /* 图例 */
+  .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; margin-top: 30px; font-size: 12px; color: var(--text-dim); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend i { display: inline-block; flex: none; }
+  .lg-it { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(194,65,12,.12); }
+  .lg-ag { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); }
+  .lg-flow { width: 22px; height: 1.6px; background: var(--track); }
+  .lg-frozen { width: 20px; height: 12px; background: repeating-linear-gradient(45deg, #f1f2f5 0 3px, #e3e5ea 3px 5px); }
+  .lg-rub { width: 20px; height: 12px; background: #fff; box-shadow: inset 2.5px 0 0 var(--accent); }
+  .lg-data { width: 20px; height: 12px; background: var(--data); box-shadow: inset 0 0 0 1px #e3e5ea; }
+  .lg-store { width: 20px; height: 12px; background: #e4e7ec; }
+  .lg-on { width: 22px; height: 0; border-top: 1.3px dashed var(--accent); }
+  figcaption { margin-top: 12px; text-align: center; font-size: 12.5px; line-height: 1.7; color: var(--text-dim); }
+
+  /* 窄屏:纵向线路 */
+  .m { display: none; }
+  @media (max-width: 720px) {
+    body { padding: 32px 16px; }
+    .d { display: none; }
+    .m { display: block; max-width: 400px; margin: 0 auto; }
+  }
+  .m svg { display: block; width: 100%; height: auto; font-family: var(--font-body); overflow: visible; }
+  .hatch-m { fill: url(#hatchm); }
+  .m-n { font-size: 14px; font-weight: 500; fill: var(--ink); }
+  .m-k { font: 600 9.5px var(--font-mono); letter-spacing: .16em; fill: var(--text-dimmer); }
+  .m-n.ac, .m-k.ac { fill: var(--accent); }
+  .m-info { font-size: 11.5px; fill: var(--text-dim); }
+  .m-info.mono { font-family: var(--font-mono); font-size: 11px; }
+  .m-info.sm { font-size: 10.5px; }
+  .m-info.ac { fill: var(--accent); }
+  .m-on-n { font-size: 12.5px; font-weight: 500; fill: var(--ink); }
+  .m-on-s { font-size: 10.5px; fill: var(--text-dim); }
+  .m-on-l { font-size: 10.5px; fill: var(--accent); }
+</style>
+</head>
+<body>
+<figure>
+  <div class="d">
+    <svg viewBox="70 44 1010 420" role="img" aria-label="Skill 层一次迭代的信息流转:从 Skill vN 出发,执行 Agent 运行训练用例,执行完把轨迹写入轨迹库;Judge 从轨迹库读取轨迹,按 rubric 判定并给出得分、失败说明与行号;Maintainer 据行号读取成功与失败的轨迹,归纳根因写入经验库;Reviser 读取经验库修改出候选 vN+1,每次修改写入修改记录,被拒绝的也保留;验证把关在验证用例上比较,更好则升级,否则保留 vN。轨迹库、经验库、修改记录持续积累,不随回滚撤销;Benchmark 在本轮内冻结,分别供给训练用例、rubric 与验证用例。上线后每周:用户反馈的 badcase 经人工归因确认属于 Skill 层后,写出新 rubric,并提取典型 badcase 作为新用例,在迭代开始前按 3:1 补进 benchmark,验证用例中一定含有新用例;之后照常进入同一个循环。">
+      <defs>
+  <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
+  <marker id="mf" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk"/></marker>
+  <marker id="ma" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk ac"/></marker>
+  <marker id="ms" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M1 1.5 L9 5 L1 8.5 Z" class="mk soft"/></marker>
+</defs>
+      <rect class="hatch" x="213" y="156" width="704" height="114"/><g class="ic dim" transform="translate(228.50 169.50) scale(0.5417)"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></g><text class="core-t" x="249" y="180.5">Benchmark</text><text class="core-k" x="326.9" y="180">本轮冻结</text><text class="core-s" x="388.9" y="180.5">初版与设计师共创</text><rect class="cell data" x="233.0" y="200" width="144" height="46"/><g class="ic data" transform="translate(245.50 216.50) scale(0.5417)"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g><text class="cell-t" x="266.0" y="227.5">验证用例</text><text class="cell-s data-s" x="365.0" y="227.0" text-anchor="end">1/4</text><rect class="cell data" x="493.0" y="200" width="144" height="46"/><g class="ic data" transform="translate(505.50 216.50) scale(0.5417)"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g><text class="cell-t" x="526.0" y="227.5">训练用例</text><text class="cell-s data-s" x="625.0" y="227.0" text-anchor="end">3/4</text><rect class="cell rub" x="753.0" y="200" width="144" height="46"/><rect class="bar" x="753.0" y="200" width="2.5" height="46"/><g class="ic acc" transform="translate(766.50 216.50) scale(0.5417)"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></g><text class="cell-t" x="787.0" y="227.5">Rubric</text><text class="cell-s" x="885.0" y="227.0" text-anchor="end">检查点</text><path class="supply" d="M565 200 V134" marker-end="url(#ms)"/><path class="supply" d="M825 200 V134" marker-end="url(#ms)"/><path class="supply" d="M305 246 V310" marker-end="url(#ms)"/><path class="flow" d="M327 112 H543" marker-end="url(#mf)"/><path class="flow" d="M587 112 H803" marker-end="url(#mf)"/><path class="flow" d="M840.4 112 A110.0 110.0 0 0 1 840.4 332" marker-end="url(#mf)"/><path class="flow" d="M803 332 H587" marker-end="url(#mf)"/><path class="flow ac" d="M543 332 H327" marker-end="url(#ma)"/><path class="flow ac" d="M289.6 332 A110.0 110.0 0 0 1 289.6 112" marker-end="url(#ma)"/><rect class="ko" x="400.3" y="103" width="69.4" height="18"/><text class="info mono" x="435.0" y="116.1">SKILL.md</text><rect class="store-bg" x="656.0" y="100" width="78.0" height="24"/><g class="ic store" transform="translate(666.00 106.00) scale(0.5000)"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g><text class="store-t" x="685.0" y="116.3">轨迹库</text><text class="store-s" x="695.0" y="90">执行完写入 · Judge 读取</text><rect class="store-bg" x="656.0" y="320" width="78.0" height="24"/><g class="ic store" transform="translate(666.00 326.00) scale(0.5000)"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g><text class="store-t" x="685.0" y="336.3">经验库</text><text class="store-s" x="695.0" y="362">成功与失败模式</text><rect class="store-bg" x="390.0" y="320" width="90.0" height="24"/><g class="ic store" transform="translate(400.00 326.00) scale(0.5000)"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g><text class="store-t" x="419.0" y="336.3">修改记录</text><text class="store-s" x="435.0" y="362">每次修改都留痕</text><text class="store-s" x="435.0" y="377">被拒绝的也保留</text><text class="side-t" x="964.4" y="210.0">判定结果</text><text class="side-s" x="964.4" y="227.0">得分 · 失败说明 · 行号</text><text class="side-s" x="964.4" y="243.0">据行号读取轨迹库中</text><text class="side-s" x="964.4" y="258.0">成功与失败的轨迹</text><text class="side-t ac" x="165.60000000000002" y="218.0" text-anchor="end">更好 → 升级</text><text class="side-s ac" x="165.60000000000002" y="235.0" text-anchor="end">否则保留 vN</text><circle class="halo" cx="305" cy="112" r="24"/><circle class="st it" cx="305" cy="112" r="17"/><g class="ic wh" transform="translate(297.50 104.50) scale(0.6250)"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></g><text class="st-n ac" x="305" y="77">Skill vN</text><text class="st-k ac" x="305" y="60">START</text><circle class="st ag" cx="565" cy="112" r="17"/><g class="ic wh" transform="translate(557.50 104.50) scale(0.6250)"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></g><text class="st-n" x="565" y="77">执行 Agent</text><text class="st-k" x="565" y="60">01</text><circle class="st ag" cx="825" cy="112" r="17"/><g class="ic wh" transform="translate(817.50 104.50) scale(0.6250)"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></g><text class="st-n" x="825" y="77">Judge</text><text class="st-k" x="825" y="60">02</text><circle class="st ag" cx="825" cy="332" r="17"/><g class="ic wh" transform="translate(817.50 324.50) scale(0.6250)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></g><text class="st-n" x="825" y="375">Maintainer</text><text class="st-k" x="825" y="391">03</text><circle class="st ag" cx="565" cy="332" r="17"/><g class="ic wh" transform="translate(557.50 324.50) scale(0.6250)"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></g><text class="st-n" x="565" y="375">Reviser</text><text class="st-k" x="565" y="391">04</text><circle class="st gate" cx="305" cy="332" r="17"/><g class="ic ink" transform="translate(297.50 324.50) scale(0.6250)"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></g><text class="st-n" x="305" y="375">验证把关</text><text class="st-k" x="305" y="391">05</text><path class="on" d="M313 430 H523" marker-end="url(#ma)"/><path class="on" d="M543 430 H758" marker-end="url(#ma)"/><rect class="ko" x="765" y="329" width="10" height="6"/><path class="on" d="M770 422 V276" marker-end="url(#ma)"/><text class="on-l" x="760" y="306" style="text-anchor:end">补进 benchmark</text><text class="on-k" x="279" y="434" text-anchor="end">上线后</text><circle class="on-st" cx="305" cy="430" r="5.5"/><text class="on-n" x="305" y="456">badcase</text><circle class="on-st" cx="535" cy="430" r="5.5"/><text class="on-n" x="535" y="456">人工归因</text><circle class="on-st" cx="770" cy="430" r="5.5"/><text class="on-n" x="770" y="456">新 rubric + 新用例</text>
+    </svg>
+  </div>
+  <div class="m"><svg viewBox="0 30 360 874" role="img" aria-label="Skill 层一次迭代的信息流转:从 Skill vN 出发,执行 Agent 运行训练用例,执行完把轨迹写入轨迹库;Judge 从轨迹库读取轨迹,按 rubric 判定并给出得分、失败说明与行号;Maintainer 据行号读取成功与失败的轨迹,归纳根因写入经验库;Reviser 读取经验库修改出候选 vN+1,每次修改写入修改记录,被拒绝的也保留;验证把关在验证用例上比较,更好则升级,否则保留 vN。轨迹库、经验库、修改记录持续积累,不随回滚撤销;Benchmark 在本轮内冻结,分别供给训练用例、rubric 与验证用例。上线后每周:用户反馈的 badcase 经人工归因确认属于 Skill 层后,写出新 rubric,并提取典型 badcase 作为新用例,在迭代开始前按 3:1 补进 benchmark,验证用例中一定含有新用例;之后照常进入同一个循环。"><defs>
+  <pattern id="hatchm" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
+  <marker id="mfm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk"/></marker>
+  <marker id="mam" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk ac"/></marker>
+  <marker id="msm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M1 1.5 L9 5 L1 8.5 Z" class="mk soft"/></marker>
+</defs><rect class="hatch-m" x="236" y="100" width="118" height="570"/><g class="ic dim" transform="translate(244.00 112.00) scale(0.5000)"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></g><text class="core-t" x="262" y="122.5">Benchmark</text><text class="core-k" x="244" y="140">本轮冻结</text><rect class="cell data" x="249" y="155.0" width="92" height="34"/><text class="cell-t" x="260" y="176.5">训练用例</text><text class="cell-s data-s" x="333" y="176" text-anchor="end">3/4</text><rect class="cell rub" x="249" y="257.0" width="92" height="34"/><rect class="bar" x="249" y="257.0" width="2.5" height="34"/><g class="ic acc" transform="translate(260.00 268.00) scale(0.5000)"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></g><text class="cell-t" x="278" y="278.5">Rubric</text><rect class="cell data" x="249" y="593.0" width="92" height="34"/><text class="cell-t" x="260" y="614.5">验证用例</text><text class="cell-s data-s" x="333" y="614" text-anchor="end">1/4</text><path class="supply" d="M249 176 H150.7" marker-end="url(#msm)"/><path class="supply" d="M249 278 H114.6" marker-end="url(#msm)"/><path class="supply" d="M249 614 H130.0" marker-end="url(#msm)"/><path class="flow" d="M40 90 V152" marker-end="url(#mfm)"/><path class="flow" d="M40 192 V254" marker-end="url(#mfm)"/><path class="flow" d="M40 294 V370" marker-end="url(#mfm)"/><path class="flow" d="M40 410 V472" marker-end="url(#mfm)"/><path class="flow ac" d="M40 512 V590" marker-end="url(#mam)"/><path class="flow ac" d="M21 610 H20 Q14 610 14 604 V76 Q14 70 20 70 H16" marker-end="url(#mam)"/><text class="m-info mono" x="64" y="125.0">SKILL.md</text><rect class="store-bg" x="62" y="211.0" width="78.0" height="24"/><g class="ic store" transform="translate(72.00 217.00) scale(0.5000)"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g><text class="store-t" x="91" y="227.3">轨迹库</text><text class="m-info sm" x="148.0" y="227.0">执行完写入</text><text class="m-info" x="64" y="318.0">判定结果</text><text class="m-info sm" x="64" y="333.0">得分 · 失败说明 · 行号</text><text class="m-info sm" x="64" y="348.0">据行号读取成功与失败轨迹</text><rect class="store-bg" x="62" y="429.0" width="78.0" height="24"/><g class="ic store" transform="translate(72.00 435.00) scale(0.5000)"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g><text class="store-t" x="91" y="445.3">经验库</text><text class="m-info sm" x="148.0" y="445.0">成功与失败模式</text><rect class="store-bg" x="62" y="539.0" width="90.0" height="24"/><g class="ic store" transform="translate(72.00 545.00) scale(0.5000)"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g><text class="store-t" x="91" y="555.3">修改记录</text><text class="m-info sm" x="160.0" y="555.0">被拒绝的也保留</text><circle class="halo" cx="40" cy="70" r="21"/><circle class="st it" cx="40" cy="70" r="15"/><g class="ic wh" transform="translate(33.50 63.50) scale(0.5417)"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></g><text class="m-k ac" x="64" y="62">START</text><text class="m-n ac" x="64" y="80">Skill vN</text><circle class="st ag" cx="40" cy="172" r="15"/><g class="ic wh" transform="translate(33.50 165.50) scale(0.5417)"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></g><text class="m-k" x="64" y="164">01</text><text class="m-n" x="64" y="182">执行 Agent</text><circle class="st ag" cx="40" cy="274" r="15"/><g class="ic wh" transform="translate(33.50 267.50) scale(0.5417)"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></g><text class="m-k" x="64" y="266">02</text><text class="m-n" x="64" y="284">Judge</text><circle class="st ag" cx="40" cy="390" r="15"/><g class="ic wh" transform="translate(33.50 383.50) scale(0.5417)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></g><text class="m-k" x="64" y="382">03</text><text class="m-n" x="64" y="400">Maintainer</text><circle class="st ag" cx="40" cy="492" r="15"/><g class="ic wh" transform="translate(33.50 485.50) scale(0.5417)"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></g><text class="m-k" x="64" y="484">04</text><text class="m-n" x="64" y="502">Reviser</text><circle class="st gate" cx="40" cy="610" r="15"/><g class="ic ink" transform="translate(33.50 603.50) scale(0.5417)"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></g><text class="m-k" x="64" y="602">05</text><text class="m-n" x="64" y="620">验证把关</text><text class="m-info ac" x="64" y="648">更好 → 升级为新的 vN</text><text class="m-info ac sm" x="64" y="664">否则保留 vN</text><path class="on" d="M200 852 V816" marker-end="url(#mam)"/><path class="on" d="M200 798 V762" marker-end="url(#mam)"/><path class="on" d="M208 752 H289.0 Q295.0 752 295.0 746 V679" marker-end="url(#mam)"/><text class="m-on-l" x="287.0" y="722" text-anchor="end">补进 benchmark</text><circle class="on-st" cx="200" cy="752" r="5"/><text class="m-on-n" x="186" y="756" text-anchor="end">新 rubric + 新用例</text><circle class="on-st" cx="200" cy="806" r="5"/><text class="m-on-n" x="186" y="810" text-anchor="end">人工归因</text><circle class="on-st" cx="200" cy="860" r="5"/><text class="m-on-n" x="186" y="864" text-anchor="end">badcase</text><text class="on-k" x="200" y="892" text-anchor="middle">上线后</text></svg></div>
+
+  <div class="legend">
+    <span><i class="lg-it"></i>迭代对象</span>
+    <span><i class="lg-ag"></i>Agent</span>
+    <span><i class="lg-flow"></i>流转的信息</span>
+    <span><i class="lg-store"></i>持续积累</span>
+    <span><i class="lg-frozen"></i>本轮冻结</span>
+    <span><i class="lg-rub"></i>Rubric</span>
+    <span><i class="lg-data"></i>测试数据</span>
+    <span><i class="lg-on"></i>上线后</span>
+  </div>
+</figure>
+</body>
+</html>
