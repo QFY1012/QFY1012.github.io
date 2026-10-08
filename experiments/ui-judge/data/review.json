@@ -1,0 +1,176 @@
+{
+  "title": "体验走查报告",
+  "target": "示例后台 · 订单列表页",
+  "date": "2026-09-14",
+  "summary": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
+  "score": {
+    "overall": 72,
+    "previous": 65,
+    "max": 100
+  },
+  "issueCounts": {
+    "total": 23,
+    "severe": 3,
+    "major": 8,
+    "minor": 12,
+    "fixedSinceLast": 9
+  },
+  "dimensions": [
+    {
+      "name": "一致性",
+      "score": 78
+    },
+    {
+      "name": "效率",
+      "score": 64
+    },
+    {
+      "name": "可读性",
+      "score": 81
+    },
+    {
+      "name": "容错",
+      "score": 58
+    },
+    {
+      "name": "可访问性",
+      "score": 70
+    }
+  ],
+  "trend": [
+    {
+      "version": "v1.0",
+      "issues": 41
+    },
+    {
+      "version": "v1.1",
+      "issues": 37
+    },
+    {
+      "version": "v1.2",
+      "issues": 35
+    },
+    {
+      "version": "v1.3",
+      "issues": 30
+    },
+    {
+      "version": "v1.4",
+      "issues": 32
+    },
+    {
+      "version": "v1.5",
+      "issues": 23
+    }
+  ],
+  "issues": [
+    {
+      "id": "P01",
+      "title": "批量删除没有二次确认",
+      "severity": "严重",
+      "location": "批量操作栏",
+      "suggestion": "删除前弹出确认,并提供撤销"
+    },
+    {
+      "id": "P02",
+      "title": "筛选条件超过 12 项且未分组",
+      "severity": "严重",
+      "location": "筛选区",
+      "suggestion": "按常用程度分组,低频条件收起"
+    },
+    {
+      "id": "P03",
+      "title": "导出失败时没有任何提示",
+      "severity": "严重",
+      "location": "导出按钮",
+      "suggestion": "失败时说明原因并给出重试入口"
+    },
+    {
+      "id": "P04",
+      "title": "状态标签颜色与规范不一致",
+      "severity": "主要",
+      "location": "表格状态列",
+      "suggestion": "改用规范中的状态色"
+    },
+    {
+      "id": "P05",
+      "title": "金额列未右对齐",
+      "severity": "主要",
+      "location": "表格金额列",
+      "suggestion": "数字列统一右对齐并使用等宽数字"
+    },
+    {
+      "id": "P06",
+      "title": "分页器每页条数默认 10 条",
+      "severity": "次要",
+      "location": "分页器",
+      "suggestion": "默认改为 20 条,并记住用户选择"
+    }
+  ],
+  "componentUsage": [
+    {
+      "component": "Button",
+      "count": 34
+    },
+    {
+      "component": "Badge",
+      "count": 27
+    },
+    {
+      "component": "Select",
+      "count": 18
+    },
+    {
+      "component": "Table",
+      "count": 6
+    },
+    {
+      "component": "Dialog",
+      "count": 4
+    }
+  ],
+  "nonstandard": [
+    {
+      "component": "Button",
+      "detail": "4 处使用了自定义圆角",
+      "count": 4
+    },
+    {
+      "component": "Badge",
+      "detail": "状态色与规范不一致",
+      "count": 9
+    },
+    {
+      "component": "Select",
+      "detail": "2 处宽度未对齐表单栅格",
+      "count": 2
+    },
+    {
+      "component": "Dialog",
+      "detail": "标题未使用规范字号",
+      "count": 2
+    }
+  ],
+  "recommendations": [
+    {
+      "title": "为批量删除加确认与撤销",
+      "detail": "影响所有批量操作,预计 1 人日"
+    },
+    {
+      "title": "筛选区分组并收起低频条件",
+      "detail": "需要产品确认常用条件,预计 3 人日"
+    },
+    {
+      "title": "统一状态标签与数字列对齐",
+      "detail": "按组件规范修改,预计 1 人日"
+    }
+  ],
+  "followUp": {
+    "date": "2026-10-12",
+    "scope": "订单列表页 v1.6",
+    "focus": "筛选区与批量操作",
+    "method": "任务走查",
+    "reviewers": 3,
+    "duration": "1 天"
+  }
+}
