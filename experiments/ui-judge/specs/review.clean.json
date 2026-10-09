@@ -2,7 +2,10 @@
  "id": "page",
  "type": "page",
  "title": "体验走查报告",
- "subtitle": "示例后台 · 订单列表页,走查日期 2026-09-14",
+ "meta": [
+  "示例后台 · 订单列表页",
+  "走查日期 2026-09-14"
+ ],
  "src": [
   "/title",
   "/target",
@@ -15,188 +18,211 @@
    "title": "概览",
    "children": [
     {
-     "id": "grid-overview",
-     "type": "grid",
+     "id": "grp-overview",
+     "type": "group",
      "children": [
       {
-       "id": "blk-summary",
-       "type": "block",
-       "span": 8,
-       "title": "结论",
+       "id": "grid-summary",
+       "type": "grid",
+       "cols": 9,
        "children": [
         {
-         "id": "text-summary",
-         "type": "text",
-         "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
-         "className": "text-xl leading-8 text-justify",
-         "src": [
-          "/summary"
-         ]
-        }
-       ]
-      },
-      {
-       "id": "blk-score",
-       "type": "block",
-       "span": 4,
-       "title": "综合得分",
-       "contentClassName": "justify-end",
-       "children": [
-        {
-         "id": "stat-score",
-         "type": "stat",
-         "size": "lg",
-         "value": "72",
-         "unit": "/ 100",
-         "delta": "+7",
-         "note": "上次 65",
-         "src": [
-          "/score"
-         ]
-        }
-       ]
-      },
-      {
-       "id": "blk-total",
-       "type": "block",
-       "span": 4,
-       "children": [
-        {
-         "id": "stat-total",
-         "type": "stat",
-         "label": "问题总数",
-         "value": "23",
-         "note": "其中主要 8 个,次要 12 个",
-         "src": [
-          "/issueCounts/total",
-          "/issueCounts/major",
-          "/issueCounts/minor"
-         ]
-        }
-       ]
-      },
-      {
-       "id": "blk-severe",
-       "type": "block",
-       "span": 4,
-       "children": [
-        {
-         "id": "stat-severe",
-         "type": "stat",
-         "label": "严重问题",
-         "value": "3",
-         "note": "需优先处理",
-         "src": [
-          "/issueCounts/severe"
-         ]
-        }
-       ]
-      },
-      {
-       "id": "blk-fixed",
-       "type": "block",
-       "span": 4,
-       "children": [
-        {
-         "id": "stat-fixed",
-         "type": "stat",
-         "label": "已修复",
-         "value": "9",
-         "note": "自上次走查",
-         "src": [
-          "/issueCounts/fixedSinceLast"
-         ]
-        }
-       ]
-      },
-      {
-       "id": "blk-dims",
-       "type": "block",
-       "span": 4,
-       "title": "分维度得分",
-       "children": [
-        {
-         "id": "prog-dims",
-         "type": "progress-list",
-         "compact": true,
-         "items": [
+         "id": "blk-summary",
+         "type": "block",
+         "span": 9,
+         "children": [
           {
-           "label": "一致性",
-           "value": 78,
-           "display": "78"
-          },
-          {
-           "label": "效率",
-           "value": 64,
-           "display": "64"
-          },
-          {
-           "label": "可读性",
-           "value": 81,
-           "display": "81"
-          },
-          {
-           "label": "容错",
-           "value": 58,
-           "display": "58"
-          },
-          {
-           "label": "可访问性",
-           "value": 70,
-           "display": "70"
+           "id": "text-summary",
+           "type": "text",
+           "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
+           "className": "text-xl leading-8 text-justify",
+           "src": [
+            "/summary"
+           ]
           }
-         ],
-         "src": [
-          "/dimensions"
          ]
         }
        ]
       },
       {
-       "id": "blk-trend",
-       "type": "block",
-       "span": 8,
-       "title": "各版本问题数",
+       "id": "grid-figures",
+       "type": "grid",
+       "cols": 9,
+       "className": "items-baseline",
        "children": [
         {
-         "id": "chart-trend",
-         "type": "line-chart",
-         "height": "fill",
-         "xKey": "version",
-         "series": [
+         "id": "blk-score",
+         "type": "block",
+         "span": 3,
+         "children": [
           {
-           "key": "issues",
-           "label": "问题数"
+           "id": "stat-score",
+           "type": "stat",
+           "size": "lg",
+           "captionBelow": true,
+           "label": "综合得分",
+           "value": "72",
+           "unit": "/ 100",
+           "note": "上次 65,提高 7 分",
+           "src": [
+            "/score"
+           ]
           }
-         ],
-         "data": [
+         ]
+        },
+        {
+         "id": "blk-total",
+         "type": "block",
+         "span": 2,
+         "children": [
           {
-           "version": "v1.0",
-           "issues": 41
-          },
-          {
-           "version": "v1.1",
-           "issues": 37
-          },
-          {
-           "version": "v1.2",
-           "issues": 35
-          },
-          {
-           "version": "v1.3",
-           "issues": 30
-          },
-          {
-           "version": "v1.4",
-           "issues": 32
-          },
-          {
-           "version": "v1.5",
-           "issues": 23
+           "id": "stat-total",
+           "type": "stat",
+           "captionBelow": true,
+           "label": "问题总数",
+           "value": "23",
+           "note": "主要 8 个,次要 12 个",
+           "src": [
+            "/issueCounts/total",
+            "/issueCounts/major",
+            "/issueCounts/minor"
+           ]
           }
-         ],
-         "src": [
-          "/trend"
+         ]
+        },
+        {
+         "id": "blk-severe",
+         "type": "block",
+         "span": 2,
+         "children": [
+          {
+           "id": "stat-severe",
+           "type": "stat",
+           "captionBelow": true,
+           "label": "严重问题",
+           "value": "3",
+           "note": "需优先处理",
+           "src": [
+            "/issueCounts/severe"
+           ]
+          }
+         ]
+        },
+        {
+         "id": "blk-fixed",
+         "type": "block",
+         "span": 2,
+         "children": [
+          {
+           "id": "stat-fixed",
+           "type": "stat",
+           "captionBelow": true,
+           "label": "已修复",
+           "value": "9",
+           "note": "自上次走查",
+           "src": [
+            "/issueCounts/fixedSinceLast"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "grid-charts",
+       "type": "grid",
+       "cols": 9,
+       "children": [
+        {
+         "id": "blk-dims",
+         "type": "block",
+         "span": 3,
+         "title": "分维度得分",
+         "children": [
+          {
+           "id": "prog-dims",
+           "type": "progress-list",
+           "compact": true,
+           "items": [
+            {
+             "label": "一致性",
+             "value": 78,
+             "display": "78"
+            },
+            {
+             "label": "效率",
+             "value": 64,
+             "display": "64"
+            },
+            {
+             "label": "可读性",
+             "value": 81,
+             "display": "81"
+            },
+            {
+             "label": "容错",
+             "value": 58,
+             "display": "58"
+            },
+            {
+             "label": "可访问性",
+             "value": 70,
+             "display": "70"
+            }
+           ],
+           "src": [
+            "/dimensions"
+           ]
+          }
+         ]
+        },
+        {
+         "id": "blk-trend",
+         "type": "block",
+         "span": 6,
+         "title": "各版本问题数",
+         "children": [
+          {
+           "id": "chart-trend",
+           "type": "line-chart",
+           "height": "fill",
+           "xKey": "version",
+           "series": [
+            {
+             "key": "issues",
+             "label": "问题数"
+            }
+           ],
+           "data": [
+            {
+             "version": "v1.0",
+             "issues": 41
+            },
+            {
+             "version": "v1.1",
+             "issues": 37
+            },
+            {
+             "version": "v1.2",
+             "issues": 35
+            },
+            {
+             "version": "v1.3",
+             "issues": 30
+            },
+            {
+             "version": "v1.4",
+             "issues": 32
+            },
+            {
+             "version": "v1.5",
+             "issues": 23
+            }
+           ],
+           "src": [
+            "/trend"
+           ]
+          }
          ]
         }
        ]
@@ -217,11 +243,12 @@
       {
        "id": "grid-issues",
        "type": "grid",
+       "cols": 9,
        "children": [
         {
          "id": "blk-issues",
          "type": "block",
-         "span": 12,
+         "span": 9,
          "title": "问题清单",
          "children": [
           {
@@ -236,12 +263,12 @@
             {
              "key": "title",
              "label": "问题",
-             "span": 4
+             "span": 3
             },
             {
              "key": "severity",
              "label": "严重程度",
-             "span": 2,
+             "span": 1,
              "tone": [
               "严重"
              ]
@@ -249,7 +276,7 @@
             {
              "key": "location",
              "label": "位置",
-             "span": 2
+             "span": 1
             },
             {
              "key": "suggestion",
@@ -328,11 +355,12 @@
       {
        "id": "grid-components",
        "type": "grid",
+       "cols": 9,
        "children": [
         {
          "id": "blk-components",
          "type": "block",
-         "span": 12,
+         "span": 9,
          "title": "组件使用",
          "children": [
           {
@@ -342,18 +370,18 @@
             {
              "key": "component",
              "label": "组件",
-             "span": 2
+             "span": 1
             },
             {
              "key": "count",
              "label": "使用次数",
-             "span": 4,
+             "span": 3,
              "bar": true
             },
             {
              "key": "nonstd",
              "label": "不规范",
-             "span": 2
+             "span": 1
             },
             {
              "key": "detail",
@@ -414,16 +442,19 @@
     {
      "id": "grid-next",
      "type": "grid",
+     "cols": 9,
      "children": [
       {
        "id": "blk-recs",
        "type": "block",
-       "span": 8,
+       "span": 6,
        "title": "优先处理",
        "children": [
         {
          "id": "list-recs",
          "type": "list",
+         "divided": false,
+         "className": "flex-1 justify-between",
          "items": [
           {
            "title": "为批量删除加确认与撤销",
@@ -447,13 +478,12 @@
       {
        "id": "blk-follow",
        "type": "block",
-       "span": 4,
+       "span": 3,
        "title": "复查安排",
        "children": [
         {
          "id": "kv-follow",
          "type": "kv",
-         "className": "flex-1 content-between",
          "items": [
           {
            "label": "日期",

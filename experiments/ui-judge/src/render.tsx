@@ -63,6 +63,8 @@ export type SpecNode = {
   [key: string]: unknown
 }
 
+const GRID_COLS: Record<number, string> = { 9: "grid-cols-9", 12: "grid-cols-12" }
+
 // Static strings so Tailwind generates them.
 const SPAN = [
   "",
@@ -115,12 +117,24 @@ function chartConfig(series: Series[]): ChartConfig {
 export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
   const p = node as Record<string, any>
   switch (node.type) {
+    // Page and section frame (Swiss layout): 12 columns of 74px with 24px
+    // gutters on an 8px baseline. Section titles hang in the left 3 columns;
+    // content sits in the 9 columns to the right, so the left margin stays a
+    // regular, empty field that gives the page its vertical axis.
     case "page":
       return (
-        <main {...mark(node)} data-slot="page" className={outer(node, ctx, "mx-auto flex w-full max-w-6xl flex-col gap-24 px-0 py-16")}>
+        <main {...mark(node)} data-slot="page" className={outer(node, ctx, "mx-auto flex w-full max-w-6xl flex-col gap-24 py-16")}>
           <header data-slot="page-header" className="flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold">{p.title}</h1>
-            {p.subtitle && <p className="text-sm text-muted-foreground">{p.subtitle}</p>}
+            <h1 className="text-3xl leading-10 font-semibold">{p.title}</h1>
+            {(p.meta as string[] | undefined)?.length ? (
+              <div className="flex flex-col text-sm leading-6 text-muted-foreground">
+                {(p.meta as string[]).map((m, i) => (
+                  <span key={i}>{m}</span>
+                ))}
+              </div>
+            ) : (
+              p.subtitle && <p className="text-sm leading-6 text-muted-foreground">{p.subtitle}</p>
+            )}
           </header>
           {kids(node)}
         </main>
@@ -128,12 +142,12 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
 
     case "section":
       return (
-        <section {...mark(node)} data-slot="section" className={cn("flex flex-col gap-6", ctx.span && SPAN[ctx.span])}>
-          <div data-slot="section-header" className="flex flex-col gap-2">
-            <h2 className="text-xl font-semibold">{p.title}</h2>
-            {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
+        <section {...mark(node)} data-slot="section" className={cn("grid grid-cols-12 items-baseline gap-x-6", ctx.span && SPAN[ctx.span])}>
+          <div data-slot="section-header" className="col-span-3 flex flex-col gap-2">
+            <h2 className="text-xl leading-8 font-semibold">{p.title}</h2>
+            {p.description && <p className="text-sm leading-6 text-muted-foreground">{p.description}</p>}
           </div>
-          <div data-slot="section-body" className={cn("flex flex-col gap-12", node.className)}>
+          <div data-slot="section-body" className={cn("col-span-9 flex flex-col gap-16", node.className)}>
             {kids(node)}
           </div>
         </section>
@@ -141,9 +155,9 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
 
     case "group":
       return (
-        <div {...mark(node)} data-slot="group" className={cn("flex flex-col gap-4", ctx.span && SPAN[ctx.span])}>
-          {p.title && <h3 className="text-lg font-medium">{p.title}</h3>}
-          <div data-slot="group-body" className={cn("flex flex-col gap-6", node.className)}>
+        <div {...mark(node)} data-slot="group" className={cn("flex flex-col gap-2", ctx.span && SPAN[ctx.span])}>
+          {p.title && <h3 className="text-sm leading-6 font-semibold">{p.title}</h3>}
+          <div data-slot="group-body" className={cn("flex flex-col gap-10", node.className)}>
             {kids(node)}
           </div>
         </div>
@@ -151,27 +165,27 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
 
     case "grid":
       return (
-        <div {...mark(node)} data-slot="grid" className={outer(node, ctx, "grid grid-cols-12 gap-6")}>
+        <div {...mark(node)} data-slot="grid" className={outer(node, ctx, cn("grid gap-x-6 gap-y-10", GRID_COLS[(p.cols as number) ?? 12]))}>
           {(node.children ?? []).map((c, i) => (
-            <Node key={c.id ?? i} node={c} ctx={{ span: c.span ?? 12 }} />
+            <Node key={c.id ?? i} node={c} ctx={{ span: c.span ?? ((p.cols as number) ?? 12) }} />
           ))}
         </div>
       )
 
-    // A titled block without card chrome. Inside spacing (12px) is kept below
-    // the 24px between blocks, since nothing but space separates them.
+    // A titled block without card chrome: 8px from title to content, 16px
+    // between parts, both below the 24px / 40px between blocks.
     case "block":
       return (
-        <div {...mark(node)} data-slot="block" className={outer(node, ctx, "flex flex-col gap-3")}>
+        <div {...mark(node)} data-slot="block" className={outer(node, ctx, "flex flex-col gap-2")}>
           {(p.title || p.description) && (
-            <div data-slot="block-header" className="flex flex-col gap-1">
+            <div data-slot="block-header" className="flex flex-col">
               {p.title && <h3 className="text-sm leading-6 font-semibold">{p.title}</h3>}
-              {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
+              {p.description && <p className="text-sm leading-6 text-muted-foreground">{p.description}</p>}
             </div>
           )}
           {/* flex-1: a block stretched by its grid row passes the height on, so
               elastic content (charts, distributed lists) can fill the band. */}
-          <div data-slot="block-content" className={cn("flex flex-1 flex-col gap-3", node.contentClassName as string)}>
+          <div data-slot="block-content" className={cn("flex flex-1 flex-col gap-4", node.contentClassName as string)}>
             {kids(node)}
           </div>
         </div>
@@ -204,11 +218,13 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       const dir = p.direction as "up" | "down" | undefined
       return (
         <div {...mark(node)} data-slot="custom-stat" className={outer(node, ctx, "flex flex-col gap-2")}>
-          {p.label && <span className="text-sm text-muted-foreground">{p.label}</span>}
+          {/* captionBelow: the number comes first, so a row of figures can align on their baselines */}
+          {p.label && !p.captionBelow && <span className="text-sm leading-6 text-muted-foreground">{p.label}</span>}
           <div className="flex items-baseline gap-2">
-            <span className={cn("font-semibold tabular-nums", p.size === "lg" ? "text-5xl leading-none" : "text-3xl")}>{p.value}</span>
+            <span className={cn("font-semibold tabular-nums", p.size === "lg" ? "text-5xl leading-[56px]" : "text-3xl leading-10")}>{p.value}</span>
             {p.unit && <span className="text-sm text-muted-foreground">{p.unit}</span>}
           </div>
+          {p.label && p.captionBelow && <span className="-mt-1 text-sm leading-6">{p.label}</span>}
           {(p.delta || p.note) && (
             <div className="flex items-center gap-2">
               {p.delta && (
@@ -242,7 +258,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         c.bar ? (
           <div className="flex items-center gap-3">
             <span className="w-8 text-right tabular-nums">{v}</span>
-            <div className="h-2 w-64 shrink-0">
+            <div className="h-2 flex-1">
               <div className="h-full rounded-full bg-primary" style={{ width: `${((Number(v) || 0) / max[c.key]) * 100}%` }} />
             </div>
           </div>
@@ -374,9 +390,9 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       // compact: one line per item (label, bar, value)
       if (p.compact)
         return (
-          <div {...mark(node)} data-slot="custom-progress-list" className={outer(node, ctx, "flex flex-col gap-3")}>
+          <div {...mark(node)} data-slot="custom-progress-list" className={outer(node, ctx, "flex flex-col gap-2")}>
             {(p.items as { label: string; value: number; max?: number; display?: string }[]).map((it, i) => (
-              <div key={i} className="grid grid-cols-[4.5rem_1fr_2rem] items-center gap-3 text-sm">
+              <div key={i} className="grid h-6 grid-cols-[4.5rem_1fr_2rem] items-center gap-3 text-sm">
                 <span>{it.label}</span>
                 <Progress value={(it.value / (it.max ?? 100)) * 100} />
                 <span className="text-right tabular-nums text-muted-foreground">{it.display ?? it.value}</span>
@@ -412,11 +428,11 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
     case "list": {
       const items = p.items as { title: string; description?: string; meta?: string }[]
       return (
-        <ItemGroup {...mark(node)} className={outer(node, ctx)}>
+        <ItemGroup {...mark(node)} className={outer(node, ctx, p.divided === false ? "gap-4" : undefined)}>
           {items.map((it, i) => (
             <React.Fragment key={i}>
-              {i > 0 && <ItemSeparator />}
-              <Item size="sm" className="px-0">
+              {i > 0 && p.divided !== false && <ItemSeparator />}
+              <Item size="sm" className={p.divided === false ? "p-0" : "px-0"}>
                 <ItemContent>
                   <ItemTitle>{it.title}</ItemTitle>
                   {it.description && <ItemDescription>{it.description}</ItemDescription>}
