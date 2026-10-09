@@ -7,6 +7,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  LabelList,
   Line,
   LineChart,
   XAxis,
@@ -265,6 +266,26 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       const cfg = chartConfig(series)
       const height = (p.height as string) ?? "h-60"
       const horizontal = p.layout === "horizontal"
+      const data = p.data as Record<string, unknown>[]
+      // Horizontal bars read like a ranked list: category, a thin bar in the
+      // same ink as the progress bars, the value at its end. No grid or value
+      // axis; the height follows the number of bars.
+      if (node.type === "bar-chart" && horizontal && series.length === 1) {
+        const key = series[0].key
+        return (
+          <div {...mark(node)} data-slot="custom-chart" className={outer(node, ctx)}>
+            <ChartContainer config={cfg} className="aspect-auto w-full" style={{ height: data.length * 52 }}>
+              <BarChart data={data} layout="vertical" margin={{ left: 0, right: 40, top: 0, bottom: 0 }} barCategoryGap={0}>
+                <XAxis type="number" hide domain={[0, "dataMax"]} />
+                <YAxis type="category" dataKey={p.xKey} tickLine={false} axisLine={false} width={64} tick={{ fill: "var(--foreground)", fontSize: 13 }} />
+                <Bar dataKey={key} fill="var(--primary)" barSize={10} radius={[0, 5, 5, 0]} isAnimationActive={false}>
+                  <LabelList dataKey={key} position="right" offset={10} className="fill-muted-foreground" fontSize={12} />
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          </div>
+        )
+      }
       return (
         <div {...mark(node)} data-slot="custom-chart" className={outer(node, ctx)}>
           <ChartContainer config={cfg} className={cn("aspect-auto w-full", height)}>
