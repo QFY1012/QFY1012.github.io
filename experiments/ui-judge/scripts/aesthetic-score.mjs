@@ -46,3 +46,20 @@ for (const v of Object.keys(EXPECTED).filter((v) => v !== "F")) {
   console.log(`| F 对 ${v} | 选 ${a}${a === "A" ? "(终版)" : ""} | 选 ${b}${b === "B" ? "(终版)" : ""} | ${ok ? "是" : "否"} |`)
 }
 console.log(`\n两次都选终版 ${both}/${n};所有判定中选 A 的比例 ${picks ? Math.round((100 * picksA) / picks) : 0}%(50% 附近说明没有位置偏好)`)
+
+// Pooled over repeats with both orders equally represented, so position
+// preference cancels out: share of judgments that pick the accepted page.
+console.log("\n## 两版对比(合并所有重复,两种顺序各半)\n")
+console.log("| 对比 | 终版为 A 时选中终版 | 终版为 B 时选中终版 | 合计选中终版 | 结论 |")
+console.log("|---|---|---|---|---|")
+for (const v of Object.keys(EXPECTED).filter((v) => v !== "F")) {
+  const fa = files.filter((f) => f.startsWith(`pair__${v}__FA__`)).map((f) => load(f).json.better === "A")
+  const fb = files.filter((f) => f.startsWith(`pair__${v}__FB__`)).map((f) => load(f).json.better === "B")
+  const k = Math.min(fa.length, fb.length)
+  if (!k) continue
+  const a = fa.slice(0, k), b = fb.slice(0, k)
+  const wins = [...a, ...b].filter(Boolean).length
+  const share = wins / (2 * k)
+  const verdict = share >= 5 / 6 ? "终版胜" : share <= 1 / 6 ? "旧版胜" : "分不出(主要看位置)"
+  console.log(`| F 对 ${v} | ${a.filter(Boolean).length}/${k} | ${b.filter(Boolean).length}/${k} | ${wins}/${2 * k} | ${verdict} |`)
+}
