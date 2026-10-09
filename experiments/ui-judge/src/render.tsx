@@ -169,7 +169,9 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
               {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
             </div>
           )}
-          <div data-slot="block-content" className={cn("flex flex-col gap-3", node.contentClassName as string)}>
+          {/* flex-1: a block stretched by its grid row passes the height on, so
+              elastic content (charts, distributed lists) can fill the band. */}
+          <div data-slot="block-content" className={cn("flex flex-1 flex-col gap-3", node.contentClassName as string)}>
             {kids(node)}
           </div>
         </div>
@@ -277,7 +279,9 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
     case "line-chart": {
       const series = p.series as Series[]
       const cfg = chartConfig(series)
-      const height = (p.height as string) ?? "h-60"
+      // height "fill": the chart takes whatever height its block is given.
+      const fill = p.height === "fill"
+      const height = fill ? "flex-1 min-h-24" : ((p.height as string) ?? "h-60")
       const horizontal = p.layout === "horizontal"
       const data = p.data as Record<string, unknown>[]
       // Horizontal bars read like a ranked list: category, a thin bar in the
@@ -300,7 +304,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         )
       }
       return (
-        <div {...mark(node)} data-slot="custom-chart" className={outer(node, ctx)}>
+        <div {...mark(node)} data-slot="custom-chart" className={outer(node, ctx, fill ? "flex min-h-0 flex-1 flex-col" : undefined)}>
           <ChartContainer config={cfg} className={cn("aspect-auto w-full", height)}>
             {node.type === "bar-chart" ? (
               <BarChart
@@ -342,6 +346,19 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
     }
 
     case "progress-list":
+      // compact: one line per item (label, bar, value)
+      if (p.compact)
+        return (
+          <div {...mark(node)} data-slot="custom-progress-list" className={outer(node, ctx, "flex flex-col gap-3")}>
+            {(p.items as { label: string; value: number; max?: number; display?: string }[]).map((it, i) => (
+              <div key={i} className="grid grid-cols-[4.5rem_1fr_2rem] items-center gap-3 text-sm">
+                <span>{it.label}</span>
+                <Progress value={(it.value / (it.max ?? 100)) * 100} />
+                <span className="text-right tabular-nums text-muted-foreground">{it.display ?? it.value}</span>
+              </div>
+            ))}
+          </div>
+        )
       return (
         <div {...mark(node)} data-slot="custom-progress-list" className={outer(node, ctx, "flex flex-col gap-4")}>
           {(p.items as { label: string; value: number; max?: number; display?: string }[]).map((it, i) => (

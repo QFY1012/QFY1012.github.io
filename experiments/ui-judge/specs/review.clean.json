@@ -19,23 +19,6 @@
      "type": "grid",
      "children": [
       {
-       "id": "blk-summary",
-       "type": "block",
-       "span": 12,
-       "title": "结论",
-       "children": [
-        {
-         "id": "text-summary",
-         "type": "text",
-         "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
-         "className": "text-base leading-7 text-justify",
-         "src": [
-          "/summary"
-         ]
-        }
-       ]
-      },
-      {
        "id": "card-score",
        "type": "card",
        "span": 3,
@@ -108,15 +91,76 @@
        ]
       },
       {
+       "id": "blk-summary",
+       "type": "block",
+       "span": 4,
+       "title": "结论",
+       "children": [
+        {
+         "id": "text-summary",
+         "type": "text",
+         "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
+         "className": "text-base leading-7 text-justify",
+         "src": [
+          "/summary"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "blk-dims",
+       "type": "block",
+       "span": 4,
+       "title": "分维度得分",
+       "children": [
+        {
+         "id": "prog-dims",
+         "type": "progress-list",
+         "compact": true,
+         "className": "flex-1 justify-between gap-2",
+         "items": [
+          {
+           "label": "一致性",
+           "value": 78,
+           "display": "78"
+          },
+          {
+           "label": "效率",
+           "value": 64,
+           "display": "64"
+          },
+          {
+           "label": "可读性",
+           "value": 81,
+           "display": "81"
+          },
+          {
+           "label": "容错",
+           "value": 58,
+           "display": "58"
+          },
+          {
+           "label": "可访问性",
+           "value": 70,
+           "display": "70"
+          }
+         ],
+         "src": [
+          "/dimensions"
+         ]
+        }
+       ]
+      },
+      {
        "id": "blk-trend",
        "type": "block",
-       "span": 8,
-       "title": "问题数量趋势",
-       "description": "各版本走查发现的问题数",
+       "span": 4,
+       "title": "各版本问题数",
        "children": [
         {
          "id": "chart-trend",
          "type": "line-chart",
+         "height": "fill",
          "xKey": "version",
          "series": [
           {
@@ -152,48 +196,6 @@
          ],
          "src": [
           "/trend"
-         ]
-        }
-       ]
-      },
-      {
-       "id": "blk-dims",
-       "type": "block",
-       "span": 4,
-       "title": "分维度得分",
-       "children": [
-        {
-         "id": "prog-dims",
-         "type": "progress-list",
-         "items": [
-          {
-           "label": "一致性",
-           "value": 78,
-           "display": "78"
-          },
-          {
-           "label": "效率",
-           "value": 64,
-           "display": "64"
-          },
-          {
-           "label": "可读性",
-           "value": 81,
-           "display": "81"
-          },
-          {
-           "label": "容错",
-           "value": 58,
-           "display": "58"
-          },
-          {
-           "label": "可访问性",
-           "value": 70,
-           "display": "70"
-          }
-         ],
-         "src": [
-          "/dimensions"
          ]
         }
        ]
@@ -409,6 +411,7 @@
         {
          "id": "list-recs",
          "type": "list",
+         "className": "flex-1 justify-between",
          "items": [
           {
            "title": "为批量删除加确认与撤销",
@@ -438,7 +441,7 @@
         {
          "id": "kv-follow",
          "type": "kv",
-         "className": "gap-y-4",
+         "className": "flex-1 content-between gap-y-4",
          "items": [
           {
            "label": "日期",

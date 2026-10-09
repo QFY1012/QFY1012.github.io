@@ -27,10 +27,7 @@ function review() {
             id: "grid-overview",
             type: "grid",
             children: [
-              // The conclusion spans the full row (every row fills 12 columns) and is
-              // set at 16px, which keeps the line near 72 characters.
-              { id: "blk-summary", type: "block", span: 12, title: "结论", children: [
-                { id: "text-summary", type: "text", text: d.summary, className: "text-base leading-7 text-justify", src: ["/summary"] } ] },
+              // Band 1: the four indicators, parallel objects, so cards.
               { id: "card-score", type: "card", span: 3, children: [
                 { id: "stat-score", type: "stat", label: "综合得分", value: String(d.score.overall), unit: `/ ${d.score.max}`, delta: `+${d.score.overall - d.score.previous}`, note: `上次 ${d.score.previous}`, src: ["/score"] } ] },
               { id: "card-total", type: "card", span: 3, children: [
@@ -39,10 +36,16 @@ function review() {
                 { id: "stat-severe", type: "stat", label: "严重问题", value: String(c.severe), note: "需优先处理", src: ["/issueCounts/severe"] } ] },
               { id: "card-fixed", type: "card", span: 3, children: [
                 { id: "stat-fixed", type: "stat", label: "已修复", value: String(c.fixedSinceLast), note: "自上次走查", src: ["/issueCounts/fixedSinceLast"] } ] },
-              { id: "blk-trend", type: "block", span: 8, title: "问题数量趋势", description: "各版本走查发现的问题数", children: [
-                { id: "chart-trend", type: "line-chart", xKey: "version", series: [{ key: "issues", label: "问题数" }], data: d.trend, src: ["/trend"] } ] },
+              // Band 2: three 4-column blocks. The conclusion sets the band height
+              // (16px text, 4 columns); the score list spreads its rows and the
+              // trend chart grows to the same height, so all three are solid
+              // rectangles with shared top and bottom edges.
+              { id: "blk-summary", type: "block", span: 4, title: "结论", children: [
+                { id: "text-summary", type: "text", text: d.summary, className: "text-base leading-7 text-justify", src: ["/summary"] } ] },
               { id: "blk-dims", type: "block", span: 4, title: "分维度得分", children: [
-                { id: "prog-dims", type: "progress-list", items: d.dimensions.map((x) => ({ label: x.name, value: x.score, display: String(x.score) })), src: ["/dimensions"] } ] },
+                { id: "prog-dims", type: "progress-list", compact: true, className: "flex-1 justify-between gap-2", items: d.dimensions.map((x) => ({ label: x.name, value: x.score, display: String(x.score) })), src: ["/dimensions"] } ] },
+              { id: "blk-trend", type: "block", span: 4, title: "各版本问题数", children: [
+                { id: "chart-trend", type: "line-chart", height: "fill", xKey: "version", series: [{ key: "issues", label: "问题数" }], data: d.trend, src: ["/trend"] } ] },
             ],
           },
         ],
@@ -94,9 +97,9 @@ function review() {
         children: [
           { id: "grid-next", type: "grid", children: [
             { id: "blk-recs", type: "block", span: 8, title: "优先处理", children: [
-              { id: "list-recs", type: "list", items: d.recommendations.map((x) => ({ title: x.title, description: x.detail })), src: ["/recommendations"] } ] },
+              { id: "list-recs", type: "list", className: "flex-1 justify-between", items: d.recommendations.map((x) => ({ title: x.title, description: x.detail })), src: ["/recommendations"] } ] },
             { id: "blk-follow", type: "block", span: 4, title: "复查安排", children: [
-              { id: "kv-follow", type: "kv", className: "gap-y-4", items: [
+              { id: "kv-follow", type: "kv", className: "flex-1 content-between gap-y-4", items: [
                 { label: "日期", value: d.followUp.date },
                 { label: "范围", value: d.followUp.scope },
                 { label: "重点", value: d.followUp.focus },
