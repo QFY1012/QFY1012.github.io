@@ -320,83 +320,67 @@
        "type": "grid",
        "children": [
         {
-         "id": "blk-usage",
+         "id": "blk-components",
          "type": "block",
-         "span": 7,
-         "title": "组件使用次数",
+         "span": 12,
+         "title": "组件使用",
          "children": [
           {
-           "id": "chart-usage",
-           "type": "bar-chart",
-           "layout": "horizontal",
-           "height": "h-60",
-           "xKey": "component",
-           "series": [
+           "id": "table-components",
+           "type": "table",
+           "columns": [
+            {
+             "key": "component",
+             "label": "组件"
+            },
             {
              "key": "count",
-             "label": "次数"
+             "label": "使用次数",
+             "bar": true
+            },
+            {
+             "key": "nonstd",
+             "label": "不规范"
+            },
+            {
+             "key": "detail",
+             "label": "不规范说明"
             }
            ],
-           "data": [
+           "rows": [
             {
              "component": "Button",
-             "count": 34
+             "count": 34,
+             "nonstd": "4 处",
+             "detail": "4 处使用了自定义圆角"
             },
             {
              "component": "Badge",
-             "count": 27
+             "count": 27,
+             "nonstd": "9 处",
+             "detail": "状态色与规范不一致"
             },
             {
              "component": "Select",
-             "count": 18
+             "count": 18,
+             "nonstd": "2 处",
+             "detail": "2 处宽度未对齐表单栅格"
             },
             {
              "component": "Table",
-             "count": 6
+             "count": 6,
+             "nonstd": "—",
+             "detail": "—"
             },
             {
              "component": "Dialog",
-             "count": 4
+             "count": 4,
+             "nonstd": "2 处",
+             "detail": "标题未使用规范字号"
             }
            ],
            "src": [
-            "/componentUsage"
-           ]
-          }
-         ]
-        },
-        {
-         "id": "blk-nonstd",
-         "type": "block",
-         "span": 5,
-         "title": "不规范用法",
-         "children": [
-          {
-           "id": "list-nonstd",
-           "type": "list",
-           "items": [
-            {
-             "title": "Button",
-             "description": "4 处使用了自定义圆角",
-             "meta": "4 处"
-            },
-            {
-             "title": "Badge",
-             "description": "状态色与规范不一致",
-             "meta": "9 处"
-            },
-            {
-             "title": "Select",
-             "description": "2 处宽度未对齐表单栅格",
-             "meta": "2 处"
-            },
-            {
-             "title": "Dialog",
-             "description": "标题未使用规范字号",
-             "meta": "2 处"
-            }
-           ],
-           "src": [
+            "/componentUsage",
             "/nonstandard"
            ]
           }

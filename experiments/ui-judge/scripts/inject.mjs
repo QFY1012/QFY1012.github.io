@@ -181,6 +181,24 @@ const REVIEW = [
     } },
 ]
 
+// Defects for the card-light clean page (rules being reworked; the list
+// above still targets the previous ids).
+const REVIEW_V2 = [
+  // From review: the bar chart beside the list ends far above it, leaving a
+  // hole at the bottom left.
+  { id: "3.4-hole", check: "3.4", level: "obvious", gt: ["blk-usage", "blk-nonstd"],
+    what: "组件使用拆成左右两块:条形图(7 列)明显比右侧列表矮,左下留出一块空洞",
+    apply: (s) => {
+      const d = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "review.json"), "utf8"))
+      replaceWith(s, "blk-components", { id: "grid-components-split", type: "grid", span: 12, children: [
+        { id: "blk-usage", type: "block", span: 7, title: "组件使用次数", children: [
+          { id: "chart-usage", type: "bar-chart", layout: "horizontal", xKey: "component", series: [{ key: "count", label: "次数" }], data: d.componentUsage, src: ["/componentUsage"] } ] },
+        { id: "blk-nonstd", type: "block", span: 5, title: "不规范用法", children: [
+          { id: "list-nonstd", type: "list", items: d.nonstandard.map((x) => ({ title: x.component, description: x.detail, meta: `${x.count} 处` })), src: ["/nonstandard"] } ] },
+      ] })
+    } },
+]
+
 const REPORTS = { review: REVIEW }
 
 const outDir = path.join(ROOT, "samples")

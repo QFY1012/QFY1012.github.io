@@ -68,10 +68,20 @@ function review() {
           ] },
           { id: "grp-components", type: "group", children: [
             { id: "grid-components", type: "grid", children: [
-              { id: "blk-usage", type: "block", span: 7, title: "组件使用次数", children: [
-                { id: "chart-usage", type: "bar-chart", layout: "horizontal", height: "h-60", xKey: "component", series: [{ key: "count", label: "次数" }], data: d.componentUsage, src: ["/componentUsage"] } ] },
-              { id: "blk-nonstd", type: "block", span: 5, title: "不规范用法", children: [
-                { id: "list-nonstd", type: "list", items: d.nonstandard.map((x) => ({ title: x.component, description: x.detail, meta: `${x.count} 处` })), src: ["/nonstandard"] } ] },
+              { id: "blk-components", type: "block", span: 12, title: "组件使用", children: [
+                { id: "table-components", type: "table",
+                  columns: [
+                    { key: "component", label: "组件" },
+                    { key: "count", label: "使用次数", bar: true },
+                    { key: "nonstd", label: "不规范" },
+                    { key: "detail", label: "不规范说明" },
+                  ],
+                  // usage joined with the non-standard findings; "—" where none was reported
+                  rows: d.componentUsage.map((u) => {
+                    const n = d.nonstandard.find((x) => x.component === u.component)
+                    return { component: u.component, count: u.count, nonstd: n ? `${n.count} 处` : "—", detail: n ? n.detail : "—" }
+                  }),
+                  src: ["/componentUsage", "/nonstandard"] } ] },
             ] },
           ] },
         ],

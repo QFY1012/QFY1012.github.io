@@ -229,8 +229,21 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       )
 
     case "table": {
-      const cols = p.columns as { key: string; label: string; align?: "left" | "right" }[]
+      const cols = p.columns as { key: string; label: string; align?: "left" | "right"; bar?: boolean }[]
       const rows = p.rows as Record<string, React.ReactNode>[]
+      // A numeric column can carry an inline bar, scaled to the column's max.
+      const max = Object.fromEntries(cols.filter((c) => c.bar).map((c) => [c.key, Math.max(...rows.map((r) => Number(r[c.key]) || 0))]))
+      const cell = (c: (typeof cols)[number], v: React.ReactNode) =>
+        c.bar ? (
+          <div className="flex items-center gap-3">
+            <span className="w-8 text-right tabular-nums">{v}</span>
+            <div className="h-2 w-64 shrink-0">
+              <div className="h-full rounded-full bg-primary" style={{ width: `${((Number(v) || 0) / max[c.key]) * 100}%` }} />
+            </div>
+          </div>
+        ) : (
+          v
+        )
       return (
         <div {...mark(node)} data-slot="custom-table" className={outer(node, ctx)}>
           <Table>
@@ -249,7 +262,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                 <TableRow key={i}>
                   {cols.map((c) => (
                     <TableCell key={c.key} className={c.align === "right" ? "text-right tabular-nums" : undefined}>
-                      {r[c.key]}
+                      {cell(c, r[c.key])}
                     </TableCell>
                   ))}
                 </TableRow>
