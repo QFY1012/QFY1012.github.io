@@ -35,7 +35,7 @@
           {
            "id": "text-summary",
            "type": "text",
-           "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
+           "text": "订单列表页整体可用，综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作：筛选条件过多且没有分组，批量操作缺少二次确认，误操作后无法撤销。建议优先处理 3 个严重问题，再统一表格内的状态标签与按钮样式。",
            "className": "text-xl leading-9 text-justify",
            "src": [
             "/summary"
@@ -65,7 +65,7 @@
            "label": "综合得分",
            "value": "72",
            "unit": "/ 100",
-           "note": "上次 65,提高 7 分;已修复 9 个问题",
+           "note": "上次 65，提高 7 分；已修复 9 个问题",
            "src": [
             "/score",
             "/issueCounts/fixedSinceLast"
@@ -85,7 +85,7 @@
            "captionBelow": true,
            "label": "问题总数",
            "value": "23",
-           "note": "主要 8 个,次要 12 个",
+           "note": "主要 8 个，次要 12 个",
            "src": [
             "/issueCounts/total",
             "/issueCounts/major",
@@ -225,7 +225,7 @@
    "id": "sec-issues",
    "type": "section",
    "title": "走查发现",
-   "description": "共 23 个问题,此处列出 6 个",
+   "description": "共 23 个问题，此处列出 6 个",
    "children": [
     {
      "id": "grp-issues",
@@ -282,14 +282,14 @@
              "title": "批量删除没有二次确认",
              "severity": "严重",
              "location": "批量操作栏",
-             "suggestion": "删除前弹出确认,并提供撤销"
+             "suggestion": "删除前弹出确认，并提供撤销"
             },
             {
              "id": "P02",
              "title": "筛选条件超过 12 项且未分组",
              "severity": "严重",
              "location": "筛选区",
-             "suggestion": "按常用程度分组,低频条件收起"
+             "suggestion": "按常用程度分组，低频条件收起"
             },
             {
              "id": "P03",
@@ -317,7 +317,7 @@
              "title": "分页器每页条数默认 10 条",
              "severity": "次要",
              "location": "分页器",
-             "suggestion": "默认改为 20 条,并记住用户选择"
+             "suggestion": "默认改为 20 条，并记住用户选择"
             }
            ],
            "src": [
@@ -429,15 +429,15 @@
          "items": [
           {
            "title": "为批量删除加确认与撤销",
-           "description": "影响所有批量操作,预计 1 人日"
+           "description": "影响所有批量操作，预计 1 人日"
           },
           {
            "title": "筛选区分组并收起低频条件",
-           "description": "需要产品确认常用条件,预计 3 人日"
+           "description": "需要产品确认常用条件，预计 3 人日"
           },
           {
            "title": "统一状态标签与数字列对齐",
-           "description": "按组件规范修改,预计 1 人日"
+           "description": "按组件规范修改，预计 1 人日"
           }
          ],
          "src": [

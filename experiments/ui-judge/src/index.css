@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@fontsource/noto-sans-sc/300.css";
 @import "@fontsource/noto-sans-sc/400.css";
 @import "@fontsource/noto-sans-sc/500.css";
 @import "@fontsource/noto-sans-sc/600.css";
@@ -75,5 +76,9 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    /* Chinese typesetting: trim the blank half of full-width punctuation at line
+       starts and between adjacent marks, so justified lines stay even. */
+    text-spacing-trim: trim-start;
+    font-kerning: normal;
   }
 }

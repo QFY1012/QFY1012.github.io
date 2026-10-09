@@ -135,7 +135,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                 <span key={i}>{m}</span>
               ))}
             </div>
-            <h1 className="col-span-9 text-5xl leading-[48px] font-semibold">{p.title}</h1>
+            <h1 className="col-span-9 text-5xl leading-[48px] font-medium">{p.title}</h1>
           </header>
           {kids(node)}
         </main>
@@ -145,7 +145,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       return (
         <section {...mark(node)} data-slot="section" className={cn("grid grid-cols-12 items-start gap-x-6", ctx.span && SPAN[ctx.span])}>
           <div data-slot="section-header" className="col-span-3 flex flex-col">
-            <h2 className="text-xl leading-6 font-semibold">{p.title}</h2>
+            <h2 className="text-xl leading-6 font-medium">{p.title}</h2>
             {p.description && <p className="text-sm leading-6 text-muted-foreground">{p.description}</p>}
           </div>
           {/* groups inside a section are one empty field apart, so they stay on field lines */}
@@ -231,7 +231,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
           {/* captionBelow: the number comes first, so a row of figures can align on their baselines */}
           {p.label && !p.captionBelow && <span className="text-sm leading-6 text-muted-foreground">{p.label}</span>}
           <div className="flex items-baseline gap-2">
-            <span className={cn("font-semibold tabular-nums", p.size === "lg" ? "text-5xl leading-[60px]" : "text-3xl leading-9")}>{p.value}</span>
+            <span className={cn("font-light tabular-nums", p.size === "lg" ? "text-5xl leading-[60px]" : "text-3xl leading-9")}>{p.value}</span>
             {p.unit && <span className="text-sm text-muted-foreground">{p.unit}</span>}
           </div>
           {p.label && p.captionBelow && <span className="text-sm leading-6">{p.label}</span>}

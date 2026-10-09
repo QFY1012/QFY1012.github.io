@@ -34,9 +34,9 @@ function review() {
             { id: "grid-figures", type: "grid", cols: 9, className: "items-baseline", children: [
               { id: "blk-score", type: "block", span: 3, rows: 1, children: [
                 { id: "stat-score", type: "stat", size: "lg", captionBelow: true, label: "综合得分", value: String(d.score.overall), unit: `/ ${d.score.max}`,
-                  note: `上次 ${d.score.previous},提高 ${d.score.overall - d.score.previous} 分;已修复 ${c.fixedSinceLast} 个问题`, src: ["/score", "/issueCounts/fixedSinceLast"] } ] },
+                  note: `上次 ${d.score.previous}，提高 ${d.score.overall - d.score.previous} 分；已修复 ${c.fixedSinceLast} 个问题`, src: ["/score", "/issueCounts/fixedSinceLast"] } ] },
               { id: "blk-total", type: "block", span: 3, rows: 1, children: [
-                { id: "stat-total", type: "stat", captionBelow: true, label: "问题总数", value: String(c.total), note: `主要 ${c.major} 个,次要 ${c.minor} 个`, src: ["/issueCounts/total", "/issueCounts/major", "/issueCounts/minor"] } ] },
+                { id: "stat-total", type: "stat", captionBelow: true, label: "问题总数", value: String(c.total), note: `主要 ${c.major} 个，次要 ${c.minor} 个`, src: ["/issueCounts/total", "/issueCounts/major", "/issueCounts/minor"] } ] },
               { id: "blk-severe", type: "block", span: 3, rows: 1, children: [
                 { id: "stat-severe", type: "stat", captionBelow: true, label: "严重问题", value: String(c.severe), note: "需优先处理", src: ["/issueCounts/severe"] } ] },
             ] },
@@ -54,7 +54,7 @@ function review() {
         id: "sec-issues",
         type: "section",
         title: "走查发现",
-        description: `共 ${c.total} 个问题,此处列出 ${d.issues.length} 个`,
+        description: `共 ${c.total} 个问题，此处列出 ${d.issues.length} 个`,
         children: [
           { id: "grp-issues", type: "group", children: [
             { id: "grid-issues", type: "grid", cols: 9, children: [
