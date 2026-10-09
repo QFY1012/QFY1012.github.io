@@ -21,14 +21,14 @@
       {
        "id": "blk-summary",
        "type": "block",
-       "span": 8,
+       "span": 12,
        "title": "结论",
        "children": [
         {
          "id": "text-summary",
          "type": "text",
          "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
-         "className": "text-justify",
+         "className": "text-base leading-7 text-justify",
          "src": [
           "/summary"
          ]
@@ -39,7 +39,6 @@
        "id": "card-score",
        "type": "card",
        "span": 3,
-       "className": "col-start-1",
        "children": [
         {
          "id": "stat-score",

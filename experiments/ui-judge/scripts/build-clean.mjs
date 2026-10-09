@@ -27,10 +27,11 @@ function review() {
             id: "grid-overview",
             type: "grid",
             children: [
-              { id: "blk-summary", type: "block", span: 8, title: "结论", children: [
-                { id: "text-summary", type: "text", text: d.summary, className: "text-justify", src: ["/summary"] } ] },
-              // Body text keeps an 8-column measure; the indicators start a new row.
-              { id: "card-score", type: "card", span: 3, className: "col-start-1", children: [
+              // The conclusion spans the full row (every row fills 12 columns) and is
+              // set at 16px, which keeps the line near 72 characters.
+              { id: "blk-summary", type: "block", span: 12, title: "结论", children: [
+                { id: "text-summary", type: "text", text: d.summary, className: "text-base leading-7 text-justify", src: ["/summary"] } ] },
+              { id: "card-score", type: "card", span: 3, children: [
                 { id: "stat-score", type: "stat", label: "综合得分", value: String(d.score.overall), unit: `/ ${d.score.max}`, delta: `+${d.score.overall - d.score.previous}`, note: `上次 ${d.score.previous}`, src: ["/score"] } ] },
               { id: "card-total", type: "card", span: 3, children: [
                 { id: "stat-total", type: "stat", label: "问题总数", value: String(c.total), note: `主要 ${c.major} · 次要 ${c.minor}`, src: ["/issueCounts/total", "/issueCounts/major", "/issueCounts/minor"] } ] },
