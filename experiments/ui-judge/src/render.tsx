@@ -119,7 +119,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       return (
         <main {...mark(node)} data-slot="page" className={outer(node, ctx, "mx-auto flex w-full max-w-6xl flex-col gap-24 px-0 py-16")}>
           <header data-slot="page-header" className="flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold tracking-tight">{p.title}</h1>
+            <h1 className="text-3xl font-semibold">{p.title}</h1>
             {p.subtitle && <p className="text-sm text-muted-foreground">{p.subtitle}</p>}
           </header>
           {kids(node)}
@@ -130,7 +130,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       return (
         <section {...mark(node)} data-slot="section" className={cn("flex flex-col gap-6", ctx.span && SPAN[ctx.span])}>
           <div data-slot="section-header" className="flex flex-col gap-2">
-            <h2 className="text-2xl font-semibold tracking-tight">{p.title}</h2>
+            <h2 className="text-xl font-semibold">{p.title}</h2>
             {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
           </div>
           <div data-slot="section-body" className={cn("flex flex-col gap-12", node.className)}>
@@ -165,7 +165,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         <div {...mark(node)} data-slot="block" className={outer(node, ctx, "flex flex-col gap-3")}>
           {(p.title || p.description) && (
             <div data-slot="block-header" className="flex flex-col gap-1">
-              {p.title && <h3 className="text-base leading-6 font-semibold">{p.title}</h3>}
+              {p.title && <h3 className="text-sm leading-6 font-semibold">{p.title}</h3>}
               {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
             </div>
           )}
@@ -204,9 +204,9 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       const dir = p.direction as "up" | "down" | undefined
       return (
         <div {...mark(node)} data-slot="custom-stat" className={outer(node, ctx, "flex flex-col gap-2")}>
-          <span className="text-sm text-muted-foreground">{p.label}</span>
+          {p.label && <span className="text-sm text-muted-foreground">{p.label}</span>}
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold tabular-nums">{p.value}</span>
+            <span className={cn("font-semibold tabular-nums", p.size === "lg" ? "text-5xl leading-none" : "text-3xl")}>{p.value}</span>
             {p.unit && <span className="text-sm text-muted-foreground">{p.unit}</span>}
           </div>
           {(p.delta || p.note) && (
@@ -231,7 +231,10 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       )
 
     case "table": {
-      const cols = p.columns as { key: string; label: string; align?: "left" | "right"; bar?: boolean }[]
+      // span: the column's width in grid columns, so cell text starts on a column line.
+      // tone: values listed here are drawn in the destructive colour (a state, e.g. 严重).
+      const cols = p.columns as { key: string; label: string; align?: "left" | "right"; bar?: boolean; span?: number; tone?: string[] }[]
+      const onGrid = cols.some((c) => c.span)
       const rows = p.rows as Record<string, React.ReactNode>[]
       // A numeric column can carry an inline bar, scaled to the column's max.
       const max = Object.fromEntries(cols.filter((c) => c.bar).map((c) => [c.key, Math.max(...rows.map((r) => Number(r[c.key]) || 0))]))
@@ -248,12 +251,20 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         )
       return (
         <div {...mark(node)} data-slot="custom-table" className={outer(node, ctx)}>
-          <Table>
+          <Table className={onGrid ? "table-fixed" : undefined}>
+            {onGrid && (
+              <colgroup>
+                {cols.map((c, i) => (
+                  // n columns plus the gutter after them; the last column has no gutter
+                  <col key={c.key} style={{ width: (c.span ?? 1) * 98 - (i === cols.length - 1 ? 24 : 0) }} />
+                ))}
+              </colgroup>
+            )}
             {p.caption && <TableCaption>{p.caption}</TableCaption>}
             <TableHeader>
               <TableRow>
-                {cols.map((c) => (
-                  <TableHead key={c.key} className={c.align === "right" ? "text-right" : undefined}>
+                {cols.map((c, i) => (
+                  <TableHead key={c.key} className={cn(c.align === "right" && "text-right", onGrid && "pl-0 pr-6 text-muted-foreground font-normal", onGrid && i === cols.length - 1 && "pr-0")}>
                     {c.label}
                   </TableHead>
                 ))}
@@ -262,8 +273,16 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
             <TableBody>
               {rows.map((r, i) => (
                 <TableRow key={i}>
-                  {cols.map((c) => (
-                    <TableCell key={c.key} className={c.align === "right" ? "text-right tabular-nums" : undefined}>
+                  {cols.map((c, i) => (
+                    <TableCell
+                      key={c.key}
+                      className={cn(
+                        c.align === "right" && "text-right tabular-nums",
+                        onGrid && "py-2.5 pl-0 pr-6 whitespace-normal",
+                        onGrid && i === cols.length - 1 && "pr-0",
+                        c.tone?.includes(String(r[c.key])) && "font-medium text-destructive",
+                      )}
+                    >
                       {cell(c, r[c.key])}
                     </TableCell>
                   ))}
@@ -284,6 +303,11 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       const height = fill ? "flex-1 min-h-24" : ((p.height as string) ?? "h-60")
       const horizontal = p.layout === "horizontal"
       const data = p.data as Record<string, unknown>[]
+      // Line charts: y range rounded out to tens, one tick every 10.
+      const vals = data.flatMap((r) => series.map((x) => Number(r[x.key]))).filter((v) => !Number.isNaN(v))
+      const yLo = Math.floor((Math.min(...vals) - 1) / 10) * 10
+      const yHi = Math.ceil((Math.max(...vals) + 1) / 10) * 10
+      const yTicks = Array.from({ length: (yHi - yLo) / 10 + 1 }, (_, i) => yLo + i * 10)
       // Horizontal bars read like a ranked list: category, a thin bar in the
       // same ink as the progress bars, the value at its end. No grid or value
       // axis; the height follows the number of bars.
@@ -330,13 +354,14 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                 ))}
               </BarChart>
             ) : (
-              <LineChart data={p.data} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey={p.xKey} tickLine={false} axisLine={false} tickMargin={8} />
-                <YAxis tickLine={false} axisLine={false} width={40} />
+              <LineChart data={p.data} margin={{ left: 0, right: 16, top: 8, bottom: 0 }}>
+                <CartesianGrid vertical={false} strokeOpacity={0.6} />
+                <XAxis dataKey={p.xKey} tickLine={false} axisLine={false} tickMargin={8} fontSize={12} />
+                {/* a trend reads by its slope, so the axis fits the data range instead of starting at 0 */}
+                <YAxis tickLine={false} axisLine={false} width={32} fontSize={12} domain={[yTicks[0], yTicks[yTicks.length - 1]]} ticks={yTicks} interval={0} />
                 {series.length > 1 && <ChartLegend content={<ChartLegendContent />} />}
                 {series.map((s) => (
-                  <Line key={s.key} dataKey={s.key} stroke={`var(--color-${s.key})`} strokeWidth={2} dot={false} isAnimationActive={false} />
+                  <Line key={s.key} dataKey={s.key} stroke={series.length > 1 ? `var(--color-${s.key})` : "var(--primary)"} strokeWidth={2} dot={{ r: 3, fill: "var(--background)", strokeWidth: 2 }} isAnimationActive={false} />
                 ))}
               </LineChart>
             )}

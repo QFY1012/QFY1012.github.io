@@ -2,7 +2,7 @@
  "id": "page",
  "type": "page",
  "title": "体验走查报告",
- "subtitle": "示例后台 · 订单列表页 · 2026-09-14",
+ "subtitle": "示例后台 · 订单列表页,走查日期 2026-09-14",
  "src": [
   "/title",
   "/target",
@@ -19,14 +19,33 @@
      "type": "grid",
      "children": [
       {
-       "id": "card-score",
-       "type": "card",
-       "span": 3,
+       "id": "blk-summary",
+       "type": "block",
+       "span": 8,
+       "title": "结论",
+       "children": [
+        {
+         "id": "text-summary",
+         "type": "text",
+         "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
+         "className": "text-xl leading-8 text-justify",
+         "src": [
+          "/summary"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "blk-score",
+       "type": "block",
+       "span": 4,
+       "title": "综合得分",
+       "contentClassName": "justify-end",
        "children": [
         {
          "id": "stat-score",
          "type": "stat",
-         "label": "综合得分",
+         "size": "lg",
          "value": "72",
          "unit": "/ 100",
          "delta": "+7",
@@ -38,16 +57,16 @@
        ]
       },
       {
-       "id": "card-total",
-       "type": "card",
-       "span": 3,
+       "id": "blk-total",
+       "type": "block",
+       "span": 4,
        "children": [
         {
          "id": "stat-total",
          "type": "stat",
          "label": "问题总数",
          "value": "23",
-         "note": "主要 8 · 次要 12",
+         "note": "其中主要 8 个,次要 12 个",
          "src": [
           "/issueCounts/total",
           "/issueCounts/major",
@@ -57,9 +76,9 @@
        ]
       },
       {
-       "id": "card-severe",
-       "type": "card",
-       "span": 3,
+       "id": "blk-severe",
+       "type": "block",
+       "span": 4,
        "children": [
         {
          "id": "stat-severe",
@@ -74,9 +93,9 @@
        ]
       },
       {
-       "id": "card-fixed",
-       "type": "card",
-       "span": 3,
+       "id": "blk-fixed",
+       "type": "block",
+       "span": 4,
        "children": [
         {
          "id": "stat-fixed",
@@ -91,23 +110,6 @@
        ]
       },
       {
-       "id": "blk-summary",
-       "type": "block",
-       "span": 4,
-       "title": "结论",
-       "children": [
-        {
-         "id": "text-summary",
-         "type": "text",
-         "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
-         "className": "text-base leading-7 text-justify",
-         "src": [
-          "/summary"
-         ]
-        }
-       ]
-      },
-      {
        "id": "blk-dims",
        "type": "block",
        "span": 4,
@@ -117,7 +119,6 @@
          "id": "prog-dims",
          "type": "progress-list",
          "compact": true,
-         "className": "flex-1 justify-between gap-2",
          "items": [
           {
            "label": "一致性",
@@ -154,7 +155,7 @@
       {
        "id": "blk-trend",
        "type": "block",
-       "span": 4,
+       "span": 8,
        "title": "各版本问题数",
        "children": [
         {
@@ -229,23 +230,31 @@
            "columns": [
             {
              "key": "id",
-             "label": "编号"
+             "label": "编号",
+             "span": 1
             },
             {
              "key": "title",
-             "label": "问题"
+             "label": "问题",
+             "span": 4
             },
             {
              "key": "severity",
-             "label": "严重程度"
+             "label": "严重程度",
+             "span": 2,
+             "tone": [
+              "严重"
+             ]
             },
             {
              "key": "location",
-             "label": "位置"
+             "label": "位置",
+             "span": 2
             },
             {
              "key": "suggestion",
-             "label": "建议"
+             "label": "建议",
+             "span": 3
             }
            ],
            "rows": [
@@ -300,7 +309,7 @@
            "id": "text-issues-note",
            "type": "text",
            "text": "共 23 个问题,此处列出 6 个",
-           "className": "text-muted-foreground",
+           "className": "text-xs text-muted-foreground",
            "src": [
             "/issueCounts/total",
             "/issues"
@@ -332,20 +341,24 @@
            "columns": [
             {
              "key": "component",
-             "label": "组件"
+             "label": "组件",
+             "span": 2
             },
             {
              "key": "count",
              "label": "使用次数",
+             "span": 4,
              "bar": true
             },
             {
              "key": "nonstd",
-             "label": "不规范"
+             "label": "不规范",
+             "span": 2
             },
             {
              "key": "detail",
-             "label": "不规范说明"
+             "label": "不规范说明",
+             "span": 4
             }
            ],
            "rows": [
@@ -411,7 +424,6 @@
         {
          "id": "list-recs",
          "type": "list",
-         "className": "flex-1 justify-between",
          "items": [
           {
            "title": "为批量删除加确认与撤销",
@@ -441,7 +453,7 @@
         {
          "id": "kv-follow",
          "type": "kv",
-         "className": "flex-1 content-between gap-y-4",
+         "className": "flex-1 content-between",
          "items": [
           {
            "label": "日期",
