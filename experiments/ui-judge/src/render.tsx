@@ -274,7 +274,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         const key = series[0].key
         return (
           <div {...mark(node)} data-slot="custom-chart" className={outer(node, ctx)}>
-            <ChartContainer config={cfg} className="aspect-auto w-full" style={{ height: data.length * 52 }}>
+            <ChartContainer config={cfg} className="aspect-auto w-full" style={{ height: data.length * 30 }}>
               <BarChart data={data} layout="vertical" margin={{ left: 0, right: 40, top: 0, bottom: 0 }} barCategoryGap={0}>
                 <XAxis type="number" hide domain={[0, "dataMax"]} />
                 <YAxis type="category" dataKey={p.xKey} tickLine={false} axisLine={false} width={64} tick={{ fill: "var(--foreground)", fontSize: 13 }} />
