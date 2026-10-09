@@ -9,6 +9,8 @@ const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, f), "utf8"))
 function review() {
   const d = read("data/review.json")
   const c = d.issueCounts
+  // Cards only where items are parallel, independent objects meant to be
+  // compared (the four indicators). Everything else is an unboxed block.
   return {
     id: "page",
     type: "page",
@@ -25,7 +27,10 @@ function review() {
             id: "grid-overview",
             type: "grid",
             children: [
-              { id: "card-score", type: "card", span: 3, children: [
+              { id: "blk-summary", type: "block", span: 8, title: "结论", children: [
+                { id: "text-summary", type: "text", text: d.summary, className: "text-justify", src: ["/summary"] } ] },
+              // Body text keeps an 8-column measure; the indicators start a new row.
+              { id: "card-score", type: "card", span: 3, className: "col-start-1", children: [
                 { id: "stat-score", type: "stat", label: "综合得分", value: String(d.score.overall), unit: `/ ${d.score.max}`, delta: `+${d.score.overall - d.score.previous}`, note: `上次 ${d.score.previous}`, src: ["/score"] } ] },
               { id: "card-total", type: "card", span: 3, children: [
                 { id: "stat-total", type: "stat", label: "问题总数", value: String(c.total), note: `主要 ${c.major} · 次要 ${c.minor}`, src: ["/issueCounts/total", "/issueCounts/major", "/issueCounts/minor"] } ] },
@@ -33,11 +38,9 @@ function review() {
                 { id: "stat-severe", type: "stat", label: "严重问题", value: String(c.severe), note: "需优先处理", src: ["/issueCounts/severe"] } ] },
               { id: "card-fixed", type: "card", span: 3, children: [
                 { id: "stat-fixed", type: "stat", label: "已修复", value: String(c.fixedSinceLast), note: "自上次走查", src: ["/issueCounts/fixedSinceLast"] } ] },
-              { id: "card-summary", type: "card", span: 12, title: "结论", children: [
-                { id: "text-summary", type: "text", text: d.summary, className: "text-justify", src: ["/summary"] } ] },
-              { id: "card-trend", type: "card", span: 8, title: "问题数量趋势", description: "各版本走查发现的问题数", children: [
+              { id: "blk-trend", type: "block", span: 8, title: "问题数量趋势", description: "各版本走查发现的问题数", children: [
                 { id: "chart-trend", type: "line-chart", xKey: "version", series: [{ key: "issues", label: "问题数" }], data: d.trend, src: ["/trend"] } ] },
-              { id: "card-dims", type: "card", span: 4, title: "分维度得分", children: [
+              { id: "blk-dims", type: "block", span: 4, title: "分维度得分", children: [
                 { id: "prog-dims", type: "progress-list", items: d.dimensions.map((x) => ({ label: x.name, value: x.score, display: String(x.score) })), src: ["/dimensions"] } ] },
             ],
           },
@@ -50,7 +53,7 @@ function review() {
         children: [
           { id: "grp-issues", type: "group", children: [
             { id: "grid-issues", type: "grid", children: [
-              { id: "card-issues", type: "card", span: 12, title: "问题清单", children: [
+              { id: "blk-issues", type: "block", span: 12, title: "问题清单", children: [
                 { id: "table-issues", type: "table",
                   columns: [
                     { key: "id", label: "编号" },
@@ -65,9 +68,9 @@ function review() {
           ] },
           { id: "grp-components", type: "group", children: [
             { id: "grid-components", type: "grid", children: [
-              { id: "card-usage", type: "card", span: 7, title: "组件使用次数", children: [
-                { id: "chart-usage", type: "bar-chart", layout: "horizontal", height: "h-72", xKey: "component", series: [{ key: "count", label: "次数" }], data: d.componentUsage, src: ["/componentUsage"] } ] },
-              { id: "card-nonstd", type: "card", span: 5, title: "不规范用法", children: [
+              { id: "blk-usage", type: "block", span: 7, title: "组件使用次数", children: [
+                { id: "chart-usage", type: "bar-chart", layout: "horizontal", height: "h-60", xKey: "component", series: [{ key: "count", label: "次数" }], data: d.componentUsage, src: ["/componentUsage"] } ] },
+              { id: "blk-nonstd", type: "block", span: 5, title: "不规范用法", children: [
                 { id: "list-nonstd", type: "list", items: d.nonstandard.map((x) => ({ title: x.component, description: x.detail, meta: `${x.count} 处` })), src: ["/nonstandard"] } ] },
             ] },
           ] },
@@ -79,9 +82,9 @@ function review() {
         title: "下一步",
         children: [
           { id: "grid-next", type: "grid", children: [
-            { id: "card-recs", type: "card", span: 8, title: "优先处理", children: [
+            { id: "blk-recs", type: "block", span: 8, title: "优先处理", children: [
               { id: "list-recs", type: "list", items: d.recommendations.map((x) => ({ title: x.title, description: x.detail })), src: ["/recommendations"] } ] },
-            { id: "card-follow", type: "card", span: 4, title: "复查安排", children: [
+            { id: "blk-follow", type: "block", span: 4, title: "复查安排", children: [
               { id: "kv-follow", type: "kv", className: "gap-y-4", items: [
                 { label: "日期", value: d.followUp.date },
                 { label: "范围", value: d.followUp.scope },

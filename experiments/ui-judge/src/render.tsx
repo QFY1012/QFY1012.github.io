@@ -157,6 +157,23 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         </div>
       )
 
+    // A titled block without card chrome. Inside spacing (12px) is kept below
+    // the 24px between blocks, since nothing but space separates them.
+    case "block":
+      return (
+        <div {...mark(node)} data-slot="block" className={outer(node, ctx, "flex flex-col gap-3")}>
+          {(p.title || p.description) && (
+            <div data-slot="block-header" className="flex flex-col gap-1">
+              {p.title && <h3 className="text-base leading-6 font-semibold">{p.title}</h3>}
+              {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
+            </div>
+          )}
+          <div data-slot="block-content" className={cn("flex flex-col gap-3", node.contentClassName as string)}>
+            {kids(node)}
+          </div>
+        </div>
+      )
+
     case "card":
       return (
         <Card {...mark(node)} className={outer(node, ctx)}>

@@ -19,9 +19,27 @@
      "type": "grid",
      "children": [
       {
+       "id": "blk-summary",
+       "type": "block",
+       "span": 8,
+       "title": "结论",
+       "children": [
+        {
+         "id": "text-summary",
+         "type": "text",
+         "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
+         "className": "text-justify",
+         "src": [
+          "/summary"
+         ]
+        }
+       ]
+      },
+      {
        "id": "card-score",
        "type": "card",
        "span": 3,
+       "className": "col-start-1",
        "children": [
         {
          "id": "stat-score",
@@ -91,25 +109,8 @@
        ]
       },
       {
-       "id": "card-summary",
-       "type": "card",
-       "span": 12,
-       "title": "结论",
-       "children": [
-        {
-         "id": "text-summary",
-         "type": "text",
-         "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
-         "className": "text-justify",
-         "src": [
-          "/summary"
-         ]
-        }
-       ]
-      },
-      {
-       "id": "card-trend",
-       "type": "card",
+       "id": "blk-trend",
+       "type": "block",
        "span": 8,
        "title": "问题数量趋势",
        "description": "各版本走查发现的问题数",
@@ -157,8 +158,8 @@
        ]
       },
       {
-       "id": "card-dims",
-       "type": "card",
+       "id": "blk-dims",
+       "type": "block",
        "span": 4,
        "title": "分维度得分",
        "children": [
@@ -216,8 +217,8 @@
        "type": "grid",
        "children": [
         {
-         "id": "card-issues",
-         "type": "card",
+         "id": "blk-issues",
+         "type": "block",
          "span": 12,
          "title": "问题清单",
          "children": [
@@ -319,8 +320,8 @@
        "type": "grid",
        "children": [
         {
-         "id": "card-usage",
-         "type": "card",
+         "id": "blk-usage",
+         "type": "block",
          "span": 7,
          "title": "组件使用次数",
          "children": [
@@ -328,7 +329,7 @@
            "id": "chart-usage",
            "type": "bar-chart",
            "layout": "horizontal",
-           "height": "h-72",
+           "height": "h-60",
            "xKey": "component",
            "series": [
             {
@@ -365,8 +366,8 @@
          ]
         },
         {
-         "id": "card-nonstd",
-         "type": "card",
+         "id": "blk-nonstd",
+         "type": "block",
          "span": 5,
          "title": "不规范用法",
          "children": [
@@ -417,8 +418,8 @@
      "type": "grid",
      "children": [
       {
-       "id": "card-recs",
-       "type": "card",
+       "id": "blk-recs",
+       "type": "block",
        "span": 8,
        "title": "优先处理",
        "children": [
@@ -446,8 +447,8 @@
        ]
       },
       {
-       "id": "card-follow",
-       "type": "card",
+       "id": "blk-follow",
+       "type": "block",
        "span": 4,
        "title": "复查安排",
        "children": [

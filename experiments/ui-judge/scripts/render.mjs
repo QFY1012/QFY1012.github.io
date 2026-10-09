@@ -124,7 +124,7 @@ function extract() {
   // Layout tree: for every container that lays out several children, the
   // measured gap between neighbours (vertical when stacked, horizontal when
   // side by side). The judge reads groups from these numbers.
-  const containers = ["page", "section", "section-body", "group-body", "grid", "card", "card-content", "custom-progress-list"]
+  const containers = ["page", "section", "section-body", "group-body", "grid", "card", "card-content", "block", "block-content", "custom-progress-list"]
   const layout = []
   for (const node of nodes) {
     if (!containers.includes(node.slot)) continue
