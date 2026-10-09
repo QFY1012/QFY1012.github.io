@@ -48,9 +48,9 @@ function review() {
         type: "section",
         title: "走查发现",
         children: [
-          { id: "grp-issues", type: "group", title: "问题清单", children: [
+          { id: "grp-issues", type: "group", children: [
             { id: "grid-issues", type: "grid", children: [
-              { id: "card-issues", type: "card", span: 12, children: [
+              { id: "card-issues", type: "card", span: 12, title: "问题清单", children: [
                 { id: "table-issues", type: "table",
                   columns: [
                     { key: "id", label: "编号" },
@@ -63,7 +63,7 @@ function review() {
                 { id: "text-issues-note", type: "text", text: `共 ${c.total} 个问题,此处列出 ${d.issues.length} 个`, className: "text-muted-foreground", src: ["/issueCounts/total", "/issues"] } ] },
             ] },
           ] },
-          { id: "grp-components", type: "group", title: "组件使用", children: [
+          { id: "grp-components", type: "group", children: [
             { id: "grid-components", type: "grid", children: [
               { id: "card-usage", type: "card", span: 7, title: "组件使用次数", children: [
                 { id: "chart-usage", type: "bar-chart", layout: "horizontal", height: "h-72", xKey: "component", series: [{ key: "count", label: "次数" }], data: d.componentUsage, src: ["/componentUsage"] } ] },

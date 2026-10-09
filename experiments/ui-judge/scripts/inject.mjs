@@ -64,19 +64,20 @@ const REVIEW = [
 
   // 3.1 spacing ladder: page 96 / group 48 / card 24
   { id: "3.1-o", check: "3.1", level: "obvious", gt: ["sec-issues", "grp-issues", "grp-components"],
-    what: "“走查发现”里两个组之间 16px,小于卡片之间的 24px",
+    what: "“走查发现”里两个组(问题清单 / 组件使用)之间 16px,小于卡片之间的 24px",
     apply: (s) => addClass(s, "sec-issues", "gap-4") },
   { id: "3.1-s", check: "3.1", level: "subtle", gt: ["grid-components", "card-usage", "card-nonstd"],
     what: "组件使用一行两张卡片之间 16px,低于最小 24px",
     apply: (s) => addClass(s, "grid-components", "gap-4") },
 
   // 3.2 consistent spacing inside a card
+  // Smaller than the other gaps, so that 3.1 (card inside <= between cards) still holds.
   { id: "3.2-o", check: "3.2", level: "obvious", gt: ["text-issues-note", "card-issues"],
-    what: "问题清单卡片里表格与说明文字之间 64px,其余 24px",
-    apply: (s) => addClass(s, "text-issues-note", "mt-10") },
+    what: "问题清单卡片里表格与说明文字之间 8px,标题区与表格之间仍是 24px",
+    apply: (s) => addClass(s, "text-issues-note", "-mt-4") },
   { id: "3.2-s", check: "3.2", level: "subtle", gt: ["text-issues-note", "card-issues"],
-    what: "问题清单卡片里表格与说明文字之间 32px,其余 24px",
-    apply: (s) => addClass(s, "text-issues-note", "mt-2") },
+    what: "问题清单卡片里表格与说明文字之间 16px,标题区与表格之间仍是 24px",
+    apply: (s) => addClass(s, "text-issues-note", "-mt-2") },
 
   // 3.3 equal height in a row
   { id: "3.3-o", check: "3.3", level: "obvious", gt: ["card-dims", "card-trend"],

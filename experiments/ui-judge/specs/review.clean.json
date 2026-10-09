@@ -210,7 +210,6 @@
     {
      "id": "grp-issues",
      "type": "group",
-     "title": "问题清单",
      "children": [
       {
        "id": "grid-issues",
@@ -220,6 +219,7 @@
          "id": "card-issues",
          "type": "card",
          "span": 12,
+         "title": "问题清单",
          "children": [
           {
            "id": "table-issues",
@@ -313,7 +313,6 @@
     {
      "id": "grp-components",
      "type": "group",
-     "title": "组件使用",
      "children": [
       {
        "id": "grid-components",
