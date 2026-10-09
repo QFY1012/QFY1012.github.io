@@ -30,12 +30,13 @@
          "id": "blk-summary",
          "type": "block",
          "span": 9,
+         "rows": 1,
          "children": [
           {
            "id": "text-summary",
            "type": "text",
            "text": "订单列表页整体可用,综合得分较上次提升 7 分。主要问题集中在筛选区和批量操作:筛选条件过多且没有分组,批量操作缺少二次确认,误操作后无法撤销。建议优先处理 3 个严重问题,再统一表格内的状态标签与按钮样式。",
-           "className": "text-xl leading-8 text-justify",
+           "className": "text-xl leading-9 text-justify",
            "src": [
             "/summary"
            ]
@@ -54,6 +55,7 @@
          "id": "blk-score",
          "type": "block",
          "span": 3,
+         "rows": 1,
          "children": [
           {
            "id": "stat-score",
@@ -63,9 +65,10 @@
            "label": "综合得分",
            "value": "72",
            "unit": "/ 100",
-           "note": "上次 65,提高 7 分",
+           "note": "上次 65,提高 7 分;已修复 9 个问题",
            "src": [
-            "/score"
+            "/score",
+            "/issueCounts/fixedSinceLast"
            ]
           }
          ]
@@ -73,7 +76,8 @@
         {
          "id": "blk-total",
          "type": "block",
-         "span": 2,
+         "span": 3,
+         "rows": 1,
          "children": [
           {
            "id": "stat-total",
@@ -93,7 +97,8 @@
         {
          "id": "blk-severe",
          "type": "block",
-         "span": 2,
+         "span": 3,
+         "rows": 1,
          "children": [
           {
            "id": "stat-severe",
@@ -104,24 +109,6 @@
            "note": "需优先处理",
            "src": [
             "/issueCounts/severe"
-           ]
-          }
-         ]
-        },
-        {
-         "id": "blk-fixed",
-         "type": "block",
-         "span": 2,
-         "children": [
-          {
-           "id": "stat-fixed",
-           "type": "stat",
-           "captionBelow": true,
-           "label": "已修复",
-           "value": "9",
-           "note": "自上次走查",
-           "src": [
-            "/issueCounts/fixedSinceLast"
            ]
           }
          ]
@@ -137,12 +124,14 @@
          "id": "blk-dims",
          "type": "block",
          "span": 3,
+         "rows": 1,
          "title": "分维度得分",
          "children": [
           {
            "id": "prog-dims",
            "type": "progress-list",
            "compact": true,
+           "className": "gap-0",
            "items": [
             {
              "label": "一致性",
@@ -180,6 +169,7 @@
          "id": "blk-trend",
          "type": "block",
          "span": 6,
+         "rows": 1,
          "title": "各版本问题数",
          "children": [
           {
@@ -235,6 +225,7 @@
    "id": "sec-issues",
    "type": "section",
    "title": "走查发现",
+   "description": "共 23 个问题,此处列出 6 个",
    "children": [
     {
      "id": "grp-issues",
@@ -249,6 +240,7 @@
          "id": "blk-issues",
          "type": "block",
          "span": 9,
+         "rows": 2,
          "title": "问题清单",
          "children": [
           {
@@ -331,36 +323,14 @@
            "src": [
             "/issues"
            ]
-          },
-          {
-           "id": "text-issues-note",
-           "type": "text",
-           "text": "共 23 个问题,此处列出 6 个",
-           "className": "text-xs text-muted-foreground",
-           "src": [
-            "/issueCounts/total",
-            "/issues"
-           ]
           }
          ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "id": "grp-components",
-     "type": "group",
-     "children": [
-      {
-       "id": "grid-components",
-       "type": "grid",
-       "cols": 9,
-       "children": [
+        },
         {
          "id": "blk-components",
          "type": "block",
          "span": 9,
+         "rows": 2,
          "title": "组件使用",
          "children": [
           {
@@ -448,13 +418,14 @@
        "id": "blk-recs",
        "type": "block",
        "span": 6,
+       "rows": 2,
        "title": "优先处理",
        "children": [
         {
          "id": "list-recs",
          "type": "list",
          "divided": false,
-         "className": "flex-1 justify-between",
+         "ordered": true,
          "items": [
           {
            "title": "为批量删除加确认与撤销",
@@ -479,11 +450,13 @@
        "id": "blk-follow",
        "type": "block",
        "span": 3,
+       "rows": 2,
        "title": "复查安排",
        "children": [
         {
          "id": "kv-follow",
          "type": "kv",
+         "labelCols": 1,
          "items": [
           {
            "label": "日期",
