@@ -66,6 +66,19 @@
     "丁": "survey-f",
     "戊": "survey-b"
    }
+  },
+  {
+   "id": "style",
+   "title": "运营月报·五种风格",
+   "desc": "同一份运营月报数据，直接写成五种不同风格的页面（不经渲染器）",
+   "src": "out/style",
+   "labels": {
+    "甲": "style-c",
+    "乙": "style-b",
+    "丙": "style-a",
+    "丁": "style-d",
+    "戊": "style-e"
+   }
   }
  ]
 }
