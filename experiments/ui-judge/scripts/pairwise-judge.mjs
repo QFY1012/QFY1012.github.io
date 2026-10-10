@@ -28,6 +28,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric9       RUBRIC_9: rubric8 with hierarchy as levels of type mapping levels of content, emphasis relative
 //   rubric10      RUBRIC_10: rubric9 with density both ways, two or three groups of information a screen
 //   rubric11      RUBRIC_11: rubric10 with crowding counted on the fullest tile, dilution as blank area on the emptiest
+//   rubric12      RUBRIC_12: rubric9 with alignment judged on the content edges, not on containers
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -181,6 +182,17 @@ export const RUBRIC_11 = RUBRIC_10.map((p, i) => i !== 0 ? p : {
   see: "最满的一屏有几个信息组;最空的一屏(不算最后一张)空白约占几成",
 })
 export const systemRubric11 = () => systemRubricOf(RUBRIC_11)
+// rubric12: rubric9 with principle 7 decoupled from decoration. Its edges were
+// any edges, so boxing every block in same-width cards made a page "aligned"
+// by construction; when 3 (decoration) and 7 disagreed the person sided with 3
+// three times out of four. Alignment now looks at the content's own edges.
+export const RUBRIC_12 = RUBRIC_9.map((p, i) => i !== 6 ? p : {
+  name: "正负形整齐",
+  rule: "只看内容本身的边缘:文字的起止、图表和表格的边,不看卡片、边框、底色的外框(外框归第 3 条)。内容的边缘落在少数几条共同的竖线和横线上,内容块之间的空白是规整的矩形",
+  bad: "几块内容高低不齐,之间留下 L 形或锯齿形的空白",
+  see: "内容本身(不算外框)的边缘落在几条共同线上、哪些空白不成矩形",
+})
+export const systemRubric12 = () => systemRubricOf(RUBRIC_12)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -274,6 +286,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric9") return systemRubric9()
   if (cond === "rubric10") return systemRubric10()
   if (cond === "rubric11") return systemRubric11()
+  if (cond === "rubric12") return systemRubric12()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
