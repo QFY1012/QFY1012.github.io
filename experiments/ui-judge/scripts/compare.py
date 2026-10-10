@@ -139,3 +139,25 @@ for k, name in labels.items():
     if k != "crit": print(f"{name:<14}" + "".join(f"{rows[c][k]:<{max(w, 22)}}" for c in conds))
 for c in conds:
     print(f"{c} 条目: {rows[c]['crit']}")
+
+# Paired test between each condition and the first one, on units both have:
+# a unit is (group, pair, round) the person does not tie; "right" = decided
+# for the person's pick. b = first right and other not, c = other right and
+# first not; two-sided sign test on b vs c.
+from math import comb
+def sign_p(b, c):
+    n = b + c
+    if n == 0: return 1.0
+    k = min(b, c)
+    return min(1.0, 2 * sum(comb(n, i) for i in range(k + 1)) / 2 ** n)
+base = conds[0]
+for c in conds[1:]:
+    b = cc = 0
+    for (g, x, y, n) in units:
+        if rank(g, x) == rank(g, y): continue
+        hum = x if rank(g, x) < rank(g, y) else y
+        d0, d1 = decide(data[base], g, x, y, n), decide(data[c], g, x, y, n)
+        if d0 is None or d1 is None: continue
+        r0, r1 = d0 == hum, d1 == hum
+        b += r0 and not r1; cc += r1 and not r0
+    print(f"配对: {c} 对 {base}: {c} 独对 {cc} 次, {base} 独对 {b} 次, 符号检验 p={sign_p(b, cc):.2f}")
