@@ -20,6 +20,8 @@ ${principles ? PRINCIPLE_TEXT : ""}
 // Variants under test on the eval set (scripts/evalset-judge.mjs --cond):
 //   principles    the prompt above (baseline)
 //   principles2   PRINCIPLE_TEXT_2: crowding judged screen by screen, observations first
+//   principles3   PRINCIPLE_TEXT_3: principles2 aligned on redundant decoration and emphasis
+//   perprinciple3 principles3 compared principle by principle, then an overall pick
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -51,6 +53,34 @@ export const PRINCIPLE_TEXT_2 = `评审标准(与具体风格无关):
 export const system2 = () => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量:整体的比例、疏密节奏、主次对比、对齐与留白、组件和字体的精致度。不比较内容。
 
 ${PRINCIPLE_TEXT_2}先写下两版最拥挤的那一屏的观察,再判断哪一版更好。只输出 JSON:{"A":"A 版最拥挤的一屏:几种内容、块间空白约几行高","B":"B 版同上","better":"A" 或 "B","reason":"一两句话"}`
+// principles3: principles2 aligned with the person's reasons on the pairs the
+// judge kept getting wrong. Every piece of decoration is checked for being
+// redundant (uniform cards are no merit), emphasis by a fill or colour on the
+// one most important block is not redundant, whitespace should come in clean
+// blocks again, emphasis needs no oversized numbers, and "uniform containers"
+// do not count as a system.
+export const PRINCIPLES_3 = [
+  { id: "decoration", see: "列出多余的装饰,没有就写「无」", name: "不要多余的装饰", text: "卡片、边框、底色、阴影、颜色都是装饰,每一处都要检查是否多余。检查方法:把它去掉,内容的分组、含义和重点是否仍然看得出来;看得出来,它就是多余的。多余的装饰是缺点。卡片样式统一、排列整齐不算优点,统一的多余装饰仍然是多余装饰。用底色或颜色把全页最重要的一块(比如标题和核心指标)突出出来,是在表达重点,不算多余;每块都同样套上,等于什么都没突出,才是多余。区分真正独立的对象(比如一条一条的发现)或表达状态(比如告警)的装饰也有必要。" },
+  { id: "crowding", see: "最拥挤的一屏:几种内容、块间空白约几行高", name: "不拥挤", text: "按屏看(每张切块约为一屏),数一数每屏里有几种不同的内容(一段文字、一组数字、一张图、一张表、一个列表各算一种),看相邻两块内容之间的空白大约是正文行高的几倍。同一屏里内容种类越多、块间空白越窄,越拥挤;几块不同内容并排挤在一行比上下排开更拥挤。拥挤是严重缺点,不能用「去掉了容器」「主次分明」「紧凑」「信息完整」来抵消。页面四周的大片留白不能抵消内容区内部的拥挤。空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间。" },
+  { id: "emphasis", see: "最先看到的是什么;有没有分量相当的不同内容并排", name: "主次分明", text: "同一水平带里的内容要么同类、分量相同,要么有明显的主次;分量相当的不同内容并排是问题。主次指最重要的信息能先被看到,不需要刻意放大。" },
+  { id: "rhythm", see: "同类元素的间距是否一致,哪里不一致", name: "疏密一致", text: "同类元素的行距和间距一致,不为凑齐高度而拉开或压缩。" },
+  { id: "system", see: "间距层级、对齐主轴、字号种类各怎样", name: "有系统", text: "整页使用统一的间距层级和对齐主轴,字号种类少且层级明确。「统一」指间距层级、对齐和字号统一;每块都套同样的容器不算有系统。" },
+  { id: "finish", see: "线条、颜色用途、标点、数字字体有什么问题", name: "精致", text: "图形线条克制,颜色只用来表达含义或突出重点;中文使用全角标点,数字字体统一。" },
+]
+export const PRINCIPLE_TEXT_3 = `评审标准(与具体风格无关):
+${PRINCIPLES_3.map((p, i) => `${i + 1}. ${p.name}:${p.text}`).join("\n")}
+
+`
+export const system3 = () => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量:整体的比例、疏密节奏、主次对比、对齐与留白、组件和字体的精致度。不比较内容。
+
+${PRINCIPLE_TEXT_3}先写下两版最拥挤的那一屏和多余的装饰,再判断哪一版更好。只输出 JSON:{"A":"A 版最拥挤的一屏:几种内容、块间空白约几行高","A装饰":"A 版多余的装饰,没有就写「无」","B":"B 版最拥挤的一屏,同上","B装饰":"B 版多余的装饰,同上","better":"A" 或 "B","reason":"一两句话"}`
+// perprinciple3: the principles3 text, but the judge goes through the six one
+// by one (what it sees in A, in B, which is better) and then picks overall,
+// with crowding and redundant decoration weighing most.
+export const system3each = () => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量,不比较内容。
+
+${PRINCIPLE_TEXT_3}按六条标准逐条比较:每条先分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。六条都比完后,综合给出总体哪一版更好,其中第 1、2 条最重要。
+只输出 JSON:{${PRINCIPLES_3.map((p, i) => `"${i + 1}":{"A":"A 版:${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -136,6 +166,8 @@ ${DIMENSIONS.map(dimLine).join("\n")}
 只输出 JSON:{"dims":{${DIMENSIONS.map((d) => `"${d.id}":"A|B|平"`).join(",")}},"better":"A" 或 "B","reason":"一两句话"}`
   if (cond === "principles") return system(true)
   if (cond === "principles2") return system2()
+  if (cond === "principles3") return system3()
+  if (cond === "perprinciple3") return system3each()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
