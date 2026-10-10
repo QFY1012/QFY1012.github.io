@@ -264,7 +264,7 @@ const vline = (svg, x, y0, y1, both = true, col = '#171b26') => S('path', { d: `
    Every chapter: 背景 → 解法 → 结果. Steps are kept short; on-screen time is derived from their length. */
 const COPY = {
   p1: {
-    idx: '01', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '技能的治理、评测与优化',
+    idx: '01', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 2026.09', title: '技能的治理、评测与优化',
     sub: '为中台设计 Agent 主导搭建技能治理与评测体系',
     steps: ['设计师各自开发的技能接入设计 Agent：<br>体量大、功能重叠，调用耗时且难以维护',
             '拆成基座 / 业务双层原子技能，按需组合调用；<br>与设计师共定过程检查点与理想输出，让技能并发评测、自我迭代'],
@@ -273,7 +273,7 @@ const COPY = {
     toc: ['技能的治理、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '技能治理',
   },
   p2: {
-    idx: '02', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: '视觉输出的规范、评测与优化',
+    idx: '02', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 2026.09', title: '视觉输出的规范、评测与优化',
     sub: '为中台设计 Agent 封装视觉组件库，让所有视觉输出动态符合规范',
     steps: ['Agent 的各类视觉输出没有统一规范：<br>每次生成的风格都不一样',
             '封装设计组件库 + design.md，Agent 按需组合、动态输出；<br>DOM · CV · LLM 多模态评测，反向迭代组件库与 design.md'],
@@ -282,7 +282,7 @@ const COPY = {
     toc: ['视觉输出的规范、评测与优化', '阿里巴巴淘天集团 · 实习', '2026'], hud: '视觉输出',
   },
   p3: {
-    idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 至今', title: 'PPT 生成 App 的设计与研发',
+    idx: '03', kicker: '实习 · 阿里巴巴淘天集团 · 2026.06 — 2026.09', title: 'PPT 生成 App 的设计与研发',
     sub: '为中台设计 Agent 上线 PPT 生成 App 与多套模板',
     steps: ['面向团队高频的 PPT 制作需求，<br>设计并研发 PPT 生成 App，接入中台设计 Agent',
             '全栈开发：可视化编辑器、PPT Agent、后端与模板管理后台；<br>DSL + 模板：稳定生成，快速换肤'],
@@ -458,7 +458,7 @@ const INTRO = (() => {
   const hl = $('div', 'abs', r); at(hl, 122, 500); st(hl, { height: '2px', background: 'var(--accent)', width: '0px' });
   const role = $('div', 'abs nowrap', r, '设计 · 工程 · AI'); at(role, 120, 526); st(role, { fontSize: '22px' });
   // the site's introduction and skills (src/pages/index.astro keeps the same text for phones and screen readers)
-  const bio = $('div', 'abs', r, '本科毕业于湖南大学工业设计专业，现为浙江大学计算机辅助设计与图形系统全国重点实验室人机交互与数据可视化方向硕士研究生，同时在阿里巴巴淘天集团实习，任 AI 设计工程师。懂 AI，懂设计，也懂工程，主要关注如何用 AI 更好地赋能设计。主导过对话式可视分析工具、数据叙事 Agent、舆情分析平台等数据产品，完成从产品定义、交互设计到开发落地的全过程。');
+  const bio = $('div', 'abs', r, '本科毕业于湖南大学工业设计专业，现为浙江大学计算机辅助设计与图形系统全国重点实验室人机交互与数据可视化方向硕士研究生，曾在阿里巴巴淘天集团实习，任 AI 设计工程师。懂 AI，懂设计，也懂工程，主要关注如何用 AI 更好地赋能设计。主导过对话式可视分析工具、数据叙事 Agent、舆情分析平台等数据产品，完成从产品定义、交互设计到开发落地的全过程。');
   at(bio, 120, 580); st(bio, { width: '560px', fontSize: '15px', lineHeight: '1.85', color: 'var(--dim)' });
   const SKILLS = [['设计', ['原型设计', 'Figma', '用户研究', '信息架构']], ['开发', ['Python', 'React', 'PydenticAgent', 'LangGraph']], ['研究', ['LLM4Vis', 'Agent4Vis', 'Chart Generation', 'Paper Writing']]];
   const skills = SKILLS.map(([k, tags]) => { const e = $('div', 'abs nowrap', r, `<span style="display:inline-block;width:46px;font-size:13px;font-weight:500">${k}</span>` +
