@@ -17,6 +17,22 @@ export const system = (principles) => `你是资深 UI 视觉设计评审。下�
 ${principles ? PRINCIPLE_TEXT : ""}
 判断哪一版更好。只输出 JSON:{"better":"A" 或 "B","reason":"一两句话"}`
 
+// Variants under test on the eval set (scripts/evalset-judge.mjs --cond):
+//   principles    the prompt above (baseline)
+//   roomy         principle 2 also names crowding as a defect
+//   perprinciple  the same principles, compared one by one before the verdict
+export const ROOMY_2 = "2. 留白要充足且成形:内容挤满页面、各部分之间缺少明显间隔是缺点;空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点。"
+export function systemFor(cond) {
+  if (cond === "principles") return system(true)
+  if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
+  if (cond === "perprinciple")
+    return system(true).replace(
+      /判断哪一版更好。只输出 JSON:.*$/m,
+      '先按六条标准逐条比较两版,每条给出 "A"、"B" 或 "平";再综合判断哪一版更好。只输出 JSON:{"principles":{"1":"A|B|平","2":"…","3":"…","4":"…","5":"…","6":"…"},"better":"A" 或 "B","reason":"一两句话"}',
+    )
+  throw new Error(`unknown cond ${cond}`)
+}
+
 export const img = (file) => ({ type: "image_url", image_url: { url: `data:image/png;base64,${fs.readFileSync(file).toString("base64")}` } })
 
 export async function call(sys, content, { key, model = "deepseek-flash", effort = "low" }) {

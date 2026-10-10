@@ -1,25 +1,29 @@
 // Run the stage-3 pairwise judge on the eval set and compare it with the
 // person's ranking.
 //
-//   DEEPSEEK_API_KEY=... node scripts/evalset-judge.mjs [--repeats 3] [--groups ops,ab,review]
-//   node scripts/evalset-judge.mjs --score
+//   DEEPSEEK_API_KEY=... node scripts/evalset-judge.mjs [--cond principles] [--repeats 3] [--groups ops,ab,review] [--with V8]
+//   node scripts/evalset-judge.mjs --score [--cond principles]
 //
 // evalset/key.json    groups: blind label → version, and where its images are
 // evalset/human.json  the person's rank per label (equal numbers = a tie)
 // Pages need thumb.png + clean tiles (scripts/cut-pages.py). Every pair inside a
 // group is judged in both orders with the principles; a decision counts only
 // when both orders pick the same page.
-// Results: out/aesthetic/evalset/<group>__<a>__<b>__r<n>.json (a is shown as A).
+// --cond picks the prompt variant (scripts/pairwise-judge.mjs); --with keeps only
+// the pairs that include that version.
+// Results: out/aesthetic/evalset/<cond>/<group>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
-import { system, img, call } from "./pairwise-judge.mjs"
+import { systemFor, img, call } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
   const i = process.argv.indexOf(`--${k}`)
   return i > 0 ? process.argv[i + 1] : d
 }
-const OUT = path.join(ROOT, "out", "aesthetic", "evalset")
+const COND = arg("cond", "principles")
+const WITH = arg("with", null)
+const OUT = path.join(ROOT, "out", "aesthetic", "evalset", COND)
 const key = JSON.parse(fs.readFileSync(path.join(ROOT, "evalset", "key.json"), "utf8")).groups
 const GROUPS = arg("groups", key.map((g) => g.id).join(",")).split(",")
 const REPEATS = Number(arg("repeats", "3"))
@@ -45,13 +49,13 @@ async function judge() {
   const jobs = []
   for (let r = 1; r <= REPEATS; r++)
     for (const g of key.filter((g) => GROUPS.includes(g.id)))
-      for (const [x, y] of pairsOf(g))
+      for (const [x, y] of pairsOf(g).filter((p) => !WITH || p.includes(WITH)))
         for (const [a, b] of [[x, y], [y, x]])
           jobs.push({
             file: `${g.id}__${a}__${b}__r${r}.json`,
             run: () => {
               const pa = pageImages(dirOf(g, a)), pb = pageImages(dirOf(g, b))
-              return call(system(true), [
+              return call(systemFor(COND), [
                 { type: "text", text: `A 版:第 1 张为整页缩略图,后 ${pa.length - 1} 张为整页切块。` },
                 ...pa,
                 { type: "text", text: `B 版:第 1 张为整页缩略图,后 ${pb.length - 1} 张为整页切块。` },
@@ -67,7 +71,7 @@ async function judge() {
       const file = path.join(OUT, job.file)
       if (fs.existsSync(file)) { done++; continue }
       try {
-        fs.writeFileSync(file, JSON.stringify({ effort: "low", ...(await job.run()) }, null, 1))
+        fs.writeFileSync(file, JSON.stringify({ cond: COND, effort: "low", ...(await job.run()) }, null, 1))
       } catch (e) {
         failed++
         console.error(`FAIL ${job.file}: ${e.message}`)
@@ -91,7 +95,7 @@ function score() {
     const label = Object.fromEntries(Object.entries(g.labels).map(([l, v]) => [v, l]))
     const r = (v) => human[g.id]?.[label[v]]
     let agree = 0, against = 0, split = 0, onTies = 0, tieSplit = 0
-    for (const [x, y] of pairsOf(g)) {
+    for (const [x, y] of pairsOf(g).filter((p) => !WITH || g.id !== "review" || p.includes(WITH))) {
       const hum = r(x) === r(y) ? null : r(x) < r(y) ? x : y
       const cell = []
       for (const n of repeats) {
