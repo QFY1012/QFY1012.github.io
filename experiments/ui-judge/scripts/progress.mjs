@@ -14,11 +14,13 @@ const ROOT = path.resolve(import.meta.dirname, "..")
 const DIR = path.join(ROOT, "out", "aesthetic", "evalset")
 const OUT = process.argv[2] ?? "."
 const REPEATS = 3
+// The same model from two providers: the official API, and openone at low and high effort.
 const RUNS = [
-  { id: "v41-principles", label: "新模型 · 6 条原则", cond: "principles", model: "deepseek-v4.1-flash" },
-  { id: "v41-dims4", label: "新模型 · 第 4 版 7 维", cond: "dims4-sep", model: "deepseek-v4.1-flash" },
-  { id: "old-principles", label: "旧模型 · 6 条原则", cond: "principles" },
-  { id: "old-dims4", label: "旧模型 · 第 4 版 7 维", cond: "dims4-sep" },
+  { id: "oo-high-principles", label: "openone high · 6 条原则", cond: "principles", model: "deepseek-v4.1-flash", effort: "high" },
+  { id: "oo-high-dims4", label: "openone high · 第 4 版 7 维", cond: "dims4-sep", model: "deepseek-v4.1-flash", effort: "high" },
+  { id: "oo-principles", label: "openone low · 6 条原则", cond: "principles", model: "deepseek-v4.1-flash" },
+  { id: "old-principles", label: "官方 low · 6 条原则", cond: "principles" },
+  { id: "old-dims4", label: "官方 low · 第 4 版 7 维", cond: "dims4-sep" },
 ]
 const key = JSON.parse(fs.readFileSync(path.join(ROOT, "evalset", "key.json"), "utf8")).groups
 const procs = (() => { try { return execSync("ps -eo args", { encoding: "utf8" }) } catch { return "" } })()
@@ -26,7 +28,7 @@ const now = Date.now()
 
 // Agreement per group title from the score table: | 组 | agree | against | split | … |
 function scores(run) {
-  const env = { ...process.env, ...(run.model ? { JUDGE_MODEL: run.model } : {}) }
+  const env = { ...process.env, ...(run.model ? { JUDGE_MODEL: run.model } : {}), JUDGE_EFFORT: run.effort ?? "low" }
   if (!run.model) delete env.JUDGE_MODEL
   let out = ""
   try { out = execSync(`node scripts/evalset-judge.mjs --score --cond ${run.cond}`, { cwd: ROOT, env, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }) } catch { return {} }
@@ -40,7 +42,7 @@ function scores(run) {
 
 const runs = [], groups = []
 for (const run of RUNS) {
-  const dir = path.join(DIR, run.cond + (run.model ? `@${run.model}` : ""))
+  const dir = path.join(DIR, run.cond + (run.model ? `@${run.model}` : "") + (run.effort ? `-${run.effort}` : ""))
   if (!fs.existsSync(dir)) continue
   const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"))
   const sc = scores(run)
@@ -64,7 +66,7 @@ for (const run of RUNS) {
     })
   }
   const running = procs.split("\n").some((p) => p.includes("evalset-judge.mjs") && p.includes(`--cond ${run.cond}`) && !p.includes("--score")) &&
-    // the new and old model runs share a cond; a running process belongs to the one whose folder grew lately
+    // runs share a cond; a running process belongs to the one whose folder grew lately
     recent > 0
   const rate = recent / 10
   runs.push({

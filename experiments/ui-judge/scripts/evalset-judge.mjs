@@ -14,7 +14,7 @@
 // Results: out/aesthetic/evalset/<cond>/<group>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
-import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, DIMENSIONS_V3, DIMENSIONS_V4, img, call, ANCHOR_TEXT, JUDGE_MODEL } from "./pairwise-judge.mjs"
+import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, DIMENSIONS_V3, DIMENSIONS_V4, img, call, ANCHOR_TEXT, JUDGE_MODEL, JUDGE_EFFORT } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
@@ -23,8 +23,9 @@ const arg = (k, d) => {
 }
 const COND = arg("cond", "principles")
 const WITH = arg("with", null)
-// Another judge model writes to (and reuses from) its own folders: <cond>@<model>.
-const TAG = process.env.JUDGE_MODEL ? `@${JUDGE_MODEL}` : ""
+// Another judge model writes to (and reuses from) its own folders: <cond>@<model>,
+// and an effort other than low adds -<effort>.
+const TAG = (process.env.JUDGE_MODEL ? `@${JUDGE_MODEL}` : "") + (JUDGE_EFFORT !== "low" ? `-${JUDGE_EFFORT}` : "")
 const OUT = path.join(ROOT, "out", "aesthetic", "evalset", COND + TAG)
 const key = JSON.parse(fs.readFileSync(path.join(ROOT, "evalset", "key.json"), "utf8")).groups
 const GROUPS = arg("groups", key.map((g) => g.id).join(",")).split(",")
@@ -136,7 +137,7 @@ async function judge() {
       const file = path.join(OUT, job.file)
       if (fs.existsSync(file)) { done++; continue }
       try {
-        fs.writeFileSync(file, JSON.stringify({ cond: COND, effort: "low", ...(await job.run()) }, null, 1))
+        fs.writeFileSync(file, JSON.stringify({ cond: COND, effort: JUDGE_EFFORT, ...(await job.run()) }, null, 1))
       } catch (e) {
         failed++
         console.error(`FAIL ${job.file}: ${e.message}`)

@@ -130,10 +130,12 @@ ${DIMENSIONS.map(dimLine).join("\n")}
 
 export const img = (file) => ({ type: "image_url", image_url: { url: `data:image/png;base64,${fs.readFileSync(file).toString("base64")}` } })
 
-// JUDGE_URL / JUDGE_MODEL switch to another OpenAI-compatible endpoint and model.
+// JUDGE_URL / JUDGE_MODEL switch to another OpenAI-compatible endpoint and model;
+// JUDGE_EFFORT sets reasoning_effort (providers differ in how much "low" thinks).
 export const JUDGE_URL = process.env.JUDGE_URL ?? "https://api.deepseek.com/chat/completions"
 export const JUDGE_MODEL = process.env.JUDGE_MODEL ?? "deepseek-flash"
-export async function call(sys, content, { key, model = JUDGE_MODEL, effort = "low" }) {
+export const JUDGE_EFFORT = process.env.JUDGE_EFFORT ?? "low"
+export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JUDGE_EFFORT }) {
   const body = { model, messages: [{ role: "system", content: sys }, { role: "user", content }], response_format: { type: "json_object" }, reasoning_effort: effort, max_tokens: 32000 }
   for (let attempt = 0; ; attempt++) {
     const t0 = Date.now()
