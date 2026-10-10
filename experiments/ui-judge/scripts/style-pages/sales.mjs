@@ -45,7 +45,7 @@ function grouped({ w = 460, h = 240 }) {
   return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block;font-size:10px;fill:#66707c">${grid}${bs}<line x1="${l}" x2="${w - r}" y1="${B}" y2="${B}" stroke="#9aa4b0"/></svg>`
 }
 function diverging({ w = 265, h = 176 }) {
-  const lo = -12, hi = 20, x0 = 40, x1 = w - 6
+  const lo = -12, hi = 20, x0 = 40, x1 = w - 18
   const x = (v) => x0 + ((v - lo) / (hi - lo)) * (x1 - x0)
   const rowH = (h - 24) / R.length
   const rows = R.map((r, i) => {
@@ -323,10 +323,10 @@ body{background:#fff;color:#111;font-family:"Noto Sans SC",sans-serif;font-size:
 header{display:flex;justify-content:space-between;font-size:14px;color:#999}
 header b{color:#111;font-weight:500}
 .lead{font-size:30px;line-height:48px;font-weight:300;margin:120px 0 96px;max-width:860px}
-.row{display:grid;grid-template-columns:1fr 280px;align-items:end;padding:64px 0 56px;border-top:1px solid #ececec}
+.row{display:grid;grid-template-columns:1fr 280px;align-items:last baseline;padding:64px 0 56px;border-top:1px solid #ececec}
 .big{font-weight:300;font-size:168px;line-height:150px;letter-spacing:-.045em;white-space:nowrap}
 .big small{font-size:26px;letter-spacing:0;margin-left:16px;color:#999;font-weight:400}
-.meta{padding-bottom:10px;font-size:16px}.meta b{display:block;font-weight:500}.meta span{color:#999}
+.meta{font-size:16px}.meta b{display:block;font-weight:500}.meta span{color:#999}
 .meta .dn{color:#b3261e}
 .sec{padding:80px 0 0;margin-top:56px;border-top:1px solid #ececec}
 .sh{display:grid;grid-template-columns:1fr 280px;margin-bottom:40px}
@@ -348,13 +348,13 @@ header b{color:#111;font-weight:500}
 footer{margin-top:120px;font-size:13px;color:#aaa}
 `, `<div class="wrap">
 <header><b>${esc(s.title)}</b><span>${esc(s.org)}　${esc(s.period)}</span></header>
-<p class="lead">收入增长 9.4%，完成目标的 96.3%。增长来自企业版和新客户，缺口来自南京、合肥两区。</p>
+<p class="lead">收入增长 9.4%，完成目标的 96.3%。增长来自企业版和新客户，缺口主要在南京、合肥两区。</p>
 ${s.kpis.map((k) => `<div class="row"><div class="big num">${k.value}<small>${k.unit}</small></div><div class="meta"><b>${k.label}</b><span class="${k.key === "churn" || k.key === "attain" ? "dn" : ""}">${k.change}</span></div></div>`).join("")}
 <div class="sec"><div class="sh"><h2>周收入</h2><span>万元，第 1 至第 13 周</span></div>
 ${line({ w: 1040, h: 220, points: weekPts((w) => `${w}`), ticks: [2000, 2200, 2400], stroke: "#111", grid: "#f1f1f1", text: "#aaa", size: 13, pad: [16, 8, 28, 44], width: 1.25, last: "2,280" })}</div>
 <div class="sec"><div class="sh"><h2>区域完成率</h2><span>竖线为 100%</span></div><div class="rg">
 ${R.map((r) => `<div><span>${r.name}</span><div class="ln"><i style="width:${(r.attain / 110) * 100}%"></i><u style="left:${(100 / 110) * 100}%"></u></div><span class="r num ${r.attain < 95 ? "red" : ""}">${r.attain.toFixed(1)}%</span><span class="r num grey">${r.change}</span></div>`).join("")}</div></div>
-<div class="sec"><div class="sh"><h2>产品占比</h2><span>同比</span></div><div class="pr">
+<div class="sec"><div class="sh"><h2>产品占比</h2><span>占季度收入，下为同比</span></div><div class="pr">
 ${P.map((p) => `<div><b class="num">${p.share}<small>%</small></b><span>${p.name}</span><em class="num">${p.change}</em></div>`).join("")}</div></div>
 <div class="sec"><div class="two"><div><h3>发现</h3><ol>${s.findings.map((f) => `<li><b>${esc(f.title)}</b><span>${esc(f.detail)}</span></li>`).join("")}</ol></div>
 <div><h3>行动</h3><ol>${s.actions.map((a) => `<li><b>${esc(a.title)}</b><span>${esc(a.detail)}</span></li>`).join("")}</ol></div></div></div>
@@ -396,6 +396,7 @@ th{background:#eef2f7;color:#47515d;font-weight:500}td:first-child,th:first-chil
 .pie .d{width:118px;height:118px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #c9d2dd}
 .pl{display:grid;gap:4px;font-size:11.5px}.pl div{display:grid;grid-template-columns:10px 1fr auto;gap:6px;align-items:center}.pl i{width:10px;height:10px}
 .li{display:grid;gap:6px}.li div{border-left:3px solid var(--c);background:#f6f8fb;padding:4px 8px}.li b{display:block;font-weight:600}
+.wt{width:100%}.wt td,.wt th{padding:3px 5px}
 .tag{display:inline-block;font-size:11px;padding:0 5px;border-radius:2px;color:#fff;margin-right:4px}
 .foot{margin-top:6px;font-size:11px;color:#6b7684;display:flex;justify-content:space-between}
 `, `<div class="bar"><div class="in"><h1>${esc(s.title)}<span>${esc(s.org)}</span></h1><span class="f">期间：${esc(s.period)}</span><span class="f">区域：全部</span><span class="f">产品：全部</span><span class="btn">导出</span></div></div>
@@ -408,6 +409,7 @@ ${s.kpis.map((k, i) => `<div class="s3 kpi" style="background:${["#1e88e5", "#00
 <div class="w s3"><h3 style="background:#fb8c00">产品明细<i><b></b><b></b><b></b></i></h3><div class="b"><table><tr><th>产品</th><th>收入</th><th>占比</th><th>同比</th></tr>${P.map((p) => `<tr><td>${p.name}</td><td class="num">${num(p.revenue)}</td><td class="num">${p.share}%</td><td class="num ${isNeg(p.change) ? "dn" : "up"}">${p.change}</td></tr>`).join("")}<tr><td><b>合计</b></td><td class="num"><b>${num(P.reduce((a, p) => a + p.revenue, 0))}</b></td><td class="num">100%</td><td class="num up">+9.4%</td></tr></table></div></div>
 <div class="w s3"><h3 style="background:#8e24aa">区域完成率<i><b></b><b></b><b></b></i></h3><div class="b"><table><tr><th>区域</th><th>收入</th><th>目标</th><th>完成率</th></tr>${R.map((r) => `<tr><td>${r.name}</td><td class="num">${num(r.revenue)}</td><td class="num">${num(r.target)}</td><td class="num ${r.attain >= 100 ? "c-g" : r.attain >= 90 ? "c-y" : "c-r"}">${r.attain.toFixed(1)}%</td></tr>`).join("")}<tr><td><b>合计</b></td><td class="num"><b>${num(totalRev)}</b></td><td class="num"><b>${num(totalTarget)}</b></td><td class="num c-y">96.3%</td></tr></table></div></div>
 <div class="w s3"><h3 style="background:#43a047">区域收入同比<i><b></b><b></b><b></b></i></h3><div class="b"><div class="lg"><span><i style="background:#43a047"></i>增长</span><span><i style="background:#e53935"></i>下降</span></div>${diverging({ w: 265, h: 168 })}</div></div>
+<div class="w s12"><h3 style="background:#546e7a">周收入明细（万元）<i><b></b><b></b><b></b></i></h3><div class="b"><table class="wt"><tr><th>周</th>${W.map((w) => `<th>第${w.week}周</th>`).join("")}<th>合计</th></tr><tr><td>收入</td>${W.map((w) => `<td class="num">${num(w.revenue)}</td>`).join("")}<td class="num"><b>${num(totalRev)}</b></td></tr><tr><td>环比</td><td>—</td>${W.slice(1).map((w, i) => { const d = ((w.revenue - W[i].revenue) / W[i].revenue) * 100; return `<td class="num ${d < 0 ? "dn" : "up"}">${d < 0 ? "−" : "+"}${Math.abs(d).toFixed(1)}%</td>` }).join("")}<td>—</td></tr></table></div></div>
 <div class="w s3"><h3 style="background:#5e35b1">目标完成率<i><b></b><b></b><b></b></i></h3><div class="b" style="display:flex;flex-direction:column;justify-content:center">${gauge(96.3)}<div style="text-align:center;margin-top:4px">缺口 <b class="dn num">${num(totalTarget - totalRev)}</b> 万元　<span class="dn">▼ 3.7 个百分点</span></div></div></div>
 <div class="w s5"><h3 style="background:#d81b60">主要发现<i><b></b><b></b><b></b></i></h3><div class="b"><div class="li">${s.findings.map((f, i) => `<div style="--c:${["#43a047", "#e53935", "#fb8c00"][i]}"><b><span class="tag" style="background:${["#43a047", "#e53935", "#fb8c00"][i]}">${["机会", "风险", "预警"][i]}</span>${esc(f.title)}</b>${esc(f.detail)}</div>`).join("")}</div></div></div>
 <div class="w s4"><h3 style="background:#0097a7">行动计划<i><b></b><b></b><b></b></i></h3><div class="b"><table><tr><th>#</th><th style="text-align:left">事项</th><th style="text-align:left">说明</th></tr>${s.actions.map((a, i) => `<tr><td>${i + 1}</td><td style="text-align:left">${esc(a.title)}</td><td style="text-align:left;white-space:normal">${esc(a.detail)}</td></tr>`).join("")}</table></div></div>

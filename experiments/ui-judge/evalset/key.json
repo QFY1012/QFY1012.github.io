@@ -79,6 +79,45 @@
     "丁": "style-d",
     "戊": "style-e"
    }
+  },
+  {
+   "id": "style-ab",
+   "title": "A/B 实验·五种风格",
+   "desc": "同一份数据直接写成五种风格（不经渲染器）",
+   "src": "out/style",
+   "labels": {
+    "甲": "style-ab-d",
+    "乙": "style-ab-a",
+    "丙": "style-ab-c",
+    "丁": "style-ab-b",
+    "戊": "style-ab-e"
+   }
+  },
+  {
+   "id": "style-sales",
+   "title": "销售复盘·五种风格",
+   "desc": "同一份数据直接写成五种风格（不经渲染器）",
+   "src": "out/style",
+   "labels": {
+    "甲": "style-sales-a",
+    "乙": "style-sales-b",
+    "丙": "style-sales-e",
+    "丁": "style-sales-c",
+    "戊": "style-sales-d"
+   }
+  },
+  {
+   "id": "style-survey",
+   "title": "会员调研·五种风格",
+   "desc": "同一份数据直接写成五种风格（不经渲染器）",
+   "src": "out/style",
+   "labels": {
+    "甲": "style-survey-d",
+    "乙": "style-survey-b",
+    "丙": "style-survey-a",
+    "丁": "style-survey-e",
+    "戊": "style-survey-c"
+   }
   }
  ]
 }
