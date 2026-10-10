@@ -14,7 +14,7 @@
 // Results: out/aesthetic/evalset/<cond>/<group>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
-import { systemFor, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
+import { systemFor, systemForDim, DIMENSIONS, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
@@ -39,8 +39,26 @@ const pairsOf = (g) => {
   return vs.flatMap((a, i) => vs.slice(i + 1).map((b) => [a, b]))
 }
 
-if (process.argv.includes("--score")) score()
-else await judge()
+const pagePair = (pa, pb) => [
+  { type: "text", text: `A 版:第 1 张为整页缩略图,后 ${pa.length - 1} 张为整页切块。` },
+  ...pa,
+  { type: "text", text: `B 版:第 1 张为整页缩略图,后 ${pb.length - 1} 张为整页切块。` },
+  ...pb,
+]
+
+// dims-sep: every dimension in its own call; the page that wins more dimensions
+// is "better", equal counts are "平".
+async function judgeDims(pa, pb, key) {
+  const dims = {}, raw = {}
+  await Promise.all(DIMENSIONS.map(async (d) => {
+    const r = await call(systemForDim(d), pagePair(pa, pb), { key })
+    dims[d.id] = r.json.better
+    raw[d.id] = r.json.reason
+  }))
+  const n = (x) => Object.values(dims).filter((v) => v === x).length
+  const better = n("A") > n("B") ? "A" : n("B") > n("A") ? "B" : "平"
+  return { json: { dims, better, reasons: raw } }
+}
 
 async function judge() {
   const KEY = process.env.DEEPSEEK_API_KEY
@@ -57,6 +75,7 @@ async function judge() {
               const pa = pageImages(dirOf(g, a)), pb = pageImages(dirOf(g, b))
               // The crowded reference is a validation page (cramped, every block boxed),
               // not one of the eval-set versions; it shares the A/B report's data.
+              if (COND === "dims-sep") return judgeDims(pa, pb, KEY)
               const anchor = COND === "crowd-anchor" ? [{ type: "text", text: ANCHOR_TEXT }, img(path.join(ROOT, "out/validate/ab-4/thumb.png"))] : []
               return call(systemFor(COND), [
                 ...anchor,
@@ -83,7 +102,8 @@ async function judge() {
       if (++done % 25 === 0) console.log(`${done}/${total}`)
     }
   }
-  await Promise.all(Array.from({ length: 10 }, worker))
+  // dims-sep sends seven calls per job at once
+  await Promise.all(Array.from({ length: COND === "dims-sep" ? 3 : 10 }, worker))
   console.log(`done, ${failed} failed → ${path.relative(ROOT, OUT)}`)
 }
 
@@ -105,8 +125,9 @@ function score() {
       for (const n of repeats) {
         const p1 = pick(`${g.id}__${x}__${y}__r${n}.json`), p2 = pick(`${g.id}__${y}__${x}__r${n}.json`)
         if (!p1 || !p2) continue
+        const ok = [p1, p2].every((p) => p === "A" || p === "B")
         const w1 = p1 === "A" ? x : y, w2 = p2 === "A" ? y : x
-        const verdict = w1 === w2 ? w1 : null
+        const verdict = ok && w1 === w2 ? w1 : null
         cell.push(verdict ? label[verdict] : "分")
         if (verdict) wins[`${g.id}/${verdict}`] = (wins[`${g.id}/${verdict}`] ?? 0) + 1
         if (!hum) { onTies++; if (!verdict) tieSplit++; continue }
@@ -129,8 +150,37 @@ function score() {
     const vs = Object.values(g.labels).sort((a, b) => (wins[`${g.id}/${b}`] ?? 0) - (wins[`${g.id}/${a}`] ?? 0))
     console.log(`- ${g.title}:judge ${vs.map((v) => `${label[v]}(${wins[`${g.id}/${v}`] ?? 0})`).join(" ")};你 ${Object.entries(human[g.id]).sort((a, b) => a[1] - b[1]).map(([l, n]) => `${l}${n}`).join(" ")}`)
   }
+  coupling()
   console.log("\n## 逐对结果(每格为各次重复的判定:选中的版面,或「分」= 两种顺序选得不一样)\n")
   console.log("| 组 | 对比 | 你选 | judge |")
   console.log("|---|---|---|---|")
   for (const d of detail) console.log(`| ${d.join(" | ")} |`)
 }
+
+// How independent the dimension (or principle) votes are: the share of
+// judgments whose non-tie votes all fall on one side, and how often each
+// vote agrees with the verdict.
+function coupling() {
+  const votes = fs.readdirSync(OUT).map((f) => JSON.parse(fs.readFileSync(path.join(OUT, f), "utf8")).json).filter((j) => j?.dims || j?.principles)
+  if (!votes.length) return
+  let oneSide = 0
+  const withVerdict = {}
+  for (const j of votes) {
+    const v = j.dims ?? j.principles
+    const sides = Object.values(v).filter((x) => x === "A" || x === "B")
+    if (sides.length && sides.every((x) => x === sides[0])) oneSide++
+    for (const [k, x] of Object.entries(v)) {
+      if (x !== "A" && x !== "B") continue
+      withVerdict[k] ??= [0, 0]
+      withVerdict[k][1]++
+      if (x === j.better) withVerdict[k][0]++
+    }
+  }
+  const pct = (a, b) => `${Math.round((100 * a) / b)}%`
+  console.log(`\n## 维度之间的耦合(${votes.length} 次判定)\n`)
+  console.log(`- 非平的票全部投向同一版:${pct(oneSide, votes.length)}`)
+  console.log(`- 各维与结论一致:${Object.entries(withVerdict).map(([k, [a, b]]) => `${k} ${pct(a, b)}(${b})`).join(",")}`)
+}
+
+if (process.argv.includes("--score")) score()
+else await judge()
