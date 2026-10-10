@@ -14,7 +14,7 @@
 // Results: out/aesthetic/evalset/<cond>/<group>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
-import { systemFor, systemForDim, DIMENSIONS, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
+import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
@@ -48,9 +48,9 @@ const pagePair = (pa, pb) => [
 
 // dims-sep: every dimension in its own call; the page that wins more dimensions
 // is "better", equal counts are "平".
-async function judgeDims(pa, pb, key) {
+async function judgeDims(pa, pb, key, dimensions) {
   const dims = {}, raw = {}
-  await Promise.all(DIMENSIONS.map(async (d) => {
+  await Promise.all(dimensions.map(async (d) => {
     const r = await call(systemForDim(d), pagePair(pa, pb), { key })
     dims[d.id] = r.json.better
     raw[d.id] = r.json.reason
@@ -75,7 +75,8 @@ async function judge() {
               const pa = pageImages(dirOf(g, a)), pb = pageImages(dirOf(g, b))
               // The crowded reference is a validation page (cramped, every block boxed),
               // not one of the eval-set versions; it shares the A/B report's data.
-              if (COND === "dims-sep") return judgeDims(pa, pb, KEY)
+              if (COND === "dims-sep") return judgeDims(pa, pb, KEY, DIMENSIONS)
+              if (COND === "dims2-sep") return judgeDims(pa, pb, KEY, DIMENSIONS_V2)
               const anchor = COND === "crowd-anchor" ? [{ type: "text", text: ANCHOR_TEXT }, img(path.join(ROOT, "out/validate/ab-4/thumb.png"))] : []
               return call(systemFor(COND), [
                 ...anchor,
@@ -103,12 +104,13 @@ async function judge() {
     }
   }
   // dims-sep sends seven calls per job at once
-  await Promise.all(Array.from({ length: COND === "dims-sep" ? 3 : 10 }, worker))
+  await Promise.all(Array.from({ length: COND.endsWith("-sep") ? 5 : 10 }, worker))
   console.log(`done, ${failed} failed → ${path.relative(ROOT, OUT)}`)
 }
 
 function score() {
   const human = JSON.parse(fs.readFileSync(path.join(ROOT, "evalset", "human.json"), "utf8"))
+  const full = (f) => JSON.parse(fs.readFileSync(path.join(OUT, f), "utf8")).json
   const pick = (f) => {
     try { return JSON.parse(fs.readFileSync(path.join(OUT, f), "utf8")).json.better } catch { return null }
   }
@@ -125,9 +127,23 @@ function score() {
       for (const n of repeats) {
         const p1 = pick(`${g.id}__${x}__${y}__r${n}.json`), p2 = pick(`${g.id}__${y}__${x}__r${n}.json`)
         if (!p1 || !p2) continue
-        const ok = [p1, p2].every((p) => p === "A" || p === "B")
-        const w1 = p1 === "A" ? x : y, w2 = p2 === "A" ? y : x
-        const verdict = ok && w1 === w2 ? w1 : null
+        let verdict
+        if (COND.endsWith("-sep")) {
+          // A dimension counts only when it picks the same page in both orders;
+          // the page with more such dimensions wins.
+          const d1 = full(`${g.id}__${x}__${y}__r${n}.json`).dims, d2 = full(`${g.id}__${y}__${x}__r${n}.json`).dims
+          let cx = 0, cy = 0
+          for (const k of Object.keys(d1)) {
+            const a = d1[k] === "A" ? x : d1[k] === "B" ? y : null
+            const b = d2[k] === "A" ? y : d2[k] === "B" ? x : null
+            if (a && a === b) a === x ? cx++ : cy++
+          }
+          verdict = cx > cy ? x : cy > cx ? y : null
+        } else {
+          const ok = [p1, p2].every((p) => p === "A" || p === "B")
+          const w1 = p1 === "A" ? x : y, w2 = p2 === "A" ? y : x
+          verdict = ok && w1 === w2 ? w1 : null
+        }
         cell.push(verdict ? label[verdict] : "分")
         if (verdict) wins[`${g.id}/${verdict}`] = (wins[`${g.id}/${verdict}`] ?? 0) + 1
         if (!hum) { onTies++; if (!verdict) tieSplit++; continue }

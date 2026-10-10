@@ -25,6 +25,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   crowd-anchor  crowd, plus one crowded page shown as a reference (ANCHOR_TEXT)
 //   dims          the decoupled DIMENSIONS, judged one by one in one call, then a verdict
 //   dims-sep      one call per dimension (systemForDim); the verdict is the majority (scripts/evalset-judge.mjs)
+//   dims2-sep     dims-sep with DIMENSIONS_V2
 export const ROOMY_2 = "2. 留白要充足且成形:内容挤满页面、各部分之间缺少明显间隔是缺点;空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点。"
 // Crowding of both kinds the person named: content spread over the full width
 // with no room around it, and a block packed with different things that are not
@@ -43,6 +44,20 @@ export const DIMENSIONS = [
   { id: "ink", name: "装饰", look: "容器、边框、底色、阴影、线条、颜色是否必要且克制,颜色只表达含义", skip: "排版" },
   { id: "finish", name: "细节", look: "中文全角标点、数字字体统一、文字不截断不溢出", skip: "布局" },
 ]
+// v2: every dimension but ink is judged on the content alone, with all cards,
+// borders and fills taken away in the mind's eye, so a container can neither
+// earn nor lose those dimensions. Space is about density, not page width.
+const STRIP = "先在脑中去掉页面上所有卡片、边框、底色和阴影,只看剩下的文字、数字和图表。"
+export const DIMENSIONS_V2 = [
+  { id: "space", name: "空间", look: `${STRIP}同样面积里塞了多少不同的东西;块与块、行与行之间是否拉开,有呼吸感`, skip: "内容是否铺满页宽、空白的形状" },
+  { id: "grouping", name: "分组", look: `${STRIP}只凭元素之间的距离,能否看出哪些内容是一组;组与组之间的距离是否明显大于组内`, skip: "卡片和边框——它们不算分组手段" },
+  { id: "alignment", name: "对齐", look: `${STRIP}文字、数字、图表的边缘是否落在少数几条共用的线上,留白是否成整块`, skip: "卡片边缘是否对齐、间距的大小" },
+  { id: "hierarchy", name: "层级", look: `${STRIP}只凭字号、字重和颜色深浅,最重要的信息是否最先被看到;字号种类少,层级清楚`, skip: "卡片、底色带来的突出、元素的位置" },
+  { id: "consistency", name: "一致", look: `${STRIP}同一类信息(几个指标、几张图、几段说明)在字号、间距、呈现形式上是否处理相同`, skip: "是否用了同一种容器——那不算一致" },
+  { id: "ink", name: "装饰", look: "容器、边框、底色、阴影、线条、颜色是否必要且克制,能用间距分组的不加容器,颜色只表达含义", skip: "排版" },
+  { id: "finish", name: "细节", look: "中文全角标点、数字字体统一、文字不截断不溢出", skip: "布局" },
+]
+
 const INTRO = "你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计,不比较内容。"
 const dimLine = (d, i) => `${i + 1}. ${d.name}:只看${d.look}。不看${d.skip}。`
 // One dimension per call: the judge sees no other dimension and gives no overall verdict.
