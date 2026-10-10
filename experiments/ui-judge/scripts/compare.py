@@ -52,9 +52,18 @@ for c, J in data.items():
 units = units or set()
 
 
+# Pairs the person called "about the same" (HANDOFF.md); --near counts them as ties.
+NEAR = {("sales", "甲", "丙"), ("style-ab", "丁", "戊"), ("style", "甲", "丁"), ("ops", "戊", "己")}
+
+
 def rank(g, v):
     lab = {vv: l for l, vv in key[g]["labels"].items()}
     return human[g][lab[v]]
+
+
+def near(g, x, y):
+    lab = {vv: l for l, vv in key[g]["labels"].items()}
+    return "--near" in args and ((g, lab[x], lab[y]) in NEAR or (g, lab[y], lab[x]) in NEAR)
 
 
 def decide(J, g, x, y, n, k=None):
@@ -84,7 +93,7 @@ for c, J in data.items():
         rx, ry = rank(g, x), rank(g, y)
         d = decide(J, g, x, y, n)
         byp[(g, x, y)].append(d)
-        if rx == ry: continue
+        if rx == ry or near(g, x, y): continue
         hum = x if rx < ry else y
         s["all"] += 1
         if d != "split":
@@ -133,7 +142,7 @@ for c, J in data.items():
     )
 
 labels = dict(n="对数(单向)", agree="一致率", decided="判出率", stable="轮间稳定", top1="第一名命中", v12="1v2 对/反/分", adj="相邻(非第一)", rho="Spearman", Apos="A 位", crit="条目 一致率(判出数)≡同总体")
-print(f"set={GROUPS or SET} {'common' if '--common' in args else ''}  pairs×rounds={len(units)}")
+print(f"set={GROUPS or SET} {'common' if '--common' in args else ''} {'near-ties-excluded' if '--near' in args else ''}  pairs×rounds={len(units)}")
 w = max(len(c) for c in conds) + 2
 for k, name in labels.items():
     if k != "crit": print(f"{name:<14}" + "".join(f"{rows[c][k]:<{max(w, 22)}}" for c in conds))
@@ -154,7 +163,7 @@ base = conds[0]
 for c in conds[1:]:
     b = cc = 0
     for (g, x, y, n) in units:
-        if rank(g, x) == rank(g, y): continue
+        if rank(g, x) == rank(g, y) or near(g, x, y): continue
         hum = x if rank(g, x) < rank(g, y) else y
         d0, d1 = decide(data[base], g, x, y, n), decide(data[c], g, x, y, n)
         if d0 is None or d1 is None: continue
