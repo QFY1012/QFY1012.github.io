@@ -55,6 +55,17 @@ node scripts/progress.mjs <输出目录>                     # 各轮进度
 
 两两一致率 rubric7 领先 6 个点;挑第一名两者一样(都把招聘季报的第一名判成了第二名甲)。
 
+## 整组排序和用户排序的相关性
+
+judge 排序 = 三轮里「两种顺序都胜出」的次数合计;和用户排序算 Spearman(1 = 顺序完全相同,0 = 无关)。`python3 scripts/analyze-rankcorr.py principles principles2 rubric7 dims4-sep`(也输出 Kendall)。
+
+| | 旧 6 条 | principles2 | rubric7 | 7 维(只跑了 375/600) |
+|---|---|---|---|---|
+| 原来 9 组平均 | 0.76 | 0.82 | 0.82 | 0.90 |
+| 留出 4 组平均 | – | 0.59 | **0.86** | – |
+
+旧 6 条被体验走查(0.00)拉低;principles2 在留出组的客服质检(0.20)、物流时效(0.40)上很差,rubric7 是 0.87、0.67。7 维数字最高,但只跑了约 2 轮,且有位置偏差,已停。
+
 ## 分析:为什么 rubric7 挑第一名比旧版差(原来 9 组)
 
 指标「第一名命中」:每一轮按「两种顺序都胜出的次数」排名,看 judge 的第一名是不是用户的第一名。`python3 scripts/analyze-top1.py rubric7 principles2 principles`。
