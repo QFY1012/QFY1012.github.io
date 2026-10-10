@@ -31,6 +31,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric12      RUBRIC_12: rubric9 with alignment judged on the content edges, not on containers
 //   rubric14      RUBRIC_14: rubric11 with dilution at six tenths blank instead of more than half
 //   rubric15      RUBRIC_15: rubric9 with spacing only in principle 2, as a range (two to four lines) and even
+//   rubric16      RUBRIC_16: rubric9 with criterion 4 counting only size and weight as emphasis
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -223,6 +224,10 @@ export const RUBRIC_15 = RUBRIC_9.map((p, i) => {
   return p
 })
 export const systemRubric15 = () => systemRubricOf(RUBRIC_15)
+// rubric16: criterion 4 counts only size and weight as emphasis; colour is judged
+// in criterion 5 and frames in criterion 3, so neither is counted twice.
+export const RUBRIC_16 = RUBRIC_9.map((p, i) => i === 3 ? { ...p, rule: p.rule.replace("放大、加粗、加色、加框的地方越多", "放大、加粗的地方越多") } : p)
+export const systemRubric16 = () => systemRubricOf(RUBRIC_16)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -319,6 +324,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric12") return systemRubric12()
   if (cond === "rubric14") return systemRubric14()
   if (cond === "rubric15") return systemRubric15()
+  if (cond === "rubric16") return systemRubric16()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
