@@ -58,6 +58,6 @@ node scripts/progress.mjs <输出目录>                     # 各轮进度
 ## 进行中 / 下一步
 
 1. **rubric7 在 9 组上跑到一半**(会话结束即中断)。解压 archive 后用上面的命令续跑,再 `--score`,和 principles2 的 90% 比。也要看对齐过的那几对是否判对(那是照着它们写的,判对是应该的)。
-2. **4 组新的泛化测试集**(财务月报 finance、招聘季报 hiring、客服质检 cs、物流时效 logistics):子代理正在生成,`data/<topic>.json` 已有,`scripts/style-pages/<topic>.mjs` 可能未完成或未提交。要求:5 个版本像 5 个不同设计师的作品、水平有高有低,**生成者不看 judge 规则**,风格避开已用过的。完成后:检查截图 → `cut-pages.py` 切图 → 在 key.json 加 4 组(标为留出集,盲标签随机)→ 让用户盲排 → 再跑 judge。**这 4 组只测试,不拿来改规则。**
+2. **4 组新的泛化测试集**(财务月报 finance、招聘季报 hiring、客服质检 cs、物流时效 logistics):页面已全部做完并提交(`data/<topic>.json` + `scripts/style-pages/<topic>.mjs`,各 5 版,截图已逐张检查过渲染问题)。本地用 `node scripts/build-style-pages.mjs <topic>` 重新生成截图。要求:5 个版本像 5 个不同设计师的作品、水平有高有低,**生成者不看 judge 规则**,风格避开已用过的。完成后:检查截图 → `cut-pages.py` 切图 → 在 key.json 加 4 组(标为留出集,盲标签随机)→ 让用户盲排 → 再跑 judge。**这 4 组只测试,不拿来改规则。**
 3. 7 维(dims4-sep high)只跑了约 100/600,已不推荐,可以不续跑。
 4. GitHub 上的 `ui-judge-progress` 分支是之前的进度中转,没用了,需要用户在 GitHub 网页上手动删除。
