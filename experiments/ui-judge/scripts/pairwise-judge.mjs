@@ -25,6 +25,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric6       RUBRIC_6, rewritten after alignment: six principles one by one, then an overall pick
 //   rubric7       RUBRIC_7: rubric6 after a second alignment pass, concrete criteria and generic counterexamples
 //   rubric8       RUBRIC_8: rubric7 with crowding as a bar to clear (both clear it: a tie) and no ranking of the principles
+//   rubric9       RUBRIC_9: rubric8 with hierarchy as levels of type mapping levels of content, emphasis relative
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -134,13 +135,27 @@ export const RUBRIC_8 = [
   { name: "不拥挤", rule: "只看是否过线,不比谁更空。过线指:每屏(每张切块)不超过三种内容,一段文字、一组数字、一张图、一张表、一个列表各算一种;块与块之间的空白至少约两行正文高。两版都过线,这一条记「平」;都没过线,超出少的那版更好", bad: "一屏里同时塞了说明文字、一排数字、两张图和一张表,块之间只隔一行", see: "最挤的一屏有几种内容、块间空白约几行高、是否过线" },
   ...RUBRIC_7.slice(1),
 ]
-export const systemRubric8 = () => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量,不比较内容。
+// One principle after another, then an overall pick weighing them together.
+export const systemRubricOf = (rubric) => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量,不比较内容。
 
 评审标准:
-${RUBRIC_8.map((p, i) => `${i + 1}. ${p.name}:${p.rule}。反例:${p.bad}。`).join("\n")}
+${rubric.map((p, i) => `${i + 1}. ${p.name}:${p.rule}。反例:${p.bad}。`).join("\n")}
 
-逐条比较:每条先分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。七条比完后,综合各条给出总体哪一版更好。
-只输出 JSON:{${RUBRIC_8.map((p, i) => `"${i + 1}":{"A":"A 版${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
+逐条比较:每条先分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。${["", "一", "二", "三", "四", "五", "六", "七", "八", "九"][rubric.length]}条比完后,综合各条给出总体哪一版更好。
+只输出 JSON:{${rubric.map((p, i) => `"${i + 1}":{"A":"A 版${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
+export const systemRubric8 = () => systemRubricOf(RUBRIC_8)
+// rubric9: rubric8 with principle 4 rewritten. "The most important thing is
+// the biggest or the heaviest" made the judge reward whichever page shouts
+// loudest (a giant number, an alert box); hierarchy is rather that a few
+// distinct levels of type map onto the levels of the content, and emphasis is
+// relative, so the more places are emphasised the less each one weighs.
+export const RUBRIC_9 = RUBRIC_8.map((p, i) => i !== 3 ? p : {
+  name: "层级清楚",
+  rule: "字号和字重只分少数几级(如标题、小节标题、正文、注释),每一级对应内容结构里的一层,同一层的内容用同一级,相邻两级的差别一眼可辨;内容的重要程度靠先后位置和所在层级体现。强调是相对的:放大、加粗、加色、加框的地方越多,每一处就越轻",
+  bad: "页面上有五六种字号,小节标题和正文只差一点,另有几处数字和提示被各自放大、加色,分不出哪些是同一层",
+  see: "分了几级字号字重、每级对应哪层内容、有几处额外强调",
+})
+export const systemRubric9 = () => systemRubricOf(RUBRIC_9)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -231,6 +246,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric6") return systemRubric6()
   if (cond === "rubric7") return systemRubric7()
   if (cond === "rubric8") return systemRubric8()
+  if (cond === "rubric9") return systemRubric9()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
