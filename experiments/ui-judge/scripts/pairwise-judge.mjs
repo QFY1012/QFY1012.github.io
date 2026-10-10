@@ -26,6 +26,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric7       RUBRIC_7: rubric6 after a second alignment pass, concrete criteria and generic counterexamples
 //   rubric8       RUBRIC_8: rubric7 with crowding as a bar to clear (both clear it: a tie) and no ranking of the principles
 //   rubric9       RUBRIC_9: rubric8 with hierarchy as levels of type mapping levels of content, emphasis relative
+//   rubric10      RUBRIC_10: rubric9 with density both ways, two or three groups of information a screen
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -156,6 +157,17 @@ export const RUBRIC_9 = RUBRIC_8.map((p, i) => i !== 3 ? p : {
   see: "分了几级字号字重、每级对应哪层内容、有几处额外强调",
 })
 export const systemRubric9 = () => systemRubricOf(RUBRIC_9)
+// rubric10: rubric9 with principle 1 as density both ways, the person's
+// measure: two or three groups of information a screen. Fewer is diluted
+// (one number alone on a screen), more is crowded. A group is what is read as
+// one thing; how far apart the groups sit is left to principle 2.
+export const RUBRIC_10 = RUBRIC_9.map((p, i) => i !== 0 ? p : {
+  name: "疏密适度",
+  rule: "每屏(每张切块)放两到三个信息组。一个信息组是读的时候当作一件事的一块:一个小标题连同它下面的图、表或文字,一排并列的指标,一组并列的发现,各算一组;一组跨两张切块时,按它在这一张里露出的部分算。超过三组是拥挤,只有一组、其余是大片空白是稀疏,两种都是缺点;两版都在两到三组之内,这一条记「平」",
+  bad: "一屏里挤了五六个信息组;或者一屏只放了一张小图,其余都是空白",
+  see: "每张切块各有几个信息组",
+})
+export const systemRubric10 = () => systemRubricOf(RUBRIC_10)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -247,6 +259,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric7") return systemRubric7()
   if (cond === "rubric8") return systemRubric8()
   if (cond === "rubric9") return systemRubric9()
+  if (cond === "rubric10") return systemRubric10()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
