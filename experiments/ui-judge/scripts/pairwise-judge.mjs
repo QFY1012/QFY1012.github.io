@@ -19,6 +19,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 
 // Variants under test on the eval set (scripts/evalset-judge.mjs --cond):
 //   principles    the prompt above (baseline)
+//   principles2   PRINCIPLE_TEXT_2: crowding judged screen by screen, observations first
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -34,7 +35,23 @@ export const ROOMY_2 = "2. 留白要充足且成形:内容挤满页面、各部�
 // with no room around it, and a block packed with different things that are not
 // spaced apart.
 export const CROWD_2 = "2. 留白充足且成形:版面要有呼吸空间。拥挤是严重缺点,有两种:一是内容铺满整个页宽、四周不留余地;二是同一区块里塞进多种不同内容,彼此没有拉开间距。不同类内容之间的间距应明显大于同类内容之间的间距。拥挤不能用「紧凑」「统一」「信息完整」来抵消。空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点,只放标题的边栏留白也不是。"
-export const ANCHOR_TEXT = "参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
+// principles2: principle 1 no longer rewards taking containers away when the
+// groups are then not spaced apart, principle 2 judges crowding screen by screen
+// (the observation that the space dimension in dims4-sep makes), and the judge
+// writes those observations down before the verdict.
+export const PRINCIPLE_TEXT_2 = `评审标准(与具体风格无关):
+1. 装饰必须表达信息:卡片、边框、底色、阴影、颜色只用于区分真正独立的对象或表达状态;能用间距分组的,不必再加容器。但去掉容器的前提是组与组之间真的拉开了间距(组间距明显大于组内距);去掉容器后几组内容挤在一起,比保留容器更差。
+2. 不拥挤:按屏看(每张切块约为一屏),数一数每屏里有几种不同的内容(一段文字、一组数字、一张图、一张表、一个列表各算一种),看相邻两块内容之间的空白大约是正文行高的几倍。同一屏里内容种类越多、块间空白越窄,越拥挤;几块不同内容并排挤在一行比上下排开更拥挤。拥挤是严重缺点,不能用「去掉了容器」「主次分明」「紧凑」「信息完整」来抵消。页面四周的大片留白不能抵消内容区内部的拥挤。
+3. 主次分明:同一水平带里的内容要么同类、分量相同,要么有明显的主次;分量相当的不同内容并排是问题。
+4. 疏密一致:同类元素的行距和间距一致,不为凑齐高度而拉开或压缩。
+5. 有系统:整页使用统一的间距层级和对齐主轴,字号种类少且层级明确。
+6. 精致:图形线条克制,颜色只表达含义;中文使用全角标点,数字字体统一。
+
+`
+export const system2 = () => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量:整体的比例、疏密节奏、主次对比、对齐与留白、组件和字体的精致度。不比较内容。
+
+${PRINCIPLE_TEXT_2}先写下两版最拥挤的那一屏的观察,再判断哪一版更好。只输出 JSON:{"A":"A 版最拥挤的一屏:几种内容、块间空白约几行高","B":"B 版同上","better":"A" 或 "B","reason":"一两句话"}`
+export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
 // emphasis, consistency, ink, finish).
@@ -118,6 +135,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
 逐维独立判断:评某一维时只看这一维,不受整体印象和其他维度的影响;两版在不同维度上互有胜负是正常的。每维给出 "A"、"B" 或 "平",再综合判断哪一版更好。
 只输出 JSON:{"dims":{${DIMENSIONS.map((d) => `"${d.id}":"A|B|平"`).join(",")}},"better":"A" 或 "B","reason":"一两句话"}`
   if (cond === "principles") return system(true)
+  if (cond === "principles2") return system2()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
