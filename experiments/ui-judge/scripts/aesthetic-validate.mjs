@@ -10,6 +10,7 @@
 // Results: out/aesthetic/validate/<cond>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
+import { system, img, call as callModel } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
@@ -26,49 +27,13 @@ const VDIR = path.join(ROOT, "out", "validate")
 const OUT = path.join(ROOT, "out", "aesthetic", "validate")
 fs.mkdirSync(OUT, { recursive: true })
 
-// Same wording as scripts/aesthetic.mjs.
-const PRINCIPLE_TEXT = `评审标准(与具体风格无关):
-1. 装饰必须表达信息:卡片、边框、底色、阴影、颜色只用于区分真正独立的对象或表达状态;能用间距分组的,不必再加容器。
-2. 留白要成形:空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点。
-3. 主次分明:同一水平带里的内容要么同类、分量相同,要么有明显的主次;分量相当的不同内容并排是问题。
-4. 疏密一致:同类元素的行距和间距一致,不为凑齐高度而拉开或压缩。
-5. 有系统:整页使用统一的间距层级和对齐主轴,字号种类少且层级明确。
-6. 精致:图形线条克制,颜色只表达含义;中文使用全角标点,数字字体统一。
-
-`
-const system = (principles) => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量:整体的比例、疏密节奏、主次对比、对齐与留白、组件和字体的精致度。不比较内容。
-
-${principles ? PRINCIPLE_TEXT : ""}
-判断哪一版更好。只输出 JSON:{"better":"A" 或 "B","reason":"一两句话"}`
-
-const img = (file) => ({ type: "image_url", image_url: { url: `data:image/png;base64,${fs.readFileSync(file).toString("base64")}` } })
 function pageImages(v) {
   const d = path.join(VDIR, v)
   const tiles = JSON.parse(fs.readFileSync(path.join(d, "clean-tiles.json"), "utf8"))
   return [img(path.join(d, "thumb.png")), ...tiles.map((t) => img(path.join(d, t.file)))]
 }
 
-async function call(sys, content) {
-  const body = { model: MODEL, messages: [{ role: "system", content: sys }, { role: "user", content }], response_format: { type: "json_object" }, reasoning_effort: EFFORT, max_tokens: 32000 }
-  for (let attempt = 0; ; attempt++) {
-    const t0 = Date.now()
-    try {
-      const r = await fetch("https://api.deepseek.com/chat/completions", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(600_000),
-      })
-      const j = await r.json()
-      if (!r.ok) throw new Error(`${r.status} ${JSON.stringify(j).slice(0, 300)}`)
-      const msg = j.choices[0].message
-      return { json: JSON.parse(msg.content), raw: msg.content, usage: j.usage, latencyMs: Date.now() - t0 }
-    } catch (e) {
-      if (attempt >= 3) throw e
-      await new Promise((r) => setTimeout(r, 2000 * 2 ** attempt))
-    }
-  }
-}
+const call = (sys, content) => callModel(sys, content, { key: KEY, model: MODEL, effort: EFFORT })
 
 const pages = fs.readdirSync(VDIR).filter((d) => !d.startsWith("_")).sort()
 const reports = [...new Set(pages.map((p) => p.split("-")[0]))]
