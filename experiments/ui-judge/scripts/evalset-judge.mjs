@@ -30,6 +30,9 @@ const OUT = path.join(ROOT, "out", "aesthetic", "evalset", COND + TAG)
 const key = JSON.parse(fs.readFileSync(path.join(ROOT, "evalset", "key.json"), "utf8")).groups
 const GROUPS = arg("groups", key.map((g) => g.id).join(",")).split(",")
 const REPEATS = Number(arg("repeats", "3"))
+// --pairs ab:ab-e:ab-f,ops:ops-a:ops-e runs only those pairs (both orders).
+const PAIRS = arg("pairs", null)?.split(",").map((s) => s.split(":"))
+const pairWanted = (g, x, y) => !PAIRS || PAIRS.some(([pg, a, b]) => pg === g && ((a === x && b === y) || (a === y && b === x)))
 // The ops and ab versions are cut in out/evalset; the review versions in place.
 const dirOf = (g, v) => path.join(ROOT, g.src === "out/render" ? "out/evalset" : g.src, v)
 
@@ -94,7 +97,7 @@ async function judge() {
   const jobs = []
   for (let r = 1; r <= REPEATS; r++)
     for (const g of key.filter((g) => GROUPS.includes(g.id)))
-      for (const [x, y] of pairsOf(g).filter((p) => !WITH || p.includes(WITH)))
+      for (const [x, y] of pairsOf(g).filter((p) => (!WITH || p.includes(WITH)) && pairWanted(g.id, ...p)))
         for (const [a, b] of [[x, y], [y, x]])
           jobs.push({
             file: `${g.id}__${a}__${b}__r${r}.json`,
