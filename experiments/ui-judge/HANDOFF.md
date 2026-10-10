@@ -27,7 +27,9 @@ node scripts/progress.mjs <输出目录>                     # 各轮进度
 
 ## 评测集
 
-- `evalset/key.json`:9 组,盲标签(甲乙丙丁戊己辛)→ 版本目录。`evalset/human.json`:人工排序(1 最好)。
+- `evalset/key.json`:13 组(9 组开发集 + 4 组留出集 `ho-*`),盲标签(甲乙丙丁戊己辛)→ 版本目录。`evalset/human.json`:人工排序(1 最好),**13 组都已排完**。
+- 人工排序是在一个排序网页上做的(每组整页截图 + 名次按钮,存在网页自带的数据库里),留出 4 组的排序已于 10-10 抄进 human.json。
+- **留出集**(财务月报 finance、招聘季报 hiring、客服质检 cs、物流时效 logistics,各 5 版,`heldout: true`,`src: out/style`):生成者没看过 judge 规则,风格避开已用过的。**只用来测试,不拿来改规则。**
 - 组:运营月报、A/B 实验报告、体验走查报告、季度销售复盘、会员调研报告,以及 4 组「五种风格」(手写 HTML,`scripts/style-pages/*.mjs`,`node scripts/build-style-pages.mjs <name>` 生成,`python3 scripts/cut-pages.py out/style --no-pairs` 切图)。
 
 ## 各评分标准的结果(openone high,除注明外)
@@ -37,7 +39,7 @@ node scripts/progress.mjs <输出目录>                     # 各轮进度
 | principles(旧 6 条原则) | 一次调用直接选 | 88%(218/248) | 248/300 | 体验走查 63%:辛(V8)太挤,judge 却因为它去掉卡片而选它 |
 | principles2 | 第 2 条改成按屏数拥挤,先写观察 | 90%(216/240) | 240/300 | 体验走查升到 90%,运营月报降到 85%。这是打补丁的写法 |
 | dims4-sep(7 维) | 每维单独调用,两种顺序都选同一版才算 1 票 | 前三组 86–93% | — | 有明显位置偏差(A 位占 59%,「一致」维 38% 前后矛盾),只跑了约 100/600,已不再推荐 |
-| rubric7(新 7 条) | 对齐后重写:一次调用逐条写 A/B 观察并判,最后总体选 | **跑到一半,未出结果** | | 下一步要看的 |
+| rubric7(新 7 条) | 对齐后重写:一次调用逐条写 A/B 观察并判,最后总体选 | **中途 90%(108/120)** | 120/137 | 9 组跑到约 250/600 时的中途数;各组 80–100%。注意对齐过的那几对是照着写的 |
 
 ## 和用户对齐出的偏好(写 rubric 的依据)
 
@@ -57,7 +59,15 @@ node scripts/progress.mjs <输出目录>                     # 各轮进度
 
 ## 进行中 / 下一步
 
-1. **rubric7 在 9 组上跑到一半**(会话结束即中断)。解压 archive 后用上面的命令续跑,再 `--score`,和 principles2 的 90% 比。也要看对齐过的那几对是否判对(那是照着它们写的,判对是应该的)。
-2. **4 组新的泛化测试集**(财务月报 finance、招聘季报 hiring、客服质检 cs、物流时效 logistics):页面已全部做完并提交(`data/<topic>.json` + `scripts/style-pages/<topic>.mjs`,各 5 版,截图已逐张检查过渲染问题)。本地用 `node scripts/build-style-pages.mjs <topic>` 重新生成截图。要求:5 个版本像 5 个不同设计师的作品、水平有高有低,**生成者不看 judge 规则**,风格避开已用过的。完成后:检查截图 → `cut-pages.py` 切图 → 在 key.json 加 4 组(标为留出集,盲标签随机)→ 让用户盲排 → 再跑 judge。**这 4 组只测试,不拿来改规则。**
-3. 7 维(dims4-sep high)只跑了约 100/600,已不推荐,可以不续跑。
-4. GitHub 上的 `ui-judge-progress` 分支是之前的进度中转,没用了,需要用户在 GitHub 网页上手动删除。
+1. **rubric7 在 9 组开发集上跑到约 250/600**(会话结束即中断)。解压 archive 后用上面的命令续跑(自动跳过已有结果),再 `--score`,和 principles2 的 90% 比。中途数据:合计 90%(108/120),运营月报 88%、A/B 96%、体验走查 88%、销售复盘 89%、会员调研 90%、四组风格 80% / 86% / 90% / 100%。
+2. **留出 4 组:人工排序已完成,judge 刚开跑**(rubric7 和基线 principles2 各一份,`out/rubric7-ho.log`、`out/principles2-ho.log`)。续跑:
+   ```sh
+   node scripts/evalset-judge.mjs --cond rubric7     --groups ho-finance,ho-hiring,ho-cs,ho-logistics
+   node scripts/evalset-judge.mjs --cond principles2 --groups ho-finance,ho-hiring,ho-cs,ho-logistics
+   # 再各加 --score 看结果;也可以补跑旧 6 条 principles 做第二个基线
+   ```
+   这是检验 rubric7 有没有过拟合到开发集的关键数字:**看留出集上 rubric7 是否 ≥ principles2,而不是看开发集。** 不论结果如何都不要用留出组改 rubric;要改就再做新的留出组。
+3. 待用户决定:rubric7 的阈值(3 种内容、2 行、2 倍)是否合适;5「调性统一」和 6「同类一致」是否合并;4 对「差不多」的是否在 human.json 改成平局。
+4. 7 维(dims4-sep high)停在约 275/600,已不推荐,可以不续跑。
+5. GitHub 上的 `ui-judge-progress` 分支是之前的进度中转,没用了,需要用户在 GitHub 网页上手动删除。
+6. 新会话要重新提供 openone 的 key(放到环境变量,别进仓库);实验结束后轮换用过的两个 key。
