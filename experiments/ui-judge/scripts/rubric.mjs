@@ -10,6 +10,7 @@
 // spec tree and the DOM; the judge decides only what needs reading the content.
 // `alsoJudge`: program checks the judge is also tested on in the experiments.
 // Nothing here names a style: no column count, no fixed scale, no cards or not.
+// A page need not be designed on a grid, but it is checked against one (2.4).
 
 export const STEPS = [
   {
@@ -31,7 +32,7 @@ export const STEPS = [
       { id: "2.1", name: "能渲染", by: "program", rule: "页面正常渲染,没有报错。" },
       { id: "2.2", name: "组件库", by: "program", rule: "只用规定组件库里的组件;AI 新做的组件必须由组件库零件拼成、遵守设计参数,并带标记。" },
       { id: "2.3", name: "统一刻度", by: "program", rule: "间距和字号都取自本页设计系统声明的同一套刻度。" },
-      { id: "2.4", name: "统一网格", by: "program", rule: "块占整数列:左右边缘落在本页声明的同一套网格的列线上。" },
+      { id: "2.4", name: "网格检查", by: "program", rule: "页面不必按网格设计,但要经得起网格检查:从块的边缘推出最贴合的一套网格(列数、列宽、栏间距、页边距、纵向基本单位),所有块的左右边缘都落在列线上,纵向间距都是基本单位的整数倍。" },
       { id: "2.5", name: "数据忠实", by: "program", alsoJudge: true, rule: "JSON 中的信息全部呈现;数值和文字不改动、不编造、不遗漏。" },
       { id: "2.6", name: "元素碰撞", by: "program", alsoJudge: true, rule: "元素之间没有重叠;内容不溢出所在的块或页面(组件内部滚动不算)。" },
       { id: "2.7", name: "分组看得出", by: "judge", rule: "页面上看起来是一组的,正是第 1 步分在一组的;组的边界靠间距、对齐或线来表现,读者不用读字就能分出组。" },
