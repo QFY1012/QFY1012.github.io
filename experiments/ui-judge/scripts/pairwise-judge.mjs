@@ -24,6 +24,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   perprinciple3 principles3 compared principle by principle, then an overall pick
 //   rubric6       RUBRIC_6, rewritten after alignment: six principles one by one, then an overall pick
 //   rubric7       RUBRIC_7: rubric6 after a second alignment pass, concrete criteria and generic counterexamples
+//   rubric8       RUBRIC_8: rubric7 with crowding as a bar to clear (both clear it: a tie) and no ranking of the principles
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -125,6 +126,21 @@ ${RUBRIC_7.map((p, i) => `${i + 1}. ${p.name}:${p.rule}。反例:${p.bad}。`).j
 
 逐条比较:每条先分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。七条比完后,综合给出总体哪一版更好。
 只输出 JSON:{${RUBRIC_7.map((p, i) => `"${i + 1}":{"A":"A 版${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
+// rubric8: rubric7 with principle 1 put back to what it was meant to be, a
+// bar to clear rather than "the emptier the better". Two pages that both clear
+// it tie on it, side by side placement is no longer a fault in itself, and the
+// principles are no longer ranked, so the overall pick weighs them together.
+export const RUBRIC_8 = [
+  { name: "不拥挤", rule: "只看是否过线,不比谁更空。过线指:每屏(每张切块)不超过三种内容,一段文字、一组数字、一张图、一张表、一个列表各算一种;块与块之间的空白至少约两行正文高。两版都过线,这一条记「平」;都没过线,超出少的那版更好", bad: "一屏里同时塞了说明文字、一排数字、两张图和一张表,块之间只隔一行", see: "最挤的一屏有几种内容、块间空白约几行高、是否过线" },
+  ...RUBRIC_7.slice(1),
+]
+export const systemRubric8 = () => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量,不比较内容。
+
+评审标准:
+${RUBRIC_8.map((p, i) => `${i + 1}. ${p.name}:${p.rule}。反例:${p.bad}。`).join("\n")}
+
+逐条比较:每条先分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。七条比完后,综合各条给出总体哪一版更好。
+只输出 JSON:{${RUBRIC_8.map((p, i) => `"${i + 1}":{"A":"A 版${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -214,6 +230,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "perprinciple3") return system3each()
   if (cond === "rubric6") return systemRubric6()
   if (cond === "rubric7") return systemRubric7()
+  if (cond === "rubric8") return systemRubric8()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")

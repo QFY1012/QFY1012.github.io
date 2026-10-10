@@ -1,8 +1,9 @@
-import json,os,re
+import json,os,re,sys
 from collections import defaultdict
 R=os.path.dirname(os.path.abspath(__file__))+'/../'
 key={g['id']:g for g in json.load(open(R+'evalset/key.json'))['groups']}; human=json.load(open(R+'evalset/human.json'))
-D=R+'out/aesthetic/evalset/rubric7@deepseek-v4.1-flash-high/'
+COND=sys.argv[1] if len(sys.argv)>1 else 'rubric7'
+D=R+f'out/aesthetic/evalset/{COND}@deepseek-v4.1-flash-high/'
 J={}
 for f in os.listdir(D):
     m=re.match(r'(.+?)__(.+?)__(.+?)__r(\d+)\.json$',f)
@@ -27,8 +28,8 @@ for (g,x,y,n),j in J.items():
             st=stat[s][k]
             if wa and wa==wb: st[0 if wa==hum else 1]+=1
             else: st[2]+=1
-print(f'总体选择 = 第1条(疏朗)的选择: {same1}/{tot1} = {same1/tot1:.0%}')
-names=dict(zip('1234567',['疏朗','分组节奏','装饰','重点','调性','同类一致','正负形']))
+print(f'总体选择 = 第1条的选择: {same1}/{tot1} = {same1/tot1:.0%}')
+names=dict(zip('1234567',['疏朗' if COND=='rubric7' else '不拥挤','分组节奏','装饰','重点','调性','同类一致','正负形']))
 for s in ('all','top','rest'):
     print('==',{'all':'所有对','top':'含你第一名的对','rest':'其他对'}[s])
     for k in list('1234567')+['总']:
