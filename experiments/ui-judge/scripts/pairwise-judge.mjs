@@ -43,6 +43,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric25      rubric24 with criterion 2 ordered: how clearly groups separate first, then not too loose
 //   rubric26      rubric25 with criterion 1 judging breathing room only, not how many kinds fit on a screen
 //   rubric27      rubric9 with rubric25's criterion 2 only, criteria not ranked
+//   rubric28      rubric7 with criterion 1 a bar to clear, not "the emptier the better"
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -339,6 +340,20 @@ export const systemRubric26 = () => systemRubricOf(RUBRIC_26, true)
 // alignment the other, one order followed "the first two matter most" and the
 // other counted five criteria to two. This keeps the two-sided criterion 2.
 export const systemRubric27 = () => systemRubricOf(RUBRIC_25)
+// rubric28: back to rubric7, which picks the top page best on the held-out
+// groups, with one change: criterion 1 is a bar. rubric7 read "空白至少约两行"
+// as "the emptier the better" and gave the person's first place to a looser
+// second; rubric8 made it a bar but also dropped the ranking in the same step,
+// so the bar alone was never tried with the ranking kept.
+export const RUBRIC_28 = RUBRIC_7.map((p, i) => i === 0 ? {
+  ...p,
+  rule: "只看是否过线,不比谁更空。过线指:" + p.rule + "。两版都过线,这一条记「平」;都没过线,超出少的那版更好",
+  see: p.see + "、是否过线",
+} : p)
+// Built from rubric7's own prompt so nothing else differs from it.
+export const systemRubric28 = () => systemRubric7()
+  .replace(`1. 疏朗:${RUBRIC_7[0].rule}`, `1. 疏朗:${RUBRIC_28[0].rule}`)
+  .replace(`"A 版${RUBRIC_7[0].see}"`, `"A 版${RUBRIC_28[0].see}"`)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -447,6 +462,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric25") return systemRubric25()
   if (cond === "rubric26") return systemRubric26()
   if (cond === "rubric27") return systemRubric27()
+  if (cond === "rubric28") return systemRubric28()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
