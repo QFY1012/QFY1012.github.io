@@ -1,0 +1,414 @@
+{
+ "id": "page",
+ "type": "page",
+ "title": "会员体验调研报告",
+ "meta": [
+  "用户研究组",
+  "2026 年 9 月 8 日至 19 日"
+ ],
+ "children": [
+  {
+   "id": "sec-verdict",
+   "type": "section",
+   "title": "结论",
+   "className": "gap-6",
+   "children": [
+    {
+     "id": "alert-summary",
+     "type": "alert",
+     "title": "净推荐值上升，退款和客服拖后腿",
+     "text": "会员净推荐值 32，比上次调研高 5 分；配送准时最受认可，退款流程和客服响应是最主要的不满，集中在老会员。",
+     "src": [
+      "/summary"
+     ]
+    },
+    {
+     "id": "badges-facts",
+     "type": "badges",
+     "items": [
+      "净推荐值 32",
+      "比上次 +5",
+      "2,346 份问卷",
+      "18 位访谈"
+     ],
+     "src": [
+      "/nps",
+      "/sample"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-figs",
+   "type": "section",
+   "title": "指标",
+   "className": "gap-6",
+   "children": [
+    {
+     "id": "grp-figs",
+     "type": "group",
+     "className": "grid grid-cols-4 gap-4",
+     "children": [
+      {
+       "id": "card-nps",
+       "type": "card",
+       "children": [
+        {
+         "id": "stat-nps",
+         "type": "stat",
+         "label": "净推荐值",
+         "value": "32",
+         "src": [
+          "/nps"
+         ],
+         "delta": "+5"
+        }
+       ]
+      },
+      {
+       "id": "card-promoters",
+       "type": "card",
+       "children": [
+        {
+         "id": "stat-promoters",
+         "type": "stat",
+         "label": "推荐者",
+         "value": "48%",
+         "src": [
+          "/nps"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "card-passives",
+       "type": "card",
+       "children": [
+        {
+         "id": "stat-passives",
+         "type": "stat",
+         "label": "中立者",
+         "value": "36%",
+         "src": [
+          "/nps"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "card-detractors",
+       "type": "card",
+       "children": [
+        {
+         "id": "stat-detractors",
+         "type": "stat",
+         "label": "贬损者",
+         "value": "16%",
+         "src": [
+          "/nps"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-sat",
+   "type": "section",
+   "title": "满意度",
+   "className": "gap-6",
+   "children": [
+    {
+     "id": "grp-sat",
+     "type": "group",
+     "className": "grid grid-cols-2 gap-4",
+     "children": [
+      {
+       "id": "card-sat",
+       "type": "card",
+       "title": "各项评分",
+       "children": [
+        {
+         "id": "chart-sat",
+         "type": "bar-chart",
+         "xKey": "name",
+         "series": [
+          {
+           "key": "score",
+           "label": "评分"
+          }
+         ],
+         "data": [
+          {
+           "name": "配送准时",
+           "score": 4.5,
+           "change": "+0.2"
+          },
+          {
+           "name": "商品新鲜",
+           "score": 4.3,
+           "change": "+0.1"
+          },
+          {
+           "name": "会员价格",
+           "score": 4,
+           "change": "0.0"
+          },
+          {
+           "name": "App 好用",
+           "score": 3.9,
+           "change": "+0.3"
+          },
+          {
+           "name": "客服响应",
+           "score": 3.2,
+           "change": "−0.2"
+          },
+          {
+           "name": "退款流程",
+           "score": 2.9,
+           "change": "−0.4"
+          }
+         ],
+         "height": "h-60",
+         "src": [
+          "/satisfaction"
+         ]
+        }
+       ],
+       "badge": "5 分制"
+      },
+      {
+       "id": "card-pain",
+       "type": "card",
+       "title": "不满",
+       "children": [
+        {
+         "id": "chart-pain",
+         "type": "bar-chart",
+         "xKey": "name",
+         "series": [
+          {
+           "key": "share",
+           "label": "提及比例（%）"
+          }
+         ],
+         "data": [
+          {
+           "name": "退款要等太久",
+           "share": 38
+          },
+          {
+           "name": "客服排队长",
+           "share": 31
+          },
+          {
+           "name": "缺货替换不提醒",
+           "share": 22
+          },
+          {
+           "name": "会员券难用",
+           "share": 17
+          },
+          {
+           "name": "配送时段少",
+           "share": 12
+          }
+         ],
+         "height": "h-60",
+         "src": [
+          "/pains"
+         ]
+        }
+       ],
+       "badge": "多选"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-seg",
+   "type": "section",
+   "title": "分群",
+   "className": "gap-6",
+   "children": [
+    {
+     "id": "card-seg",
+     "type": "card",
+     "title": "各分群",
+     "children": [
+      {
+       "id": "table-seg",
+       "type": "table",
+       "columns": [
+        {
+         "key": "name",
+         "label": "会员分群"
+        },
+        {
+         "key": "n",
+         "label": "样本",
+         "align": "right"
+        },
+        {
+         "key": "nps",
+         "label": "净推荐值",
+         "align": "right"
+        },
+        {
+         "key": "csat",
+         "label": "满意度",
+         "align": "right"
+        }
+       ],
+       "rows": [
+        {
+         "name": "新会员（半年内）",
+         "n": "812",
+         "nps": 41,
+         "csat": "4.2"
+        },
+        {
+         "name": "老会员（一年以上）",
+         "n": "1,034",
+         "nps": 24,
+         "csat": "3.8"
+        },
+        {
+         "name": "高频（每周 2 单以上）",
+         "n": "655",
+         "nps": 36,
+         "csat": "4.1"
+        },
+        {
+         "name": "低频（每月 2 单以下）",
+         "n": "487",
+         "nps": 19,
+         "csat": "3.6"
+        }
+       ],
+       "src": [
+        "/segments"
+       ]
+      }
+     ],
+     "badge": "4 个分群"
+    }
+   ]
+  },
+  {
+   "id": "sec-quotes",
+   "type": "section",
+   "title": "用户原话",
+   "className": "gap-6",
+   "children": [
+    {
+     "id": "grp-quotes",
+     "type": "group",
+     "className": "grid grid-cols-2 gap-4",
+     "children": [
+      {
+       "id": "card-q0",
+       "type": "card",
+       "children": [
+        {
+         "id": "text-q0",
+         "type": "text",
+         "text": "「退一盒坏掉的草莓要等五天，钱不多，就是很烦。」",
+         "src": [
+          "/quotes/0"
+         ]
+        }
+       ],
+       "footer": "老会员，上海"
+      },
+      {
+       "id": "card-q1",
+       "type": "card",
+       "children": [
+        {
+         "id": "text-q1",
+         "type": "text",
+         "text": "「配送一直很准时，这是我续费的主要原因。」",
+         "src": [
+          "/quotes/1"
+         ]
+        }
+       ],
+       "footer": "高频会员，杭州"
+      },
+      {
+       "id": "card-q2",
+       "type": "card",
+       "children": [
+        {
+         "id": "text-q2",
+         "type": "text",
+         "text": "「缺货时直接换了别的牌子，也没问我一声。」",
+         "src": [
+          "/quotes/2"
+         ]
+        }
+       ],
+       "footer": "老会员，苏州"
+      },
+      {
+       "id": "card-q3",
+       "type": "card",
+       "children": [
+        {
+         "id": "text-q3",
+         "type": "text",
+         "text": "「客服要排二十分钟，最后还是自己在 App 里找到了入口。」",
+         "src": [
+          "/quotes/3"
+         ]
+        }
+       ],
+       "footer": "低频会员，南京"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-rec",
+   "type": "section",
+   "title": "建议",
+   "className": "gap-6",
+   "children": [
+    {
+     "id": "alert-rec-0",
+     "type": "alert",
+     "title": "小额退款秒退",
+     "text": "50 元以下的生鲜退款免审核，预计覆盖七成退款申请。",
+     "src": [
+      "/recommendations/0"
+     ]
+    },
+    {
+     "id": "alert-rec-1",
+     "type": "alert",
+     "title": "缺货替换先确认",
+     "text": "替换商品前推送确认，用户 5 分钟内未回复则按备注处理。",
+     "src": [
+      "/recommendations/1"
+     ]
+    },
+    {
+     "id": "alert-rec-2",
+     "type": "alert",
+     "title": "老会员专属客服",
+     "text": "会员满一年进入优先队列，目标排队时间 3 分钟以内。",
+     "src": [
+      "/recommendations/2"
+     ]
+    }
+   ]
+  }
+ ],
+ "className": "gap-12 py-12"
+}

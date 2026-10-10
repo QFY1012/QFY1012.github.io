@@ -1,0 +1,193 @@
+{
+ "groups": [
+  {
+   "id": "ops",
+   "title": "运营月报",
+   "desc": "同一份数据生成的六版",
+   "src": "out/render",
+   "labels": {
+    "甲": "ops-a",
+    "乙": "ops-e",
+    "丙": "ops-b",
+    "丁": "ops-f",
+    "戊": "ops-c",
+    "己": "ops-d"
+   }
+  },
+  {
+   "id": "ab",
+   "title": "A/B 实验报告",
+   "desc": "同一份数据生成的六版",
+   "src": "out/render",
+   "labels": {
+    "甲": "ab-d",
+    "乙": "ab-e",
+    "丙": "ab-b",
+    "丁": "ab-c",
+    "戊": "ab-f",
+    "己": "ab-a"
+   }
+  },
+  {
+   "id": "review",
+   "title": "体验走查报告",
+   "desc": "上一轮迭代里的五版（从十版里挑出名次拉得开的）",
+   "labels": {
+    "甲": "V6",
+    "丙": "V3",
+    "丁": "F",
+    "戊": "V2",
+    "辛": "V8"
+   },
+   "src": "out/versions"
+  },
+  {
+   "id": "sales",
+   "title": "季度销售复盘",
+   "desc": "同一份数据生成的五版（新加，用来检验）",
+   "src": "out/render",
+   "labels": {
+    "甲": "sales-b",
+    "乙": "sales-c",
+    "丙": "sales-f",
+    "丁": "sales-a",
+    "戊": "sales-d"
+   }
+  },
+  {
+   "id": "survey",
+   "title": "会员调研报告",
+   "desc": "同一份数据生成的五版（新加，用来检验）",
+   "src": "out/render",
+   "labels": {
+    "甲": "survey-d",
+    "乙": "survey-c",
+    "丙": "survey-e",
+    "丁": "survey-f",
+    "戊": "survey-b"
+   }
+  },
+  {
+   "id": "style",
+   "title": "运营月报·五种风格",
+   "desc": "同一份运营月报数据，直接写成五种不同风格的页面（不经渲染器）",
+   "src": "out/style",
+   "labels": {
+    "甲": "style-c",
+    "乙": "style-b",
+    "丙": "style-a",
+    "丁": "style-d",
+    "戊": "style-e"
+   }
+  },
+  {
+   "id": "style-ab",
+   "title": "A/B 实验·五种风格",
+   "desc": "同一份数据直接写成五种风格（不经渲染器）",
+   "src": "out/style",
+   "labels": {
+    "甲": "style-ab-d",
+    "乙": "style-ab-a",
+    "丙": "style-ab-c",
+    "丁": "style-ab-b",
+    "戊": "style-ab-e"
+   }
+  },
+  {
+   "id": "style-sales",
+   "title": "销售复盘·五种风格",
+   "desc": "同一份数据直接写成五种风格（不经渲染器）",
+   "src": "out/style",
+   "labels": {
+    "甲": "style-sales-a",
+    "乙": "style-sales-b",
+    "丙": "style-sales-e",
+    "丁": "style-sales-c",
+    "戊": "style-sales-d"
+   }
+  },
+  {
+   "id": "style-survey",
+   "title": "会员调研·五种风格",
+   "desc": "同一份数据直接写成五种风格（不经渲染器）",
+   "src": "out/style",
+   "labels": {
+    "甲": "style-survey-d",
+    "乙": "style-survey-b",
+    "丙": "style-survey-a",
+    "丁": "style-survey-e",
+    "戊": "style-survey-c"
+   }
+  },
+  {
+   "id": "ho-finance",
+   "title": "财务月报(留出)",
+   "desc": "泛化测试:生成者没看过 judge 规则;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-finance-b",
+    "乙": "style-finance-a",
+    "丙": "style-finance-d",
+    "丁": "style-finance-e",
+    "戊": "style-finance-c"
+   }
+  },
+  {
+   "id": "ho-hiring",
+   "title": "招聘季度报告(留出)",
+   "desc": "泛化测试:生成者没看过 judge 规则;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-hiring-e",
+    "乙": "style-hiring-a",
+    "丙": "style-hiring-d",
+    "丁": "style-hiring-b",
+    "戊": "style-hiring-c"
+   }
+  },
+  {
+   "id": "ho-cs",
+   "title": "客服质检月报(留出)",
+   "desc": "泛化测试:生成者没看过 judge 规则;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-cs-c",
+    "乙": "style-cs-d",
+    "丙": "style-cs-b",
+    "丁": "style-cs-a",
+    "戊": "style-cs-e"
+   }
+  },
+  {
+   "id": "ho-logistics",
+   "title": "物流时效周报(留出)",
+   "desc": "泛化测试:生成者没看过 judge 规则;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-logistics-d",
+    "乙": "style-logistics-c",
+    "丙": "style-logistics-b",
+    "丁": "style-logistics-a",
+    "戊": "style-logistics-e"
+   }
+  },
+  {
+   "id": "new-energy",
+   "title": "园区能耗月报(新测试组)",
+   "desc": "新测试组:由已读过 judge 规则的人手写,不完全盲;待用户排名;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-energy-d",
+    "乙": "style-energy-a",
+    "丙": "style-energy-e",
+    "丁": "style-energy-b",
+    "戊": "style-energy-c"
+   }
+  }
+ ]
+}

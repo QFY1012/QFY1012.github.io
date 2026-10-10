@@ -1,0 +1,382 @@
+{
+ "id": "page",
+ "type": "page",
+ "title": "第三季度销售复盘",
+ "meta": [
+  "华东销售部",
+  "2026 年 7 月至 9 月"
+ ],
+ "children": [
+  {
+   "id": "grid-kpis",
+   "type": "grid",
+   "cols": 4,
+   "fields": false,
+   "ruled": true,
+   "children": [
+    {
+     "id": "stat-revenue",
+     "type": "stat",
+     "label": "季度收入",
+     "value": "2.86",
+     "unit": "亿元",
+     "direction": "up",
+     "src": [
+      "/kpis/0"
+     ],
+     "size": "xl",
+     "note": "同比 +9.4%",
+     "span": 1
+    },
+    {
+     "id": "stat-attain",
+     "type": "stat",
+     "label": "目标完成率",
+     "value": "96.3",
+     "unit": "%",
+     "direction": "down",
+     "src": [
+      "/kpis/1"
+     ],
+     "size": "xl",
+     "note": "同比 −3.7 个百分点",
+     "span": 1
+    },
+    {
+     "id": "stat-newcust",
+     "type": "stat",
+     "label": "新签客户",
+     "value": "412",
+     "unit": "家",
+     "direction": "up",
+     "src": [
+      "/kpis/2"
+     ],
+     "size": "xl",
+     "note": "同比 +18.0%",
+     "span": 1
+    },
+    {
+     "id": "stat-churn",
+     "type": "stat",
+     "label": "客户流失率",
+     "value": "3.1",
+     "unit": "%",
+     "direction": "down",
+     "src": [
+      "/kpis/3"
+     ],
+     "size": "xl",
+     "note": "同比 +0.6 个百分点",
+     "span": 1
+    }
+   ]
+  },
+  {
+   "id": "sec-weekly",
+   "type": "section",
+   "title": "每周收入",
+   "aside": "单位：百万元，7 月 1 日至 9 月 29 日",
+   "children": [
+    {
+     "id": "chart-weekly",
+     "type": "line-chart",
+     "xKey": "week",
+     "series": [
+      {
+       "key": "revenue",
+       "label": "收入（百万元）"
+      }
+     ],
+     "data": [
+      {
+       "week": "第 1 周",
+       "revenue": 20.5
+      },
+      {
+       "week": "第 2 周",
+       "revenue": 21.2
+      },
+      {
+       "week": "第 3 周",
+       "revenue": 20.8
+      },
+      {
+       "week": "第 4 周",
+       "revenue": 21.9
+      },
+      {
+       "week": "第 5 周",
+       "revenue": 21.6
+      },
+      {
+       "week": "第 6 周",
+       "revenue": 22.4
+      },
+      {
+       "week": "第 7 周",
+       "revenue": 22.1
+      },
+      {
+       "week": "第 8 周",
+       "revenue": 21.8
+      },
+      {
+       "week": "第 9 周",
+       "revenue": 22.6
+      },
+      {
+       "week": "第 10 周",
+       "revenue": 22.3
+      },
+      {
+       "week": "第 11 周",
+       "revenue": 23.1
+      },
+      {
+       "week": "第 12 周",
+       "revenue": 22.9
+      },
+      {
+       "week": "第 13 周",
+       "revenue": 22.8
+      }
+     ],
+     "src": [
+      "/weekly"
+     ],
+     "yTicks": [
+      20,
+      21,
+      22,
+      23,
+      24
+     ],
+     "xInterval": 3,
+     "pointLabels": "last",
+     "lastLabel": "22.8",
+     "height": "h-[220px]"
+    }
+   ]
+  },
+  {
+   "id": "sec-region",
+   "type": "section",
+   "title": "区域与产品",
+   "aside": "收入单位：万元",
+   "children": [
+    {
+     "id": "grid-region",
+     "type": "grid",
+     "cols": 12,
+     "fields": false,
+     "className": "gap-x-20",
+     "children": [
+      {
+       "id": "blk-region",
+       "type": "block",
+       "span": 7,
+       "title": "各区域完成情况",
+       "children": [
+        {
+         "id": "table-region",
+         "type": "table",
+         "columns": [
+          {
+           "key": "name",
+           "label": "区域"
+          },
+          {
+           "key": "revenue",
+           "label": "收入（万元）",
+           "align": "right"
+          },
+          {
+           "key": "target",
+           "label": "目标（万元）",
+           "align": "right"
+          },
+          {
+           "key": "attain",
+           "label": "完成率",
+           "align": "right",
+           "tone": [
+            "88.0%",
+            "66.5%"
+           ]
+          },
+          {
+           "key": "change",
+           "label": "同比",
+           "align": "right",
+           "tone": [
+            "−6.3%"
+           ]
+          }
+         ],
+         "rows": [
+          {
+           "name": "上海",
+           "revenue": "8,920",
+           "target": "8,600",
+           "attain": "103.7%",
+           "change": "+12.1%"
+          },
+          {
+           "name": "杭州",
+           "revenue": "6,140",
+           "target": "6,000",
+           "attain": "102.3%",
+           "change": "+10.8%"
+          },
+          {
+           "name": "苏州",
+           "revenue": "4,870",
+           "target": "4,800",
+           "attain": "101.5%",
+           "change": "+9.2%"
+          },
+          {
+           "name": "南京",
+           "revenue": "3,960",
+           "target": "4,500",
+           "attain": "88.0%",
+           "change": "+2.4%"
+          },
+          {
+           "name": "宁波",
+           "revenue": "2,650",
+           "target": "2,700",
+           "attain": "98.1%",
+           "change": "+8.7%"
+          },
+          {
+           "name": "合肥",
+           "revenue": "2,060",
+           "target": "3,100",
+           "attain": "66.5%",
+           "change": "−6.3%"
+          }
+         ],
+         "src": [
+          "/regions"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "blk-products",
+       "type": "block",
+       "span": 5,
+       "title": "产品收入占比",
+       "children": [
+        {
+         "id": "prog-products",
+         "type": "progress-list",
+         "items": [
+          {
+           "label": "企业版订阅",
+           "value": 43.6,
+           "max": 50,
+           "display": "43.6%"
+          },
+          {
+           "label": "专业版订阅",
+           "value": 25.7,
+           "max": 50,
+           "display": "25.7%"
+          },
+          {
+           "label": "实施服务",
+           "value": 17.2,
+           "max": 50,
+           "display": "17.2%"
+          },
+          {
+           "label": "培训",
+           "value": 7.7,
+           "max": 50,
+           "display": "7.7%"
+          },
+          {
+           "label": "其他",
+           "value": 5.7,
+           "max": 50,
+           "display": "5.7%"
+          }
+         ],
+         "src": [
+          "/products"
+         ],
+         "compact": true,
+         "className": "gap-4"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-findings",
+   "type": "section",
+   "title": "发现",
+   "children": [
+    {
+     "id": "list-findings",
+     "type": "list",
+     "items": [
+      {
+       "title": "企业版带动增长",
+       "description": "企业版收入同比增长 14.2%，贡献了本季度增量的六成，主要来自制造业客户。"
+      },
+      {
+       "title": "南京、合肥未达标",
+       "description": "两区合计缺口 1,580 万元；合肥有两名大客户经理离职，跟进中断。"
+      },
+      {
+       "title": "老客户流失上升",
+       "description": "流失率升至 3.1%，流失客户集中在专业版、签约不满一年的中小企业。"
+      }
+     ],
+     "src": [
+      "/findings"
+     ],
+     "numbered": true
+    }
+   ]
+  },
+  {
+   "id": "sec-actions",
+   "type": "section",
+   "title": "四季度行动",
+   "children": [
+    {
+     "id": "list-actions",
+     "type": "list",
+     "items": [
+      {
+       "title": "补齐合肥团队",
+       "description": "10 月底前到岗两名客户经理，由上海区派人带教一个季度。"
+      },
+      {
+       "title": "中小客户续约提醒",
+       "description": "签约满 9 个月的专业版客户，由客户成功团队提前回访。"
+      },
+      {
+       "title": "企业版行业方案",
+       "description": "把制造业的成单经验整理成方案，四季度在苏州、宁波试点。"
+      }
+     ],
+     "src": [
+      "/actions"
+     ],
+     "columns": 3,
+     "numbered": true
+    }
+   ]
+  }
+ ],
+ "frame": "column",
+ "lead": "三季度收入 2.86 亿元，同比增长 9.4%，目标完成 96.3%；新客户增长明显，但老客户流失率上升，南京、合肥两区未达标。"
+}

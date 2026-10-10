@@ -1,0 +1,332 @@
+{
+ "id": "page",
+ "type": "page",
+ "title": "9 月运营月报",
+ "meta": [
+  "鲜到家 App",
+  "2026 年 9 月 1 日至 30 日"
+ ],
+ "children": [
+  {
+   "id": "sec-all",
+   "type": "section",
+   "title": "月报",
+   "children": [
+    {
+     "id": "grp-all",
+     "type": "group",
+     "children": [
+      {
+       "id": "text-summary",
+       "type": "text",
+       "text": "9 月日活与成交额继续增长，乳品烘焙增速最快；下单转化率小幅回落，主要来自新渠道用户。",
+       "src": [
+        "/summary"
+       ]
+      },
+      {
+       "id": "kv-kpis",
+       "type": "kv",
+       "items": [
+        {
+         "label": "日活跃用户",
+         "value": "128.4 万（+6.2%）"
+        },
+        {
+         "label": "成交额",
+         "value": "3.42 亿元（+11.8%）"
+        },
+        {
+         "label": "下单转化率",
+         "value": "4.7 %（−0.3 个百分点）"
+        },
+        {
+         "label": "客单价",
+         "value": "86.5 元（+3.1%）"
+        }
+       ],
+       "src": [
+        "/kpis"
+       ]
+      },
+      {
+       "id": "chart-dau",
+       "type": "bar-chart",
+       "xKey": "day",
+       "series": [
+        {
+         "key": "dau",
+         "label": "日活（万）"
+        }
+       ],
+       "data": [
+        {
+         "day": 1,
+         "dau": 122.9
+        },
+        {
+         "day": 2,
+         "dau": 124
+        },
+        {
+         "day": 3,
+         "dau": 122.2
+        },
+        {
+         "day": 4,
+         "dau": 120.1
+        },
+        {
+         "day": 5,
+         "dau": 120.2
+        },
+        {
+         "day": 6,
+         "dau": 121.3
+        },
+        {
+         "day": 7,
+         "dau": 122.5
+        },
+        {
+         "day": 8,
+         "dau": 124.4
+        },
+        {
+         "day": 9,
+         "dau": 125.8
+        },
+        {
+         "day": 10,
+         "dau": 124.5
+        },
+        {
+         "day": 11,
+         "dau": 122.1
+        },
+        {
+         "day": 12,
+         "dau": 121.8
+        },
+        {
+         "day": 13,
+         "dau": 123.4
+        },
+        {
+         "day": 14,
+         "dau": 124.8
+        },
+        {
+         "day": 15,
+         "dau": 126.2
+        },
+        {
+         "day": 16,
+         "dau": 127.5
+        },
+        {
+         "day": 17,
+         "dau": 126.8
+        },
+        {
+         "day": 18,
+         "dau": 124.3
+        },
+        {
+         "day": 19,
+         "dau": 123.4
+        },
+        {
+         "day": 20,
+         "dau": 125.2
+        },
+        {
+         "day": 21,
+         "dau": 127.1
+        },
+        {
+         "day": 22,
+         "dau": 128.2
+        },
+        {
+         "day": 23,
+         "dau": 129.1
+        },
+        {
+         "day": 24,
+         "dau": 128.8
+        },
+        {
+         "day": 25,
+         "dau": 126.6
+        },
+        {
+         "day": 26,
+         "dau": 125.2
+        },
+        {
+         "day": 27,
+         "dau": 126.8
+        },
+        {
+         "day": 28,
+         "dau": 129.3
+        },
+        {
+         "day": 29,
+         "dau": 130.4
+        },
+        {
+         "day": 30,
+         "dau": 130.7
+        }
+       ],
+       "height": "h-60",
+       "src": [
+        "/dauDaily"
+       ]
+      },
+      {
+       "id": "chart-channels",
+       "type": "bar-chart",
+       "xKey": "name",
+       "series": [
+        {
+         "key": "share",
+         "label": "占比（%）"
+        }
+       ],
+       "data": [
+        {
+         "name": "应用商店",
+         "share": 38
+        },
+        {
+         "name": "信息流广告",
+         "share": 27
+        },
+        {
+         "name": "社交分享",
+         "share": 18
+        },
+        {
+         "name": "搜索",
+         "share": 11
+        },
+        {
+         "name": "其他",
+         "share": 6
+        }
+       ],
+       "height": "h-48",
+       "src": [
+        "/channels"
+       ]
+      },
+      {
+       "id": "table-cat",
+       "type": "table",
+       "columns": [
+        {
+         "key": "name",
+         "label": "品类"
+        },
+        {
+         "key": "gmv",
+         "label": "成交额（万元）",
+         "align": "right"
+        },
+        {
+         "key": "change",
+         "label": "环比",
+         "align": "right",
+         "tone": [
+          "−4.3%"
+         ]
+        },
+        {
+         "key": "share",
+         "label": "占比（%）",
+         "bar": true
+        }
+       ],
+       "rows": [
+        {
+         "name": "水果",
+         "gmv": "8,920",
+         "change": "+14.2%",
+         "share": 25.9
+        },
+        {
+         "name": "蔬菜",
+         "gmv": "6,150",
+         "change": "+9.8%",
+         "share": 17.8
+        },
+        {
+         "name": "肉禽蛋",
+         "gmv": "5,870",
+         "change": "+6.1%",
+         "share": 17
+        },
+        {
+         "name": "乳品烘焙",
+         "gmv": "4,230",
+         "change": "+18.5%",
+         "share": 12.3
+        },
+        {
+         "name": "海鲜水产",
+         "gmv": "3,960",
+         "change": "−4.3%",
+         "share": 11.5
+        },
+        {
+         "name": "粮油调味",
+         "gmv": "2,880",
+         "change": "+2.7%",
+         "share": 8.4
+        }
+       ],
+       "src": [
+        "/categories"
+       ]
+      },
+      {
+       "id": "list-findings",
+       "type": "list",
+       "items": [
+        {
+         "title": "日活增长来自老用户回流",
+         "description": "中秋节前一周日活达到月内高点 131.6 万，回流用户占新增日活的 62%。"
+        },
+        {
+         "title": "乳品烘焙成为增长最快的品类",
+         "description": "早餐套餐上线后，乳品烘焙成交额环比增长 18.5%，复购率 41%。"
+        },
+        {
+         "title": "新渠道用户转化偏低",
+         "description": "信息流广告带来的新用户下单转化率仅 2.1%，拉低了整体转化率。"
+        }
+       ],
+       "src": [
+        "/findings"
+       ]
+      },
+      {
+       "id": "badges-risks",
+       "type": "badges",
+       "items": [
+        "海鲜水产成交额连续两个月下降，需排查供应与价格。",
+        "10 月国庆期间配送运力紧张，预计履约时长增加。"
+       ],
+       "src": [
+        "/risks"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

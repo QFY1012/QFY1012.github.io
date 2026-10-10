@@ -1,0 +1,420 @@
+{
+ "id": "page",
+ "type": "page",
+ "title": "9 月运营月报",
+ "meta": [
+  "鲜到家 App",
+  "2026 年 9 月 1 日至 30 日"
+ ],
+ "children": [
+  {
+   "id": "sec-overview",
+   "type": "section",
+   "title": "概览",
+   "children": [
+    {
+     "id": "grp-overview",
+     "type": "group",
+     "children": [
+      {
+       "id": "grid-summary",
+       "type": "grid",
+       "cols": 9,
+       "children": [
+        {
+         "id": "blk-summary",
+         "type": "block",
+         "span": 9,
+         "rows": 1,
+         "children": [
+          {
+           "id": "text-summary",
+           "type": "text",
+           "text": "9 月日活与成交额继续增长，乳品烘焙增速最快；下单转化率小幅回落，主要来自新渠道用户。",
+           "className": "text-xl leading-9",
+           "src": [
+            "/summary"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "grid-kpis",
+       "type": "grid",
+       "cols": 12,
+       "children": [
+        {
+         "id": "blk-dau",
+         "type": "block",
+         "span": 3,
+         "rows": 1,
+         "children": [
+          {
+           "id": "stat-dau",
+           "type": "stat",
+           "label": "日活跃用户",
+           "value": "128.4",
+           "unit": "万",
+           "delta": "+6.2%",
+           "direction": "up",
+           "src": [
+            "/kpis/0"
+           ]
+          }
+         ]
+        },
+        {
+         "id": "blk-gmv",
+         "type": "block",
+         "span": 3,
+         "rows": 1,
+         "children": [
+          {
+           "id": "stat-gmv",
+           "type": "stat",
+           "label": "成交额",
+           "value": "3.42",
+           "unit": "亿元",
+           "delta": "+11.8%",
+           "direction": "up",
+           "src": [
+            "/kpis/1"
+           ]
+          }
+         ]
+        },
+        {
+         "id": "blk-cvr",
+         "type": "block",
+         "span": 3,
+         "rows": 1,
+         "children": [
+          {
+           "id": "stat-cvr",
+           "type": "stat",
+           "label": "下单转化率",
+           "value": "4.7",
+           "unit": "%",
+           "delta": "−0.3 个百分点",
+           "direction": "down",
+           "src": [
+            "/kpis/2"
+           ]
+          }
+         ]
+        },
+        {
+         "id": "blk-aov",
+         "type": "block",
+         "span": 3,
+         "rows": 1,
+         "children": [
+          {
+           "id": "stat-aov",
+           "type": "stat",
+           "label": "客单价",
+           "value": "86.5",
+           "unit": "元",
+           "delta": "+3.1%",
+           "direction": "up",
+           "src": [
+            "/kpis/3"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-f1",
+   "type": "section",
+   "title": "日活增长来自老用户回流",
+   "children": [
+    {
+     "id": "grid-f1",
+     "type": "grid",
+     "cols": 9,
+     "children": [
+      {
+       "id": "blk-f1-text",
+       "type": "block",
+       "span": 3,
+       "rows": 2,
+       "children": [
+        {
+         "id": "text-f1",
+         "type": "text",
+         "text": "中秋节前一周日活达到月内高点 131.6 万，回流用户占新增日活的 62%。",
+         "src": [
+          "/findings/0"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "blk-dau",
+       "type": "block",
+       "span": 6,
+       "rows": 2,
+       "title": "日活跃用户（周均，万）",
+       "children": [
+        {
+         "id": "chart-dau",
+         "type": "line-chart",
+         "xKey": "week",
+         "series": [
+          {
+           "key": "dau",
+           "label": "日活（万）"
+          }
+         ],
+         "data": [
+          {
+           "week": "9/1–7",
+           "dau": 121.9
+          },
+          {
+           "week": "9/8–14",
+           "dau": 123.8
+          },
+          {
+           "week": "9/15–21",
+           "dau": 125.8
+          },
+          {
+           "week": "9/22–30",
+           "dau": 128.3
+          }
+         ],
+         "src": [
+          "/dauWeekly"
+         ],
+         "height": "fill"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-f2",
+   "type": "section",
+   "title": "乳品烘焙成为增长最快的品类",
+   "children": [
+    {
+     "id": "grid-f2",
+     "type": "grid",
+     "cols": 9,
+     "children": [
+      {
+       "id": "blk-f2-text",
+       "type": "block",
+       "span": 9,
+       "rows": 1,
+       "children": [
+        {
+         "id": "text-f2",
+         "type": "text",
+         "text": "早餐套餐上线后，乳品烘焙成交额环比增长 18.5%，复购率 41%。",
+         "src": [
+          "/findings/1"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "blk-cat",
+       "type": "block",
+       "span": 9,
+       "rows": 2,
+       "title": "品类成交额",
+       "children": [
+        {
+         "id": "table-cat",
+         "type": "table",
+         "columns": [
+          {
+           "key": "name",
+           "label": "品类",
+           "span": 2
+          },
+          {
+           "key": "gmv",
+           "label": "成交额（万元）",
+           "align": "right",
+           "span": 2
+          },
+          {
+           "key": "change",
+           "label": "环比",
+           "align": "right",
+           "span": 2,
+           "tone": [
+            "−4.3%"
+           ]
+          },
+          {
+           "key": "share",
+           "label": "占比（%）",
+           "span": 3,
+           "bar": true
+          }
+         ],
+         "rows": [
+          {
+           "name": "水果",
+           "gmv": "8,920",
+           "change": "+14.2%",
+           "share": 25.9
+          },
+          {
+           "name": "蔬菜",
+           "gmv": "6,150",
+           "change": "+9.8%",
+           "share": 17.8
+          },
+          {
+           "name": "肉禽蛋",
+           "gmv": "5,870",
+           "change": "+6.1%",
+           "share": 17
+          },
+          {
+           "name": "乳品烘焙",
+           "gmv": "4,230",
+           "change": "+18.5%",
+           "share": 12.3
+          },
+          {
+           "name": "海鲜水产",
+           "gmv": "3,960",
+           "change": "−4.3%",
+           "share": 11.5
+          },
+          {
+           "name": "粮油调味",
+           "gmv": "2,880",
+           "change": "+2.7%",
+           "share": 8.4
+          }
+         ],
+         "src": [
+          "/categories"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-f3",
+   "type": "section",
+   "title": "新渠道用户转化偏低",
+   "children": [
+    {
+     "id": "grid-f3",
+     "type": "grid",
+     "cols": 9,
+     "children": [
+      {
+       "id": "blk-f3-text",
+       "type": "block",
+       "span": 3,
+       "rows": 2,
+       "children": [
+        {
+         "id": "text-f3",
+         "type": "text",
+         "text": "信息流广告带来的新用户下单转化率仅 2.1%，拉低了整体转化率。",
+         "src": [
+          "/findings/2"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "blk-channels",
+       "type": "block",
+       "span": 6,
+       "rows": 2,
+       "title": "新增用户渠道（%）",
+       "children": [
+        {
+         "id": "chart-channels",
+         "type": "bar-chart",
+         "layout": "horizontal",
+         "xKey": "name",
+         "series": [
+          {
+           "key": "share",
+           "label": "占比（%）"
+          }
+         ],
+         "data": [
+          {
+           "name": "应用商店",
+           "share": 38
+          },
+          {
+           "name": "信息流广告",
+           "share": 27
+          },
+          {
+           "name": "社交分享",
+           "share": 18
+          },
+          {
+           "name": "搜索",
+           "share": 11
+          },
+          {
+           "name": "其他",
+           "share": 6
+          }
+         ],
+         "src": [
+          "/channels"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-risks",
+   "type": "section",
+   "title": "风险",
+   "children": [
+    {
+     "id": "list-risks",
+     "type": "list",
+     "divided": false,
+     "ordered": true,
+     "items": [
+      {
+       "title": "海鲜水产成交额连续两个月下降，需排查供应与价格。"
+      },
+      {
+       "title": "10 月国庆期间配送运力紧张，预计履约时长增加。"
+      }
+     ],
+     "src": [
+      "/risks"
+     ]
+    }
+   ]
+  }
+ ],
+ "className": "gap-[144px]"
+}

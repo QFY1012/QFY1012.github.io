@@ -1,0 +1,59 @@
+{
+ "title": "物流时效周报",
+ "org": "青岚速运 · 华东运营中心",
+ "period": "2026 年第 40 周（9 月 28 日至 10 月 4 日）",
+ "summary": "本周受国庆节前发货高峰影响，单量 186.4 万单，环比增长 6.8%；准时率降至 92.7%，较上周下降 1.9 个百分点，平均时效延长 2.4 小时。延误主要集中在 9 月 29 日至 10 月 1 日，嘉兴转运中心中转拥堵是首要原因，杭州—成都线准时率连续三周垫底。10 月 3 日起各项指标已明显回升。",
+ "kpis": [
+  { "key": "orders", "label": "本周单量", "value": 186.4, "unit": "万单", "change": "+6.8%", "direction": "up" },
+  { "key": "ontime", "label": "准时率", "value": 92.7, "unit": "%", "change": "−1.9 个百分点", "direction": "down" },
+  { "key": "hours", "label": "平均时效", "value": 31.9, "unit": "小时", "change": "+2.4 小时", "direction": "down" },
+  { "key": "exceptions", "label": "异常件", "value": 4812, "unit": "件", "change": "+23.5%", "direction": "down" }
+ ],
+ "daily": [
+  { "date": "9/21", "weekday": "周一", "orders": 24.8, "ontime": 94.8, "hours": 29.4, "exceptions": 520 },
+  { "date": "9/22", "weekday": "周二", "orders": 25.3, "ontime": 94.6, "hours": 29.6, "exceptions": 545 },
+  { "date": "9/23", "weekday": "周三", "orders": 25.9, "ontime": 94.9, "hours": 29.3, "exceptions": 560 },
+  { "date": "9/24", "weekday": "周四", "orders": 26.4, "ontime": 94.3, "hours": 29.8, "exceptions": 590 },
+  { "date": "9/25", "weekday": "周五", "orders": 27.8, "ontime": 93.9, "hours": 30.1, "exceptions": 640 },
+  { "date": "9/26", "weekday": "周六", "orders": 24.1, "ontime": 94.5, "hours": 29.5, "exceptions": 560 },
+  { "date": "9/27", "weekday": "周日", "orders": 20.2, "ontime": 95.1, "hours": 29.0, "exceptions": 481 },
+  { "date": "9/28", "weekday": "周一", "orders": 30.6, "ontime": 93.8, "hours": 30.2, "exceptions": 640 },
+  { "date": "9/29", "weekday": "周二", "orders": 33.9, "ontime": 92.6, "hours": 31.4, "exceptions": 790 },
+  { "date": "9/30", "weekday": "周三", "orders": 35.2, "ontime": 90.9, "hours": 33.1, "exceptions": 905 },
+  { "date": "10/1", "weekday": "周四", "orders": 25.7, "ontime": 91.8, "hours": 33.8, "exceptions": 812 },
+  { "date": "10/2", "weekday": "周五", "orders": 21.4, "ontime": 93.1, "hours": 32.6, "exceptions": 610 },
+  { "date": "10/3", "weekday": "周六", "orders": 19.8, "ontime": 93.6, "hours": 31.5, "exceptions": 540 },
+  { "date": "10/4", "weekday": "周日", "orders": 19.8, "ontime": 94.0, "hours": 30.6, "exceptions": 515 }
+ ],
+ "routes": [
+  { "from": "上海", "to": "北京", "orders": 38.2, "ontime": 94.1, "hours": 28.6, "exceptions": 812, "change": "−1.2 个百分点" },
+  { "from": "上海", "to": "广州", "orders": 34.5, "ontime": 91.3, "hours": 34.2, "exceptions": 1036, "change": "−3.1 个百分点" },
+  { "from": "宁波", "to": "深圳", "orders": 29.1, "ontime": 95.4, "hours": 30.3, "exceptions": 460, "change": "+0.3 个百分点" },
+  { "from": "苏州", "to": "武汉", "orders": 26.9, "ontime": 93.8, "hours": 27.9, "exceptions": 604, "change": "−0.9 个百分点" },
+  { "from": "杭州", "to": "成都", "orders": 21.7, "ontime": 88.6, "hours": 41.5, "exceptions": 968, "change": "−4.4 个百分点" },
+  { "from": "南京", "to": "西安", "orders": 18.4, "ontime": 90.2, "hours": 37.8, "exceptions": 702, "change": "−2.6 个百分点" },
+  { "from": "合肥", "to": "郑州", "orders": 17.6, "ontime": 96.2, "hours": 22.4, "exceptions": 230, "change": "+0.5 个百分点" }
+ ],
+ "delays": [
+  { "reason": "中转拥堵", "note": "节前高峰，嘉兴转运中心排队", "share": 38.4, "count": 52250 },
+  { "reason": "天气影响", "note": "华南强降雨，干线限速", "share": 21.6, "count": 29390 },
+  { "reason": "末端运力不足", "note": "节日期间派送员到岗率低", "share": 17.9, "count": 24360 },
+  { "reason": "交接漏扫", "note": "装卸交接未扫描，件被滞留", "share": 11.3, "count": 15380 },
+  { "reason": "地址异常或改约", "note": "收件人不在、要求改期", "share": 7.2, "count": 9800 },
+  { "reason": "其他", "note": "破损重包、海关查验等", "share": 3.6, "count": 4890 }
+ ],
+ "findings": [
+  { "title": "节前高峰压垮中转", "detail": "9 月 29 日至 30 日单量较上周同期增长 33%，嘉兴转运中心排队超过 6 小时，当日准时率跌至 90.9%。" },
+  { "title": "杭州—成都线持续垫底", "detail": "准时率 88.6%，连续三周全网最低，平均时效 41.5 小时，主要卡在成都分拨中心的夜间卸车。" },
+  { "title": "假期后半段快速恢复", "detail": "10 月 3 日起准时率回到 93.6% 以上，临时加开的夜班车次和跨区调配的分拣人手起了作用。" }
+ ],
+ "actions": [
+  { "title": "嘉兴转运中心扩容", "detail": "10 月 12 日前增设两条临时分拣线，高峰日从华东其他站点调配 40 名分拣员。" },
+  { "title": "调整杭州—成都发车时间", "detail": "发车由 22:00 提前到 19:30，避开成都分拨卸车高峰，下周起试行两周。" },
+  { "title": "漏扫纳入站点考核", "detail": "交接漏扫计入站点周考核，目标是把漏扫导致的延误件降到每周 1 万件以内。" }
+ ],
+ "risks": [
+  { "title": "双十一预售提前", "detail": "10 月 20 日起预售单量预计比本周再增 40%，按现有排班，中转能力缺口约 15%。" },
+  { "title": "华南降雨仍未结束", "detail": "气象预报下周华南仍有强降雨，上海—广州、宁波—深圳两线时效可能再延长 3 至 5 小时。" }
+ ]
+}
