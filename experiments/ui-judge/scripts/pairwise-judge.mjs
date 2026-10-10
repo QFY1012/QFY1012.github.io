@@ -30,6 +30,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric11      RUBRIC_11: rubric10 with crowding counted on the fullest tile, dilution as blank area on the emptiest
 //   rubric12      RUBRIC_12: rubric9 with alignment judged on the content edges, not on containers
 //   rubric14      RUBRIC_14: rubric11 with dilution at six tenths blank instead of more than half
+//   rubric15      RUBRIC_15: rubric9 with spacing only in principle 2, as a range (two to four lines) and even
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -205,6 +206,23 @@ export const RUBRIC_14 = RUBRIC_11.map((p, i) => i !== 0 ? p : {
   rule: p.rule.replace("大半是空白是稀疏", "空白占六成以上是稀疏"),
 })
 export const systemRubric14 = () => systemRubricOf(RUBRIC_14)
+// rubric15: rubric9 with spacing judged in one place, as a range with both
+// ends and evenness. Written only as a floor ("at least twice"), principle 2
+// read as "the farther apart the clearer", and diluted pages won on it: in
+// pixels the person's first choices space their sections about two to four
+// lines apart and evenly, the diluted second choices four to eight lines with
+// one gap far larger than the rest. Principle 1 loses its own spacing clause.
+export const RUBRIC_15 = RUBRIC_9.map((p, i) => {
+  if (i === 0) return { ...p, rule: p.rule.replace(";块与块之间的空白至少约两行正文高", ""), bad: "一屏里同时塞了说明文字、一排数字、两张图和一张表", see: "最挤的一屏有几种内容、是否过线" }
+  if (i === 1) return {
+    name: "分组清楚,间距匀称",
+    rule: "间距分两三级:组内紧,组与组之间约空两到四行正文高,同一级的间距处处相同。组间距不到两行,相邻的组粘在一起;超过五行,或某处忽然空出一大段,组与组就脱节,页面显得散",
+    bad: "所有模块按同一个间距排成均匀的格子;或者有的节之间隔一行、有的隔八行",
+    see: "组内距、组间距各约几行,各处组间距是否一样",
+  }
+  return p
+})
+export const systemRubric15 = () => systemRubricOf(RUBRIC_15)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -300,6 +318,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric11") return systemRubric11()
   if (cond === "rubric12") return systemRubric12()
   if (cond === "rubric14") return systemRubric14()
+  if (cond === "rubric15") return systemRubric15()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
