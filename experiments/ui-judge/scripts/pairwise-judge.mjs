@@ -21,9 +21,17 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   principles    the prompt above (baseline)
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
+//   crowd         principle 2 names both kinds of crowding as a serious defect
+//   crowd-anchor  crowd, plus one crowded page shown as a reference (ANCHOR_TEXT)
 export const ROOMY_2 = "2. 留白要充足且成形:内容挤满页面、各部分之间缺少明显间隔是缺点;空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点。"
+// Crowding of both kinds the person named: content spread over the full width
+// with no room around it, and a block packed with different things that are not
+// spaced apart.
+export const CROWD_2 = "2. 留白充足且成形:版面要有呼吸空间。拥挤是严重缺点,有两种:一是内容铺满整个页宽、四周不留余地;二是同一区块里塞进多种不同内容,彼此没有拉开间距。不同类内容之间的间距应明显大于同类内容之间的间距。拥挤不能用「紧凑」「统一」「信息完整」来抵消。空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点,只放标题的边栏留白也不是。"
+export const ANCHOR_TEXT = "参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 export function systemFor(cond) {
   if (cond === "principles") return system(true)
+  if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
     return system(true).replace(

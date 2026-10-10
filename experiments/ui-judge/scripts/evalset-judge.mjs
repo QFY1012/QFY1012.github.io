@@ -14,7 +14,7 @@
 // Results: out/aesthetic/evalset/<cond>/<group>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
-import { systemFor, img, call } from "./pairwise-judge.mjs"
+import { systemFor, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
@@ -55,7 +55,11 @@ async function judge() {
             file: `${g.id}__${a}__${b}__r${r}.json`,
             run: () => {
               const pa = pageImages(dirOf(g, a)), pb = pageImages(dirOf(g, b))
+              // The crowded reference is a validation page (cramped, every block boxed),
+              // not one of the eval-set versions; it shares the A/B report's data.
+              const anchor = COND === "crowd-anchor" ? [{ type: "text", text: ANCHOR_TEXT }, img(path.join(ROOT, "out/validate/ab-4/thumb.png"))] : []
               return call(systemFor(COND), [
+                ...anchor,
                 { type: "text", text: `A 版:第 1 张为整页缩略图,后 ${pa.length - 1} 张为整页切块。` },
                 ...pa,
                 { type: "text", text: `B 版:第 1 张为整页缩略图,后 ${pb.length - 1} 张为整页切块。` },
