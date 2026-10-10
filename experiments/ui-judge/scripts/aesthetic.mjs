@@ -1,6 +1,13 @@
 // Probe: can the judge make the stage-3 (aesthetic) calls?
 //
 //   DEEPSEEK_API_KEY=... node scripts/aesthetic.mjs [--run probe] [--effort low] [--repeats 1]
+//                        [--tasks check,pair] [--nodom] [--sbs] [--principles]
+//
+// Ablations (each changes one thing against the base run):
+//   --nodom       check without the DOM list: images only, so the judge has to look
+//   --sbs         pair as one side-by-side image of the two pages at the same scale
+//   --principles  style-independent review principles added to both prompts
+//   --effort high stronger reasoning
 //
 // Samples are the page versions rejected during review plus the accepted one,
 // rendered into out/versions/<V>/ (thumb.png, clean-*.png, dom.json).
@@ -19,6 +26,10 @@ const RUN = arg("run", "probe")
 const EFFORT = arg("effort", "low")
 const REPEATS = Number(arg("repeats", "1"))
 const MODEL = arg("model", "deepseek-flash")
+const TASKS = arg("tasks", "check,pair").split(",")
+const NODOM = process.argv.includes("--nodom")
+const SBS = process.argv.includes("--sbs")
+const PRINCIPLES = process.argv.includes("--principles")
 const KEY = process.env.DEEPSEEK_API_KEY
 if (!KEY) throw new Error("set DEEPSEEK_API_KEY")
 const VDIR = path.join(ROOT, "out", "versions")
@@ -60,9 +71,19 @@ function domText(v) {
     .join("\n")
 }
 
+// Style-independent principles: what "good" means here, without naming a style.
+const PRINCIPLE_TEXT = `评审标准(与具体风格无关):
+1. 装饰必须表达信息:卡片、边框、底色、阴影、颜色只用于区分真正独立的对象或表达状态;能用间距分组的,不必再加容器。
+2. 留白要成形:空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点。
+3. 主次分明:同一水平带里的内容要么同类、分量相同,要么有明显的主次;分量相当的不同内容并排是问题。
+4. 疏密一致:同类元素的行距和间距一致,不为凑齐高度而拉开或压缩。
+5. 有系统:整页使用统一的间距层级和对齐主轴,字号种类少且层级明确。
+6. 精致:图形线条克制,颜色只表达含义;中文使用全角标点,数字字体统一。
+
+`
 const SYSTEM_CHECK = `你是资深 UI 视觉设计评审。你只评判一个报告页面的视觉设计质量(排版、比例、节奏、精致度),不评判内容是否正确。
 
-逐条判断页面是否出现下列失败模式。每条只回答出现(true)或没出现(false);出现时用 DOM 清单中的节点编号标出问题最集中的元素(编号必须真实存在),并用一句话说明。
+${PRINCIPLES ? PRINCIPLE_TEXT : ""}逐条判断页面是否出现下列失败模式。每条只回答出现(true)或没出现(false);${NODOM ? "出现时用一句话说明在页面的哪个位置。" : "出现时用 DOM 清单中的节点编号标出问题最集中的元素(编号必须真实存在),并用一句话说明。"}
 
 ${modeText}
 
@@ -70,6 +91,7 @@ ${modeText}
 
 const SYSTEM_PAIR = `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量:整体的比例、疏密节奏、主次对比、对齐与留白、组件和字体的精致度。不比较内容。
 
+${PRINCIPLES ? PRINCIPLE_TEXT : ""}
 判断哪一版更好。只输出 JSON:{"better":"A" 或 "B","reason":"一两句话"}`
 
 async function call(system, content) {
@@ -97,13 +119,14 @@ async function call(system, content) {
 const jobs = []
 const versions = Object.keys(EXPECTED)
 for (let r = 1; r <= REPEATS; r++) {
-  for (const v of versions) {
+  for (const v of TASKS.includes("check") ? versions : []) {
     jobs.push({
       file: `check__${v}__r${r}.json`,
       run: async () => {
         const p = pageImages(v)
+        const intro = `第 1 张图是整页缩略图(看整体);后面 ${p.tiles.length} 张是从上到下的整页切块(看细节,${p.ranges.join(";")},相邻两张重叠 64px,左边缘对应页面 x=96)。`
         const content = [
-          { type: "text", text: `第 1 张图是整页缩略图(看整体);后面 ${p.tiles.length} 张是从上到下的整页切块(看细节,${p.ranges.join(";")},相邻两张重叠 64px,左边缘对应页面 x=96)。\n\n【DOM 清单】编号 组件 父节点 位置尺寸 字号/字重 文字\n${domText(v)}` },
+          { type: "text", text: NODOM ? intro : `${intro}\n\n【DOM 清单】编号 组件 父节点 位置尺寸 字号/字重 文字\n${domText(v)}` },
           p.thumb,
           ...p.tiles,
         ]
@@ -111,13 +134,21 @@ for (let r = 1; r <= REPEATS; r++) {
       },
     })
   }
-  for (const v of versions.filter((x) => x !== "F")) {
+  for (const v of TASKS.includes("pair") ? versions.filter((x) => x !== "F") : []) {
     for (const order of ["FA", "FB"]) {
       // FA: the accepted page is A; FB: the accepted page is B
       const [a, b] = order === "FA" ? ["F", v] : [v, "F"]
       jobs.push({
         file: `pair__${v}__${order}__r${r}.json`,
         run: async () => {
+          if (SBS) {
+            // one image, the two pages side by side at the same scale, left A, right B
+            const content = [
+              { type: "text", text: "下图是两版整页并排、同一比例:左边是 A 版,右边是 B 版。" },
+              img(path.join(VDIR, "_pairs", `${v}__${order}.png`)),
+            ]
+            return call(SYSTEM_PAIR, content)
+          }
           const pa = pageImages(a)
           const pb = pageImages(b)
           const content = [
