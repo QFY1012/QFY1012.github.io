@@ -29,6 +29,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric10      RUBRIC_10: rubric9 with density both ways, two or three groups of information a screen
 //   rubric11      RUBRIC_11: rubric10 with crowding counted on the fullest tile, dilution as blank area on the emptiest
 //   rubric12      RUBRIC_12: rubric9 with alignment judged on the content edges, not on containers
+//   rubric13      RUBRIC_13: rubric11 with crowding a heavy defect and dilution a light one
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -193,6 +194,14 @@ export const RUBRIC_12 = RUBRIC_9.map((p, i) => i !== 6 ? p : {
   see: "内容本身(不算外框)的边缘落在几条共同线上、哪些空白不成矩形",
 })
 export const systemRubric12 = () => systemRubricOf(RUBRIC_12)
+// rubric13: rubric11 with the two defects of principle 1 weighed by what
+// they cost the reader. Where rubric11 lost to rubric9, principle 1 had
+// picked a boxed or crowded page over a sparse one the person ranked higher.
+export const RUBRIC_13 = RUBRIC_11.map((p, i) => i !== 0 ? p : {
+  ...p,
+  rule: p.rule.replace("两头都没问题,这一条记「平」", "拥挤会妨碍阅读,是重的缺点;稀疏只让阅读变慢,是轻的缺点。两头都没问题,这一条记「平」"),
+})
+export const systemRubric13 = () => systemRubricOf(RUBRIC_13)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -287,6 +296,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric10") return systemRubric10()
   if (cond === "rubric11") return systemRubric11()
   if (cond === "rubric12") return systemRubric12()
+  if (cond === "rubric13") return systemRubric13()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
