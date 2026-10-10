@@ -552,10 +552,10 @@ body{background:#fff;font-family:"Noto Sans SC",sans-serif;font-size:13px;color:
 .fx .f{padding:0 10px;color:#555;font-style:italic;border-right:1px solid #c6c6c6;height:100%;display:flex;align-items:center}
 .fx .v{padding:0 10px;font-family:"IBM Plex Mono";font-size:12.5px}
 table.ws{table-layout:fixed;width:1216px;border-collapse:collapse;margin-top:6px}
-.ws td,.ws th{border:1px solid #d9d9d9;height:24px;padding:2px 6px;overflow:hidden;white-space:nowrap;vertical-align:bottom}
+.ws td,.ws th{border:1px solid #d9d9d9;height:24px;padding:2px 6px;overflow:hidden;white-space:nowrap;vertical-align:middle}
 .ws th{background:#efefef;color:#444;font-weight:400;text-align:center;font-size:12px}
 .ws td.rh{background:#efefef;color:#444;text-align:center;font-size:12px;width:36px;vertical-align:middle}
-.ws td.wrap{white-space:normal;line-height:1.7;vertical-align:top;padding:6px}
+.ws td.wrap{white-space:normal;line-height:1.7;padding:6px}
 .t1{font-size:20px;font-weight:600;color:#1f3864}
 .sec{background:#d9e1f2;font-weight:600;color:#1f3864;font-size:14px}
 .hd td{background:#4472c4;color:#fff;font-weight:600;text-align:center}
@@ -572,7 +572,7 @@ table.ws{table-layout:fixed;width:1216px;border-collapse:collapse;margin-top:6px
 .db{position:relative}
 .db i{position:absolute;left:0;top:3px;bottom:3px;background:linear-gradient(90deg,#638ec6,#c5d7ef);opacity:.85}
 .db span{position:relative}
-.charts{display:flex;gap:18px;padding:10px 6px;align-items:flex-start;vertical-align:top}
+.ws td.charts{padding:10px 6px;vertical-align:top}
 .chart{border:1px solid #bfbfbf;background:#fff;padding:8px 10px 8px;box-shadow:1px 1px 0 #e3e3e3}
 .ct{text-align:center;font-size:15px;color:#595959;margin-bottom:4px}
 .cl{display:flex;justify-content:center;gap:16px;font-size:12px;color:#595959;margin-top:2px}
@@ -615,7 +615,7 @@ table.ws{table-layout:fixed;width:1216px;border-collapse:collapse;margin-top:6px
   rows.push(tr(`${c("90天以上占比")}${c(R.over90 + "%", "r bd")}${c("周转天数")}${c(R.dso, "r")}${c("较上月")}${c(esc(K.dso.change), "r red")}${pad(3)}`))
   const cashChart = cols({ w: 560, h: 230, data: M.map((m) => ({ x: m.label, y: m.cash })), ticks: [-1000, 0, 1000, 2000, 3000, 4000], color: orange, grid: "#d9d9d9", text: "#595959", font: "Noto Sans SC", size: 11, pad: [10, 8, 22, 46], bw: 0.6, baseColor: "#bfbfbf" })
   const pie = ring({ size: 220, r: 50, t: 100, items: E, colors: [blue, orange, gray, gold] })
-  rows.push(tr(`<td colspan="9" class="charts" style="height:300px"><div style="display:flex;gap:22px">${chartBox("经营活动现金净流量（万元）", cashChart, lgd([["经营现金流", orange]]), 580)}${chartBox("9月期间费用构成", `<div style="display:flex;justify-content:center;padding:6px 0">${pie}</div>`, lgd(E.map((e, i) => [`${e.name} ${e.share}%`, [blue, orange, gray, gold][i]])), 420)}</div></td>`))
+  rows.push(tr(`<td colspan="9" class="charts" style="height:300px"><div style="display:flex;gap:22px">${chartBox("经营活动现金净流量（万元）", cashChart, lgd([["经营现金流", orange]]), 580)}${chartBox("9月期间费用构成", `<div style="display:flex;justify-content:center;padding:6px 0">${pie}</div>`, lgd(E.map((e, i) => [`${e.name} ${e.share}%`, [blue, orange, gray, gold][i]])), 470)}</div></td>`))
   rows.push(blank())
   rows.push(sec("七、重点发现"))
   f.findings.forEach((x, i) => rows.push(tr(`<td colspan="2" class="b">${i + 1}. ${esc(x.title)}</td><td colspan="7" class="wrap">${esc(x.text)}</td>`)))
