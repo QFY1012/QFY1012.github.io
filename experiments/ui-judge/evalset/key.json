@@ -3,27 +3,29 @@
   {
    "id": "ops",
    "title": "运营月报",
-   "desc": "同一份数据生成的五版",
+   "desc": "同一份数据生成的六版",
    "src": "out/render",
    "labels": {
-    "甲": "ops-d",
-    "乙": "ops-a",
-    "丙": "ops-e",
-    "丁": "ops-b",
-    "戊": "ops-c"
+    "甲": "ops-a",
+    "乙": "ops-e",
+    "丙": "ops-b",
+    "丁": "ops-f",
+    "戊": "ops-c",
+    "己": "ops-d"
    }
   },
   {
    "id": "ab",
    "title": "A/B 实验报告",
-   "desc": "同一份数据生成的五版",
+   "desc": "同一份数据生成的六版",
    "src": "out/render",
    "labels": {
-    "甲": "ab-a",
-    "乙": "ab-d",
+    "甲": "ab-d",
+    "乙": "ab-e",
     "丙": "ab-b",
-    "丁": "ab-e",
-    "戊": "ab-c"
+    "丁": "ab-c",
+    "戊": "ab-f",
+    "己": "ab-a"
    }
   },
   {

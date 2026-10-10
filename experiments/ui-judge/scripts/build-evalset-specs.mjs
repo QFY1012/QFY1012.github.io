@@ -127,6 +127,25 @@ const OPS = {
     { id: "sec-risks", type: "section", title: "风险", children: [
       { id: "list-risks", type: "list", divided: false, ordered: true, items: ops.risks.map((r) => ({ title: r })), src: ["/risks"] } ] },
   ], { className: "gap-[144px]" }),
+  // One 1040px column: title and lead, a ruled KPI row, then sections whose
+  // titles sit above a hairline with the unit on the right.
+  f: page(ops, [ops.product, ops.period], [
+    { id: "grid-kpis", type: "grid", cols: 4, fields: false, ruled: true, children: ops.kpis.map((k, i) =>
+      ({ ...kpiStat(k, i, { size: "xl", delta: undefined, note: `环比 ${k.change}` }), span: 1 })) },
+    { id: "sec-dau", type: "section", title: "日活跃用户", aside: "单位：万，9 月 1 日至 30 日", children: [
+      { id: "chart-dau", type: "line-chart", xKey: "date", series: [{ key: "dau", label: "日活（万）" }], yTicks: [120, 125, 130], xInterval: 6, pointLabels: "last", height: "h-[220px]",
+        data: ops.dauDaily.map((d) => ({ date: `9 月 ${d.day} 日`, dau: d.dau })), src: ["/dauDaily"] } ] },
+    { id: "sec-cat", type: "section", title: "渠道与品类", aside: "成交额单位：万元", children: [
+      { id: "grid-cat", type: "grid", cols: 12, fields: false, className: "gap-x-20", children: [
+        blk("blk-channels", 4, undefined, "新增用户来源", [{ id: "prog-channels", type: "progress-list", compact: true, className: "gap-4", items: ops.channels.map((c) => ({ label: c.name, value: c.share, max: 38, display: `${c.share}%` })), src: ["/channels"] }]),
+        blk("blk-cat", 8, undefined, "品类成交额", [{ id: "table-cat", type: "table", columns: [
+          { key: "name", label: "品类" }, { key: "gmv", label: "成交额", align: "right" },
+          { key: "change", label: "环比", align: "right", tone: ["−4.3%"] }, { key: "share", label: "占比", align: "right" } ],
+          rows: ops.categories.map((c) => ({ name: c.name, gmv: num(c.gmv), change: c.change, share: `${c.share}%` })), src: ["/categories"] }]) ] } ] },
+    { id: "sec-findings", type: "section", title: "发现与风险", children: [
+      { id: "list-findings", type: "list", numbered: true, items: ops.findings.map((f) => ({ title: f.title, description: f.detail })), src: ["/findings"] },
+      { id: "list-risks", type: "list", columns: 2, metaTone: "destructive", items: ops.risks.map((r) => ({ meta: "风险", description: r })), src: ["/risks"] } ] },
+  ], { frame: "column", lead: ops.summary }),
 }
 
 // ---------- A/B 实验报告 ----------
@@ -246,6 +265,36 @@ const AB = {
         { label: "负责团队", value: ab.owner }, { label: "分流方式", value: ab.traffic },
         { label: "样本量", value: `对照 ${num(ab.samples.control)} / 实验 ${num(ab.samples.treatment)}` } ], src: ["/owner", "/traffic", "/samples"] } ] },
   ], { className: "gap-[144px]" }),
+  // Swiss frame with sections a field apart: an interval column in the metric
+  // table, the trend with its band, segments as figures, next steps across.
+  f: page(ab, abMeta, [
+    { id: "sec-verdict", type: "section", title: "结论", children: [
+      { id: "grp-verdict", type: "group", className: "gap-12", children: [
+        { id: "text-verdict", type: "text", text: ab.verdict, className: "text-2xl leading-9 font-light", src: ["/verdict"] },
+        { id: "grid-figs", type: "grid", cols: 3, fields: false, children: [
+          { id: "stat-lift", type: "stat", span: 1, size: "lg", captionBelow: true, quiet: true, label: "支付转化率，主指标", value: pct(primary.lift), src: ["/metrics/0"] },
+          { id: "stat-n", type: "stat", span: 1, size: "lg", captionBelow: true, quiet: true, label: `实验组样本量，对照组 ${num(ab.samples.control)}`, value: num(ab.samples.treatment), src: ["/samples"] },
+          { id: "stat-days", type: "stat", span: 1, size: "lg", captionBelow: true, quiet: true, label: ab.traffic, value: "21 天", src: ["/period", "/traffic"] } ] } ] } ] },
+    { id: "sec-metrics", type: "section", title: "指标结果", description: "点为提升幅度，线为 95% 置信区间；灰色为不显著。", children: [
+      { id: "table-metrics", type: "table", columns: [
+        { key: "name", label: "指标", span: 2 },
+        { key: "control", label: "对照组", align: "right", span: 1 },
+        { key: "treatment", label: "实验组", align: "right", span: 1 },
+        { key: "liftText", label: "变化", align: "right", span: 1, muteWhen: { key: "significant", equals: false } },
+        { key: "lift", label: "置信区间", span: 2, interval: { low: "ciLow", high: "ciHigh", domain: [-10, 14] }, muteWhen: { key: "significant", equals: false } },
+        { key: "ci", label: "区间", align: "right", span: 2, muteWhen: { key: "significant", equals: false } } ],
+        rows: ab.metrics.map((m) => ({ name: m.name, control: m.control, treatment: m.treatment, liftText: pct(m.lift), lift: m.lift, ciLow: m.ciLow, ciHigh: m.ciHigh, ci: ci(m), significant: m.significant })),
+        src: ["/metrics"] } ] },
+    { id: "sec-trend", type: "section", title: "随时间变化", description: "主指标累计提升与 95% 置信区间，第 6 天起区间不再包含 0。", children: [
+      { id: "chart-trend", type: "line-chart", xKey: "day", series: [{ key: "lift", label: "累计提升（%）" }], band: { low: "low", high: "high" }, zero: true,
+        yTicks: [0, 4, 8, 12, 16], xInterval: 4, pointLabels: "last", lastLabel: pct(primary.lift), height: "h-48",
+        data: ab.daily.map((d) => ({ ...d, day: `第 ${d.day} 天` })), src: ["/daily"] } ] },
+    { id: "sec-seg", type: "section", title: "分群", description: "支付转化率提升，各群均显著。", children: [
+      { id: "grid-seg", type: "grid", cols: 4, fields: false, children: ab.segments.map((g, i) =>
+        ({ id: `stat-seg-${i}`, type: "stat", captionBelow: true, quiet: true, label: `${g.name}，${g.control} → ${g.treatment}`, value: pct(g.lift), span: 1, src: [`/segments/${i}`] })) } ] },
+    { id: "sec-next", type: "section", title: "下一步", children: [
+      { id: "list-next", type: "list", columns: 3, numbered: true, items: ab.next.map((n) => ({ title: n.title, description: n.detail })), src: ["/next"] } ] },
+  ], { className: "gap-24" }),
 }
 
 fs.rmSync(OUT, { recursive: true, force: true })

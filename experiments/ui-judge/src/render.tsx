@@ -4,12 +4,15 @@
 import * as React from "react"
 import { CircleAlert } from "lucide-react"
 import {
+  Area,
   Bar,
   BarChart,
   CartesianGrid,
+  ComposedChart,
   LabelList,
   Line,
   LineChart,
+  ReferenceLine,
   XAxis,
   YAxis,
 } from "recharts"
@@ -63,7 +66,13 @@ export type SpecNode = {
   [key: string]: unknown
 }
 
-const GRID_COLS: Record<number, string> = { 9: "grid-cols-9", 12: "grid-cols-12" }
+const GRID_COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4", 9: "grid-cols-9", 12: "grid-cols-12" }
+
+// The page frame, chosen by the spec: "swiss" (default) hangs section titles in
+// the left 3 of 12 columns; "column" is one 1040px column with section titles
+// above their content.
+type Frame = "swiss" | "column"
+const FrameContext = React.createContext<Frame>("swiss")
 
 // Static strings so Tailwind generates them.
 const SPAN = [
@@ -116,12 +125,28 @@ function chartConfig(series: Series[]): ChartConfig {
 
 export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
   const p = node as Record<string, any>
+  const frame = React.useContext(FrameContext)
   switch (node.type) {
     // Page and section frame (Swiss layout): 12 columns of 74px with 24px
     // gutters on an 8px baseline. Section titles hang in the left 3 columns;
     // content sits in the 9 columns to the right, so the left margin stays a
     // regular, empty field that gives the page its vertical axis.
     case "page":
+      if (p.frame === "column")
+        return (
+          <FrameContext.Provider value="column">
+            <main {...mark(node)} data-slot="page" className={outer(node, ctx, "mx-auto flex w-full max-w-[1040px] flex-col gap-[88px] py-[88px]")}>
+              <header data-slot="page-header" className="flex flex-col">
+                {((p.meta as string[] | undefined) ?? []).length > 0 && (
+                  <span className="text-[13px] leading-6 text-muted-foreground">{(p.meta as string[]).join(" · ")}</span>
+                )}
+                <h1 className="mt-3 text-[44px] leading-[56px] font-semibold">{p.title}</h1>
+                {p.lead && <p className="mt-6 max-w-[760px] text-xl leading-[34px] font-light text-foreground/75">{p.lead}</p>}
+              </header>
+              {kids(node)}
+            </main>
+          </FrameContext.Provider>
+        )
       return (
         // Modular grid: 4 columns of 270px (each divisible into thirds) by fields of
         // 144px (six 24px lines) with a one-line interval. Sections are one empty
@@ -142,6 +167,19 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       )
 
     case "section":
+      if (frame === "column")
+        return (
+          <section {...mark(node)} data-slot="section" className={cn("flex flex-col", ctx.span && SPAN[ctx.span])}>
+            {/* title on the left, a note (units, period) on the right, a hairline under both */}
+            <div data-slot="section-header" className="mb-6 flex items-baseline justify-between gap-6 border-b pb-3">
+              <h2 className="text-[22px] leading-8 font-semibold">{p.title}</h2>
+              {(p.aside || p.description) && <span className="text-[13px] text-muted-foreground">{p.aside ?? p.description}</span>}
+            </div>
+            <div data-slot="section-body" className={cn("flex flex-col gap-6", node.className)}>
+              {kids(node)}
+            </div>
+          </section>
+        )
       return (
         <section {...mark(node)} data-slot="section" className={cn("grid grid-cols-12 items-start gap-x-6", ctx.span && SPAN[ctx.span])}>
           <div data-slot="section-header" className="col-span-3 flex flex-col">
@@ -171,8 +209,18 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         <div
           {...mark(node)}
           data-slot="grid"
-          className={outer(node, ctx, cn("grid gap-x-6 gap-y-6", GRID_COLS[(p.cols as number) ?? 12]))}
-          style={{ gridAutoRows: "144px" }}
+          className={outer(
+            node,
+            ctx,
+            cn(
+              "grid gap-x-6 gap-y-6",
+              GRID_COLS[(p.cols as number) ?? 12],
+              // ruled: a dark rule over the row and hairlines between its cells
+              p.ruled && "gap-x-0 border-t border-foreground [&>*]:pt-4 [&>*]:pr-6 [&>*+*]:border-l [&>*+*]:pl-6",
+            ),
+          )}
+          // fields: false lets rows take their content's height instead of whole 144px fields
+          style={p.fields === false ? undefined : { gridAutoRows: "144px" }}
         >
           {(node.children ?? []).map((c, i) => (
             <Node key={c.id ?? i} node={c} ctx={{ span: c.span ?? ((p.cols as number) ?? 12), rows: c.rows as number | undefined }} />
@@ -231,10 +279,10 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
           {/* captionBelow: the number comes first, so a row of figures can align on their baselines */}
           {p.label && !p.captionBelow && <span className="text-sm leading-6 text-muted-foreground">{p.label}</span>}
           <div className="flex items-baseline gap-2">
-            <span className={cn("font-light tabular-nums", p.size === "lg" ? "text-5xl leading-[60px]" : "text-3xl leading-9")}>{p.value}</span>
+            <span className={cn("font-light tabular-nums", p.size === "lg" ? "text-5xl leading-[60px]" : p.size === "xl" ? "text-[44px] leading-[56px]" : "text-3xl leading-9")}>{p.value}</span>
             {p.unit && <span className="text-sm text-muted-foreground">{p.unit}</span>}
           </div>
-          {p.label && p.captionBelow && <span className="text-sm leading-6">{p.label}</span>}
+          {p.label && p.captionBelow && <span className={p.quiet ? "text-xs leading-6 text-muted-foreground" : "text-sm leading-6"}>{p.label}</span>}
           {(p.delta || p.note) && (
             <div className="flex items-center gap-2">
               {p.delta && (
@@ -242,7 +290,8 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                   {p.delta}
                 </Badge>
               )}
-              {p.note && <span className="text-xs leading-6 text-muted-foreground">{p.note}</span>}
+              {/* without a delta badge the note carries the change, so a fall is drawn in the destructive colour */}
+              {p.note && <span className={cn("text-xs leading-6", !p.delta && dir === "down" ? "text-destructive" : "text-muted-foreground")}>{p.note}</span>}
             </div>
           )}
         </div>
@@ -259,13 +308,34 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
     case "table": {
       // span: the column's width in grid columns, so cell text starts on a column line.
       // tone: values listed here are drawn in the destructive colour (a state, e.g. 严重).
-      const cols = p.columns as { key: string; label: string; align?: "left" | "right"; bar?: boolean; span?: number; tone?: string[] }[]
+      // interval: the cell draws the row's estimate (key) with its range (low..high) on an axis shared by the column.
+      // muteWhen: the cell is greyed when the row's field equals the value (e.g. not significant).
+      type Col = {
+        key: string; label: string; align?: "left" | "right"; bar?: boolean; span?: number; tone?: string[]
+        interval?: { low: string; high: string; domain: [number, number] }
+        muteWhen?: { key: string; equals: unknown }
+      }
+      const cols = p.columns as Col[]
       const onGrid = cols.some((c) => c.span)
       const rows = p.rows as Record<string, React.ReactNode>[]
       // A numeric column can carry an inline bar, scaled to the column's max.
       const max = Object.fromEntries(cols.filter((c) => c.bar).map((c) => [c.key, Math.max(...rows.map((r) => Number(r[c.key]) || 0))]))
-      const cell = (c: (typeof cols)[number], v: React.ReactNode) =>
-        c.bar ? (
+      const interval = (c: Col, r: Record<string, React.ReactNode>, muted: boolean) => {
+        const [lo, hi] = c.interval!.domain
+        const x = (v: unknown) => ((Number(v) - lo) / (hi - lo)) * 100
+        const ink = muted ? "var(--muted-foreground)" : "var(--foreground)"
+        return (
+          <svg width="100%" height="16" className="block overflow-visible" aria-label={`${r[c.key]} [${r[c.interval!.low]}, ${r[c.interval!.high]}]`}>
+            <line x1={`${x(0)}%`} x2={`${x(0)}%`} y1="-12" y2="28" stroke="var(--border)" />
+            <line x1={`${x(r[c.interval!.low])}%`} x2={`${x(r[c.interval!.high])}%`} y1="8" y2="8" stroke={ink} strokeOpacity={muted ? 0.5 : 1} strokeWidth="1.5" />
+            <circle cx={`${x(r[c.key])}%`} cy="8" r="3.5" fill={ink} fillOpacity={muted ? 0.5 : 1} />
+          </svg>
+        )
+      }
+      const cell = (c: Col, v: React.ReactNode, r: Record<string, React.ReactNode>, muted: boolean) =>
+        c.interval ? (
+          interval(c, r, muted)
+        ) : c.bar ? (
           <div className="flex items-center gap-3">
             <span className="w-8 tabular-nums">{v}</span>
             <div className="h-1 flex-1 rounded-full bg-primary/10">
@@ -308,9 +378,10 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                         onGrid && "h-[39px] py-0 pl-0 pr-6 whitespace-normal",
                         onGrid && i === cols.length - 1 && "pr-0",
                         c.tone?.includes(String(r[c.key])) && "font-medium text-destructive",
+                        c.muteWhen && r[c.muteWhen.key] === c.muteWhen.equals && "text-muted-foreground/70",
                       )}
                     >
-                      {cell(c, r[c.key])}
+                      {cell(c, r[c.key], r, !!c.muteWhen && r[c.muteWhen.key] === c.muteWhen.equals)}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -350,6 +421,44 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                   <LabelList dataKey={key} position="right" offset={10} className="fill-muted-foreground" fontSize={12} />
                 </Bar>
               </BarChart>
+            </ChartContainer>
+          </div>
+        )
+      }
+      // One series drawn as a quiet trend: optional y ticks with a grid, a
+      // shaded range (band), a zero line, sparse x labels and only the last
+      // point labelled.
+      if (node.type === "line-chart" && series.length === 1 && (p.band || p.yTicks || p.pointLabels === "last")) {
+        const key = series[0].key
+        const ticks = p.yTicks as number[] | undefined
+        const band = p.band as { low: string; high: string } | undefined
+        const rows = band ? data.map((r) => ({ ...r, __band: [r[band.low], r[band.high]] })) : data
+        const n = data.length
+        return (
+          <div {...mark(node)} data-slot="custom-chart" className={outer(node, ctx, fill ? "flex min-h-0 flex-1 flex-col" : undefined)}>
+            <ChartContainer config={cfg} className={cn("aspect-auto w-full", height)}>
+              <ComposedChart data={rows} margin={{ left: 0, right: 24, top: 24, bottom: 0 }}>
+                {ticks && <CartesianGrid vertical={false} strokeOpacity={0.5} />}
+                <XAxis dataKey={p.xKey} tickLine={false} axisLine={false} tickMargin={12} fontSize={12} interval={(p.xInterval as number | undefined) ?? "preserveStartEnd"} />
+                <YAxis hide={!ticks} domain={ticks ? [ticks[0], ticks[ticks.length - 1]] : ["auto", "auto"]} ticks={ticks} interval={0} tickLine={false} axisLine={false} width={32} fontSize={12} />
+                {band && <Area dataKey="__band" stroke="none" fill="var(--foreground)" fillOpacity={0.06} isAnimationActive={false} />}
+                {p.zero && <ReferenceLine y={0} stroke="var(--muted-foreground)" strokeOpacity={0.5} />}
+                <Line dataKey={key} stroke="var(--foreground)" strokeWidth={1.5} dot={false} isAnimationActive={false}>
+                  <LabelList
+                    dataKey={key}
+                    content={(lp: any) =>
+                      lp.index === n - 1 ? (
+                        <g>
+                          <circle cx={lp.x} cy={lp.y} r={3} fill="var(--foreground)" />
+                          <text x={lp.x - 6} y={lp.y - 10} textAnchor="end" fontSize={12} fontWeight={500} fill="var(--foreground)">
+                            {(p.lastLabel as string | undefined) ?? lp.value}
+                          </text>
+                        </g>
+                      ) : null
+                    }
+                  />
+                </Line>
+              </ComposedChart>
             </ChartContainer>
           </div>
         )
@@ -449,7 +558,40 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       )
 
     case "list": {
-      const items = p.items as { title: string; description?: string; meta?: string }[]
+      const items = p.items as { title?: string; description?: string; meta?: string }[]
+      // numbered: "01", "02" … instead of 1, 2; columns: the items sit side by
+      // side, each with its number (or its meta) as a small line above.
+      const num = (i: number) => String(i + 1).padStart(2, "0")
+      if (p.columns)
+        return (
+          <div {...mark(node)} data-slot="custom-list" className={outer(node, ctx, cn("grid gap-x-6 gap-y-6", GRID_COLS[p.columns as number]))}>
+            {items.map((it, i) => (
+              <div key={i} className="flex flex-col text-sm leading-6">
+                {(p.numbered || it.meta) && (
+                  <span className={cn("text-xs leading-6", it.meta && p.metaTone === "destructive" ? "text-destructive" : "text-muted-foreground")}>
+                    {it.meta ?? num(i)}
+                  </span>
+                )}
+                {it.title && <span className="font-semibold">{it.title}</span>}
+                {it.description && <span className="text-foreground/70">{it.description}</span>}
+              </div>
+            ))}
+          </div>
+        )
+      if (p.numbered)
+        return (
+          <ol {...mark(node)} data-slot="custom-list" className={outer(node, ctx, "flex flex-col")}>
+            {items.map((it, i) => (
+              <li key={i} className="grid grid-cols-[48px_1fr] border-b py-5 text-sm leading-6">
+                <span className="text-xs leading-6 text-muted-foreground tabular-nums">{num(i)}</span>
+                <div className="flex flex-col">
+                  {it.title && <span className="font-semibold">{it.title}</span>}
+                  {it.description && <span className="text-foreground/70">{it.description}</span>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        )
       return (
         // Undivided lists: an item's title and description sit tight (two 24px lines),
         // with a 12px gap only between items.
