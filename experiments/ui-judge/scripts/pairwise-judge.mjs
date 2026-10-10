@@ -27,6 +27,8 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   dims-sep      one call per dimension (systemForDim); the verdict is the majority (scripts/evalset-judge.mjs)
 //   dims2-sep     dims-sep with DIMENSIONS_V2
 //   dims3-sep     dims-sep with DIMENSIONS_V3 (only alignment differs from v2)
+//   dims3v-sep    dims3-sep, with space and grouping asked three times and taken by majority (scripts/evalset-judge.mjs)
+//   dims4-sep     dims3-sep with DIMENSIONS_V4 (space and grouping rewritten, observations first)
 export const ROOMY_2 = "2. 留白要充足且成形:内容挤满页面、各部分之间缺少明显间隔是缺点;空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点。"
 // Crowding of both kinds the person named: content spread over the full width
 // with no room around it, and a block packed with different things that are not
@@ -72,7 +74,30 @@ export const DIMENSIONS_V3 = DIMENSIONS_V2.map((d) =>
       },
 )
 
-const INTRO = "你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计,不比较内容。"
+// v4: v3 with space and grouping given concrete things to observe, and the
+// judge writes its observations down before the verdict. Cards packed in a
+// grid can no longer read as "roomy" or "well grouped" by their tidiness:
+// space counts how many kinds of content share one screen, grouping lists
+// the groups first and then compares the distances.
+export const DIMENSIONS_V4 = DIMENSIONS_V3.map((d) =>
+  d.id === "space"
+    ? {
+        ...d,
+        look: `${STRIP}按屏看(每张切块约为一屏):每屏里有几种不同的内容(一段文字、一组数字、一张图、一张表、一个列表各算一种),相邻两块内容之间的空白大约是正文行高的几倍。同一屏里内容种类越多、块间空白越窄,越拥挤;几块内容并排挤在一行比上下排开更拥挤`,
+        skip: "内容是否铺满页宽、空白的形状、页面总长度、卡片是否排得整齐",
+        out: '{"A":"A 版每屏的内容种类数和块间空白,如:3 种、约 3 行高;5 种、约 1 行高","B":"B 版同上","better":"A"、"B" 或 "平","reason":"一两句话"}',
+      }
+    : d.id === "grouping"
+      ? {
+          ...d,
+          look: `${STRIP}先列出页面上有哪几组内容(比如结论、几个指标、走势、明细、发现);再估计每组内部元素之间的距离和组与组之间的距离。组间距明显大于组内距(两倍以上)才算分得清;几组不相干的内容并排放着、彼此只隔一条窄缝,算分不清`,
+          skip: "卡片和边框——它们不算分组手段;分组是否合乎内容逻辑",
+          out: '{"groups":"页面上的几组内容","A":"A 版组内距和组间距大约多少","B":"B 版同上","better":"A"、"B" 或 "平","reason":"一两句话"}',
+        }
+      : d,
+)
+
+const INTRO ="你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计,不比较内容。"
 const dimLine = (d, i) => `${i + 1}. ${d.name}:只看${d.look}。不看${d.skip}。`
 // One dimension per call: the judge sees no other dimension and gives no overall verdict.
 export const systemForDim = (d) => `${INTRO}
@@ -81,7 +106,7 @@ export const systemForDim = (d) => `${INTRO}
 只看:${d.look}。
 不看:${d.skip}。页面在其他方面再好或再差,都不影响这一项。两版在这一方面差不多时回答「平」。
 
-只输出 JSON:{"better":"A"、"B" 或 "平","reason":"一两句话"}`
+${d.out ? "先写下观察,再下结论。" : ""}只输出 JSON:${d.out ?? '{"better":"A"、"B" 或 "平","reason":"一两句话"}'}`
 
 export function systemFor(cond) {
   if (cond === "dims")

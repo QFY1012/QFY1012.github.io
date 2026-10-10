@@ -31,20 +31,41 @@
   {
    "id": "review",
    "title": "体验走查报告",
-   "desc": "上一轮迭代的九个中间版和终版",
+   "desc": "上一轮迭代里的五版（从十版里挑出名次拉得开的）",
    "labels": {
     "甲": "V6",
-    "乙": "V5",
     "丙": "V3",
     "丁": "F",
     "戊": "V2",
-    "己": "V1",
-    "庚": "V4",
-    "辛": "V8",
-    "壬": "V9",
-    "癸": "V7"
+    "辛": "V8"
    },
    "src": "out/versions"
+  },
+  {
+   "id": "sales",
+   "title": "季度销售复盘",
+   "desc": "同一份数据生成的五版（新加，用来检验）",
+   "src": "out/render",
+   "labels": {
+    "甲": "sales-b",
+    "乙": "sales-c",
+    "丙": "sales-f",
+    "丁": "sales-a",
+    "戊": "sales-d"
+   }
+  },
+  {
+   "id": "survey",
+   "title": "会员调研报告",
+   "desc": "同一份数据生成的五版（新加，用来检验）",
+   "src": "out/render",
+   "labels": {
+    "甲": "survey-d",
+    "乙": "survey-c",
+    "丙": "survey-e",
+    "丁": "survey-f",
+    "戊": "survey-b"
+   }
   }
  ]
 }

@@ -14,7 +14,7 @@
 // Results: out/aesthetic/evalset/<cond>/<group>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
-import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, DIMENSIONS_V3, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
+import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, DIMENSIONS_V3, DIMENSIONS_V4, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
@@ -58,11 +58,30 @@ async function judgeDims(pa, pb, key, dimensions, reuse = null, redo = []) {
   await Promise.all(dimensions.filter((d) => !(d.id in dims)).map(async (d) => {
     const r = await call(systemForDim(d), pagePair(pa, pb), { key })
     dims[d.id] = r.json.better
-    raw[d.id] = r.json.reason
+    // dimensions that ask for observations keep them with the reason
+    raw[d.id] = d.out ? r.json : r.json.reason
   }))
   const n = (x) => Object.values(dims).filter((v) => v === x).length
   const better = n("A") > n("B") ? "A" : n("B") > n("A") ? "B" : "平"
   return { json: { dims, better, reasons: raw } }
+}
+
+// dims3v-sep: dims3-sep with two more calls for each of VOTED; that dimension
+// takes the majority of the three answers (no majority is "平").
+const VOTED = ["space", "grouping"]
+async function addVotes(pa, pb, key, base) {
+  const dims = { ...base.dims }, votes = {}, more = {}
+  await Promise.all(VOTED.map(async (id) => {
+    const d = DIMENSIONS_V3.find((x) => x.id === id)
+    const rs = await Promise.all([0, 1].map(() => call(systemForDim(d), pagePair(pa, pb), { key })))
+    votes[id] = [base.dims[id], ...rs.map((r) => r.json.better)]
+    more[id] = rs.map((r) => r.json.reason)
+    const c = (x) => votes[id].filter((v) => v === x).length
+    dims[id] = c("A") >= 2 ? "A" : c("B") >= 2 ? "B" : "平"
+  }))
+  const n = (x) => Object.values(dims).filter((v) => v === x).length
+  const better = n("A") > n("B") ? "A" : n("B") > n("A") ? "B" : "平"
+  return { json: { dims, better, reasons: base.reasons, votes, moreReasons: more } }
 }
 
 async function judge() {
@@ -84,6 +103,16 @@ async function judge() {
                 // v3 differs from v2 only in alignment: reuse v2's other answers when present.
                 const v2 = path.join(ROOT, "out", "aesthetic", "evalset", "dims2-sep", `${g.id}__${a}__${b}__r${r}.json`)
                 return judgeDims(pa, pb, KEY, DIMENSIONS_V3, fs.existsSync(v2) ? JSON.parse(fs.readFileSync(v2, "utf8")).json : null, ["alignment"])
+              }
+              if (COND === "dims4-sep") {
+                // v4 differs from v3 only in space and grouping: reuse v3's other answers when present.
+                const v3 = path.join(ROOT, "out", "aesthetic", "evalset", "dims3-sep", `${g.id}__${a}__${b}__r${r}.json`)
+                return judgeDims(pa, pb, KEY, DIMENSIONS_V4, fs.existsSync(v3) ? JSON.parse(fs.readFileSync(v3, "utf8")).json : null, ["space", "grouping"])
+              }
+              if (COND === "dims3v-sep") {
+                const v3 = path.join(ROOT, "out", "aesthetic", "evalset", "dims3-sep", `${g.id}__${a}__${b}__r${r}.json`)
+                return (fs.existsSync(v3) ? Promise.resolve(JSON.parse(fs.readFileSync(v3, "utf8"))) : judgeDims(pa, pb, KEY, DIMENSIONS_V3))
+                  .then((base) => addVotes(pa, pb, KEY, base.json))
               }
               // The crowded reference is a validation page (cramped, every block boxed),
               // not one of the eval-set versions; it shares the A/B report's data.
@@ -174,7 +203,7 @@ function score() {
   for (const g of key) {
     const label = Object.fromEntries(Object.entries(g.labels).map(([l, v]) => [v, l]))
     const vs = Object.values(g.labels).sort((a, b) => (wins[`${g.id}/${b}`] ?? 0) - (wins[`${g.id}/${a}`] ?? 0))
-    console.log(`- ${g.title}:judge ${vs.map((v) => `${label[v]}(${wins[`${g.id}/${v}`] ?? 0})`).join(" ")};你 ${Object.entries(human[g.id]).sort((a, b) => a[1] - b[1]).map(([l, n]) => `${l}${n}`).join(" ")}`)
+    console.log(`- ${g.title}:judge ${vs.map((v) => `${label[v]}(${wins[`${g.id}/${v}`] ?? 0})`).join(" ")};你 ${Object.entries(human[g.id] ?? {}).filter(([l]) => l in g.labels).sort((a, b) => a[1] - b[1]).map(([l, n]) => `${l}${n}`).join(" ")}`)
   }
   coupling()
   console.log("\n## 逐对结果(每格为各次重复的判定:选中的版面,或「分」= 两种顺序选得不一样)\n")
