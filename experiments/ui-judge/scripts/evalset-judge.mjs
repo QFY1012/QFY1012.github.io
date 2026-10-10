@@ -14,7 +14,7 @@
 // Results: out/aesthetic/evalset/<cond>/<group>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
-import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, DIMENSIONS_V3, DIMENSIONS_V4, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
+import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, DIMENSIONS_V3, DIMENSIONS_V4, img, call, ANCHOR_TEXT, JUDGE_MODEL } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
@@ -23,7 +23,9 @@ const arg = (k, d) => {
 }
 const COND = arg("cond", "principles")
 const WITH = arg("with", null)
-const OUT = path.join(ROOT, "out", "aesthetic", "evalset", COND)
+// Another judge model writes to (and reuses from) its own folders: <cond>@<model>.
+const TAG = process.env.JUDGE_MODEL ? `@${JUDGE_MODEL}` : ""
+const OUT = path.join(ROOT, "out", "aesthetic", "evalset", COND + TAG)
 const key = JSON.parse(fs.readFileSync(path.join(ROOT, "evalset", "key.json"), "utf8")).groups
 const GROUPS = arg("groups", key.map((g) => g.id).join(",")).split(",")
 const REPEATS = Number(arg("repeats", "3"))
@@ -101,16 +103,16 @@ async function judge() {
               if (COND === "dims2-sep") return judgeDims(pa, pb, KEY, DIMENSIONS_V2)
               if (COND === "dims3-sep") {
                 // v3 differs from v2 only in alignment: reuse v2's other answers when present.
-                const v2 = path.join(ROOT, "out", "aesthetic", "evalset", "dims2-sep", `${g.id}__${a}__${b}__r${r}.json`)
+                const v2 = path.join(ROOT, "out", "aesthetic", "evalset", "dims2-sep" + TAG, `${g.id}__${a}__${b}__r${r}.json`)
                 return judgeDims(pa, pb, KEY, DIMENSIONS_V3, fs.existsSync(v2) ? JSON.parse(fs.readFileSync(v2, "utf8")).json : null, ["alignment"])
               }
               if (COND === "dims4-sep") {
                 // v4 differs from v3 only in space and grouping: reuse v3's other answers when present.
-                const v3 = path.join(ROOT, "out", "aesthetic", "evalset", "dims3-sep", `${g.id}__${a}__${b}__r${r}.json`)
+                const v3 = path.join(ROOT, "out", "aesthetic", "evalset", "dims3-sep" + TAG, `${g.id}__${a}__${b}__r${r}.json`)
                 return judgeDims(pa, pb, KEY, DIMENSIONS_V4, fs.existsSync(v3) ? JSON.parse(fs.readFileSync(v3, "utf8")).json : null, ["space", "grouping"])
               }
               if (COND === "dims3v-sep") {
-                const v3 = path.join(ROOT, "out", "aesthetic", "evalset", "dims3-sep", `${g.id}__${a}__${b}__r${r}.json`)
+                const v3 = path.join(ROOT, "out", "aesthetic", "evalset", "dims3-sep" + TAG, `${g.id}__${a}__${b}__r${r}.json`)
                 return (fs.existsSync(v3) ? Promise.resolve(JSON.parse(fs.readFileSync(v3, "utf8"))) : judgeDims(pa, pb, KEY, DIMENSIONS_V3))
                   .then((base) => addVotes(pa, pb, KEY, base.json))
               }

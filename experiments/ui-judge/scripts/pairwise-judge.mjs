@@ -130,12 +130,15 @@ ${DIMENSIONS.map(dimLine).join("\n")}
 
 export const img = (file) => ({ type: "image_url", image_url: { url: `data:image/png;base64,${fs.readFileSync(file).toString("base64")}` } })
 
-export async function call(sys, content, { key, model = "deepseek-flash", effort = "low" }) {
+// JUDGE_URL / JUDGE_MODEL switch to another OpenAI-compatible endpoint and model.
+export const JUDGE_URL = process.env.JUDGE_URL ?? "https://api.deepseek.com/chat/completions"
+export const JUDGE_MODEL = process.env.JUDGE_MODEL ?? "deepseek-flash"
+export async function call(sys, content, { key, model = JUDGE_MODEL, effort = "low" }) {
   const body = { model, messages: [{ role: "system", content: sys }, { role: "user", content }], response_format: { type: "json_object" }, reasoning_effort: effort, max_tokens: 32000 }
   for (let attempt = 0; ; attempt++) {
     const t0 = Date.now()
     try {
-      const r = await fetch("https://api.deepseek.com/chat/completions", {
+      const r = await fetch(JUDGE_URL, {
         method: "POST",
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify(body),
