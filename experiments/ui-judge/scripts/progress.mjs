@@ -1,7 +1,7 @@
 // Progress of the eval-set judge runs, as two JSON tables for the progress
 // dashboard: one row per run, one row per run and group.
 //
-//   node scripts/progress.mjs <out dir>   → <out dir>/runs.json, <out dir>/groups.json
+//   node scripts/progress.mjs <out dir>   → <out dir>/runs.json, groups.json, and both in progress.json
 //
 // A run is a results folder (out/aesthetic/evalset/<cond>[@model]). Done =
 // result files for the group's current versions; total = pairs × 2 orders ×
@@ -78,4 +78,5 @@ for (const run of RUNS) {
 fs.mkdirSync(OUT, { recursive: true })
 fs.writeFileSync(path.join(OUT, "runs.json"), JSON.stringify(runs, null, 1))
 fs.writeFileSync(path.join(OUT, "groups.json"), JSON.stringify(groups, null, 1))
+fs.writeFileSync(path.join(OUT, "progress.json"), JSON.stringify({ updatedAt: new Date(now).toISOString(), runs, groups }))
 console.log(runs.map((r) => `${r.run} ${r.done}/${r.total} ${r.status}`).join(" | "))
