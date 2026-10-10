@@ -34,6 +34,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric16      RUBRIC_16: rubric9 with criterion 4 counting only size and weight as emphasis
 //   rubric17      RUBRIC_17: rubric16 with criterion 4's observation prompt asking for size and weight too
 //   rubric18      RUBRIC_18: rubric9 with criterion 2 asking that gaps of one level are the same everywhere
+//   rubric19      RUBRIC_19: rubric9 with criterion 2's gap ratio as a range on both sides (three to four)
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -243,6 +244,15 @@ export const RUBRIC_18 = RUBRIC_9.map((p, i) => i === 1 ? {
   see: "组内距和组间距大约多少、同一级的间距是否处处相同",
 } : p)
 export const systemRubric18 = () => systemRubricOf(RUBRIC_18)
+// rubric19: rubric9 with criterion 2's ratio as a range on both sides. The person's
+// pages peak at a ratio of three to four (as the judge itself estimates it); two
+// does not separate groups, five and more pulls them apart.
+export const RUBRIC_19 = RUBRIC_9.map((p, i) => i === 1 ? {
+  ...p,
+  rule: "间距分两级,组与组之间的间距约是组内间距的三四倍:不到两倍,组与组分不开;超过五倍,组与组之间隔得太远,页面散成一块一块",
+  see: "组内距和组间距大约多少、约几倍",
+} : p)
+export const systemRubric19 = () => systemRubricOf(RUBRIC_19)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -342,6 +352,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric16") return systemRubric16()
   if (cond === "rubric17") return systemRubric17()
   if (cond === "rubric18") return systemRubric18()
+  if (cond === "rubric19") return systemRubric19()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
