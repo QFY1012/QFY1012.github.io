@@ -26,6 +26,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   dims          the decoupled DIMENSIONS, judged one by one in one call, then a verdict
 //   dims-sep      one call per dimension (systemForDim); the verdict is the majority (scripts/evalset-judge.mjs)
 //   dims2-sep     dims-sep with DIMENSIONS_V2
+//   dims3-sep     dims-sep with DIMENSIONS_V3 (only alignment differs from v2)
 export const ROOMY_2 = "2. 留白要充足且成形:内容挤满页面、各部分之间缺少明显间隔是缺点;空白应是规整、与网格对齐的整块区域,而不是零碎、不规则的剩余空间;大面积而规整的留白不是缺点。"
 // Crowding of both kinds the person named: content spread over the full width
 // with no room around it, and a block packed with different things that are not
@@ -57,6 +58,19 @@ export const DIMENSIONS_V2 = [
   { id: "ink", name: "装饰", look: "容器、边框、底色、阴影、线条、颜色是否必要且克制,能用间距分组的不加容器,颜色只表达含义", skip: "排版" },
   { id: "finish", name: "细节", look: "中文全角标点、数字字体统一、文字不截断不溢出", skip: "布局" },
 ]
+
+// v3: v2 with alignment judged as "are the things that should line up lined
+// up", not as a count of shared lines (a single column has one line and is not
+// thereby well aligned).
+export const DIMENSIONS_V3 = DIMENSIONS_V2.map((d) =>
+  d.id !== "alignment"
+    ? d
+    : {
+        ...d,
+        look: `${STRIP}该对齐的东西有没有对齐:同一行的数字和文字是否在同一基线上,同一列的左右边缘是否在同一条线上,并排的块顶部和底部是否齐平;有没有差几个像素的错位`,
+        skip: "对齐线的数量(单栏只有一条线不等于对齐得好)、间距的大小",
+      },
+)
 
 const INTRO = "你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计,不比较内容。"
 const dimLine = (d, i) => `${i + 1}. ${d.name}:只看${d.look}。不看${d.skip}。`

@@ -14,7 +14,7 @@
 // Results: out/aesthetic/evalset/<cond>/<group>__<a>__<b>__r<n>.json (a is shown as A).
 import fs from "node:fs"
 import path from "node:path"
-import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
+import { systemFor, systemForDim, DIMENSIONS, DIMENSIONS_V2, DIMENSIONS_V3, img, call, ANCHOR_TEXT } from "./pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const arg = (k, d) => {
@@ -48,9 +48,14 @@ const pagePair = (pa, pb) => [
 
 // dims-sep: every dimension in its own call; the page that wins more dimensions
 // is "better", equal counts are "平".
-async function judgeDims(pa, pb, key, dimensions) {
+async function judgeDims(pa, pb, key, dimensions, reuse = null, redo = []) {
   const dims = {}, raw = {}
-  await Promise.all(dimensions.map(async (d) => {
+  for (const d of dimensions)
+    if (reuse && !redo.includes(d.id)) {
+      dims[d.id] = reuse.dims[d.id]
+      raw[d.id] = reuse.reasons[d.id]
+    }
+  await Promise.all(dimensions.filter((d) => !(d.id in dims)).map(async (d) => {
     const r = await call(systemForDim(d), pagePair(pa, pb), { key })
     dims[d.id] = r.json.better
     raw[d.id] = r.json.reason
@@ -73,10 +78,15 @@ async function judge() {
             file: `${g.id}__${a}__${b}__r${r}.json`,
             run: () => {
               const pa = pageImages(dirOf(g, a)), pb = pageImages(dirOf(g, b))
-              // The crowded reference is a validation page (cramped, every block boxed),
-              // not one of the eval-set versions; it shares the A/B report's data.
               if (COND === "dims-sep") return judgeDims(pa, pb, KEY, DIMENSIONS)
               if (COND === "dims2-sep") return judgeDims(pa, pb, KEY, DIMENSIONS_V2)
+              if (COND === "dims3-sep") {
+                // v3 differs from v2 only in alignment: reuse v2's other answers when present.
+                const v2 = path.join(ROOT, "out", "aesthetic", "evalset", "dims2-sep", `${g.id}__${a}__${b}__r${r}.json`)
+                return judgeDims(pa, pb, KEY, DIMENSIONS_V3, fs.existsSync(v2) ? JSON.parse(fs.readFileSync(v2, "utf8")).json : null, ["alignment"])
+              }
+              // The crowded reference is a validation page (cramped, every block boxed),
+              // not one of the eval-set versions; it shares the A/B report's data.
               const anchor = COND === "crowd-anchor" ? [{ type: "text", text: ANCHOR_TEXT }, img(path.join(ROOT, "out/validate/ab-4/thumb.png"))] : []
               return call(systemFor(COND), [
                 ...anchor,
