@@ -22,6 +22,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   principles2   PRINCIPLE_TEXT_2: crowding judged screen by screen, observations first
 //   principles3   PRINCIPLE_TEXT_3: principles2 aligned on redundant decoration and emphasis
 //   perprinciple3 principles3 compared principle by principle, then an overall pick
+//   rubric6       RUBRIC_6, rewritten after alignment: six principles one by one, then an overall pick
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -81,6 +82,26 @@ export const system3each = () => `你是资深 UI 视觉设计评审。下面是
 
 ${PRINCIPLE_TEXT_3}按六条标准逐条比较:每条先分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。六条都比完后,综合给出总体哪一版更好,其中第 1、2 条最重要。
 只输出 JSON:{${PRINCIPLES_3.map((p, i) => `"${i + 1}":{"A":"A 版:${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
+// rubric6: rewritten from scratch after the alignment pass instead of patched.
+// Each principle says what good looks like and how to look for it, one thing
+// each, in order of importance; finish is dropped (it hardly ever separated
+// two versions) and grouping is in (the dimension that agreed with the person
+// most). The judge goes through them one by one, then picks overall.
+export const RUBRIC_6 = [
+  { name: "疏朗", good: "每屏只放少数几种内容,内容块之间留出明显的空白,不同内容上下排开", look: "每屏有几种内容(一段文字、一组数字、一张图、一张表、一个列表各算一种),块与块之间的空白大约几行高,有没有几块不同内容并排挤在一行", see: "最拥挤的一屏有几种内容、块间空白约几行高" },
+  { name: "分组清楚", good: "只凭间距就能看出哪些内容是一组", look: "先列出页面上有哪几组内容,再比较组与组之间的距离和组内元素之间的距离,组间距应明显大于组内距", see: "组内距和组间距大约多少" },
+  { name: "装饰各有用处", good: "每一处卡片、边框、分隔线、底色、阴影和颜色都承担一个作用:区分独立的对象、表示状态,或突出全页最重要的那一块", look: "逐处设想把它去掉,看是否损失了什么;什么都不损失的就是多余的", see: "多余的装饰,没有就写「无」" },
+  { name: "重点清楚", good: "一眼先看到最重要的信息,其余内容按重要程度依次减弱", look: "第一眼落在哪里,那是不是最重要的内容", see: "第一眼落在哪里" },
+  { name: "同类一致", good: "同一类内容(几个指标、几张图、几条发现)用同样的字号、间距和呈现形式", look: "找出页面上的同类内容,逐一比较它们的处理方式", see: "哪些同类内容处理得不一样" },
+  { name: "对齐,留白成形", good: "元素落在少数几条对齐线上,空白是规整的整块", look: "左右边缘和并排块的顶部是否对齐,空白是整块的还是零碎的", see: "哪里没对齐、哪里空白零碎" },
+]
+export const systemRubric6 = () => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量,不比较内容。
+
+评审标准(按重要程度排列):
+${RUBRIC_6.map((p, i) => `${i + 1}. ${p.name}:${p.good}。怎么看:${p.look}。`).join("\n")}
+
+逐条比较:每条先按「怎么看」分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。六条比完后,综合给出总体哪一版更好。
+只输出 JSON:{${RUBRIC_6.map((p, i) => `"${i + 1}":{"A":"A 版${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -168,6 +189,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "principles2") return system2()
   if (cond === "principles3") return system3()
   if (cond === "perprinciple3") return system3each()
+  if (cond === "rubric6") return systemRubric6()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
