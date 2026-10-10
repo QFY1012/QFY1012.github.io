@@ -1,0 +1,231 @@
+{
+ "title": "新版结账流程 A/B 实验报告",
+ "owner": "交易体验组",
+ "period": "2026 年 9 月 2 日至 22 日，共 21 天",
+ "traffic": "全量用户 50% / 50% 分流",
+ "samples": {
+  "control": 412380,
+  "treatment": 411906
+ },
+ "verdict": "新版结账流程使支付转化率提升 4.1%，结果显著，建议全量上线。",
+ "metrics": [
+  {
+   "name": "支付转化率",
+   "control": "3.62%",
+   "treatment": "3.77%",
+   "lift": 4.1,
+   "ciLow": 2.3,
+   "ciHigh": 5.9,
+   "significant": true,
+   "primary": true
+  },
+  {
+   "name": "人均支付金额",
+   "control": "3.12 元",
+   "treatment": "3.23 元",
+   "lift": 3.5,
+   "ciLow": 1.2,
+   "ciHigh": 5.8,
+   "significant": true,
+   "primary": false
+  },
+  {
+   "name": "结账页跳出率",
+   "control": "41.8%",
+   "treatment": "38.9%",
+   "lift": -6.9,
+   "ciLow": -8.7,
+   "ciHigh": -5.1,
+   "significant": true,
+   "primary": false
+  },
+  {
+   "name": "客单价",
+   "control": "86.2 元",
+   "treatment": "85.7 元",
+   "lift": -0.6,
+   "ciLow": -1.8,
+   "ciHigh": 0.6,
+   "significant": false,
+   "primary": false
+  },
+  {
+   "name": "退款率",
+   "control": "2.1%",
+   "treatment": "2.2%",
+   "lift": 4.8,
+   "ciLow": -3,
+   "ciHigh": 12.6,
+   "significant": false,
+   "primary": false
+  }
+ ],
+ "daily": [
+  {
+   "day": 1,
+   "lift": 6.9,
+   "low": -0.7,
+   "high": 14.5
+  },
+  {
+   "day": 2,
+   "lift": 5.5,
+   "low": 0,
+   "high": 11
+  },
+  {
+   "day": 3,
+   "lift": 3.7,
+   "low": -0.9,
+   "high": 8.3
+  },
+  {
+   "day": 4,
+   "lift": 2.9,
+   "low": -1.2,
+   "high": 7
+  },
+  {
+   "day": 5,
+   "lift": 3.2,
+   "low": -0.5,
+   "high": 6.9
+  },
+  {
+   "day": 6,
+   "lift": 3.9,
+   "low": 0.4,
+   "high": 7.4
+  },
+  {
+   "day": 7,
+   "lift": 4.5,
+   "low": 1.3,
+   "high": 7.7
+  },
+  {
+   "day": 8,
+   "lift": 4.6,
+   "low": 1.5,
+   "high": 7.7
+  },
+  {
+   "day": 9,
+   "lift": 4.3,
+   "low": 1.4,
+   "high": 7.2
+  },
+  {
+   "day": 10,
+   "lift": 4,
+   "low": 1.2,
+   "high": 6.8
+  },
+  {
+   "day": 11,
+   "lift": 3.9,
+   "low": 1.2,
+   "high": 6.6
+  },
+  {
+   "day": 12,
+   "lift": 3.9,
+   "low": 1.3,
+   "high": 6.5
+  },
+  {
+   "day": 13,
+   "lift": 4.1,
+   "low": 1.6,
+   "high": 6.6
+  },
+  {
+   "day": 14,
+   "lift": 4.2,
+   "low": 1.7,
+   "high": 6.7
+  },
+  {
+   "day": 15,
+   "lift": 4.2,
+   "low": 1.8,
+   "high": 6.6
+  },
+  {
+   "day": 16,
+   "lift": 4.1,
+   "low": 1.7,
+   "high": 6.5
+  },
+  {
+   "day": 17,
+   "lift": 4.1,
+   "low": 1.8,
+   "high": 6.4
+  },
+  {
+   "day": 18,
+   "lift": 4.1,
+   "low": 1.9,
+   "high": 6.3
+  },
+  {
+   "day": 19,
+   "lift": 4.1,
+   "low": 1.9,
+   "high": 6.3
+  },
+  {
+   "day": 20,
+   "lift": 4.1,
+   "low": 1.9,
+   "high": 6.3
+  },
+  {
+   "day": 21,
+   "lift": 4.1,
+   "low": 2,
+   "high": 6.2
+  }
+ ],
+ "segments": [
+  {
+   "name": "新用户",
+   "lift": 6.8,
+   "control": "4.0%",
+   "treatment": "4.27%"
+  },
+  {
+   "name": "老用户",
+   "lift": 2.9,
+   "control": "3.48%",
+   "treatment": "3.58%"
+  },
+  {
+   "name": "iOS",
+   "lift": 4.4,
+   "control": "3.95%",
+   "treatment": "4.12%"
+  },
+  {
+   "name": "Android",
+   "lift": 3.8,
+   "control": "3.31%",
+   "treatment": "3.44%"
+  }
+ ],
+ "next": [
+  {
+   "title": "10 月 9 日起全量上线",
+   "detail": "分三批放量，每批观察 2 天支付转化率与退款率。"
+  },
+  {
+   "title": "继续观察退款率",
+   "detail": "区间仍较宽，全量后按周复核，超过 2.5% 回滚。"
+  },
+  {
+   "title": "针对老用户做第二轮实验",
+   "detail": "老用户提升较小，下一轮测试默认支付方式记忆。"
+  }
+ ]
+}

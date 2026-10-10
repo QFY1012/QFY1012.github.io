@@ -1,0 +1,479 @@
+{
+ "id": "page",
+ "type": "page",
+ "title": "新版结账流程 A/B 实验报告",
+ "meta": [
+  "交易体验组",
+  "2026 年 9 月 2 日至 22 日，共 21 天"
+ ],
+ "children": [
+  {
+   "id": "sec-verdict",
+   "type": "section",
+   "title": "结论",
+   "children": [
+    {
+     "id": "grp-verdict",
+     "type": "group",
+     "children": [
+      {
+       "id": "grid-verdict",
+       "type": "grid",
+       "cols": 9,
+       "children": [
+        {
+         "id": "blk-verdict",
+         "type": "block",
+         "span": 9,
+         "rows": 1,
+         "children": [
+          {
+           "id": "text-verdict",
+           "type": "text",
+           "text": "新版结账流程使支付转化率提升 4.1%，结果显著，建议全量上线。",
+           "className": "text-xl leading-9",
+           "src": [
+            "/verdict"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "grid-figs",
+       "type": "grid",
+       "cols": 9,
+       "className": "items-baseline",
+       "children": [
+        {
+         "id": "blk-lift",
+         "type": "block",
+         "span": 3,
+         "rows": 1,
+         "children": [
+          {
+           "id": "stat-lift",
+           "type": "stat",
+           "size": "lg",
+           "captionBelow": true,
+           "label": "支付转化率提升",
+           "value": "+4.1",
+           "unit": "%",
+           "note": "95% 区间 [+2.3%, +5.9%]",
+           "src": [
+            "/metrics/0"
+           ]
+          }
+         ]
+        },
+        {
+         "id": "blk-n",
+         "type": "block",
+         "span": 3,
+         "rows": 1,
+         "children": [
+          {
+           "id": "stat-n",
+           "type": "stat",
+           "captionBelow": true,
+           "label": "样本量",
+           "value": "82.4",
+           "unit": "万",
+           "note": "对照 412,380 / 实验 411,906",
+           "src": [
+            "/samples"
+           ]
+          }
+         ]
+        },
+        {
+         "id": "blk-days",
+         "type": "block",
+         "span": 3,
+         "rows": 1,
+         "children": [
+          {
+           "id": "stat-days",
+           "type": "stat",
+           "captionBelow": true,
+           "label": "实验时长",
+           "value": "21",
+           "unit": "天",
+           "note": "全量用户 50% / 50% 分流",
+           "src": [
+            "/period",
+            "/traffic"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-metrics",
+   "type": "section",
+   "title": "指标",
+   "children": [
+    {
+     "id": "grp-metrics",
+     "type": "group",
+     "children": [
+      {
+       "id": "grid-metrics",
+       "type": "grid",
+       "cols": 9,
+       "children": [
+        {
+         "id": "blk-metrics",
+         "type": "block",
+         "span": 9,
+         "rows": 2,
+         "children": [
+          {
+           "id": "table-metrics",
+           "type": "table",
+           "columns": [
+            {
+             "key": "name",
+             "label": "指标",
+             "span": 2
+            },
+            {
+             "key": "control",
+             "label": "对照组",
+             "align": "right",
+             "span": 1
+            },
+            {
+             "key": "treatment",
+             "label": "实验组",
+             "align": "right",
+             "span": 1
+            },
+            {
+             "key": "lift",
+             "label": "相对变化",
+             "align": "right",
+             "span": 1
+            },
+            {
+             "key": "ci",
+             "label": "95% 区间",
+             "span": 2
+            },
+            {
+             "key": "sig",
+             "label": "结论",
+             "span": 2
+            }
+           ],
+           "rows": [
+            {
+             "name": "支付转化率",
+             "control": "3.62%",
+             "treatment": "3.77%",
+             "lift": "+4.1%",
+             "ci": "[+2.3%, +5.9%]",
+             "sig": "显著"
+            },
+            {
+             "name": "人均支付金额",
+             "control": "3.12 元",
+             "treatment": "3.23 元",
+             "lift": "+3.5%",
+             "ci": "[+1.2%, +5.8%]",
+             "sig": "显著"
+            },
+            {
+             "name": "结账页跳出率",
+             "control": "41.8%",
+             "treatment": "38.9%",
+             "lift": "−6.9%",
+             "ci": "[−8.7%, −5.1%]",
+             "sig": "显著"
+            },
+            {
+             "name": "客单价",
+             "control": "86.2 元",
+             "treatment": "85.7 元",
+             "lift": "−0.6%",
+             "ci": "[−1.8%, +0.6%]",
+             "sig": "不显著"
+            },
+            {
+             "name": "退款率",
+             "control": "2.1%",
+             "treatment": "2.2%",
+             "lift": "+4.8%",
+             "ci": "[−3.0%, +12.6%]",
+             "sig": "不显著"
+            }
+           ],
+           "src": [
+            "/metrics"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "grid-trend",
+       "type": "grid",
+       "cols": 9,
+       "children": [
+        {
+         "id": "blk-trend",
+         "type": "block",
+         "span": 9,
+         "rows": 2,
+         "title": "支付转化率累计提升（%）",
+         "children": [
+          {
+           "id": "chart-trend",
+           "type": "line-chart",
+           "xKey": "day",
+           "series": [
+            {
+             "key": "lift",
+             "label": "累计提升（%）"
+            }
+           ],
+           "data": [
+            {
+             "day": "第 1 天",
+             "lift": 6.9,
+             "low": -0.7,
+             "high": 14.5
+            },
+            {
+             "day": "第 4 天",
+             "lift": 2.9,
+             "low": -1.2,
+             "high": 7
+            },
+            {
+             "day": "第 7 天",
+             "lift": 4.5,
+             "low": 1.3,
+             "high": 7.7
+            },
+            {
+             "day": "第 10 天",
+             "lift": 4,
+             "low": 1.2,
+             "high": 6.8
+            },
+            {
+             "day": "第 13 天",
+             "lift": 4.1,
+             "low": 1.6,
+             "high": 6.6
+            },
+            {
+             "day": "第 16 天",
+             "lift": 4.1,
+             "low": 1.7,
+             "high": 6.5
+            },
+            {
+             "day": "第 19 天",
+             "lift": 4.1,
+             "low": 1.9,
+             "high": 6.3
+            },
+            {
+             "day": "第 21 天",
+             "lift": 4.1,
+             "low": 2,
+             "high": 6.2
+            }
+           ],
+           "src": [
+            "/daily"
+           ],
+           "height": "fill"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-seg",
+   "type": "section",
+   "title": "分群",
+   "children": [
+    {
+     "id": "grid-seg",
+     "type": "grid",
+     "cols": 9,
+     "children": [
+      {
+       "id": "blk-seg-bars",
+       "type": "block",
+       "span": 4,
+       "rows": 2,
+       "title": "支付转化率提升（%）",
+       "children": [
+        {
+         "id": "chart-seg",
+         "type": "bar-chart",
+         "layout": "horizontal",
+         "xKey": "name",
+         "series": [
+          {
+           "key": "lift",
+           "label": "提升（%）"
+          }
+         ],
+         "data": [
+          {
+           "name": "新用户",
+           "lift": 6.8,
+           "control": "4.0%",
+           "treatment": "4.27%"
+          },
+          {
+           "name": "老用户",
+           "lift": 2.9,
+           "control": "3.48%",
+           "treatment": "3.58%"
+          },
+          {
+           "name": "iOS",
+           "lift": 4.4,
+           "control": "3.95%",
+           "treatment": "4.12%"
+          },
+          {
+           "name": "Android",
+           "lift": 3.8,
+           "control": "3.31%",
+           "treatment": "3.44%"
+          }
+         ],
+         "src": [
+          "/segments"
+         ]
+        }
+       ]
+      },
+      {
+       "id": "blk-seg-table",
+       "type": "block",
+       "span": 5,
+       "rows": 2,
+       "title": "支付转化率",
+       "children": [
+        {
+         "id": "table-seg",
+         "type": "table",
+         "columns": [
+          {
+           "key": "name",
+           "label": "分群",
+           "span": 1
+          },
+          {
+           "key": "control",
+           "label": "对照组",
+           "span": 2
+          },
+          {
+           "key": "treatment",
+           "label": "实验组",
+           "span": 2
+          }
+         ],
+         "rows": [
+          {
+           "name": "新用户",
+           "lift": 6.8,
+           "control": "4.0%",
+           "treatment": "4.27%"
+          },
+          {
+           "name": "老用户",
+           "lift": 2.9,
+           "control": "3.48%",
+           "treatment": "3.58%"
+          },
+          {
+           "name": "iOS",
+           "lift": 4.4,
+           "control": "3.95%",
+           "treatment": "4.12%"
+          },
+          {
+           "name": "Android",
+           "lift": 3.8,
+           "control": "3.31%",
+           "treatment": "3.44%"
+          }
+         ],
+         "src": [
+          "/segments"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sec-next",
+   "type": "section",
+   "title": "下一步",
+   "children": [
+    {
+     "id": "grid-next",
+     "type": "grid",
+     "cols": 9,
+     "children": [
+      {
+       "id": "blk-next",
+       "type": "block",
+       "span": 9,
+       "rows": 2,
+       "children": [
+        {
+         "id": "list-next",
+         "type": "list",
+         "items": [
+          {
+           "title": "10 月 9 日起全量上线",
+           "description": "分三批放量，每批观察 2 天支付转化率与退款率。"
+          },
+          {
+           "title": "继续观察退款率",
+           "description": "区间仍较宽，全量后按周复核，超过 2.5% 回滚。"
+          },
+          {
+           "title": "针对老用户做第二轮实验",
+           "description": "老用户提升较小，下一轮测试默认支付方式记忆。"
+          }
+         ],
+         "src": [
+          "/next"
+         ],
+         "divided": false,
+         "ordered": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

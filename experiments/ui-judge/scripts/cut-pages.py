@@ -2,11 +2,12 @@
 #   thumb.png        whole page, 624px wide (overall view)
 #   clean-N.png      640px tiles from top to bottom, 64px overlap (detail)
 #   _pairs/<a>__<b>.png  two whole pages side by side at the same scale, a left
-import itertools, json, os
+import itertools, json, os, sys
 from PIL import Image
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-OUT = os.path.join(ROOT, "out", "validate")
+args = [a for a in sys.argv[1:] if not a.startswith("--")]
+OUT = os.path.join(ROOT, args[0] if args else os.path.join("out", "validate"))
 pages = sorted(d for d in os.listdir(OUT) if not d.startswith("_"))
 shots = {}
 for v in pages:
@@ -25,6 +26,9 @@ for v in pages:
         y += 640 - 64
     json.dump(tiles, open(os.path.join(d, "clean-tiles.json"), "w"))
     print(v, im.size, len(tiles))
+
+if "--no-pairs" in sys.argv:
+    sys.exit(0)
 
 # Side by side: each page at 720px wide, 48px gutter, top aligned on white.
 os.makedirs(os.path.join(OUT, "_pairs"), exist_ok=True)

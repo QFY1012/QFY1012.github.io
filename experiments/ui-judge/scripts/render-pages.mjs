@@ -1,15 +1,17 @@
 // Screenshot the validation pages at 1440px, then cut the images the judge sees.
 //
-//   node scripts/render-pages.mjs   → out/validate/<page>/shot.png, then
-//   python3 scripts/cut-pages.py    → thumb.png, clean-N.png, clean-tiles.json, _pairs/
+//   node scripts/render-pages.mjs [src out]   (default validate/pages out/validate)
+//     → <out>/<page>/shot.png, then
+//   python3 scripts/cut-pages.py [out] [--no-pairs]
+//     → thumb.png, clean-N.png, clean-tiles.json, _pairs/
 import fs from "node:fs"
 import path from "node:path"
 import http from "node:http"
 import { chromium } from "playwright-core"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
-const SRC = path.join(ROOT, "validate", "pages")
-const OUT = path.join(ROOT, "out", "validate")
+const SRC = path.join(ROOT, process.argv[2] ?? "validate/pages")
+const OUT = path.join(ROOT, process.argv[3] ?? "out/validate")
 
 const MIME = { ".html": "text/html", ".css": "text/css", ".woff2": "font/woff2", ".woff": "font/woff" }
 const server = http.createServer((req, res) => {
@@ -26,7 +28,7 @@ const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } })
 for (const f of fs.readdirSync(SRC).filter((f) => f.endsWith(".html"))) {
   const name = f.replace(/\.html$/, "")
   const page = await ctx.newPage()
-  await page.goto(`${base}/validate/pages/${f}`, { waitUntil: "networkidle" })
+  await page.goto(`${base}/${path.relative(ROOT, SRC)}/${f}`, { waitUntil: "networkidle" })
   await page.evaluate(() => document.fonts.ready)
   const dir = path.join(OUT, name)
   fs.mkdirSync(dir, { recursive: true })
