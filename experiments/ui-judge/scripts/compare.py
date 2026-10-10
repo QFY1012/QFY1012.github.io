@@ -53,7 +53,7 @@ units = units or set()
 
 
 # Pairs the person called "about the same" (HANDOFF.md); --near counts them as ties.
-NEAR = {("sales", "甲", "丙"), ("style-ab", "丁", "戊"), ("style", "甲", "丁"), ("ops", "戊", "己")}
+NEAR = {("sales", "甲", "丙"), ("style-ab", "丁", "戊"), ("style", "甲", "丁"), ("ops", "戊", "己"), ("new-energy", "乙", "戊")}
 
 
 def rank(g, v):
