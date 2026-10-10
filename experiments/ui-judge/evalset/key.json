@@ -118,6 +118,62 @@
     "丁": "style-survey-e",
     "戊": "style-survey-c"
    }
+  },
+  {
+   "id": "ho-finance",
+   "title": "财务月报(留出)",
+   "desc": "泛化测试:生成者没看过 judge 规则;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-finance-b",
+    "乙": "style-finance-a",
+    "丙": "style-finance-d",
+    "丁": "style-finance-e",
+    "戊": "style-finance-c"
+   }
+  },
+  {
+   "id": "ho-hiring",
+   "title": "招聘季度报告(留出)",
+   "desc": "泛化测试:生成者没看过 judge 规则;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-hiring-e",
+    "乙": "style-hiring-a",
+    "丙": "style-hiring-d",
+    "丁": "style-hiring-b",
+    "戊": "style-hiring-c"
+   }
+  },
+  {
+   "id": "ho-cs",
+   "title": "客服质检月报(留出)",
+   "desc": "泛化测试:生成者没看过 judge 规则;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-cs-c",
+    "乙": "style-cs-d",
+    "丙": "style-cs-b",
+    "丁": "style-cs-a",
+    "戊": "style-cs-e"
+   }
+  },
+  {
+   "id": "ho-logistics",
+   "title": "物流时效周报(留出)",
+   "desc": "泛化测试:生成者没看过 judge 规则;只用于测试,不用于改规则",
+   "heldout": true,
+   "src": "out/style",
+   "labels": {
+    "甲": "style-logistics-d",
+    "乙": "style-logistics-c",
+    "丙": "style-logistics-b",
+    "丁": "style-logistics-a",
+    "戊": "style-logistics-e"
+   }
   }
  ]
 }
