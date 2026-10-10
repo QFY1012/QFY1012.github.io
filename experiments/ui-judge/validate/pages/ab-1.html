@@ -1,0 +1,52 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>新版结账流程 A/B 实验报告</title>
+<link rel="stylesheet" href="/node_modules/@fontsource/noto-sans-sc/300.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/noto-sans-sc/400.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/noto-sans-sc/500.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/noto-sans-sc/600.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/noto-sans-sc/700.css">
+<style>
+@font-face{font-family:"Latin Metric";font-weight:300;font-display:block;size-adjust:105%;unicode-range:U+0000-00FF,U+2013-2014,U+2018-201D,U+2026;src:url("/node_modules/@fontsource/barlow/files/barlow-latin-300-normal.woff2") format("woff2")}
+@font-face{font-family:"Latin Metric";font-weight:400;font-display:block;size-adjust:105%;unicode-range:U+0000-00FF,U+2013-2014,U+2018-201D,U+2026;src:url("/node_modules/@fontsource/barlow/files/barlow-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Latin Metric";font-weight:500;font-display:block;size-adjust:105%;unicode-range:U+0000-00FF,U+2013-2014,U+2018-201D,U+2026;src:url("/node_modules/@fontsource/barlow/files/barlow-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"Latin Metric";font-weight:600;font-display:block;size-adjust:105%;unicode-range:U+0000-00FF,U+2013-2014,U+2018-201D,U+2026;src:url("/node_modules/@fontsource/barlow/files/barlow-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Latin Metric";font-weight:700;font-display:block;size-adjust:105%;unicode-range:U+0000-00FF,U+2013-2014,U+2018-201D,U+2026;src:url("/node_modules/@fontsource/barlow/files/barlow-latin-700-normal.woff2") format("woff2")}
+*{box-sizing:border-box;margin:0;padding:0}
+body{-webkit-font-smoothing:antialiased;text-spacing-trim:trim-start}
+table{border-collapse:collapse}
+.num{font-variant-numeric:tabular-nums}
+</style><style>
+body{background:#fff;font-family:"Latin Metric","Noto Sans SC",sans-serif;color:#1f1f1f;font-size:15px;line-height:26px}
+.wrap{width:760px;margin:0 auto;padding:80px 0 96px}
+h1{font-size:32px;line-height:44px;font-weight:600}
+.meta{display:grid;grid-template-columns:96px 1fr;margin-top:24px;font-size:14px;color:#525252;row-gap:2px}
+.meta dt{color:#8a8a8a}
+.verdict{margin-top:40px;background:#f0fdf4;border-radius:8px;padding:20px 24px;font-size:17px;line-height:30px}
+.verdict b{display:block;font-size:13px;color:#15803d;font-weight:600;line-height:20px;margin-bottom:4px}
+h2{font-size:20px;line-height:30px;font-weight:600;margin-top:56px;margin-bottom:16px}
+p.t{color:#404040}
+table{width:100%;font-size:14px}
+th{font-weight:500;color:#8a8a8a;text-align:left;padding:8px 0;border-bottom:1px solid #e5e5e5}
+td{padding:10px 0;border-bottom:1px solid #f0f0f0}
+.r{text-align:right}
+.sig{color:#15803d}.ns{color:#a3a3a3}
+.cap{font-size:13px;color:#8a8a8a;margin-top:8px}
+ol{padding-left:0;list-style:none;counter-reset:n}
+ol li{counter-increment:n;padding-left:32px;position:relative;margin-bottom:16px}
+ol li::before{content:counter(n);position:absolute;left:0;top:0;color:#8a8a8a}
+ol b{font-weight:600}
+ol p{color:#525252}
+</style></head><body><div class="wrap">
+<h1>新版结账流程 A/B 实验报告</h1>
+<dl class="meta"><dt>负责团队</dt><dd>交易体验组</dd><dt>实验周期</dt><dd>2026 年 9 月 2 日至 22 日，共 21 天</dd><dt>分流</dt><dd>全量用户 50% / 50% 分流</dd><dt>样本量</dt><dd class="num">对照组 412,380 人，实验组 411,906 人</dd></dl>
+<div class="verdict"><b>结论</b>新版结账流程使支付转化率提升 4.1%，结果显著，建议全量上线。</div>
+<h2>指标结果</h2>
+<table><tr><th>指标</th><th class="r">对照组</th><th class="r">实验组</th><th class="r">变化</th><th class="r">95% 置信区间</th></tr><tr><td>支付转化率（主指标）</td><td class="r num">3.62%</td><td class="r num">3.77%</td><td class="r num sig">+4.1%</td><td class="r num ">[+2.3%, +5.9%]</td></tr><tr><td>人均支付金额</td><td class="r num">3.12 元</td><td class="r num">3.23 元</td><td class="r num sig">+3.5%</td><td class="r num ">[+1.2%, +5.8%]</td></tr><tr><td>结账页跳出率</td><td class="r num">41.8%</td><td class="r num">38.9%</td><td class="r num sig">−6.9%</td><td class="r num ">[−8.7%, −5.1%]</td></tr><tr><td>客单价</td><td class="r num">86.2 元</td><td class="r num">85.7 元</td><td class="r num ns">−0.6%</td><td class="r num ns">[−1.8%, +0.6%]</td></tr><tr><td>退款率</td><td class="r num">2.1%</td><td class="r num">2.2%</td><td class="r num ns">+4.8%</td><td class="r num ns">[−3.0%, +12.6%]</td></tr></table>
+<p class="cap">绿色为显著（p &lt; 0.05），灰色为不显著。</p>
+<h2>主指标随时间的变化</h2>
+<p class="t">累计提升在第 8 天后稳定在 4% 左右，置信区间逐日收窄，第 6 天起不再包含 0。</p>
+<svg width="760" height="220" viewBox="0 0 760 220" style="display:block;font-size:12px"><text x="24" y="179.63636363636363" text-anchor="end" fill="#a3a3a3">-4</text><text x="24" y="146.9090909090909" text-anchor="end" fill="#a3a3a3">0</text><text x="24" y="114.18181818181819" text-anchor="end" fill="#a3a3a3">4</text><text x="24" y="81.45454545454545" text-anchor="end" fill="#a3a3a3">8</text><text x="24" y="48.72727272727272" text-anchor="end" fill="#a3a3a3">12</text><text x="24" y="16" text-anchor="end" fill="#a3a3a3">16</text><text x="32" y="214" text-anchor="start" fill="#a3a3a3">第 1 天</text><text x="212" y="214" text-anchor="middle" fill="#a3a3a3">第 6 天</text><text x="392" y="214" text-anchor="middle" fill="#a3a3a3">第 11 天</text><text x="572" y="214" text-anchor="middle" fill="#a3a3a3">第 16 天</text><text x="752" y="214" text-anchor="end" fill="#a3a3a3">第 21 天</text><polygon points="32,24.27272727272728 68,52.90909090909091 104,75 140,85.63636363636363 176,86.45454545454544 212,82.36363636363636 248,79.90909090909092 284,79.90909090909092 320,84 356,87.27272727272725 392,88.9090909090909 428.00000000000006,89.72727272727272 464,88.9090909090909 500,88.0909090909091 536,88.9090909090909 572,89.72727272727272 608,90.54545454545455 644,91.36363636363636 680,91.36363636363636 716,91.36363636363636 752,92.18181818181817 752,126.54545454545455 716,127.36363636363636 680,127.36363636363636 644,127.36363636363636 608,128.1818181818182 572,129 536,128.1818181818182 500,129 464,129.8181818181818 428.00000000000006,132.27272727272728 392,133.0909090909091 356,133.0909090909091 320,131.45454545454544 284,130.63636363636363 248,132.27272727272728 212,139.63636363636363 176,147 140,152.72727272727272 104,150.27272727272728 68,142.9090909090909 32,148.63636363636363" fill="rgba(21,128,61,.1)"/><line x1="32" x2="752" y1="142.9090909090909" y2="142.9090909090909" stroke="#a3a3a3" stroke-width="1" /><polyline points="32,86.45454545454544 68,97.9090909090909 104,112.63636363636364 140,119.18181818181819 176,116.72727272727273 212,111 248,106.0909090909091 284,105.27272727272728 320,107.72727272727272 356,110.18181818181819 392,111 428.00000000000006,111 464,109.36363636363637 500,108.54545454545455 536,108.54545454545455 572,109.36363636363637 608,109.36363636363637 644,109.36363636363637 680,109.36363636363637 716,109.36363636363637 752,109.36363636363637" fill="none" stroke="#15803d" stroke-width="1.5" stroke-linejoin="round"/></svg>
+<h2>分群表现</h2>
+<table><tr><th>用户群</th><th class="r">支付转化率</th><th class="r">提升</th></tr><tr><td>新用户</td><td class="r num">4.0% → 4.27%</td><td class="r num sig">+6.8%</td></tr><tr><td>老用户</td><td class="r num">3.48% → 3.58%</td><td class="r num sig">+2.9%</td></tr><tr><td>iOS</td><td class="r num">3.95% → 4.12%</td><td class="r num sig">+4.4%</td></tr><tr><td>Android</td><td class="r num">3.31% → 3.44%</td><td class="r num sig">+3.8%</td></tr></table>
+<h2>下一步</h2>
+<ol><li><b>10 月 9 日起全量上线</b><p>分三批放量，每批观察 2 天支付转化率与退款率。</p></li><li><b>继续观察退款率</b><p>区间仍较宽，全量后按周复核，超过 2.5% 回滚。</p></li><li><b>针对老用户做第二轮实验</b><p>老用户提升较小，下一轮测试默认支付方式记忆。</p></li></ol>
+</div></body></html>
