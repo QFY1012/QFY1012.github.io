@@ -33,6 +33,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric15      RUBRIC_15: rubric9 with spacing only in principle 2, as a range (two to four lines) and even
 //   rubric16      RUBRIC_16: rubric9 with criterion 4 counting only size and weight as emphasis
 //   rubric17      RUBRIC_17: rubric16 with criterion 4's observation prompt asking for size and weight too
+//   rubric18      RUBRIC_18: rubric9 with criterion 2 asking that gaps of one level are the same everywhere
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -233,6 +234,15 @@ export const systemRubric16 = () => systemRubricOf(RUBRIC_16)
 // since the judge counts whatever the prompt calls emphasis, colour included.
 export const RUBRIC_17 = RUBRIC_16.map((p, i) => i === 3 ? { ...p, see: p.see.replace("有几处额外强调", "有几处额外放大或加粗") } : p)
 export const systemRubric17 = () => systemRubricOf(RUBRIC_17)
+// rubric18: rubric9 with criterion 2 also asking that gaps of one level are the
+// same everywhere. The ratio alone was read as "the bigger the better", so
+// loose pages with gaps jumping between 60 and 300 px won; no absolute sizes.
+export const RUBRIC_18 = RUBRIC_9.map((p, i) => i === 1 ? {
+  ...p,
+  rule: p.rule.replace("组内间距的两倍以上;", "组内间距的两倍以上,同一级的间距处处相同;"),
+  see: "组内距和组间距大约多少、同一级的间距是否处处相同",
+} : p)
+export const systemRubric18 = () => systemRubricOf(RUBRIC_18)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -331,6 +341,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric15") return systemRubric15()
   if (cond === "rubric16") return systemRubric16()
   if (cond === "rubric17") return systemRubric17()
+  if (cond === "rubric18") return systemRubric18()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
