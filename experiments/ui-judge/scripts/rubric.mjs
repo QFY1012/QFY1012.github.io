@@ -6,7 +6,9 @@
 //                      one is better only if it wins both (probe + validation:
 //                      a judge compares reliably, it does not score taste alone)
 //
-// `by`: who decides. "program" checks are measured and never given to the judge.
+// `by`: who decides. Geometry and typesetting are measured by the program from the
+// spec tree and the DOM; the judge decides only what needs reading the content.
+// `alsoJudge`: program checks the judge is also tested on in the experiments.
 // Nothing here names a style: no column count, no fixed scale, no cards or not.
 
 export const STEPS = [
@@ -27,19 +29,19 @@ export const STEPS = [
     input: "渲染出的页面:截图切块和编号 DOM 清单",
     checks: [
       { id: "2.1", name: "能渲染", by: "program", rule: "页面正常渲染,没有报错。" },
-      { id: "2.2", name: "组件库", by: "program", rule: "只用规定组件库里的组件。" },
+      { id: "2.2", name: "组件库", by: "program", rule: "只用规定组件库里的组件;AI 新做的组件必须由组件库零件拼成、遵守设计参数,并带标记。" },
       { id: "2.3", name: "统一刻度", by: "program", rule: "间距和字号都取自本页设计系统声明的同一套刻度。" },
-      { id: "2.4", name: "统一网格", by: "program", rule: "块的左右边缘落在本页声明的同一套网格的列线上。" },
-      { id: "2.5", name: "数据忠实", by: "judge", rule: "JSON 中的信息全部呈现;数值和文字不改动、不编造、不遗漏。" },
-      { id: "2.6", name: "元素碰撞", by: "judge", rule: "元素之间没有重叠;内容不溢出所在的块或页面(组件内部滚动不算)。" },
+      { id: "2.4", name: "统一网格", by: "program", rule: "块占整数列:左右边缘落在本页声明的同一套网格的列线上。" },
+      { id: "2.5", name: "数据忠实", by: "program", alsoJudge: true, rule: "JSON 中的信息全部呈现;数值和文字不改动、不编造、不遗漏。" },
+      { id: "2.6", name: "元素碰撞", by: "program", alsoJudge: true, rule: "元素之间没有重叠;内容不溢出所在的块或页面(组件内部滚动不算)。" },
       { id: "2.7", name: "分组看得出", by: "judge", rule: "页面上看起来是一组的,正是第 1 步分在一组的;组的边界靠间距、对齐或线来表现,读者不用读字就能分出组。" },
       { id: "2.8", name: "层级看得出", by: "judge", rule: "最醒目的(字号、位置、面积)是第 1 步标出的最重要信息。" },
       { id: "2.9", name: "组件与数据匹配", by: "judge", rule: "组件适合第 1 步标出的数据性质(类别比较、时间趋势、占比、明细各有合适的呈现方式)。" },
       { id: "2.10", name: "同类同组件", by: "judge", rule: "同一类信息使用同一种组件。" },
-      { id: "2.11", name: "间距阶梯", by: "judge", rule: "只看不同层之间的大小关系,不看具体数值:块之间大于块内部(有边框的块可以相等);组之间大于块之间;节之间大于组之间。" },
-      { id: "2.12", name: "同层间距一致", by: "judge", rule: "只看同一层内是否相等:同一个块里并列的几部分之间、同一组里并列的块之间,间距相等。" },
-      { id: "2.13", name: "并排对齐", by: "judge", rule: "同一行并排的块,上边缘对齐,下边缘也对齐:有边框的看外框,没有边框的看内容的上下边缘。" },
-      { id: "2.14", name: "排字", by: "judge", rule: "中文里使用全角标点;数字使用同一种字体并且等宽;多行正文的对齐方式全页一致。" },
+      { id: "2.11", name: "间距阶梯", by: "program", alsoJudge: true, rule: "只看不同层之间的大小关系,不看具体数值:块之间大于块内部(有边框的块可以相等);组之间大于块之间;节之间大于组之间。" },
+      { id: "2.12", name: "同层间距一致", by: "program", alsoJudge: true, rule: "只看同一层内是否相等:同一个块里并列的几部分之间、同一组里并列的块之间,间距相等。" },
+      { id: "2.13", name: "并排对齐", by: "program", alsoJudge: true, rule: "同一行并排的块,上边缘对齐,下边缘也对齐:有边框的看外框,没有边框的看内容的上下边缘。" },
+      { id: "2.14", name: "排字", by: "program", alsoJudge: true, rule: "中文里使用全角标点;数字使用同一种字体并且等宽;多行正文的对齐方式全页一致。" },
     ],
   },
   {
@@ -67,7 +69,7 @@ export const FROM_PILOT = {
   "4.1": "1.2 + 2.7", "4.2": "1.3 + 2.8", "4.3": "1.4 + 2.9", "4.4": "2.10", "4.5": "P1",
 }
 
-// What the single-page judge is asked: the step-2 checks it decides.
-export const CHECKS = STEPS[1].checks.filter((c) => c.by === "judge")
+// What the single-page judge is asked in the experiments.
+export const CHECKS = STEPS[1].checks.filter((c) => c.by === "judge" || c.alsoJudge)
 export const rubricText = () => CHECKS.map((c) => `- ${c.id} ${c.name}:${c.rule}`).join("\n")
 export const principleText = () => STEPS[2].principles.map((p, i) => `${i + 1}. ${p.name}:${p.rule}`).join("\n")
