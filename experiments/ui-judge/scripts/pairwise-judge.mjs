@@ -23,6 +23,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   principles3   PRINCIPLE_TEXT_3: principles2 aligned on redundant decoration and emphasis
 //   perprinciple3 principles3 compared principle by principle, then an overall pick
 //   rubric6       RUBRIC_6, rewritten after alignment: six principles one by one, then an overall pick
+//   rubric7       RUBRIC_7: rubric6 after a second alignment pass, concrete criteria and generic counterexamples
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -102,6 +103,28 @@ ${RUBRIC_6.map((p, i) => `${i + 1}. ${p.name}:${p.good}。怎么看:${p.look}。
 
 逐条比较:每条先按「怎么看」分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。六条比完后,综合给出总体哪一版更好。
 只输出 JSON:{${RUBRIC_6.map((p, i) => `"${i + 1}":{"A":"A 版${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
+// rubric7: rubric6 after a second alignment pass. Each principle is one or two
+// sentences with criteria that can be checked by looking, plus at most one
+// counterexample that is generic (none of them describes a page in the eval
+// set). Grouping now asks for rhythm, alignment became positive and negative
+// shapes, and tone was added. The thresholds (three kinds of content a screen,
+// two lines of space, twice the distance) are first guesses.
+export const RUBRIC_7 = [
+  { name: "疏朗", rule: "每屏(每张切块)不超过三种内容,一段文字、一组数字、一张图、一张表、一个列表各算一种;块与块之间的空白至少约两行正文高;不同种类的内容上下排开,不并排挤在同一行", bad: "一屏里同时塞了说明文字、一排数字、两张图和一张表,块之间只隔一行", see: "每屏最多几种内容、块间空白约几行高、有没有不同内容并排" },
+  { name: "分组清楚,有节奏", rule: "间距至少分两级,组与组之间的间距约是组内间距的两倍以上;所有间距都差不多大,就等于没有分组", bad: "所有模块按同一个间距排成均匀的格子", see: "组内距和组间距大约多少" },
+  { name: "装饰各有用处", rule: "每一处卡片、边框、分隔线、底色、阴影和颜色,都要说得出作用:区分独立的对象、表示状态(如告警),或突出全页最重要的那一块;说不出作用的就是多余的", bad: "每个模块都套着同样的白底圆角边框卡片", see: "说不出作用的装饰,没有就写「无」" },
+  { name: "重点清楚", rule: "全页最重要的信息(通常是结论或核心指标)字号最大或颜色最重,第一眼就能看到;其余内容的分量逐级减弱", bad: "结论和次要说明用了同样的字号和颜色", see: "最重要的信息是什么、是不是字号最大或颜色最重" },
+  { name: "调性统一", rule: "除黑白灰外,彩色不超过两种,饱和度接近;视觉最重的一块(实心填色面积最大的)是最重要的内容;线条粗细接近", bad: "全页是黑灰细线,唯独一个次要模块用了大面积高饱和的荧光色块", see: "用到哪些彩色、最重的一块是什么、线条粗细是否接近" },
+  { name: "同类一致", rule: "同一类内容(几个指标、几张图、几条发现)用同样的字号、间距和呈现形式", bad: "三条发现,一条用卡片,两条用纯文字", see: "哪些同类内容处理得不一样" },
+  { name: "正负形整齐", rule: "内容块和块之间的空白都是规整的矩形,边缘落在少数几条共同的竖线和横线上", bad: "几块内容高低不齐,之间留下 L 形或锯齿形的空白", see: "哪些内容块边缘没落在共同线上、哪些空白不成矩形" },
+]
+export const systemRubric7 = () => `你是资深 UI 视觉设计评审。下面是同一份报告的两版页面设计 A 和 B,数据相同。只比较视觉设计质量,不比较内容。
+
+评审标准(按重要程度排列):
+${RUBRIC_7.map((p, i) => `${i + 1}. ${p.name}:${p.rule}。反例:${p.bad}。`).join("\n")}
+
+逐条比较:每条先分别写下 A 版和 B 版的观察,再给出这一条哪版更好("A"、"B" 或 "平")。七条比完后,综合给出总体哪一版更好。
+只输出 JSON:{${RUBRIC_7.map((p, i) => `"${i + 1}":{"A":"A 版${p.see}","B":"B 版同上","better":"A|B|平"}`).join(",")},"better":"A" 或 "B","reason":"一两句话"}`
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -190,6 +213,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "principles3") return system3()
   if (cond === "perprinciple3") return system3each()
   if (cond === "rubric6") return systemRubric6()
+  if (cond === "rubric7") return systemRubric7()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
