@@ -42,6 +42,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric24      rubric23 without "both separate, call it a tie" in criterion 2
 //   rubric25      rubric24 with criterion 2 ordered: how clearly groups separate first, then not too loose
 //   rubric26      rubric25 with criterion 1 judging breathing room only, not how many kinds fit on a screen
+//   rubric27      rubric9 with rubric25's criterion 2 only, criteria not ranked
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -332,6 +333,12 @@ export const RUBRIC_26 = RUBRIC_25.map((p, i) => i === 0 ? {
   see: "最挤的一处在哪里、块间空白约几行高、四周有没有边距、是否过线",
 } : p)
 export const systemRubric26 = () => systemRubricOf(RUBRIC_26, true)
+// rubric27: rubric25 without the ranking, i.e. rubric9 with only criterion 2
+// changed. On the held-out groups the ranking made the overall pick depend on
+// the order: when spacing favoured one page and decoration, colour and
+// alignment the other, one order followed "the first two matter most" and the
+// other counted five criteria to two. This keeps the two-sided criterion 2.
+export const systemRubric27 = () => systemRubricOf(RUBRIC_25)
 export const ANCHOR_TEXT ="参考示例(另一版页面,不参与本次比较):下图是典型的拥挤页面。内容铺满整个页宽、四周没有余地;每个区块都塞得很满,区块之间只隔一条细缝,不同内容之间没有拉开间距。它看起来紧凑、信息完整,但这是差的设计。"
 // Decoupled dimensions: each looks at one thing and says what it leaves out,
 // so that no two share a concept (spacing amount, spacing relations, alignment,
@@ -439,6 +446,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric24") return systemRubric24()
   if (cond === "rubric25") return systemRubric25()
   if (cond === "rubric26") return systemRubric26()
+  if (cond === "rubric27") return systemRubric27()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
