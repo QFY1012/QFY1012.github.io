@@ -128,7 +128,7 @@ async function build(name, prompt) {
   const ws = wsOf(name)
   const sys = SYSTEM(JSON.parse(read(path.join(ws, "requests.json"))), p.rejected ?? "")
   const round = (p.rounds?.length ?? 0) + 1
-  let run = await runAgent({ stream: true, effort: EFFORT, tight: true,
+  let run = await runAgent({ stream: true, effort: EFFORT,
     name, ws, priv: privOf(name, round), system: sys, maxShoots: 6, prompt,
     nudges: ["你还没有写出演示页 Page.tsx。请写出并运行检查。"], missing: () => !fs.existsSync(path.join(ws, "Page.tsx")),
   })
@@ -141,7 +141,7 @@ async function build(name, prompt) {
     lint = lintComponents(ws)
     if ((!checks.length && !lint.length) || back === 2) break
     console.log(`${name}: back to the agent (${checks.length} demo checks, ${lint.length} component checks)`)
-    run = await runAgent({ stream: true, effort: EFFORT, tight: true,
+    run = await runAgent({ stream: true, effort: EFFORT,
       name, ws, priv: privOf(name, `${round}-${back + 1}`), system: sys, maxShoots: 4,
       prompt: `检查出下面的问题,请修改组件和演示页,改完运行检查。\n\n<演示页程序检查>\n${JSON.stringify(checks, null, 1)}\n</演示页程序检查>\n\n<组件代码检查>\n${JSON.stringify(lint, null, 1)}\n</组件代码检查>`,
     })

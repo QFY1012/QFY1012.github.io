@@ -42,7 +42,7 @@ import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, TrendChart, B
 
 | 组件 | props | 说明 |
 |---|---|---|
-| `FigureStrip` | children | 一行截图,放在 shadcn `ScrollArea` 里横向滚动,滚动条是 shadcn 的样式(不是浏览器原生滚动条);超出宽度的部分裁掉,不把页面撑宽 |
+| `FigureStrip` | children | 一行截图,横向滚动;超出宽度的部分裁掉,不把页面撑宽 |
 | `Figure` | children | 一张截图的外框,纵向排图、标签和说明;宽度随图,不收缩 |
 | `FigureImage` | `src`, `alt` | 截图本体。固定高度、按原比例显示,不裁剪,所以不用传比例 |
 | `FigureLabel` | children(字符串) | 图下面或上面的视图名(屏名、步号),12px 灰色 |
