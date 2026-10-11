@@ -176,6 +176,11 @@ ${CHANGE.old ? `原文:${CHANGE.old.trim()}\n改为:${CHANGE.new.trim()}` : `新
 
 请按这条规则修改 Page.tsx:只改和这条规则有关的地方,其他部分保持原样;如果页面已经符合这条规则,就不要改,直接结束。改了就运行检查。`
     : `工作目录里的 Page.tsx 是已经写好的页面。检查它是否符合规范和输出指南,需要的话修改。`)
+  // The model sometimes ends a turn after long thinking without writing anything.
+  for (let nudge = 0; nudge < 2 && !fs.existsSync(path.join(ws, "Page.tsx")); nudge++) {
+    console.log(`${name}: no Page.tsx yet, nudge ${nudge + 1}`)
+    await session.prompt(`你还没有写出 Page.tsx。请现在用 write 写出页面,然后运行检查。`)
+  }
 
   // Shoot once more so the stored screenshots and checks match the final Page.tsx.
   let final = []

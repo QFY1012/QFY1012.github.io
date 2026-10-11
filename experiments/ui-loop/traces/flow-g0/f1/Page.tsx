@@ -51,7 +51,7 @@ export default function Report() {
           {data.kpis.map((kpi) => (
             <Stat
               key={kpi.key}
-              span={3}
+              span={2}
               size="lg"
               value={kpi.value}
               unit={kpi.unit}

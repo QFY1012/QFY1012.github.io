@@ -3,7 +3,7 @@ import { Page, Section, Grid, Text, Stat, DataTable, List, KV } from "@/componen
 
 const confusionRows = data.confusions.map((c) => ({
   where: c.where,
-  colors: c.colors.join(" · "),
+  colors: c.colors.join(" / "),
   normal: c.normal.toFixed(1),
   protan: c["红色盲"].toFixed(1),
   deuteran: c["绿色盲"].toFixed(1),
@@ -13,12 +13,12 @@ const confusionRows = data.confusions.map((c) => ({
 
 const confusionColumns = [
   { key: "where", label: "颜色对", span: 2 },
-  { key: "colors", label: "色值", span: 2 },
+  { key: "colors", label: "色值", span: 1 },
   { key: "normal", label: "正常视觉", align: "right" as const, span: 1 },
   { key: "protan", label: "红色盲", align: "right" as const, span: 1, tone: ["0.3"] },
   { key: "deuteran", label: "绿色盲", align: "right" as const, span: 1, tone: ["5.9", "8.2"] },
   { key: "tritan", label: "蓝色盲", align: "right" as const, span: 1 },
-  { key: "affected", label: "难以区分", span: 1 },
+  { key: "affected", label: "难以区分", span: 2 },
 ]
 
 const contrastRows = data.contrast.map((c) => ({

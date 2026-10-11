@@ -31,7 +31,6 @@ const issueRows = data.issues.map((i) => ({
 const suggestions = data.issues.map((i) => ({
   title: i.title,
   description: i.suggestion,
-  meta: `${i.id} · ${i.type}`,
 }))
 
 export default function Report() {
