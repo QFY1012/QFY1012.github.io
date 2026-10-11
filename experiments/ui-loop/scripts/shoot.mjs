@@ -46,9 +46,9 @@ src.split("\n").forEach((line, i) => {
   const c = line.match(COLOR)
   if (c) add("统一刻度", `直接写了颜色类名 ${c[0]};颜色只能来自组件(下降、严重用组件的 direction、tone)`, n)
   for (const m of line.matchAll(/\btext-(xs|sm|base|lg|xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)\b/g)) add("统一刻度", `字号类名 ${m[0]} 不在规范里(只允许结论句的 text-2xl)`, n)
-  for (const m of line.matchAll(/<(h[1-6]|p|span|table|ul|ol|li|img|svg|button)\b/g)) add("组件库", `直接写了 <${m[1]}>,应使用组件库组件`, n)
+  for (const m of line.matchAll(/<(h[1-6]|p|span|table|ul|ol|li|svg|button)\b/g)) add("组件库", `直接写了 <${m[1]}>,应使用组件库组件`, n)
   // The same tags through createElement / jsx() are the same thing written another way.
-  for (const m of line.matchAll(/\b(?:createElement|jsxs?)\(\s*["'`]([a-z][a-z0-9]*)["'`]/g)) if (m[1] !== "div") add("组件库", `用 createElement 直接画了 <${m[1]}>,应使用组件库组件`, n)
+  for (const m of line.matchAll(/\b(?:createElement|jsxs?)\(\s*["'`]([a-z][a-z0-9]*)["'`]/g)) if (m[1] !== "div" && m[1] !== "img") add("组件库", `用 createElement 直接画了 <${m[1]}>,应使用组件库组件`, n)
 })
 
 // ---------- build ----------
@@ -106,9 +106,9 @@ try {
   for (const e of errors) add("能渲染", `页面报错:${e.slice(0, 200)}`)
 
   const dom = await page.evaluate(() => {
-    // Images, canvases and the like that no library component drew: the page made them itself,
-    // however the code spells it (<img>, createElement, a variable holding "img", new Image()...).
-    const raw = [...document.querySelectorAll("img,canvas,video,iframe,picture,object,embed")].filter((e) => !e.hasAttribute("data-slot")).map((e) => e.tagName.toLowerCase())
+    // Canvases and the like that no library component drew: the page made them itself, however
+    // the code spells it (createElement, a variable holding the tag name...). <img> is allowed.
+    const raw = [...document.querySelectorAll("canvas,video,iframe,picture,object,embed")].filter((e) => !e.hasAttribute("data-slot")).map((e) => e.tagName.toLowerCase())
     const images = [...document.images].map((i) => i.getAttribute("src") ?? "")
     const main = document.querySelector("main")
     if (!main) return { height: document.body.scrollHeight, text: document.body.innerText, images, out: [], unknown: 0, raw }
