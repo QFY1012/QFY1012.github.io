@@ -1,0 +1,13 @@
+{
+ "issues": [
+  {
+   "kind": "program",
+   "what": "链路明细里 9 张截图用原生 <img> 元素渲染,不是组件库画的",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "程序检查:「页面上有不是组件库画的元素:9 个 <img>;组件库没有的能力不要自己画,在最后的说明里写出缺什么组件」。Page.tsx 里 `const Img: any = \"img\"` 并用于 chain.steps 的截图;components.md 的组件清单(Page、Section、Group、Grid、Block、Text、Stat、DataTable、TrendChart、BarChart、ProgressList、List、KV)中没有图片/截图组件,且明确要求「不直接写 HTML 标签」",
+   "fix": "组件库:缺一个图片/截图组件——能接收图片路径(由构建器解析成可加载资源)、alt 文本,并让图片宽度随所在栏宽自适应缩放(如占 span 列、`w-full` 行为由组件给出)"
+  }
+ ],
+ "dropped": []
+}

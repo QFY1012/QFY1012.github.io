@@ -4,9 +4,12 @@
 //   组合    the components can do it, the page uses or arranges them wrongly   → change the Skill's output guide
 //   没照做  the spec or guide already says it, Page.tsx does not follow        → no rule change, recorded
 //
-//   node scripts/attribute.mjs --run flow-g0 --cases f1,f2 --guide skills/flow/guides/g0.md [--runs 3]
+//   node scripts/attribute.mjs --run flow-g0 --cases f1,f2 --guide skills/flow/guides/g0.md [--stage program|function] [--runs 3]
 //
-// Reads traces/<run>/<case>/function-<n>.json, writes traces/<run>/<case>/attribution.json.
+// The checks run in order and a page goes on only when it passes: program checks, then the
+// function judge, then the aesthetic judge. --stage program attributes the program-check
+// findings only; --stage function also reads traces/<run>/<case>/function-<n>.json.
+// Writes traces/<run>/<case>/attribution-<stage>.json.
 import fs from "node:fs"
 import path from "node:path"
 import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
@@ -27,12 +30,13 @@ export const SYSTEM = `你负责给报告页面的问题归因。会给你:功�
 
 只输出 JSON:{"issues":[{"kind":"unused 或 inconvenient 或 program","what":"一句话说清问题","runs":出现次数,"cause":"组件库 或 组合 或 没照做","evidence":"依据","fix":"组件库:缺什么能力;组合:用哪个组件怎么改,以及缺规则还是规则不清楚;没照做:哪条规则"}],"dropped":[{"what":"一句话","runs":1}]}`
 
-export async function attribute(run, cases, guideFile, runs = 3) {
+export async function attribute(run, cases, guideFile, stage = "function", runs = 3) {
+  if (stage === "program") runs = 0
   const key = process.env.DEEPSEEK_API_KEY
   const shared = `<components.md>\n${read(path.join(ROOT, "components.md"))}\n</components.md>\n\n<design.md>\n${read(path.join(ROOT, "design.md"))}\n</design.md>\n\n<输出指南>\n${read(path.resolve(ROOT, guideFile))}\n</输出指南>`
   await Promise.all(cases.map(async (c) => {
     const ws = path.join(ROOT, "traces", run, c)
-    const out = path.join(ws, "attribution.json")
+    const out = path.join(ws, `attribution-${stage}.json`)
     if (fs.existsSync(out)) return
     const results = Array.from({ length: runs }, (_, n) => path.join(ws, `function-${n + 1}.json`)).filter(fs.existsSync).map((f, n) => `<第 ${n + 1} 次检查>\n${read(f)}\n</第 ${n + 1} 次检查>`)
     try {
@@ -44,7 +48,7 @@ export async function attribute(run, cases, guideFile, runs = 3) {
     }
   }))
   return Object.fromEntries(cases.map((c) => {
-    const f = path.join(ROOT, "traces", run, c, "attribution.json")
+    const f = path.join(ROOT, "traces", run, c, `attribution-${stage}.json`)
     const j = fs.existsSync(f) ? JSON.parse(read(f)) : { issues: [] }
     const by = (k) => j.issues.filter((i) => i.cause === k).length
     return [c, { 组件库: by("组件库"), 组合: by("组合"), 没照做: by("没照做"), dropped: j.dropped?.length ?? 0 }]
@@ -56,5 +60,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const i = process.argv.indexOf(`--${k}`)
     return i > 0 ? process.argv[i + 1] : d
   }
-  console.log(JSON.stringify(await attribute(arg("run"), arg("cases").split(","), arg("guide"), Number(arg("runs", "3"))), null, 1))
+  console.log(JSON.stringify(await attribute(arg("run"), arg("cases").split(","), arg("guide"), arg("stage", "function"), Number(arg("runs", "3"))), null, 1))
 }

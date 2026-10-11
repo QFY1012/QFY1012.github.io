@@ -1,0 +1,13 @@
+{
+ "issues": [
+  {
+   "kind": "program",
+   "what": "页面没有显示 4 张色觉模拟图(assets/original.png、protanopia.png、deuteranopia.png、tritanopia.png),数据里的模拟视图素材完全没呈现",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "程序检查「数据忠实」:页面上没有显示 4 张图 assets/original.png、assets/protanopia.png、assets/deuteranopia.png、assets/tritanopia.png;components.md 的可 import 清单只有 Page、Section、Group、Grid、Block、Text、Stat、DataTable、TrendChart、BarChart、ProgressList、List、KV,没有任何能渲染图片的组件;Page.tsx 里「模拟视图」只用 KV 把 data.screens 的 view 名拼成字符串",
+   "fix": "组件库:缺图片能力。需要新增一个能渲染 assets 图片的组件(如 Image/Figure,接受 src、alt/说明,可在 Grid 里占 span),页面才能把这 4 张模拟图放进对应一节;现有组件和 props 都做不到显示图片。"
+  }
+ ],
+ "dropped": []
+}

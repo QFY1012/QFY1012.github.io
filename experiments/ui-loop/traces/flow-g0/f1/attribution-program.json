@@ -1,0 +1,13 @@
+{
+ "issues": [
+  {
+   "kind": "program",
+   "what": "数据里的 26 张截图(assets/p1-01.png 等)在页面上完全没有显示,「步骤明细」一节只呈现了表格文字",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "程序检查「数据忠实」指出页面上没有显示 assets/p1-01.png ~ p1-06.png 等 26 张图;components.md 的可 import 组件只有 Page、Section、Group、Grid、Block、Text、Stat、DataTable、TrendChart、BarChart、ProgressList、List、KV,没有任何图片/截图类组件或接受图片路径的 props;Page.tsx 的「步骤明细」节只用了 DataTable,列为 no/screen/flow/inputs/note,全是文字。",
+   "fix": "组件库:缺能渲染图片的能力——需要一个图片/截图组件(或 DataTable 列支持图片值),接收 assets 路径并按网格列宽显示;现有组件无法解决,故归因组件库。"
+  }
+ ],
+ "dropped": []
+}

@@ -1,0 +1,13 @@
+{
+ "issues": [
+  {
+   "kind": "program",
+   "what": "页面上有 4 个 <img> 是页面自己写的原生标签,不是组件库画的元素",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "components.md 的框架与内容组件清单(Page/Section/Group/Grid/Block/Text/Stat/DataTable/TrendChart/BarChart/ProgressList/List/KV)里没有任何图片或截图组件;Page.tsx 顶部自建了 `const Img = \"img\" as unknown as React.ElementType`,并在 Screen 里渲染 `<Img src={src} alt={view} className=\"w-full h-auto\" />`,四张截图(original/protanopia/deuteranopia/tritanopia)都走这条路",
+   "fix": "组件库:缺图片/截图组件的能力——需要一个能接收 src、alt、可选 span 的图片组件(或给 Block 增加 image props),让「原界面与三种色觉模拟」这类图像证据不用写原生标签就能呈现"
+  }
+ ],
+ "dropped": []
+}

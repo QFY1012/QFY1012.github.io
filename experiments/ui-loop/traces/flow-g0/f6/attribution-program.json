@@ -1,0 +1,21 @@
+{
+ "issues": [
+  {
+   "kind": "program",
+   "what": "第 99 行用 createElement 直接画 <img> 显示步骤截图,没用组件库组件",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "Page.tsx 第 99 行 `createElement(\"img\", { src: shot(step.image), ... })`;components.md 的组件清单(Page、Section、Group、Grid、Block、Text、Stat、DataTable、TrendChart、BarChart、ProgressList、List、KV)里没有任何图片/截图组件,页面代码注释也写明「The component library has no image component」",
+   "fix": "组件库:缺显示图片的能力,应补一个图片/截图组件(如 `Image`/`Shot`),支持 `src`、`alt`、宽度铺满和可选的 `title`/说明,否则只能用 createElement 画原生 img"
+  },
+  {
+   "kind": "program",
+   "what": "整页 27 个 <img> 元素都不是组件库画的,缺图片组件这件事也没写进最后的说明",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "程序检查「页面上有不是组件库画的元素:27 个 <img>」;Page.tsx 的「步骤截图」节里 `chain.steps.map` 每屏一个 createElement(\"img\");components.md 要求「不直接写 HTML 标签」「组件库没有的能力不要自己画,在最后的说明里写出缺什么组件」,而页面里没有这段缺组件说明",
+   "fix": "组件库:缺图片/截图组件这一能力,需在组件库中补上;在补齐前,应在页面末尾按要求写明「缺图片组件」,而不是静默地画 27 个原生 <img>"
+  }
+ ],
+ "dropped": []
+}

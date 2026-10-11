@@ -115,9 +115,16 @@ try {
         out.push(`${el.tagName.toLowerCase()}[${el.getAttribute("data-slot") ?? ""}] 超出页面左右边界 ${Math.round(Math.max(mr.left - r.left, r.right - mr.right))}px「${t}」`)
       }
     }
-    return { height: Math.ceil(document.documentElement.scrollHeight), text: document.body.innerText, images: [...document.images].map((i) => i.getAttribute("src") ?? ""), out: out.slice(0, 10), unknown: document.querySelectorAll("[data-slot=unknown]").length }
+    return { height: Math.ceil(document.documentElement.scrollHeight), text: document.body.innerText, images: [...document.images].map((i) => i.getAttribute("src") ?? ""), out: out.slice(0, 10), unknown: document.querySelectorAll("[data-slot=unknown]").length,
+      // Images, canvases and the like that no library component drew: the page made them itself,
+      // however the code spells it (<img>, createElement, a variable holding "img", new Image()...).
+      raw: [...document.querySelectorAll("img,canvas,video,iframe,picture,object,embed")].filter((e) => !e.hasAttribute("data-slot")).map((e) => e.tagName.toLowerCase()) }
   })
   if (dom.unknown) add("组件库", `${dom.unknown} 个组件类型未知`)
+  if (dom.raw.length) {
+    const n = dom.raw.reduce((m, t) => ({ ...m, [t]: (m[t] ?? 0) + 1 }), {})
+    add("组件库", `页面上有不是组件库画的元素:${Object.entries(n).map(([t, k]) => `${k} 个 <${t}>`).join("、")};组件库没有的能力不要自己画,在最后的说明里写出缺什么组件`)
+  }
   for (const o of dom.out) add("元素越界", o)
 
   // Data coverage: every short value outside long series should appear on the page.

@@ -1,0 +1,13 @@
+{
+ "issues": [
+  {
+   "kind": "program",
+   "what": "页面上的 13 张截图不是组件库画的,而是在 Shot 里用 DOM API 新建 <img> 元素挂到 div 上",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "程序检查:「页面上有不是组件库画的元素:13 个 <img>;组件库没有的能力不要自己画」;Page.tsx 里 `function Shot` 用 `new Image()`、`host.replaceChildren(picture)` 自己造图片;components.md 的组件清单(Page、Section、Group、Grid、Block、Text、Stat、DataTable、TrendChart、BarChart、ProgressList、List、KV)里没有任何能显示图片的组件或 props",
+   "fix": "组件库:缺一个图片组件(例如 `Image` / `Shot`,接受 `src`、`alt`,并支持 `span`/`className` 在 Grid、Block 里占位),现在只能绕过组件库手写 <img>,需要把这个能力补进 components.md"
+  }
+ ],
+ "dropped": []
+}

@@ -1,0 +1,21 @@
+{
+ "issues": [
+  {
+   "kind": "program",
+   "what": "页面用 createElement 直接画了 4 个 <img> 来放截图,不是组件库组件",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "程序检查:第 151 行「用 createElement 直接画了 <img>,应使用组件库组件」;Page.tsx 第 151 行 createElement(\"img\", { src: SHOTS[s.view] ?? s.image, alt: s.view, className: \"w-full\" });components.md 的内容组件只有 Text、Stat、DataTable、TrendChart、BarChart、ProgressList、List、KV,没有任何图片/截图组件,也没有能接受 src 的 props",
+   "fix": "组件库缺能力:缺一个图片/截图组件(如 Image/Figure,接受 src、alt,可选宽高或说明文字),页面无法用现有组件显示「原界面 + 三种色盲模拟」四张图"
+  },
+  {
+   "kind": "program",
+   "what": "页面上有 4 个不是组件库画的元素,且缺的能力没有按规范在说明里写出来",
+   "runs": 0,
+   "cause": "组件库",
+   "evidence": "程序检查:「页面上有不是组件库画的元素:4 个 <img>;组件库没有的能力不要自己画,在最后的说明里写出缺什么组件」;Page.tsx 只在文件顶部用代码注释写了一句 The library has no image component,页面本身与最终说明里都没有交代这一能力缺口",
+   "fix": "组件库缺能力:缺图片组件。除补组件外,还应在页面说明中写出「组件库缺图片组件」这一缺口,而不是用 createElement 自己画"
+  }
+ ],
+ "dropped": []
+}
