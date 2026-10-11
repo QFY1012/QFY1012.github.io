@@ -103,9 +103,9 @@ export default function Report() {
           <Block span={6} rows={2} title="产出与成本">
             <DataTable
               columns={[
-                { key: "name", label: "渠道", span: 3 },
-                { key: "hires", label: "入职(人)", span: 2, align: "right", bar: true },
-                { key: "cost", label: "单人成本(万元)", span: 4, align: "right" },
+                { key: "name", label: "渠道", span: 2 },
+                { key: "hires", label: "入职(人)", span: 1, align: "right", bar: true },
+                { key: "cost", label: "单人成本(万元)", span: 3, align: "right" },
               ]}
               rows={data.channels}
             />
