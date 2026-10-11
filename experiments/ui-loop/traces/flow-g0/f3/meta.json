@@ -1,0 +1,26 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 198,
+ "usage": {
+  "input": 44878,
+  "output": 10143
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已完成，程序检查全部通过。\n\n结构：页头（产品/周期 + 标题）→ 结论（24px 判断句）→ 核心指标（4 个 `Stat`，一行 48px 细体）→ 产品对比（`DataTable`，步骤数列带细条、文本输入列右对齐）→ 流程明细（每款产品一个 `Group` + 步骤表：步骤/页面/页面内容/操作/备注）→ 发现问题（三列 `List`，风险等级标红）→ 下一步（两条编号建议，带依据）→ 背景信息（`KV` 两列标签）。数据里没有时间趋势，故跳过随时间变化一节。"
+}

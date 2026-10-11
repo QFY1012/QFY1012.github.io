@@ -1,0 +1,26 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 125,
+ "usage": {
+  "input": 37067,
+  "output": 14689
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "程序检查通过,页面符合规范。结构如下:\n\n- **页头**:产品(快送 · 小橙)与周期在左,报告标题《交互流程挖掘 · 下单支付》在右。\n- **结论**:一句 24px 细体总结,占满 9 列。\n- **核心指标**:4 个数字一行 3 列排布,主指标「步骤最少 4 步」用 48px 细体,其余 30px。\n- **产品对比**:带对照的表格(产品 / 步骤数右对齐 / 整体判断)。\n- **链路明细**:快送 11.2 与小橙 8.9 各一块,用明细表列出每步的页面、内容、操作与备注,两块间隔 48px。\n- **发现问题**:3 列并排,风险等级以红色 meta 标出。\n- **下一步**:左 6 列编号建议列表,右 3 列依据键值。\n- **背景信息**:两列标签的键值表(任务、产品、版本、日期)。"
+}

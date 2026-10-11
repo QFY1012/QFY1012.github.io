@@ -78,7 +78,7 @@ export default function Report() {
           {data.kpis.map((k, i) => (
             <Stat
               key={k.key}
-              span={3}
+              span={2}
               size="lg"
               captionBelow
               value={k.value}

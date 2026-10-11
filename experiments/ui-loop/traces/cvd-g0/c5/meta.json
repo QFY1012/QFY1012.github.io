@@ -1,0 +1,26 @@
+{
+ "case": "c5",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 188,
+ "usage": {
+  "input": 42311,
+  "output": 18260
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "程序检查全部通过,页面也符合规范。最终结构:\n\n- **页头**:左侧 meta(证券 App · 个股行情页 / 2026-09-18),右侧标题「色觉无障碍分析 · 行情页」。\n- **结论**:24px 细体一句判断(不友好 + summary)。\n- **核心指标**:4 个 `Stat`(lg,数字在上说明在下),每行 3 列。\n- **配色 / 对比度**:两张 `DataTable`,对比度列右对齐、结果列「不达标」标红。\n- **色差**:3 列 `ProgressList`(各类型问题数)+ 6 列色差表并排,ΔE 小于 12 的 10.2 标红。\n- **问题明细**:`DataTable`(问题 / 类型 / 位置 / 严重度 / 影响人群),严重度「高」标红。\n- **修改建议**:`List` ordered 列 4 条改法 + 色值调整表(原色值 / 建议色值 / 前后对比度)。\n- **背景信息**:`KV`(检查对象、日期、标准、方法)。"
+}
