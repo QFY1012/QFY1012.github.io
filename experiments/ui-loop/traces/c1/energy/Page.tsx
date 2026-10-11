@@ -46,7 +46,7 @@ export default function Report() {
             unit={intensity.unit}
             label={intensity.label}
             captionBelow
-            note={`环比 ${intensity.change}`}
+            note={`环比 ${intensity.change} ${intensity.unit}`}
             direction={intensity.direction as "up" | "down"}
           />
           <Stat
@@ -81,6 +81,7 @@ export default function Report() {
               xKey="date"
               series={[{ key: "mwh", label: "用电量" }]}
               height="fill"
+              yTicks={[70, 90, 110, 130]}
               pointLabels="last"
             />
           </Block>
@@ -90,6 +91,7 @@ export default function Report() {
               xKey="date"
               series={[{ key: "peak", label: "峰时占比" }]}
               height="fill"
+              yTicks={[36, 40, 44, 48]}
               pointLabels="last"
             />
           </Block>

@@ -43,14 +43,13 @@ export default function Report() {
 
       <Section title="维度得分" description="六项体验的满意度得分（5 分制），括号内为与上次的差值">
         <Grid cols={9}>
-          <Block span={6} title="满意度得分">
+          <Block span={3} title="满意度得分">
             <ProgressList
-              compact
               items={satisfaction.map((s) => ({
                 label: s.name,
                 value: s.score,
                 max: 5,
-                display: `${s.score}（${s.change}）`,
+                display: `${s.score.toFixed(1)}（${s.change}）`,
               }))}
             />
           </Block>
@@ -59,9 +58,8 @@ export default function Report() {
 
       <Section title="痛点占比" description="提及最多的五个问题及提及占比（%）">
         <Grid cols={9}>
-          <Block span={6} title="痛点提及占比">
+          <Block span={3} title="痛点提及占比">
             <ProgressList
-              compact
               items={pains.map((p) => ({
                 label: p.name,
                 value: p.share,
@@ -78,7 +76,7 @@ export default function Report() {
           numbered
           items={quotes.map((q) => ({
             title: q.who,
-            description: q.text,
+            description: `“${q.text}”`,
           }))}
         />
       </Section>

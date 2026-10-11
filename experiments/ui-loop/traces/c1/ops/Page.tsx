@@ -2,6 +2,7 @@ import data from "./data.json"
 import {
   Page,
   Section,
+  Group,
   Grid,
   Block,
   Text,
@@ -23,7 +24,7 @@ export default function Report() {
         <Text className="text-2xl leading-9 font-light">{data.summary}</Text>
       </Section>
 
-      <Section title="核心指标" description="当月数值,注释为环比变化">
+      <Section title="核心指标" description="当月数值,注释为变化幅度">
         <Grid cols={9} fields={false} className="items-baseline">
           {data.kpis.map((kpi, i) => (
             <Stat
@@ -41,33 +42,36 @@ export default function Report() {
         </Grid>
       </Section>
 
-      <Section title="日活走势" description="9 月 1 日至 30 日,单位:万">
-        <Grid cols={9}>
-          <Block span={6} rows={2} title="每日日活">
-            <TrendChart
-              data={data.dauDaily}
-              xKey="day"
-              series={[{ key: "dau", label: "日活" }]}
-              height="fill"
-              pointLabels="last"
-              xInterval={5}
-            />
-          </Block>
-          <Block span={3} rows={2} title="周均日活">
-            <TrendChart
-              data={data.dauWeekly}
-              xKey="week"
-              series={[{ key: "dau", label: "日活" }]}
-              height="fill"
-              pointLabels="last"
-            />
-          </Block>
-        </Grid>
+      <Section title="日活走势" description="9 月 1 日至 30 日,单位:万" className="gap-12">
+        <Block title="每日日活">
+          <TrendChart
+            data={data.dauDaily}
+            xKey="day"
+            series={[{ key: "dau", label: "日活" }]}
+            height="h-48"
+            pointLabels="last"
+            xInterval={5}
+          />
+        </Block>
+        <Group title="周均日活">
+          <Grid cols={9} fields={false} className="items-baseline">
+            {data.dauWeekly.map((w) => (
+              <Stat
+                key={w.week}
+                span={2}
+                value={w.dau}
+                unit="万"
+                label={w.week}
+                captionBelow
+              />
+            ))}
+          </Grid>
+        </Group>
       </Section>
 
-      <Section title="拆分" description="渠道为新增用户占比,品类为成交额占比">
-        <Grid cols={9}>
-          <Block span={3} rows={2} title="分渠道">
+      <Section title="拆分" description="渠道为新增用户占比,品类为成交额占比" className="gap-12">
+        <Grid cols={9} fields={false}>
+          <Block span={3} title="分渠道">
             <ProgressList
               compact
               items={data.channels.map((c) => ({
@@ -78,7 +82,9 @@ export default function Report() {
               }))}
             />
           </Block>
-          <Block span={6} rows={2} title="分类别">
+        </Grid>
+        <Grid cols={9} fields={false}>
+          <Block span={9} title="分类别">
             <DataTable
               columns={[
                 { key: "name", label: "品类", span: 3 },

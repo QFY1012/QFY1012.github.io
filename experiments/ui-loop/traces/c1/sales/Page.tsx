@@ -41,8 +41,8 @@ export default function Report() {
           xKey="week"
           series={[{ key: "revenue", label: "周收入" }]}
           height="h-48"
+          yTicks={[2000, 2100, 2200, 2300]}
           pointLabels="last"
-          xInterval={1}
         />
       </Section>
 
