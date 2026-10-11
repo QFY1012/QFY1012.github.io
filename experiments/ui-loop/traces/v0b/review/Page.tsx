@@ -30,9 +30,14 @@ const issueRows = data.issues.map((item) => ({
 }))
 
 const nonstandardColumns = [
-  { key: "component", label: "组件", span: 2 },
-  { key: "detail", label: "问题", span: 5 },
+  { key: "component", label: "组件", span: 1 },
+  { key: "detail", label: "问题", span: 3 },
   { key: "count", label: "处数", span: 2, align: "right" as const, bar: true },
+]
+
+const trendColumns = [
+  { key: "version", label: "版本", span: 2 },
+  { key: "issues", label: "问题数", span: 1, align: "right" as const },
 ]
 
 export default function Report() {
@@ -73,13 +78,20 @@ export default function Report() {
       </Section>
 
       <Section title="随时间变化" description="各版本未关闭问题数，单位：个">
-        <TrendChart
-          data={data.trend}
-          xKey="version"
-          series={[{ key: "issues", label: "未关闭问题数" }]}
-          height="h-48"
-          pointLabels="last"
-        />
+        <Grid cols={9}>
+          <Block span={6} rows={2} title="未关闭问题数">
+            <TrendChart
+              data={data.trend}
+              xKey="version"
+              series={[{ key: "issues", label: "未关闭问题数" }]}
+              height="fill"
+              pointLabels="last"
+            />
+          </Block>
+          <Block span={3} rows={2} title="各版本问题数">
+            <DataTable columns={trendColumns} rows={data.trend} />
+          </Block>
+        </Grid>
       </Section>
 
       <Section title="分维度" description="五个维度得分，满分 100">
