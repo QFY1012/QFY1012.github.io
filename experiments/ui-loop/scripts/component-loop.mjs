@@ -12,8 +12,9 @@
 //    props, how each Skill would use it, and how it matches the existing components' style.
 //    Review material: library/k<n>-plan.md.
 // ② Implement in a copy of the library (traces/_components/k<n>/app): shadcn source copied
-//    unchanged from vendor/shadcn (like `shadcn add`), the report component on top of it, using
-//    tokens only; components.md updated; a demo page on real sample data next to existing components.
+//    from vendor/shadcn (like `shadcn add`) and then adapted to the spec (shadcn's own classes have
+//    shadows, backgrounds and off-grid sizes), the report component on top of it, using tokens only;
+//    components.md updated; a demo page on real sample data next to existing components.
 // ③ Program checks on the component code (colours only from tokens, the type scale, 8px steps,
 //    no shadows or cards) and on the demo page.
 // ④ Style check: a model compares the new component with the existing ones on the demo page;
@@ -59,11 +60,11 @@ const SYSTEM = (requests, rejected) => `你维护报告页面的组件库。生�
 - app/src/components/report/index.tsx:报告组件(框架组件和内容组件),内容组件的绘制在 render.tsx。生成 Agent 用的是这一层。
 - app/src/index.css:tokens(颜色、字体、圆角),不要改。
 - components.md:组件库说明,生成 Agent 只读这份说明来用组件。
-- shadcn/:shadcn/ui new-york-v4 全部组件的源码(只读副本,你不能联网);shadcn/index.json 列出每个组件的文件和依赖,missing 不为空的不能用。
+- shadcn/:shadcn/ui new-york-v4 全部组件的源码(只读副本,你不能联网),依赖的包都已安装;shadcn/index.json 列出每个组件的文件和依赖。ui/ 下的文件复制到 app/src/components/ui/,hooks/ 下的复制到 app/src/hooks/。
 - data.json 和 assets/:一份真实的样本数据,用来做演示页。
 
 组件怎么来,按这个顺序:
-1. 先用 shadcn:shadcn 里有合适的组件,就把它的源码原样复制到 app/src/components/ui/(和 shadcn add 一样,不改源码),报告组件再基于它组合。
+1. 先用 shadcn:shadcn 里有合适的组件,就把它的源码复制到 app/src/components/ui/(和 shadcn add 一样),再按规范改它的样式:shadcn 原版带阴影、底色,有的字号和尺寸不在规范里,这些都要改;结构、行为、data-slot、导出的组件和 props 保持不变。报告组件再基于它组合。
 2. shadcn 里没有合适的,才直接调用 Radix 原语(import { X } from "radix-ui")来写,写法和 shadcn 一致:函数组件、data-slot、cn() 合并 className、只用 token 类名。
 3. 不管哪种,风格都要和现有组件统一:同样的字号几级、灰度层级、线条、间距、对齐,颜色只来自 tokens;不加卡片、底色和阴影。不要改变现有组件的样子和行为。
 
@@ -101,7 +102,7 @@ const IMPL_PROMPT = (plan, note) => `方案已经审核通过${note ? `,审核�
 ${plan}
 </方案>
 
-1. 按来源规则把 shadcn 源码原样复制进 app/src/components/ui/(或按 shadcn 的写法用 Radix 原语写),再写报告组件。
+1. 按来源规则把 shadcn 源码复制进 app/src/components/ui/ 并按规范改样式(或按 shadcn 的写法用 Radix 原语写),再写报告组件。
 2. 在 components.md 里补上:props、什么时候用、最小用法示例。
 3. 写演示页 Page.tsx:用 data.json,把原来呈现不了的内容用新组件呈现出来,其余内容用现有组件排(演示页要能看出新组件和现有组件放在一起是否统一)。
 4. 用 bash 运行 \`node \$SHOOT .\` 构建、截图、检查,用 read 看 thumb.png 和切块,不对就改。检查最多运行 6 次。
@@ -120,11 +121,12 @@ function collect(runs) {
   return out
 }
 
-const diff = (a, b) => spawnSync("git", ["diff", "--no-index", "--no-color", a, b], { encoding: "utf8" }).stdout.replaceAll(path.dirname(a) + "/", "").replaceAll(path.dirname(b) + "/", "")
+const diff = (a, b) => spawnSync("git", ["diff", "--no-index", "--no-color", a, b], { encoding: "utf8" }).stdout.replaceAll(path.dirname(a), "").replaceAll(path.dirname(b), "")
 const libDiff = (ws) => diff(path.join(ROOT, "app", "src"), path.join(ws, "app", "src")) + diff(path.join(ROOT, "components.md"), path.join(ws, "components.md"))
 
 // ③ Program checks on the component code: the lines the change adds to app/src.
-// Files copied unchanged from shadcn are shadcn's own code and are not linted.
+// Files copied from shadcn are checked like any other: shadcn's own classes have shadows,
+// backgrounds and sizes the spec doesn't allow, so they have to be adapted.
 function lintComponents(ws) {
   const out = []
   const src = path.join(ws, "app", "src")
@@ -132,12 +134,7 @@ function lintComponents(ws) {
   for (const f of files) {
     const rel = path.relative(src, f)
     if (rel === "index.css") { out.push({ file: rel, msg: "改了 tokens(index.css);tokens 只由用户改" }); continue }
-    const name = path.basename(f)
-    const vendor = path.join(SHADCN, "ui", name)
-    if (rel.startsWith("components/ui/")) {
-      if (fs.existsSync(path.join(ROOT, "app", "src", rel))) { out.push({ file: rel, msg: "改了已有的 shadcn 组件;ui/ 里已有的文件不能改" }); continue }
-      if (fs.existsSync(vendor) && read(vendor) === read(f)) continue
-    }
+    if ((rel.startsWith("components/ui/") || rel.startsWith("hooks/")) && fs.existsSync(path.join(ROOT, "app", "src", rel))) { out.push({ file: rel, msg: "改了已有的 ui/ 或 hooks/ 文件;已有的不能改" }); continue }
     const before = fs.existsSync(path.join(ROOT, "app", "src", rel)) ? new Set(read(path.join(ROOT, "app", "src", rel)).split("\n")) : new Set()
     read(f).split("\n").forEach((line, i) => {
       if (before.has(line)) return
@@ -152,6 +149,14 @@ function lintComponents(ws) {
     })
   }
   return out
+}
+
+// New ui/ and hooks/ files against the shadcn originals they came from: the adaptation, for review.
+function fromShadcn(ws) {
+  const src = path.join(ws, "app", "src")
+  return ["components/ui", "hooks"].flatMap((d) => (fs.existsSync(path.join(src, d)) ? fs.readdirSync(path.join(src, d)).map((f) => `${d}/${f}`) : []))
+    .filter((rel) => !fs.existsSync(path.join(ROOT, "app", "src", rel)) && fs.existsSync(path.join(SHADCN, rel.replace(/^components\//, ""))))
+    .map((rel) => diff(path.join(SHADCN, rel.replace(/^components\//, "")), path.join(src, rel)) || `${rel}:和 shadcn 原版相同\n`).join("")
 }
 
 // ④ Style check: the new component next to the existing ones on the demo page.
@@ -250,8 +255,14 @@ ${run.summary}
 演示页(${p.demo} 的数据,截图 \`traces/_components/${name}/thumb.png\`)程序检查:
 ${list(checks)}
 
-组件代码检查(只用 token、字号几级、8 的倍数、无阴影和底色;从 shadcn 原样复制的文件不查):
+组件代码检查(只用 token、字号几级、8 的倍数、无阴影和底色;从 shadcn 复制来的文件也查):
 ${list(lint)}
+
+## 对 shadcn 原版改了什么
+
+\`\`\`diff
+${fromShadcn(ws) || "(没有从 shadcn 复制的文件)"}
+\`\`\`
 
 风格一致检查(新组件和现有组件放在演示页上比较):
 ${list(style)}
@@ -269,6 +280,7 @@ function merge(name) {
   const p = state.proposals[name]
   const ws = wsOf(name)
   fs.cpSync(path.join(ws, "app", "src", "components"), path.join(ROOT, "app", "src", "components"), { recursive: true })
+  if (fs.existsSync(path.join(ws, "app", "src", "hooks"))) fs.cpSync(path.join(ws, "app", "src", "hooks"), path.join(ROOT, "app", "src", "hooks"), { recursive: true })
   fs.copyFileSync(path.join(ws, "components.md"), path.join(ROOT, "components.md"))
   p.status = "采用"
   save()

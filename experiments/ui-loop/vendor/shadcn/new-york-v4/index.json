@@ -122,10 +122,7 @@
   "registryDependencies": [
    "button"
   ],
-  "missing": [
-   "react-day-picker@latest",
-   "date-fns"
-  ]
+  "missing": []
  },
  {
   "name": "card",
@@ -150,9 +147,7 @@
   "registryDependencies": [
    "button"
   ],
-  "missing": [
-   "embla-carousel-react"
-  ]
+  "missing": []
  },
  {
   "name": "chart",
@@ -205,9 +200,7 @@
    "button",
    "input-group"
   ],
-  "missing": [
-   "@base-ui/react"
-  ]
+  "missing": []
  },
  {
   "name": "command",
@@ -221,9 +214,7 @@
   "registryDependencies": [
    "dialog"
   ],
-  "missing": [
-   "cmdk"
-  ]
+  "missing": []
  },
  {
   "name": "context-menu",
@@ -259,9 +250,7 @@
    "vaul"
   ],
   "registryDependencies": [],
-  "missing": [
-   "vaul"
-  ]
+  "missing": []
  },
  {
   "name": "dropdown-menu",
@@ -316,10 +305,7 @@
    "button",
    "label"
   ],
-  "missing": [
-   "@hookform/resolvers",
-   "react-hook-form"
-  ]
+  "missing": []
  },
  {
   "name": "hover-card",
@@ -369,9 +355,7 @@
    "input-otp"
   ],
   "registryDependencies": [],
-  "missing": [
-   "input-otp"
-  ]
+  "missing": []
  },
  {
   "name": "item",
@@ -482,9 +466,7 @@
    "react-resizable-panels@^4"
   ],
   "registryDependencies": [],
-  "missing": [
-   "react-resizable-panels@^4"
-  ]
+  "missing": []
  },
  {
   "name": "scroll-area",
@@ -537,7 +519,8 @@
  {
   "name": "sidebar",
   "files": [
-   "ui/sidebar.tsx"
+   "ui/sidebar.tsx",
+   "hooks/use-mobile.ts"
   ],
   "dependencies": [
    "cn",
@@ -589,10 +572,7 @@
    "next-themes"
   ],
   "registryDependencies": [],
-  "missing": [
-   "sonner",
-   "next-themes"
-  ]
+  "missing": []
  },
  {
   "name": "spinner",
@@ -782,8 +762,6 @@
   "registryDependencies": [
    "button"
   ],
-  "missing": [
-   "@shadcn/react"
-  ]
+  "missing": []
  }
 ]

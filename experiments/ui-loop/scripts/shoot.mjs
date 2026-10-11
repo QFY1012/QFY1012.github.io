@@ -106,8 +106,12 @@ try {
   for (const e of errors) add("能渲染", `页面报错:${e.slice(0, 200)}`)
 
   const dom = await page.evaluate(() => {
+    // Images, canvases and the like that no library component drew: the page made them itself,
+    // however the code spells it (<img>, createElement, a variable holding "img", new Image()...).
+    const raw = [...document.querySelectorAll("img,canvas,video,iframe,picture,object,embed")].filter((e) => !e.hasAttribute("data-slot")).map((e) => e.tagName.toLowerCase())
+    const images = [...document.images].map((i) => i.getAttribute("src") ?? "")
     const main = document.querySelector("main")
-    if (!main) return { height: document.body.scrollHeight, text: document.body.innerText, out: [], unknown: 0 }
+    if (!main) return { height: document.body.scrollHeight, text: document.body.innerText, images, out: [], unknown: 0, raw }
     const mr = main.getBoundingClientRect()
     const out = []
     for (const el of main.querySelectorAll("*")) {
@@ -118,10 +122,7 @@ try {
         out.push(`${el.tagName.toLowerCase()}[${el.getAttribute("data-slot") ?? ""}] 超出页面左右边界 ${Math.round(Math.max(mr.left - r.left, r.right - mr.right))}px「${t}」`)
       }
     }
-    return { height: Math.ceil(document.documentElement.scrollHeight), text: document.body.innerText, images: [...document.images].map((i) => i.getAttribute("src") ?? ""), out: out.slice(0, 10), unknown: document.querySelectorAll("[data-slot=unknown]").length,
-      // Images, canvases and the like that no library component drew: the page made them itself,
-      // however the code spells it (<img>, createElement, a variable holding "img", new Image()...).
-      raw: [...document.querySelectorAll("img,canvas,video,iframe,picture,object,embed")].filter((e) => !e.hasAttribute("data-slot")).map((e) => e.tagName.toLowerCase()) }
+    return { height: Math.ceil(document.documentElement.scrollHeight), text: document.body.innerText, images, out: out.slice(0, 10), unknown: document.querySelectorAll("[data-slot=unknown]").length, raw }
   })
   if (dom.unknown) add("组件库", `${dom.unknown} 个组件类型未知`)
   if (dom.raw.length) {
