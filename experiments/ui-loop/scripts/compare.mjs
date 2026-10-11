@@ -12,13 +12,11 @@
 import fs from "node:fs"
 import path from "node:path"
 import crypto from "node:crypto"
-import { spawnSync } from "node:child_process"
 import { systemRubric31Next, call, img } from "../../ui-judge/scripts/pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
-// variant (需求 judge only, for trying ways to show the pair): side = both versions in one image, A left
-// and B right; tasks = list what the reader does in each version before deciding; focus = check the
-// problems found before (the ones the candidate set out to fix) in each version, then anything else.
+// variant (需求 judge only, for trying a way of asking): focus = check the problems found before (the
+// ones the candidate set out to fix) in each version, then anything else.
 const dirOf = (a, b, kind, variant) => path.join(ROOT, "traces", "_compare", ...(kind === "function" ? [variant ? `function-${variant}` : "function"] : []), `${a}__${b}`)
 
 // rubric31 as calibrated, plus one question at the end: what the better page still gets wrong.
@@ -33,15 +31,10 @@ const FUNCTION = `你比较同一份报告的两版页面 A 和 B 哪版更方�
 
 只输出 JSON:{"better":"A 或 B 或 一样","reason":"一两句话","next":[{"where":"页面上的哪一节","task":"读者想做什么","why":"为什么不方便"}]}`
 export const SYSTEM_FUNCTION = FUNCTION
-export const systemFunction = (variant) => variant === "side"
-  ? FUNCTION.replace("和两版的截图(每版先是整页缩略图,再是从上到下的切块;两版开头完全相同的切块会略去)", "和两版并排的截图:每张图左半是 A 版、右半是 B 版;第 1 张是两版的整页缩略图,后面是从上到下、同一高度的切块(两版开头完全相同的切块会略去)")
-  : variant === "tasks"
-    ? FUNCTION.replace("1. 判断哪版更方便", "1. 先列出读者拿这页要做的几件主要事情,逐件写 A、B 两版各自怎么做、要翻找和对照多少。\n2. 再判断哪版更方便")
-      .replace("2. 列出更方便的那版", "3. 列出更方便的那版").replace('只输出 JSON:{"better"', '只输出 JSON:{"tasks":[{"task":"读者要做的事","A":"A 版怎么做","B":"B 版怎么做"}],"better"')
-    : variant === "focus"
-      ? FUNCTION.replace("1. 判断哪版更方便", "1. 先逐条看下面「上一轮找出的不方便」在 A、B 两版里各自解决没有。\n2. 再看清单以外,有没有一版比另一版更不方便的地方。\n3. 综合判断哪版更方便")
-        .replace("2. 列出更方便的那版", "4. 列出更方便的那版").replace('只输出 JSON:{"better"', '只输出 JSON:{"checks":[{"problem":"清单里的哪条","A":"解决 或 部分解决 或 没解决","B":"解决 或 部分解决 或 没解决"}],"worse":[{"version":"A 或 B","where":"哪一节","why":"比另一版更不方便在哪"}],"better"')
-      : FUNCTION
+export const systemFunction = (variant) => variant === "focus"
+  ? FUNCTION.replace("1. 判断哪版更方便", "1. 先逐条看下面「上一轮找出的不方便」在 A、B 两版里各自解决没有。\n2. 再看清单以外,有没有一版比另一版更不方便的地方。\n3. 综合判断哪版更方便")
+    .replace("2. 列出更方便的那版", "4. 列出更方便的那版").replace('只输出 JSON:{"better"', '只输出 JSON:{"checks":[{"problem":"清单里的哪条","A":"解决 或 部分解决 或 没解决","B":"解决 或 部分解决 或 没解决"}],"worse":[{"version":"A 或 B","where":"哪一节","why":"比另一版更不方便在哪"}],"better"')
+  : FUNCTION
 
 const PAIR = `下面是对同一对页面的两次比较各自列出的「更好那版还剩的问题」。把两次里说的是同一件事的配对,只输出两次都提到的,每条写成一句话。
 
@@ -61,16 +54,6 @@ const version = (ws, label, from) => {
   const t = tiles(ws).slice(from)
   return [{ type: "text", text: `${label} 版:第 1 张为整页缩略图,后 ${t.length} 张为${from ? `从第 ${from + 1} 张起的切块(前面的两版相同,略去)` : "整页切块"}。` },
     img(path.join(ws, "thumb.png")), ...t.map((x) => img(path.join(ws, x.file)))]
-}
-
-// Both versions in one image per band of the page (scripts/side.py), made once per page and order.
-function sideBySide(wx, wy, from, out) {
-  if (!fs.existsSync(path.join(out, "side-0.png"))) {
-    const r = spawnSync("python3", [path.join(ROOT, "scripts", "side.py"), wx, wy, String(from), out], { encoding: "utf8" })
-    if (r.status) throw new Error(`side.py: ${r.stderr.slice(0, 200)}`)
-  }
-  const files = fs.readdirSync(out).filter((f) => /^side-\d+\.png$/.test(f)).sort((x, y) => Number(x.match(/\d+/)) - Number(y.match(/\d+/)))
-  return [{ type: "text", text: `第 1 张为两版整页缩略图并排,后 ${files.length - 1} 张为${from ? `从第 ${from + 1} 段起` : "整页"}同一高度的切块并排;每张左半是 A 版、右半是 B 版。` }, ...files.map((f) => img(path.join(out, f)))]
 }
 
 export async function compare(a, b, cases, rounds = 3, kind = "aesthetic", { variant, next = true, focus } = {}) {
@@ -94,7 +77,7 @@ export async function compare(a, b, cases, rounds = 3, kind = "aesthetic", { var
       const [x, y] = order === "AB" ? [a, b] : [b, a]
       const wx = path.join(ROOT, "traces", x, c), wy = path.join(ROOT, "traces", y, c)
       const from = kind === "function" ? firstChange(wx, wy) : 0
-      const shots = variant === "side" ? sideBySide(wx, wy, from, path.join(dir, "img", `${c}__${order}`)) : [...version(wx, "A", from), ...version(wy, "B", from)]
+      const shots = [...version(wx, "A", from), ...version(wy, "B", from)]
       const content = [...(kind === "function" ? [{ type: "text", text: `<data.json>\n${fs.readFileSync(path.join(wx, "data.json"), "utf8")}\n</data.json>` }] : []),
         ...(focus ? [{ type: "text", text: `<上一轮找出的不方便>\n${focus.map((p) => `- ${p}`).join("\n")}\n</上一轮找出的不方便>` }] : []), ...shots]
       const label = `${name} ${c} 第 ${r} 轮 ${order}`

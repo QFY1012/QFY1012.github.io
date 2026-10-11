@@ -1,10 +1,10 @@
-// Does a way of showing the pair lower the 需求 judge's pull toward the version shown second?
+// Does a way of asking lower the 需求 judge's pull toward the version shown second?
 // Re-asks every comparison already in traces/_compare/function/ (same pages, rounds and orders)
 // with a variant of compare.mjs, then counts per variant how often both orders agree, and how
 // often both pick the second-shown (B) or the first-shown (A) version, whatever its content.
 //
-//   source judge.env && node scripts/bias-test.mjs --variant side|tasks|focus     run, then score
-//   node scripts/bias-test.mjs --score                                            score what is there
+//   source judge.env && node scripts/bias-test.mjs --variant focus     run, then score
+//   node scripts/bias-test.mjs --score                       score what is there
 //
 // focus needs the problems each candidate set out to fix: traces/_compare/function-focus/targets.json
 // ({"<a>__<b>": ["problem", ...]}); pairs without targets (the twin comparisons) are left out.
