@@ -18,9 +18,6 @@ import {
 } from "@/components/report"
 
 export default function Report() {
-  const mainKpi = data.kpis.find((k) => k.key === "issues")!
-  const subKpis = data.kpis.filter((k) => k.key !== "issues")
-
   const typeItems = data.byType.map((t) => ({
     label: t.type,
     value: t.issues,
@@ -72,91 +69,37 @@ export default function Report() {
     tritan: c["蓝色盲"],
   }))
 
-  const severityRank: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-  const sortedIssues = [...data.issues].sort(
-    (a, b) => severityRank[a.severity] - severityRank[b.severity] || a.id.localeCompare(b.id),
-  )
-
-  const affectChar: Record<string, string> = { 红色盲: "红", 绿色盲: "绿", 蓝色盲: "蓝" }
-
   const issueColumns = [
-    { key: "id", label: "编号", span: 1 },
-    { key: "severity", label: "严重度", span: 1, tone: ["高"] },
-    { key: "title", label: "问题", span: 2 },
-    { key: "suggestion", label: "建议", span: 2 },
-    { key: "type", label: "类型", span: 1 },
-    { key: "location", label: "位置", span: 1 },
-    { key: "affects", label: "影响(红/绿/蓝)", span: 1 },
+    { key: "title", label: "问题", span: 3 },
+    { key: "place", label: "位置 · 类型", span: 3 },
+    { key: "severity", label: "严重", span: 1, tone: ["高"] },
+    { key: "affects", label: "影响", span: 2 },
   ]
-  const issueRows = sortedIssues.map((i) => ({
-    id: i.id,
+  const issueRows = data.issues.map((i) => ({
+    title: `${i.id} · ${i.title}`,
+    place: `${i.location} · ${i.type}`,
     severity: i.severity,
-    title: i.title,
-    suggestion: i.suggestion,
-    type: i.type,
-    location: i.location,
-    affects: i.affects.map((a) => affectChar[a] ?? a).join("、"),
+    affects: i.affects.join("、") || "—",
   }))
 
-  const bestOverlap = (where: string, text: string) => {
-    let best = { len: 0, pos: where.length }
-    for (let i = 0; i < where.length; i++) {
-      for (let j = where.length; j > i; j--) {
-        if (text.includes(where.slice(i, j))) {
-          const len = j - i
-          if (len > best.len || (len === best.len && i < best.pos)) best = { len, pos: i }
-          break
-        }
-      }
-    }
-    return best
-  }
-
-  const issueIdFor = (where: string) => {
-    let id = "—"
-    let best = { len: 1, pos: where.length }
-    sortedIssues.forEach((i) => {
-      ;[i.location, i.title, i.suggestion].forEach((text) => {
-        const o = bestOverlap(where, text)
-        if (o.len > best.len || (o.len === best.len && o.len > 1 && o.pos < best.pos)) {
-          best = o
-          id = i.id
-        }
-      })
-    })
-    return id
-  }
-
   const fixColumns = [
-    { key: "issue", label: "问题编号", span: 1 },
     { key: "where", label: "位置", span: 2 },
-    { key: "from", label: "原值", span: 1 },
-    { key: "to", label: "新值", span: 1 },
-    { key: "before", label: "改前对比度", align: "right", span: 1 },
-    { key: "after", label: "改后对比度", align: "right", span: 1 },
-    { key: "bg", label: "背景", span: 2 },
+    { key: "from", label: "原色", span: 2 },
+    { key: "to", label: "改为", span: 2 },
+    { key: "bg", label: "背景", span: 1 },
+    { key: "before", label: "改前", align: "right", span: 1 },
+    { key: "after", label: "改后", align: "right", span: 1 },
   ]
   const fixRows = data.fixes.map((f) => ({
-    issue: issueIdFor(f.where),
     where: f.where,
     from: f.from,
     to: f.to,
+    bg: f.bg,
     before: f.before,
     after: f.after,
-    bg: f.bg,
   }))
 
-  const fixMetaFor = (id: string) => {
-    const matched = fixRows.filter((f) => f.issue === id)
-    if (matched.length === 0) return undefined
-    return matched.map((f) => `${f.from} → ${f.to},${f.before} → ${f.after}`).join(";")
-  }
-
-  const steps = sortedIssues.map((i) => ({
-    title: `${i.id} ${i.title}`,
-    description: i.suggestion,
-    meta: fixMetaFor(i.id),
-  }))
+  const steps = data.issues.map((i) => ({ title: i.title, description: i.suggestion }))
 
   const facts = [
     { label: "分析对象", value: data.target },
@@ -182,10 +125,16 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="对比度与色觉混淆统计">
-        <Grid cols={9} fields={false} className="items-baseline">
-          <Stat span={3} size="lg" captionBelow value={mainKpi.value} unit={mainKpi.unit} label={mainKpi.label} />
-          {subKpis.map((k) => (
-            <Stat key={k.key} span={2} captionBelow value={k.value} unit={k.unit} label={k.label} />
+        <Grid cols={data.kpis.length} fields={false} className="items-baseline">
+          {data.kpis.map((k) => (
+            <Stat
+              key={k.key}
+              size={k.key === "issues" ? "lg" : undefined}
+              captionBelow
+              value={k.value}
+              unit={k.unit}
+              label={k.label}
+            />
           ))}
         </Grid>
       </Section>
@@ -213,15 +162,17 @@ export default function Report() {
         <DataTable columns={contrastColumns} rows={contrastRows} />
       </Section>
 
-      <Section title="明细" description="逐条列出问题、严重度、建议、类型、位置与影响" className="gap-12">
+      <Section title="问题" description="逐条列出问题、位置、类型与影响">
         <DataTable columns={issueColumns} rows={issueRows} />
-        <Group title="修复动作">
-          <DataTable columns={fixColumns} rows={fixRows} />
-        </Group>
       </Section>
 
-      <Section title="下一步" description="按问题逐条给出处理建议">
-        <List items={steps} />
+      <Section title="下一步" description="颜色替换与逐条处理建议" className="gap-12">
+        <Group title="颜色调整">
+          <DataTable columns={fixColumns} rows={fixRows} />
+        </Group>
+        <Group title="按问题处理">
+          <List columns={3} numbered items={steps} />
+        </Group>
       </Section>
 
       <Section title="背景信息" description="分析口径与判定标准">

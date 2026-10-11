@@ -41,82 +41,18 @@ const confusionRows = data.confusions.map((c) => ({
   affected: c.affected.length ? c.affected.join("、") : "—",
 }))
 
-// 影响列只写色觉类型的单字。
-const affectShort: Record<string, string> = { 红色盲: "红", 绿色盲: "绿", 蓝色盲: "蓝" }
-
-// 问题清单按严重度「高 → 中 → 低」排,同档按编号排。
-const severityOrder: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-
-const issueRows = [...data.issues]
-  .sort(
-    (a, b) =>
-      (severityOrder[a.severity] ?? 9) - (severityOrder[b.severity] ?? 9) ||
-      a.id.localeCompare(b.id),
-  )
-  .map((i) => ({
-    id: i.id,
-    severity: i.severity,
-    title: i.title,
-    suggestion: i.suggestion,
-    type: i.type,
-    location: i.location,
-    affects: i.affects.map((a) => affectShort[a] ?? a).join("、"),
-  }))
-
-// 修复动作与问题清单同号:where 与某条问题的位置、问题、建议含相同文字(≥2 字)即对上。
-const commonText = (a: string, b: string) => {
-  let best = 0
-  for (let i = 0; i < a.length; i++) {
-    for (let j = 0; j < b.length; j++) {
-      let k = 0
-      while (a[i + k] && a[i + k] === b[j + k]) k++
-      if (k > best) best = k
-    }
-  }
-  return best
-}
-
-const matchIssueId = (where: string) => {
-  for (const field of ["location", "title", "suggestion"] as const) {
-    let bestId = "—"
-    let bestLen = 1
-    for (const r of issueRows) {
-      const len = commonText(where, r[field])
-      if (len > bestLen) {
-        bestLen = len
-        bestId = r.id
-      }
-    }
-    if (bestId !== "—") return bestId
-  }
-  return "—"
-}
-
-const fixRows = data.fixes.map((f) => ({
-  id: matchIssueId(f.where),
-  where: f.where,
-  from: f.from,
-  to: f.to,
-  before: f.before,
-  after: f.after,
-  bg: f.bg,
+const issueRows = data.issues.map((i) => ({
+  title: i.title,
+  type: i.type,
+  location: i.location,
+  severity: i.severity,
+  affects: i.affects.length ? i.affects.join("、") : "—",
+  suggestion: i.suggestion,
 }))
 
-// 每条问题在修复动作表里匹配到的改前改后数值。
-const fixMeta = new Map<string, string[]>()
-for (const f of data.fixes) {
-  const id = matchIssueId(f.where)
-  if (id === "—") continue
-  const list = fixMeta.get(id) ?? []
-  list.push(`${f.from} → ${f.to},${f.before} → ${f.after}`)
-  fixMeta.set(id, list)
-}
-
-// 「下一步」与问题清单逐条同号,不截断、不筛选。
-const nextItems = issueRows.map((r) => ({
-  title: `${r.id} ${r.title}`,
-  description: r.suggestion,
-  meta: fixMeta.get(r.id)?.join(";"),
+const fixItems = data.fixes.map((f) => ({
+  title: f.where,
+  description: `${f.from} → ${f.to} · 对比度 ${f.before} → ${f.after}`,
 }))
 
 export default function Report() {
@@ -127,29 +63,17 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="正文对比度要求 4.5:1,色差 ΔE 小于 12 视为难以区分">
-        <Grid cols={9} fields={false} className="items-baseline">
-          <Stat
-            span={3}
-            value={kpi("issues").value}
-            unit={kpi("issues").unit}
-            size="lg"
-            captionBelow
-            label={kpi("issues").label}
-          />
-          <Stat
-            span={3}
-            value={kpi("fail").value}
-            unit={kpi("fail").unit}
-            captionBelow
-            label={kpi("fail").label}
-          />
-          <Stat
-            span={3}
-            value={kpi("confuse").value}
-            unit={kpi("confuse").unit}
-            captionBelow
-            label={kpi("confuse").label}
-          />
+        <Grid cols={data.kpis.length} fields={false} className="items-baseline">
+          {data.kpis.map((k) => (
+            <Stat
+              key={k.key}
+              value={k.value}
+              unit={k.unit}
+              size={k.key === "issues" ? "lg" : undefined}
+              captionBelow
+              label={k.label}
+            />
+          ))}
         </Grid>
       </Section>
 
@@ -227,42 +151,23 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="明细" description="问题清单与修复动作,编号一一对应" className="gap-12">
-        <Group title="问题清单">
-          <DataTable
-            columns={[
-              { key: "id", label: "编号", span: 1 },
-              { key: "severity", label: "严重度", span: 1, tone: ["高"] },
-              { key: "title", label: "问题", span: 2 },
-              { key: "suggestion", label: "建议", span: 2 },
-              { key: "type", label: "类型", span: 1 },
-              { key: "location", label: "位置", span: 1 },
-              { key: "affects", label: "影响(红/绿/蓝)", span: 1 },
-            ]}
-            rows={issueRows}
-            caption="影响 = 受该问题影响的色觉类型;严重程度分高、中、低。"
-          />
-        </Group>
-
-        <Group title="修复动作">
-          <DataTable
-            columns={[
-              { key: "id", label: "问题编号", span: 1 },
-              { key: "where", label: "位置", span: 2 },
-              { key: "from", label: "原值", span: 1 },
-              { key: "to", label: "新值", span: 1 },
-              { key: "before", label: "改前对比度", align: "right", span: 1 },
-              { key: "after", label: "改后对比度", align: "right", span: 1 },
-              { key: "bg", label: "背景", span: 2 },
-            ]}
-            rows={fixRows}
-            caption="白底上的替换色值与替换前后的对比度。"
-          />
-        </Group>
+      <Section title="明细" description="问题清单:类型、位置、影响与建议">
+        <DataTable
+          columns={[
+            { key: "title", label: "问题", span: 2 },
+            { key: "type", label: "类型", span: 1 },
+            { key: "location", label: "位置", span: 1 },
+            { key: "severity", label: "严重", span: 1, tone: ["高"] },
+            { key: "affects", label: "影响", span: 2 },
+            { key: "suggestion", label: "建议", span: 2 },
+          ]}
+          rows={issueRows}
+          caption="影响 = 受该问题影响的色觉类型;严重程度分高、中、低。"
+        />
       </Section>
 
-      <Section title="下一步" description="按问题清单的编号逐条修复,高严重度优先">
-        <List items={nextItems} />
+      <Section title="下一步" description="建议替换的色值与替换后的对比度">
+        <List numbered columns={3} items={fixItems} />
       </Section>
 
       <Section title="背景信息" description="检查范围与口径">

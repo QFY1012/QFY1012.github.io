@@ -70,20 +70,20 @@
  "judged": {
   "aesthetic": {
    "f1": [
-    "flow-g0",
-    "flow-c1"
+    "flow-c1",
+    "flow-c2"
    ],
    "f2": [
-    "flow-g0",
-    "flow-c1"
+    "flow-c1",
+    "flow-c2"
    ],
    "f3": [
-    "flow-g0",
-    "flow-c1"
+    "flow-c1",
+    "flow-c2"
    ],
    "f4": [
-    "flow-g0",
-    "flow-c1"
+    "flow-c1",
+    "flow-c2"
    ]
   }
  },

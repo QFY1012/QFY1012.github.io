@@ -84,91 +84,12 @@ const byTypeItems = data.byType.map((t) => ({
   display: String(t.issues),
 }))
 
-// 问题清单:一行一条,按严重度 高→中→低、同档按编号排。
-const severityRank: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-const sortedIssues = [...data.issues].sort(
-  (a, b) =>
-    (severityRank[a.severity] ?? 3) - (severityRank[b.severity] ?? 3) ||
-    a.id.localeCompare(b.id),
-)
-// 色觉类型取单字:红色盲写「红」、绿色盲写「绿」、蓝色盲写「蓝」。
-const affectChar: Record<string, string> = {
-  红色盲: "红",
-  绿色盲: "绿",
-  蓝色盲: "蓝",
-}
-const issueColumns = [
-  { key: "id", label: "编号", span: 1 },
-  { key: "severity", label: "严重度", span: 1, tone: ["高"] },
-  { key: "title", label: "问题", span: 2 },
-  { key: "suggestion", label: "建议", span: 2 },
-  { key: "type", label: "类型", span: 1 },
-  { key: "location", label: "位置", span: 1 },
-  { key: "affects", label: "影响(红/绿/蓝)", span: 1 },
-]
-const issueRows = sortedIssues.map((it) => ({
-  id: it.id,
-  severity: it.severity,
+// 问题清单:标题、类型与位置、影响范围、建议,严重度作标记。
+const issueItems = data.issues.map((it) => ({
   title: it.title,
-  suggestion: it.suggestion,
-  type: it.type,
-  location: it.location,
-  affects: it.affects.map((a) => affectChar[a] ?? a).join("、"),
+  description: `${it.type} · ${it.location} · 影响:${it.affects.length ? it.affects.join("、") : "—"} · 建议:${it.suggestion}`,
+  meta: it.severity,
 }))
-
-// 修复动作:问题编号取该行 where 与某条问题的 location、title、suggestion
-// 任一处含相同文字时那条的 id,匹配不到写「—」。
-// 数据里没有 fixes 时这张表跳过。
-type FixRow = {
-  where: string
-  from: string
-  to: string
-  before: number | string
-  after: number | string
-  bg: string
-}
-const fixes = ((data as { fixes?: FixRow[] }).fixes ?? []) as FixRow[]
-const fixRows = fixes.map((f) => {
-  const matched = sortedIssues.find(
-    (it) =>
-      f.where.includes(it.location) ||
-      f.where.includes(it.title) ||
-      f.where.includes(it.suggestion),
-  )
-  return {
-    id: matched ? matched.id : "—",
-    where: f.where,
-    from: f.from,
-    to: f.to,
-    before: String(f.before),
-    after: String(f.after),
-    bg: f.bg,
-  }
-})
-const fixColumns = [
-  { key: "id", label: "问题编号", span: 1 },
-  { key: "where", label: "位置", span: 2 },
-  { key: "from", label: "原值", span: 1 },
-  { key: "to", label: "新值", span: 1 },
-  { key: "before", label: "改前对比度", span: 1, align: "right" as const },
-  { key: "after", label: "改后对比度", span: 1, align: "right" as const },
-  { key: "bg", label: "背景", span: 2 },
-]
-
-// 下一步:按问题清单同一顺序,一条不落。
-const nextStepItems = sortedIssues.map((it) => {
-  const fix = fixes.find(
-    (f) =>
-      f.where.includes(it.location) ||
-      f.where.includes(it.title) ||
-      f.where.includes(it.suggestion),
-  )
-  return {
-    title: `${it.id} ${it.title}`,
-    description: it.suggestion,
-    meta: fix ? `${fix.from} → ${fix.to},${fix.before} → ${fix.after}` : undefined,
-  }
-})
 
 export default function Report() {
   return (
@@ -202,14 +123,13 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="关键指标" description="本次检查的四个数字">
+      <Section title="核心指标" description="本次检查的四个数字">
         <Group>
-          <Grid cols={4} fields={false}>
+          <Grid cols={data.kpis.length} fields={false} className="items-baseline">
             {data.kpis.map((k) => (
               <Stat
                 key={k.key}
-                span={1}
-                size="lg"
+                size={k.key === "issues" ? "lg" : undefined}
                 captionBelow
                 label={k.label}
                 value={k.value}
@@ -253,23 +173,9 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="明细" description="问题清单,按严重度 高→中→低">
-        <Group title="问题清单">
-          <DataTable columns={issueColumns} rows={issueRows} />
-        </Group>
-        {fixRows.length > 0 && (
-          <Group title="修复动作">
-            <DataTable columns={fixColumns} rows={fixRows} />
-          </Group>
-        )}
-      </Section>
-
-      <Section title="下一步" description="按问题清单顺序逐条处理">
+      <Section title="问题清单" description="按严重度">
         <Group>
-          <List
-            items={nextStepItems}
-            {...(nextStepItems.length > 3 ? {} : { columns: 3 })}
-          />
+          <List ordered items={issueItems} />
         </Group>
       </Section>
     </Page>

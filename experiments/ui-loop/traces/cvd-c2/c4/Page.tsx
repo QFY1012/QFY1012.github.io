@@ -33,45 +33,22 @@ const confusionRows = data.confusions.map((row) => ({
   affected: row.affected.join("、"),
 }))
 
-const severityOrder: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-
-const sortedIssues = [...data.issues].sort((a, b) => {
-  const diff = severityOrder[a.severity] - severityOrder[b.severity]
-  return diff !== 0 ? diff : a.id.localeCompare(b.id)
-})
-
-const issueRows = sortedIssues.map((issue) => ({
+const issueRows = data.issues.map((issue) => ({
   id: issue.id,
-  severity: issue.severity,
   title: issue.title,
-  suggestion: issue.suggestion,
   type: issue.type,
   location: issue.location,
-  affects: issue.affects.map((type) => type[0]).join("、"),
+  severity: issue.severity,
 }))
 
-const matchIssueId = (where: string) => {
-  const hit = sortedIssues.find((issue) =>
-    [issue.location, issue.title, issue.suggestion].some(
-      (field) => field.includes(where) || where.includes(field)
-    )
-  )
-  return hit ? hit.id : "—"
-}
-
 const fixRows = data.fixes.map((fix) => ({
-  issue: matchIssueId(fix.where),
   where: fix.where,
   from: fix.from,
   to: fix.to,
+  bg: fix.bg,
   before: fix.before.toFixed(2),
   after: fix.after.toFixed(2),
-  bg: fix.bg,
 }))
-
-const fixByIssue = new Map(
-  fixRows.filter((row) => row.issue !== "—").map((row) => [row.issue, row])
-)
 
 const paletteRows = data.palette.map((token) => ({
   name: token.name,
@@ -101,33 +78,26 @@ export default function Report() {
         description={`14 个颜色 token,${data.kpis[0].value} 组文字与背景组合`}
       >
         <Group>
-          <Grid cols={9} fields={false} className="items-baseline">
-            <Stat
-              span={3}
-              size="lg"
-              value={13}
-              unit="组"
-              label="对比度不达标"
-              captionBelow
-              note="WCAG 2.2 AA 正文阈值 4.5:1"
-            />
-          </Grid>
-          <Grid cols={9} fields={false} className="items-baseline">
-            <Stat
-              span={3}
-              value={18}
-              unit="组"
-              label="检查的文字与背景组合"
-              captionBelow
-            />
-            <Stat
-              span={3}
-              value={2}
-              unit="对"
-              label="色盲用户难以区分的颜色"
-              captionBelow
-            />
-            <Stat span={3} value={5} unit="个" label="问题总数" captionBelow />
+          <Grid
+            cols={data.kpis.length}
+            fields={false}
+            className="items-baseline"
+          >
+            {data.kpis.map((kpi) => (
+              <Stat
+                key={kpi.key}
+                size={kpi.key === "issues" ? "lg" : undefined}
+                value={kpi.value}
+                unit={kpi.unit}
+                label={kpi.label}
+                captionBelow
+                note={
+                  kpi.key === "fail"
+                    ? "WCAG 2.2 AA 正文阈值 4.5:1"
+                    : undefined
+                }
+              />
+            ))}
           </Grid>
         </Group>
       </Section>
@@ -212,56 +182,59 @@ export default function Report() {
 
       <Section
         title="问题清单"
-        description={`${data.issues.length} 个问题,按严重程度排列;修复动作与问题编号对应`}
+        description={`${data.issues.length} 个问题,按编号排列`}
       >
         <Group>
           <DataTable
             columns={[
               { key: "id", label: "编号", span: 1 },
-              { key: "severity", label: "严重度", span: 1, tone: ["高"] },
-              { key: "title", label: "问题", span: 2 },
-              { key: "suggestion", label: "建议", span: 2 },
-              { key: "type", label: "类型", span: 1 },
-              { key: "location", label: "位置", span: 1 },
-              { key: "affects", label: "影响(红/绿/蓝)", span: 1 },
+              { key: "title", label: "问题", span: 3 },
+              { key: "type", label: "类型", span: 2 },
+              { key: "location", label: "位置", span: 2 },
+              { key: "severity", label: "严重", span: 1, tone: ["高"] },
             ]}
             rows={issueRows}
             caption="严重程度为「高」的问题标红"
           />
-          {fixRows.length > 0 ? (
-            <DataTable
-              columns={[
-                { key: "issue", label: "问题编号", span: 1 },
-                { key: "where", label: "位置", span: 2 },
-                { key: "from", label: "原值", span: 1 },
-                { key: "to", label: "新值", span: 1 },
-                { key: "before", label: "改前对比度", span: 1, align: "right" },
-                { key: "after", label: "改后对比度", span: 1, align: "right" },
-                { key: "bg", label: "背景", span: 2 },
-              ]}
-              rows={fixRows}
-              caption="对比度为调整前后的文字与背景对比度"
-            />
-          ) : null}
+        </Group>
+      </Section>
+
+      <Section
+        title="修复建议"
+        description="调整后的色值与对比度变化"
+      >
+        <Group>
+          <DataTable
+            columns={[
+              { key: "where", label: "位置", span: 2 },
+              { key: "from", label: "原色值", span: 2 },
+              { key: "to", label: "建议色值", span: 2 },
+              { key: "bg", label: "背景", span: 1 },
+              { key: "before", label: "调整前", span: 1, align: "right" },
+              { key: "after", label: "调整后", span: 1, align: "right" },
+            ]}
+            rows={fixRows}
+            caption="对比度为调整前后的文字与背景对比度"
+          />
         </Group>
       </Section>
 
       <Section
         title="下一步"
-        description="按严重程度排列,编号与问题清单一一对应"
+        description="按问题给出的整改建议"
       >
         <Group>
           <List
-            items={sortedIssues.map((issue) => {
-              const fix = fixByIssue.get(issue.id)
-              return {
-                title: `${issue.id} ${issue.title}`,
-                description: issue.suggestion,
-                meta: fix
-                  ? `${fix.from} → ${fix.to},${fix.before} → ${fix.after}`
-                  : undefined,
-              }
-            })}
+            numbered
+            columns={3}
+            items={data.issues.map((issue) => ({
+              title: issue.title,
+              description: `${
+                issue.affects.length > 0
+                  ? `影响 ${issue.affects.join("、")} · `
+                  : ""
+              }${issue.suggestion}`,
+            }))}
           />
         </Group>
       </Section>

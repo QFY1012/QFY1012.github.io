@@ -7,7 +7,6 @@ import {
   Text,
   Stat,
   DataTable,
-  List,
   KV,
   FigureStrip,
   Figure,
@@ -18,17 +17,6 @@ import {
 const totalIssues = data.issues.length
 
 const kpi = (key: string) => data.kpis.find((k) => k.key === key)!
-
-const severityRank: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-
-const sortedIssues = [...data.issues].sort(
-  (a, b) =>
-    severityRank[a.severity] - severityRank[b.severity] || a.id.localeCompare(b.id),
-)
-
-const affectsChar: Record<string, string> = { 红色盲: "红", 绿色盲: "绿", 蓝色盲: "蓝" }
-
-const nextSteps = sortedIssues
 
 export default function Report() {
   const fail = kpi("fail")
@@ -45,20 +33,18 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="本次检查的范围与结果">
-        <Grid cols={9} fields={false} className="items-baseline">
+        <Grid cols={data.kpis.length} fields={false} className="items-baseline">
+          <Stat captionBelow value={pairs.value} unit={pairs.unit} label={pairs.label} />
           <Stat
-            span={3}
             captionBelow
-            size="lg"
             value={fail.value}
             unit={fail.unit}
             label={fail.label}
             note="要求 ≥ 4.5:1"
             direction="down"
           />
-          <Stat span={3} captionBelow value={pairs.value} unit={pairs.unit} label={pairs.label} />
-          <Stat span={3} captionBelow value={confuse.value} unit={confuse.unit} label={confuse.label} />
-          <Stat span={3} captionBelow value={issues.value} unit={issues.unit} label={issues.label} />
+          <Stat captionBelow value={confuse.value} unit={confuse.unit} label={confuse.label} />
+          <Stat captionBelow size="lg" value={issues.value} unit={issues.unit} label={issues.label} />
         </Grid>
       </Section>
 
@@ -125,34 +111,21 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="明细" description={`${totalIssues} 个问题的位置、严重度与建议`}>
+      <Section title="问题明细" description={`${totalIssues} 个问题的位置、严重度与建议`}>
         <DataTable
           columns={[
-            { key: "id", label: "编号", span: 1 },
-            { key: "severity", label: "严重度", span: 1, tone: ["高"] },
             { key: "title", label: "问题", span: 2 },
+            { key: "meta", label: "类型 · 位置", span: 2 },
+            { key: "severity", label: "严重度", span: 1, tone: ["高"] },
+            { key: "affects", label: "影响", span: 2 },
             { key: "suggestion", label: "建议", span: 2 },
-            { key: "type", label: "类型", span: 1 },
-            { key: "location", label: "位置", span: 1 },
-            { key: "affects", label: "影响(红/绿/蓝)", span: 1 },
           ]}
-          rows={sortedIssues.map((i) => ({
-            id: i.id,
+          rows={data.issues.map((i) => ({
+            title: `${i.id} · ${i.title}`,
+            meta: `${i.type} · ${i.location}`,
             severity: i.severity,
-            title: i.title,
+            affects: i.affects.length > 0 ? i.affects.join("、") : "—",
             suggestion: i.suggestion,
-            type: i.type,
-            location: i.location,
-            affects: i.affects.map((a) => affectsChar[a] ?? a).join("、"),
-          }))}
-        />
-      </Section>
-
-      <Section title="下一步" description="按严重度排序的整改项,编号对应明细">
-        <List
-          items={nextSteps.map((i) => ({
-            title: `${i.id} ${i.title}`,
-            description: i.suggestion,
           }))}
         />
       </Section>

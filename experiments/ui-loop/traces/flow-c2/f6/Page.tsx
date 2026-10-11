@@ -20,43 +20,9 @@ export default function Report() {
   const { kpis, products, chains, stages, patterns, issues, suggestions } = data as any
 
   const stepText = (step: any) =>
-    [step.content, step.action, `输入 ${step.inputs} 项`, step.note].filter(Boolean).join(" · ")
-
-  const stepRows = (steps: any[]) =>
-    steps.reduce((rows: any[][], step: any, i: number) => {
-      if (i % 3 === 0) rows.push([])
-      rows[rows.length - 1].push(step)
-      return rows
-    }, [])
-
-  const chainOf = (product: string) => chains.find((c: any) => c.product === product)
-
-  const screenOf = (product: string, stepNo: number) =>
-    chainOf(product)?.steps.find((s: any) => s.no === stepNo)?.screen
-
-  const issueWhere = (it: any) => {
-    if (it.product === "全部") {
-      const screens = chains
-        .map((c: any) => c.steps.find((s: any) => s.no === it.step)?.screen)
-        .filter(Boolean)
-        .filter((s: string, i: number, arr: string[]) => arr.indexOf(s) === i)
-      return `全部产品 · 第 ${it.step} 步${screens.length ? ` · ${screens.join("、")}` : ""}`
-    }
-    const screen = screenOf(it.product, it.step)
-    return `${it.product} · 第 ${it.step} 步${screen ? ` · ${screen}` : ""}`
-  }
-
-  const basisText = (b: string) => {
-    const hit = issues.find((i: any) => i.id === b)
-    if (hit)
-      return `${hit.id} · ${hit.product} 第 ${hit.step} 步 · ${screenOf(hit.product, hit.step)}`
-    const m = b.match(/^(.+?)第\s*(\d+)\s*步$/)
-    if (m) {
-      const screen = screenOf(m[1], Number(m[2]))
-      return screen ? `${b} · ${screen}` : b
-    }
-    return b
-  }
+    [step.content, step.action, step.inputs > 0 ? `输入 ${step.inputs} 项` : null]
+      .filter(Boolean)
+      .join(" · ")
 
   return (
     <Page
@@ -68,11 +34,11 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="对比范围与主要发现">
-        <Grid cols={9} fields={false} className="items-baseline">
+        <Grid cols={12} fields={false} className="items-baseline">
           {kpis.map((k: any) => (
             <Stat
               key={k.key}
-              span={3}
+              span={12 / kpis.length}
               value={k.value}
               unit={k.unit}
               label={k.label}
@@ -129,54 +95,61 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="链路明细" description="每款 App 从首页到支付的步骤与截图" className="gap-12">
+      <Section title="交互链路" description="每款 App 从首页到支付的步骤与截图" className="gap-12">
         {chains.map((chain: any) => (
           <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
-            {stepRows(chain.steps).map((row: any[], rowIndex: number) => (
-              <FigureStrip key={rowIndex}>
-                {row.map((step: any) => {
-                  const ids = issues
-                    .filter(
-                      (it: any) =>
-                        (it.product === chain.product || it.product === "全部") &&
-                        it.step === step.no
-                    )
-                    .map((it: any) => it.id)
-                  const label = `第 ${step.no} 步 · ${step.screen}${
-                    ids.length ? ` · ${ids.join("、")}` : ""
-                  }`
-                  return (
-                    <Figure key={step.no}>
-                      <FigureImage
-                        src={step.image}
-                        alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
-                      />
-                      <FigureLabel>{label}</FigureLabel>
-                      <FigureText>{stepText(step)}</FigureText>
-                    </Figure>
-                  )
-                })}
-              </FigureStrip>
-            ))}
+            <FigureStrip>
+              {chain.steps.map((step: any) => (
+                <Figure key={step.no}>
+                  <FigureImage
+                    src={step.image}
+                    alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
+                  />
+                  <FigureLabel>第 {step.no} 步 · {step.screen}</FigureLabel>
+                  <FigureText>{stepText(step)}</FigureText>
+                </Figure>
+              ))}
+            </FigureStrip>
           </Group>
         ))}
+        <Group title="步骤备注">
+          <DataTable
+            columns={[
+              { key: "product", label: "产品", span: 1 },
+              { key: "step", label: "步骤", span: 2 },
+              { key: "note", label: "备注", span: 6 },
+            ]}
+            rows={chains.flatMap((chain: any) =>
+              chain.steps
+                .filter((step: any) => step.note)
+                .map((step: any) => ({
+                  product: chain.product,
+                  step: `第 ${step.no} 步 · ${step.screen}`,
+                  note: step.note,
+                }))
+            )}
+          />
+        </Group>
       </Section>
 
-      <Section title="问题清单" description="7 个问题及各自的定位">
+      <Section title="问题明细" description="按严重度排列的 7 个问题">
         <DataTable
           columns={[
             { key: "id", label: "编号", span: 1 },
-            { key: "where", label: "位置", span: 3 },
+            { key: "product", label: "产品", span: 1 },
+            { key: "step", label: "步骤", span: 1 },
             { key: "title", label: "问题", span: 3 },
-            { key: "severity", label: "严重度", span: 2, tone: ["高"] },
+            { key: "severity", label: "严重度", span: 1, tone: ["高"] },
+            { key: "evidence", label: "依据", span: 2 },
           ]}
           rows={issues.map((i: any) => ({
             id: i.id,
-            where: issueWhere(i),
+            product: i.product,
+            step: `第 ${i.step} 步`,
             title: i.title,
             severity: i.severity,
+            evidence: i.evidence,
           }))}
-          caption={`依据:${issues.map((i: any) => `${i.id} ${i.evidence}`).join(";")}`}
         />
       </Section>
 
@@ -186,9 +159,7 @@ export default function Report() {
           columns={3}
           items={suggestions.map((s: any) => ({
             title: s.title,
-            description: `${s.detail ? `${s.detail} ` : ""}依据:${s.basis
-              .map(basisText)
-              .join(";")}`,
+            description: `${s.id} · 依据 ${s.basis.join("、")}`,
           }))}
         />
       </Section>

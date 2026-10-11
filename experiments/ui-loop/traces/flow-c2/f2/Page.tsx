@@ -16,14 +16,6 @@ import {
   FigureText,
 } from "@/components/report"
 
-function chunk<T>(items: T[], size: number): T[][] {
-  const rows: T[][] = []
-  for (let i = 0; i < items.length; i += size) {
-    rows.push(items.slice(i, i + size))
-  }
-  return rows
-}
-
 export default function Report() {
   const productRows = data.chains.map((chain) => ({
     name: chain.product,
@@ -32,56 +24,24 @@ export default function Report() {
     verdict: chain.verdict,
   }))
 
-  const issuesForStep = (product: string, no: number) =>
-    data.issues
-      .filter(
-        (issue) =>
-          (issue.product === product || issue.product === "全部") && issue.step === no,
-      )
-      .map((issue) => issue.id)
-
-  const screenOf = (product: string, no: number) =>
-    data.chains
-      .find((chain) => chain.product === product)
-      ?.steps.find((step) => step.no === no)?.screen
-
-  const issueWhere = (product: string, step: number) => {
-    if (product === "全部") {
-      const screens = Array.from(
-        new Set(
-          data.chains
-            .map((chain) => chain.steps.find((s) => s.no === step)?.screen)
-            .filter((screen): screen is string => Boolean(screen)),
-        ),
-      )
-      return `全部产品 · 第 ${step} 步${screens.length ? ` · ${screens.join("、")}` : ""}`
-    }
-    const screen = screenOf(product, step)
-    return `${product} · 第 ${step} 步${screen ? ` · ${screen}` : ""}`
-  }
-
   const issueRows = data.issues.map((issue) => ({
     id: issue.id,
-    where: issueWhere(issue.product, issue.step),
-    title: `${issue.title} · ${issue.evidence}`,
+    product: issue.product,
+    step: issue.step,
+    title: issue.title,
     severity: issue.severity,
+    evidence: issue.evidence,
   }))
 
-  const formatBasis = (basis: string) => {
-    const issue = data.issues.find((item) => item.id === basis)
-    if (issue) {
-      const screen = screenOf(issue.product, issue.step)
-      return `${issue.id} · ${issue.product} 第 ${issue.step} 步${screen ? ` · ${screen}` : ""}`
-    }
-    const matched = basis.match(/^(.+?)第\s*(\d+)\s*步$/)
-    if (matched) {
-      const product = matched[1].trim()
-      const no = Number(matched[2])
-      const screen = screenOf(product, no)
-      return `${product}第 ${no} 步${screen ? ` · ${screen}` : ""}`
-    }
-    return basis
-  }
+  const noteRows = data.chains.flatMap((chain) =>
+    chain.steps
+      .filter((step) => step.note)
+      .map((step) => ({
+        product: chain.product,
+        step: step.no,
+        note: step.note,
+      })),
+  )
 
   return (
     <Page title={data.title} meta={["快送 11.2 · 小橙 8.9", "2026 年 9 月"]}>
@@ -90,7 +50,7 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="本次挖掘的样本与结果">
-        <Grid cols={9} fields={false} className="items-baseline">
+        <Grid cols={12} fields={false} className="items-baseline">
           {data.kpis.map((kpi) => (
             <Stat
               key={kpi.key}
@@ -117,43 +77,54 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="链路明细" description="从购物车到支付成功的逐步截图">
+      <Section
+        title="链路明细"
+        description="从购物车到支付成功的逐步截图"
+        className="gap-12"
+      >
         {data.chains.map((chain) => (
           <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
-            {chunk(chain.steps, 3).map((row, rowIndex) => (
-              <FigureStrip key={rowIndex}>
-                {row.map((step) => {
-                  const issueIds = issuesForStep(chain.product, step.no)
-                  return (
-                    <Figure key={step.no}>
-                      <FigureImage
-                        src={step.image}
-                        alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
-                      />
-                      <FigureLabel>
-                        第 {step.no} 步 · {step.screen}
-                        {issueIds.length > 0 ? ` · ${issueIds.join("、")}` : ""}
-                      </FigureLabel>
-                      <FigureText>
-                        {step.content} · {step.action} · 输入 {step.inputs} 项
-                      </FigureText>
-                      {step.note ? <FigureLabel>{step.note}</FigureLabel> : null}
-                    </Figure>
-                  )
-                })}
-              </FigureStrip>
-            ))}
+            <FigureStrip>
+              {chain.steps.map((step) => (
+                <Figure key={step.no}>
+                  <FigureImage
+                    src={step.image}
+                    alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
+                  />
+                  <FigureLabel>
+                    第 {step.no} 步 · {step.screen}
+                  </FigureLabel>
+                  <FigureText>
+                    {step.inputs > 0
+                      ? `${step.content} · ${step.action} · 输入 ${step.inputs} 项`
+                      : `${step.content} · ${step.action}`}
+                  </FigureText>
+                </Figure>
+              ))}
+            </FigureStrip>
           </Group>
         ))}
+        <Group title="步骤备注">
+          <DataTable
+            columns={[
+              { key: "product", label: "产品", span: 2 },
+              { key: "step", label: "步骤", span: 1, align: "right" },
+              { key: "note", label: "备注", span: 6 },
+            ]}
+            rows={noteRows}
+          />
+        </Group>
       </Section>
 
-      <Section title="问题清单" description="链路中发现的可用性问题">
+      <Section title="问题" description="链路中发现的可用性问题">
         <DataTable
           columns={[
             { key: "id", label: "编号", span: 1 },
-            { key: "where", label: "位置", span: 3 },
-            { key: "title", label: "问题", span: 3 },
-            { key: "severity", label: "严重度", span: 2, tone: ["高"] },
+            { key: "product", label: "产品", span: 1 },
+            { key: "step", label: "步骤", span: 1, align: "right" },
+            { key: "title", label: "问题", span: 2 },
+            { key: "severity", label: "严重度", span: 1, tone: ["高"] },
+            { key: "evidence", label: "证据", span: 3 },
           ]}
           rows={issueRows}
         />
@@ -165,7 +136,7 @@ export default function Report() {
           numbered
           items={data.suggestions.map((s) => ({
             title: s.title,
-            description: `${s.detail} · 依据:${s.basis.map(formatBasis).join(";")}`,
+            description: `${s.detail} · 依据:${s.basis.join("、")}`,
           }))}
         />
       </Section>

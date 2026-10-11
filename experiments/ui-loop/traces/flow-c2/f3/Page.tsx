@@ -16,50 +16,6 @@ import {
   FigureText,
 } from "@/components/report"
 
-function chunk<T>(arr: T[], size: number): T[][] {
-  const out: T[][] = []
-  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
-  return out
-}
-
-function issueIdsFor(product: string, stepNo: number) {
-  return data.issues
-    .filter(
-      (i) => (i.product === product || i.product === "全部") && i.step === stepNo,
-    )
-    .map((i) => i.id)
-}
-
-function screenFor(product: string, stepNo: number) {
-  const chain = data.chains.find((c) => c.product === product)
-  return chain?.steps.find((s) => s.no === stepNo)?.screen ?? ""
-}
-
-function issueLocation(issue: (typeof data.issues)[number]) {
-  if (issue.product === "全部") {
-    const screens = data.chains
-      .map((c) => c.steps.find((s) => s.no === issue.step)?.screen)
-      .filter((s): s is string => Boolean(s))
-    const unique = [...new Set(screens)]
-    return `全部产品 · 第 ${issue.step} 步${unique.length ? ` · ${unique.join("、")}` : ""}`
-  }
-  return `${issue.product} · 第 ${issue.step} 步 · ${screenFor(issue.product, issue.step)}`
-}
-
-function basisLabel(ref: string) {
-  const issue = data.issues.find((i) => i.id === ref)
-  if (issue) {
-    return `${issue.id} · ${issue.product} 第 ${issue.step} 步 · ${screenFor(issue.product, issue.step)}`
-  }
-  const matched = ref.match(/第\s*(\d+)\s*步/)
-  const product = data.products.map((p) => p.name).find((n) => ref.includes(n))
-  if (matched && product) {
-    const stepNo = Number(matched[1])
-    return `${product} 第 ${stepNo} 步 · ${screenFor(product, stepNo)}`
-  }
-  return ref
-}
-
 export default function Report() {
   const productRows = data.products.map((p) => ({
     name: p.name,
@@ -68,10 +24,10 @@ export default function Report() {
   }))
 
   const issueRows = data.issues.map((i) => ({
-    id: i.id,
-    where: issueLocation(i),
-    title: `${i.title}(${i.evidence})`,
+    location: `${i.id} · ${i.product} 第 ${i.step} 步`,
+    title: i.title,
     severity: i.severity,
+    evidence: i.evidence,
   }))
 
   return (
@@ -83,7 +39,7 @@ export default function Report() {
 
       {/* 核心指标 */}
       <Section title="核心指标" description="本次挖掘的样本与结果概览">
-        <Grid cols={9} fields={false} className="items-baseline">
+        <Grid cols={12} fields={false} className="items-baseline">
           <Stat span={3} captionBelow value={3} unit="个" label="对比产品" />
           <Stat span={3} captionBelow value={12} unit="张" label="分析截图" />
           <Stat
@@ -110,49 +66,59 @@ export default function Report() {
         />
       </Section>
 
-      {/* 链路明细 */}
+      {/* 交互链路 */}
       <Section
-        title="链路明细"
+        title="交互链路"
         description="逐屏拆解从文件到发送的完整流程"
         className="gap-12"
       >
         {data.chains.map((chain) => (
           <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
-            {chunk(chain.steps, 3).map((row, rowIndex) => (
-              <FigureStrip key={rowIndex}>
-                {row.map((step) => {
-                  const ids = issueIdsFor(chain.product, step.no)
-                  return (
-                    <Figure key={step.no}>
-                      <FigureImage
-                        src={step.image}
-                        alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
-                      />
-                      <FigureLabel>
-                        第 {step.no} 步 · {step.screen}
-                        {ids.length ? ` · ${ids.join("、")}` : ""}
-                      </FigureLabel>
-                      <FigureText>
-                        {step.content} · {step.action} · 输入 {step.inputs} 项
-                        {step.note ? ` · ${step.note}` : ""}
-                      </FigureText>
-                    </Figure>
-                  )
-                })}
-              </FigureStrip>
-            ))}
+            <FigureStrip>
+              {chain.steps.map((step) => (
+                <Figure key={step.no}>
+                  <FigureImage
+                    src={step.image}
+                    alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
+                  />
+                  <FigureLabel>
+                    第 {step.no} 步 · {step.screen}
+                  </FigureLabel>
+                  <FigureText>
+                    {step.content} · {step.action}
+                    {step.inputs > 0 ? ` · 输入 ${step.inputs} 项` : ""}
+                  </FigureText>
+                </Figure>
+              ))}
+            </FigureStrip>
           </Group>
         ))}
       </Section>
 
-      {/* 问题清单 */}
-      <Section title="问题清单" description="共 3 个,集中在云盒的权限与反馈环节">
+      {/* 步骤备注 */}
+      <Section title="步骤备注" description="链路各步骤的补充说明">
+        <List
+          numbered
+          columns={2}
+          items={data.chains.flatMap((chain) =>
+            chain.steps
+              .filter((step) => step.note)
+              .map((step) => ({
+                title: `${chain.product} 第 ${step.no} 步 · ${step.screen}`,
+                description: step.note,
+              }))
+          )}
+        />
+      </Section>
+
+      {/* 问题 */}
+      <Section title="问题" description="共 3 个,集中在云盒的权限与反馈环节">
         <DataTable
           columns={[
-            { key: "id", label: "编号", span: 1 },
-            { key: "where", label: "位置", span: 3 },
+            { key: "location", label: "位置", span: 2 },
             { key: "title", label: "问题", span: 3 },
-            { key: "severity", label: "严重度", span: 2, tone: ["高"] },
+            { key: "severity", label: "严重度", span: 1, align: "right", tone: ["高"] },
+            { key: "evidence", label: "证据", span: 3 },
           ]}
           rows={issueRows}
           caption="严重度按影响范围与用户困惑程度评定"
@@ -166,7 +132,7 @@ export default function Report() {
           numbered
           items={data.suggestions.map((s) => ({
             title: s.title,
-            description: `${s.detail} · 依据:${s.basis.map(basisLabel).join(";")}`,
+            description: `${s.detail} · 依据:${s.basis.join("、")}`,
           }))}
         />
       </Section>

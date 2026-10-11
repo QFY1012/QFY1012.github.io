@@ -38,60 +38,20 @@ export default function Report() {
     影响: c.affected.join("、"),
   }))
 
-  const severityRank: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-  const sortedIssues = [...data.issues].sort(
-    (a, b) => severityRank[a.severity] - severityRank[b.severity] || a.id.localeCompare(b.id),
-  )
-
-  const affectChar: Record<string, string> = { 红色盲: "红", 绿色盲: "绿", 蓝色盲: "蓝" }
-
-  const issueRows = sortedIssues.map((i) => ({
+  const issueRows = data.issues.map((i) => ({
     id: i.id,
-    severity: i.severity,
     title: i.title,
-    suggestion: i.suggestion,
     type: i.type,
-    location: i.location,
-    affects: i.affects.map((a) => affectChar[a] ?? a).join("、"),
+    severity: i.severity,
+    affects: i.affects.join("、"),
   }))
 
-  const matchIssueId = (where: string) => {
-    const hit = data.issues.find(
-      (i) =>
-        i.location.includes(where) ||
-        i.title.includes(where) ||
-        i.suggestion.includes(where) ||
-        where.includes(i.location),
-    )
-    return hit ? hit.id : "—"
-  }
-
-  const fixByIssue: Record<string, (typeof data.fixes)[number]> = {}
-  data.fixes.forEach((f) => {
-    const id = matchIssueId(f.where)
-    if (id !== "—") fixByIssue[id] = f
-  })
-
   const fixRows = data.fixes.map((f) => ({
-    issueId: matchIssueId(f.where),
     where: f.where,
     from: f.from,
     to: f.to,
-    before: f.before,
-    after: f.after,
-    bg: f.bg,
+    ratio: `${f.before} → ${f.after}`,
   }))
-
-  const nextItems = sortedIssues.map((issue) => {
-    const f = fixByIssue[issue.id]
-    return f
-      ? {
-          title: `${issue.id} ${issue.title}`,
-          description: issue.suggestion,
-          meta: `${f.from} → ${f.to},${f.before} → ${f.after}`,
-        }
-      : { title: `${issue.id} ${issue.title}`, description: issue.suggestion }
-  })
 
   return (
     <Page
@@ -115,26 +75,14 @@ export default function Report() {
         description="本次检查 6 组文字与背景组合,共发现 3 个问题"
       >
         <Group>
-          <Grid cols={9} fields={false} className="items-baseline">
+          <Grid cols={4} fields={false} className="items-baseline">
             <Stat
-              span={3}
-              size="lg"
-              captionBelow
-              value={kpis.issues.value}
-              unit={kpis.issues.unit}
-              label={kpis.issues.label}
-            />
-          </Grid>
-          <Grid cols={9} fields={false} className="items-baseline">
-            <Stat
-              span={3}
               captionBelow
               value={kpis.pairs.value}
               unit={kpis.pairs.unit}
               label={kpis.pairs.label}
             />
             <Stat
-              span={3}
               captionBelow
               value={kpis.fail.value}
               unit={kpis.fail.unit}
@@ -143,13 +91,19 @@ export default function Report() {
               direction="down"
             />
             <Stat
-              span={3}
               captionBelow
               value={kpis.confuse.value}
               unit={kpis.confuse.unit}
               label={kpis.confuse.label}
               note="绿色盲下 ΔE 9.0"
               direction="down"
+            />
+            <Stat
+              size="lg"
+              captionBelow
+              value={kpis.issues.value}
+              unit={kpis.issues.unit}
+              label={kpis.issues.label}
             />
           </Grid>
         </Group>
@@ -229,6 +183,19 @@ export default function Report() {
             caption="阈值按 WCAG 2.2 AA:正文 4.5:1,大号文字 3:1。"
           />
         </Group>
+        <Group title="问题清单">
+          <DataTable
+            columns={[
+              { key: "id", label: "编号", span: 1 },
+              { key: "title", label: "问题", span: 3 },
+              { key: "type", label: "类型", span: 2 },
+              { key: "severity", label: "严重度", span: 1 },
+              { key: "affects", label: "影响", span: 2 },
+            ]}
+            rows={issueRows}
+            caption="影响为空表示该问题与色觉类型无关;严重度分中、低两级。"
+          />
+        </Group>
         <Group title="界面用色">
           <DataTable
             columns={[
@@ -240,44 +207,34 @@ export default function Report() {
             caption="色值为界面原始取色,共 5 个。"
           />
         </Group>
-        <Group title="问题清单">
-          <DataTable
-            columns={[
-              { key: "id", label: "编号", span: 1 },
-              { key: "severity", label: "严重度", span: 1, tone: ["高"] },
-              { key: "title", label: "问题", span: 2 },
-              { key: "suggestion", label: "建议", span: 2 },
-              { key: "type", label: "类型", span: 1 },
-              { key: "location", label: "位置", span: 1 },
-              { key: "affects", label: "影响(红/绿/蓝)", span: 1 },
-            ]}
-            rows={issueRows}
-            caption="影响为空表示该问题与色觉类型无关;严重度分中、低两级。"
-          />
-        </Group>
-        <Group title="修复动作">
-          <DataTable
-            columns={[
-              { key: "issueId", label: "问题编号", span: 1 },
-              { key: "where", label: "位置", span: 2 },
-              { key: "from", label: "原值", span: 1 },
-              { key: "to", label: "新值", span: 1 },
-              { key: "before", label: "改前对比度", span: 1, align: "right" },
-              { key: "after", label: "改后对比度", span: 1, align: "right" },
-              { key: "bg", label: "背景", span: 2 },
-            ]}
-            rows={fixRows}
-            caption="背景色 #FFC300,改动后对比度由 1.61 提升到 10.25。"
-          />
-        </Group>
       </Section>
 
       <Section
         title="下一步"
         description="按问题给出的修改建议;顶部标题改为深色后对比度从 1.61 提升到 10.25"
+        className="gap-12"
       >
         <Group>
-          <List columns={3} items={nextItems} />
+          <List
+            columns={3}
+            numbered
+            items={data.issues.map((issue) => ({
+              title: `${issue.id} · ${issue.location}`,
+              description: issue.suggestion,
+            }))}
+          />
+        </Group>
+        <Group title="建议改动">
+          <DataTable
+            columns={[
+              { key: "where", label: "位置", span: 3 },
+              { key: "from", label: "当前色", span: 2 },
+              { key: "to", label: "建议色", span: 2 },
+              { key: "ratio", label: "对比度", span: 2, align: "right" },
+            ]}
+            rows={fixRows}
+            caption="背景色 #FFC300,改动后对比度由 1.61 提升到 10.25。"
+          />
         </Group>
       </Section>
 
