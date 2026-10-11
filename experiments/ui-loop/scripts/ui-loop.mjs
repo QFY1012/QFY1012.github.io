@@ -2,7 +2,7 @@
 // from what the checks say about its pages. The shared spec (design.md) stays fixed; the component
 // library changes only through the component branch (scripts/component-loop.mjs, approved by a person).
 //
-//   source judge.env && node scripts/ui-loop.mjs --skill flow [--max-rounds 12] [--stage-rounds 4]
+//   source judge.env && node scripts/ui-loop.mjs --skill flow [--max-rounds 12] [--stage-rounds 4] [--checkpoint 2]
 //
 // The Skill's samples are split in skills/split.json: training samples are what the Maintainer
 // and the Reviser learn from; held-out samples are only used to accept or reject a change.
@@ -33,7 +33,7 @@
 // checks them again from this stage.
 // A stage ends early (moving on, with what is left recorded) after --stage-rounds rounds or 3
 // rejected candidates in a row. The loop stops after --max-rounds, or at a human checkpoint
-// every 2 accepted versions.
+// every --checkpoint accepted versions (default 2; 0 turns it off).
 import fs from "node:fs"
 import path from "node:path"
 import { execFileSync } from "node:child_process"
@@ -52,6 +52,8 @@ if (!split) throw new Error("--skill must be one of skills/split.json")
 const NAME = split.name, TRAIN = split.train, HOLD = split.holdout, ALL = [...TRAIN, ...HOLD]
 const MAX_ROUNDS = Number(arg("max-rounds", "12"))
 const STAGE_ROUNDS = Number(arg("stage-rounds", "4"))
+// Stop for a person to blind-rank the current version against g0 after this many accepted versions; 0: never.
+const CHECKPOINT = Number(arg("checkpoint", "2"))
 const KEY = process.env.DEEPSEEK_API_KEY
 const DIR = path.join(ROOT, "skills", SK)
 const GUIDES = path.join(DIR, "guides")
@@ -207,7 +209,7 @@ const nextStage = (why, passed = false) => {
 
 while (true) {
   if (state.round >= MAX_ROUNDS) { state.stop = `达到轮数上限 ${MAX_ROUNDS}`; break }
-  if (state.sinceCheckpoint >= 2) { state.stop = "人工检查点:请盲排当前版和 g0"; break }
+  if (CHECKPOINT && state.sinceCheckpoint >= CHECKPOINT) { state.stop = "人工检查点:请盲排当前版和 g0"; break }
   // A stage ends when every page passes it, or when it has run out of rounds.
   if (state.stage === "program") {
     log(`检查当前版 ${state.currentRun} 是否全部通过「程序检查」`)
