@@ -12,15 +12,18 @@
 import fs from "node:fs"
 import path from "node:path"
 import crypto from "node:crypto"
+import { spawnSync } from "node:child_process"
 import { systemRubric31Next, call, img } from "../../ui-judge/scripts/pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
-const dirOf = (a, b, kind) => path.join(ROOT, "traces", "_compare", ...(kind === "function" ? ["function"] : []), `${a}__${b}`)
+// variant (需求 judge only, for trying ways to show the pair): side = both versions in one image, A left
+// and B right; tasks = list what the reader does in each version before deciding.
+const dirOf = (a, b, kind, variant) => path.join(ROOT, "traces", "_compare", ...(kind === "function" ? [variant ? `function-${variant}` : "function"] : []), `${a}__${b}`)
 
 // rubric31 as calibrated, plus one question at the end: what the better page still gets wrong.
 export const systemAesthetic = systemRubric31Next
 
-export const SYSTEM_FUNCTION = `你比较同一份报告的两版页面 A 和 B 哪版更方便使用,不评价美观。会给你上游数据 data.json 和两版的截图(每版先是整页缩略图,再是从上到下的切块;两版开头完全相同的切块会略去)。
+const FUNCTION = `你比较同一份报告的两版页面 A 和 B 哪版更方便使用,不评价美观。会给你上游数据 data.json 和两版的截图(每版先是整页缩略图,再是从上到下的切块;两版开头完全相同的切块会略去)。
 
 方便使用指:读者拿着这页做该做的事——找到某一项、在几项之间对照、看图并对应到文字说明——需要的翻找和来回对照少。不考虑配色、留白、字号这类美观问题。
 
@@ -28,6 +31,13 @@ export const SYSTEM_FUNCTION = `你比较同一份报告的两版页面 A 和 B 
 2. 列出更方便的那版还剩的不方便(一样时列两版共有的):在哪一节、读者想做什么、为什么不方便。没有就返回空列表。
 
 只输出 JSON:{"better":"A 或 B 或 一样","reason":"一两句话","next":[{"where":"页面上的哪一节","task":"读者想做什么","why":"为什么不方便"}]}`
+export const SYSTEM_FUNCTION = FUNCTION
+export const systemFunction = (variant) => variant === "side"
+  ? FUNCTION.replace("和两版的截图(每版先是整页缩略图,再是从上到下的切块;两版开头完全相同的切块会略去)", "和两版并排的截图:每张图左半是 A 版、右半是 B 版;第 1 张是两版的整页缩略图,后面是从上到下、同一高度的切块(两版开头完全相同的切块会略去)")
+  : variant === "tasks"
+    ? FUNCTION.replace("1. 判断哪版更方便", "1. 先列出读者拿这页要做的几件主要事情,逐件写 A、B 两版各自怎么做、要翻找和对照多少。\n2. 再判断哪版更方便")
+      .replace("2. 列出更方便的那版", "3. 列出更方便的那版").replace('只输出 JSON:{"better"', '只输出 JSON:{"tasks":[{"task":"读者要做的事","A":"A 版怎么做","B":"B 版怎么做"}],"better"')
+    : FUNCTION
 
 const PAIR = `下面是对同一对页面的两次比较各自列出的「更好那版还剩的问题」。把两次里说的是同一件事的配对,只输出两次都提到的,每条写成一句话。
 
@@ -49,11 +59,21 @@ const version = (ws, label, from) => {
     img(path.join(ws, "thumb.png")), ...t.map((x) => img(path.join(ws, x.file)))]
 }
 
-export async function compare(a, b, cases, rounds = 3, kind = "aesthetic") {
+// Both versions in one image per band of the page (scripts/side.py), made once per page and order.
+function sideBySide(wx, wy, from, out) {
+  if (!fs.existsSync(path.join(out, "side-0.png"))) {
+    const r = spawnSync("python3", [path.join(ROOT, "scripts", "side.py"), wx, wy, String(from), out], { encoding: "utf8" })
+    if (r.status) throw new Error(`side.py: ${r.stderr.slice(0, 200)}`)
+  }
+  const files = fs.readdirSync(out).filter((f) => /^side-\d+\.png$/.test(f)).sort((x, y) => Number(x.match(/\d+/)) - Number(y.match(/\d+/)))
+  return [{ type: "text", text: `第 1 张为两版整页缩略图并排,后 ${files.length - 1} 张为${from ? `从第 ${from + 1} 段起` : "整页"}同一高度的切块并排;每张左半是 A 版、右半是 B 版。` }, ...files.map((f) => img(path.join(out, f)))]
+}
+
+export async function compare(a, b, cases, rounds = 3, kind = "aesthetic", { variant, next = true } = {}) {
   const KEY = process.env.DEEPSEEK_API_KEY
-  const dir = dirOf(a, b, kind)
+  const dir = dirOf(a, b, kind, variant)
   fs.mkdirSync(dir, { recursive: true })
-  const sys = kind === "function" ? SYSTEM_FUNCTION : systemAesthetic()
+  const sys = kind === "function" ? systemFunction(variant) : systemAesthetic()
   const name = kind === "function" ? "需求 judge" : "审美 judge"
   const jobs = []
   for (const c of cases)
@@ -70,7 +90,8 @@ export async function compare(a, b, cases, rounds = 3, kind = "aesthetic") {
       const [x, y] = order === "AB" ? [a, b] : [b, a]
       const wx = path.join(ROOT, "traces", x, c), wy = path.join(ROOT, "traces", y, c)
       const from = kind === "function" ? firstChange(wx, wy) : 0
-      const content = [...(kind === "function" ? [{ type: "text", text: `<data.json>\n${fs.readFileSync(path.join(wx, "data.json"), "utf8")}\n</data.json>` }] : []), ...version(wx, "A", from), ...version(wy, "B", from)]
+      const shots = variant === "side" ? sideBySide(wx, wy, from, path.join(dir, "img", `${c}__${order}`)) : [...version(wx, "A", from), ...version(wy, "B", from)]
+      const content = [...(kind === "function" ? [{ type: "text", text: `<data.json>\n${fs.readFileSync(path.join(wx, "data.json"), "utf8")}\n</data.json>` }] : []), ...shots]
       const label = `${name} ${c} 第 ${r} 轮 ${order}`
       const t0 = Date.now()
       console.log(`  ${label} 开始(${content.filter((p) => p.type === "image_url").length} 张图)`)
@@ -98,6 +119,7 @@ export async function compare(a, b, cases, rounds = 3, kind = "aesthetic") {
   }
   const missing = all.filter((j) => !fs.existsSync(j.file))
   if (missing.length) throw new Error(`${name} 没跑完:${missing.map((j) => path.basename(j.file)).join("、")}`)
+  if (!next) return
   await pairNext(a, b, cases, rounds, kind)
   const s = summarize(a, b, cases, rounds, kind)
   for (const [c, v] of Object.entries(s.perCase)) console.log(`  ${name} ${c}:${v.rounds.map((x) => (x === "b" ? b : x === "a" ? a : x)).join("、")} → ${v.verdict === "b" ? b : v.verdict === "a" ? a : "平"}`)

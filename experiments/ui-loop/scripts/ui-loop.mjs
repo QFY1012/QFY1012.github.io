@@ -104,10 +104,12 @@ const open = (pick) => {
   const f = path.join(DIR, "experience.json")
   return fs.existsSync(f) ? JSON.parse(read(f)).problems.filter((p) => p.status !== "已解决" && pick(p)) : []
 }
-// Compare two runs on training pages and remember, per page, which comparison is the latest.
-async function judgeTrain(a, b, cases) {
+// Compare two runs on training pages. remember: the comparison is about the current pages (the
+// first look, or an accepted candidate), so the Maintainer reads it for those pages from now on.
+async function judgeTrain(a, b, cases, remember) {
   log(`训练页 ${cases.join(",")} 上比较 ${a} 和 ${b}(${STAGE_NAME[state.stage]},1 轮 × 两种顺序)`)
   await compare(a, b, cases, 1, state.stage)
+  if (!remember) return
   state.judged ??= {}
   state.judged[state.stage] = { ...(state.judged[state.stage] ?? {}), ...Object.fromEntries(cases.map((c) => [c, [a, b]])) }
   save()
@@ -219,7 +221,7 @@ while (true) {
         execFileSync("node", [path.join(ROOT, "scripts", "generate.mjs"), "--run", twin, "--cases", TRAIN.join(","), "--data", path.join("skills", SK, "data"), "--guide", path.relative(ROOT, path.join(GUIDES, `${state.current}.md`)), "--version", state.current], { stdio: "inherit", cwd: ROOT })
       }
       state.judged = { ...state.judged, [state.stage]: {} }
-      await judgeTrain(state.currentRun, twin, TRAIN)
+      await judgeTrain(state.currentRun, twin, TRAIN, true)
       await maintain(`两版都按当前指南生成,都是当前版`)
     } else await maintain()
   }
@@ -252,7 +254,7 @@ while (true) {
   // What the change did on the training pages, accepted or not: a tried change for the next Reviser.
   const trainTouched = touched.filter((c) => TRAIN.includes(c))
   log(`门禁结果:${g.accept ? "采用" : `未采用(${g.why})`};接着在训练页 ${trainTouched.join(",") || "(都没改动)"} 上看这次改动的效果`)
-  if (state.stage !== "program" && trainTouched.length) await judgeTrain(state.currentRun, cr, trainTouched)
+  if (state.stage !== "program" && trainTouched.length) await judgeTrain(state.currentRun, cr, trainTouched, g.accept)
   const tried = trainTouched.length ? await attempt({ skill: SK, stage: state.stage, base: state.currentRun, run: cr, candidate: cand, change, accepted: g.accept, why: g.why, cases: trainTouched }) : null
 
   const base = state.current, baseRun = state.currentRun, stage = state.stage
@@ -266,9 +268,10 @@ while (true) {
     state.sinceCheckpoint++
   } else state.rejected++
   state.stageRounds++
-  // The problem list is about the current run: refreshed from this round's comparisons (judge stages).
+  // The problem list is about the current run: refreshed from this round's comparisons when the
+  // candidate became the current run (judge stages); a rejected candidate leaves only its tried change.
   if (state.stage !== "program") {
-    if (trainTouched.length) await maintain(`当前版是 ${state.currentRun}`)
+    if (g.accept && trainTouched.length) await maintain(`当前版是 ${state.currentRun}`)
     else state.maintained = { run: state.currentRun, stage: state.stage }
   }
   fs.appendFileSync(LOG, `
