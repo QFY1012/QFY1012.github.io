@@ -1,0 +1,14 @@
+{
+ "title": "截图部件 · 第 3 版",
+ "lead": "按第 2 版的意见改:间距加大,滑条换成 shadcn 的 scroll-area。",
+ "flags": [],
+ "parts": [],
+ "source": "",
+ "demo": "",
+ "crops": [],
+ "docs": "## 截图",
+ "review": {
+  "decision": "打回重做",
+  "feedback": "还需要更宽的间距"
+ }
+}
