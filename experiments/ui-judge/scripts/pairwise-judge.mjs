@@ -538,7 +538,7 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
         signal: ac.signal,
       })
       if (!r.ok) throw new Error(`${r.status} ${(await r.text()).slice(0, 300)}`)
-      let buf = "", text = "", usage, thought = false
+      let buf = "", text = "", usage, thought = false, finish
       const dec = new TextDecoder()
       for await (const chunk of r.body) {
         // Keep-alive lines (": ...") before the reply starts do not count as the reply.
@@ -556,8 +556,10 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
           if (d.reasoning_content && !thought) { thought = true; onThink?.() }
           if (d.content) { text += d.content; onText?.(d.content) }
           if (j.usage) usage = j.usage
+          if (j.choices?.[0]?.finish_reason) finish = j.choices[0].finish_reason
         }
       }
+      if (!text) throw new Error(`服务端返回空回复(finish_reason ${finish ?? "无"},输出 ${usage?.completion_tokens ?? 0} token)`)
       return { json: JSON.parse(text), raw: text, usage, latencyMs: Date.now() - t0 }
     } catch (e) {
       if (attempt >= 3) throw e

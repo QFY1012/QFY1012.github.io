@@ -63,8 +63,13 @@ export async function functionJudge(run, cases, repeat = 1) {
   const todo = all.filter((j) => !fs.existsSync(j.file)).length
   let done = 0
   if (todo) console.log(`  需求 judge ${run}:${cases.join(",")} 共 ${todo} 次检查要跑(每页 ${repeat} 次,已有的跳过)`)
-  for (let pass = 0; pass < 3; pass++) {
-    if (pass && all.some((j) => !fs.existsSync(j.file))) console.log(`  需求 judge ${run}:补跑第 ${pass} 轮,还缺 ${all.filter((j) => !fs.existsSync(j.file)).length} 次`)
+  for (let pass = 0; pass < 4; pass++) {
+    if (pass && all.some((j) => !fs.existsSync(j.file))) {
+      // The endpoint fails in stretches (empty replies, no reply at all); give it time before asking again.
+      const wait = 60 * 2 ** (pass - 1)
+      console.log(`  需求 judge ${run}:还缺 ${all.filter((j) => !fs.existsSync(j.file)).length} 次,等 ${wait} 秒后补跑(第 ${pass} 轮)`)
+      await new Promise((r) => setTimeout(r, wait * 1000))
+    }
     jobs.splice(0, jobs.length, ...all.filter((j) => !fs.existsSync(j.file)))
     if (!jobs.length) break
     await Promise.all(Array.from({ length: 8 }, worker))
