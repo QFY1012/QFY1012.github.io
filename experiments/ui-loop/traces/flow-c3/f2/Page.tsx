@@ -1,0 +1,200 @@
+import data from "./data.json"
+import {
+  Page,
+  Section,
+  Group,
+  Grid,
+  Text,
+  Stat,
+  DataTable,
+  List,
+  KV,
+  FigureStrip,
+  Figure,
+  FigureImage,
+  FigureLabel,
+  FigureText,
+} from "@/components/report"
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const rows: T[][] = []
+  for (let i = 0; i < items.length; i += size) {
+    rows.push(items.slice(i, i + size))
+  }
+  return rows
+}
+
+export default function Report() {
+  const productRows = data.chains.map((chain) => ({
+    name: chain.product,
+    version: chain.version,
+    steps: chain.steps.length,
+    verdict: chain.verdict,
+  }))
+
+  const issuesForStep = (product: string, no: number) =>
+    data.issues.filter(
+      (issue) =>
+        (issue.product === product || issue.product === "全部") && issue.step === no,
+    )
+
+  const maxStep = Math.max(...data.chains.map((chain) => chain.steps.length))
+
+  const screenOf = (product: string, no: number) =>
+    data.chains
+      .find((chain) => chain.product === product)
+      ?.steps.find((step) => step.no === no)?.screen
+
+  const issueWhere = (product: string, step: number) => {
+    if (product === "全部") {
+      const screens = Array.from(
+        new Set(
+          data.chains
+            .map((chain) => chain.steps.find((s) => s.no === step)?.screen)
+            .filter((screen): screen is string => Boolean(screen)),
+        ),
+      )
+      return `全部产品 · 第 ${step} 步${screens.length ? ` · ${screens.join("、")}` : ""}`
+    }
+    const screen = screenOf(product, step)
+    return `${product} · 第 ${step} 步${screen ? ` · ${screen}` : ""}`
+  }
+
+  const issueRows = data.issues.map((issue) => ({
+    id: issue.id,
+    where: issueWhere(issue.product, issue.step),
+    title: `${issue.title} · ${issue.evidence}`,
+    severity: issue.severity,
+  }))
+
+  const formatBasis = (basis: string) => {
+    const issue = data.issues.find((item) => item.id === basis)
+    if (issue) {
+      const screen = screenOf(issue.product, issue.step)
+      return `${issue.id} · ${issue.product} 第 ${issue.step} 步${screen ? ` · ${screen}` : ""}`
+    }
+    const matched = basis.match(/^(.+?)第\s*(\d+)\s*步$/)
+    if (matched) {
+      const product = matched[1].trim()
+      const no = Number(matched[2])
+      const screen = screenOf(product, no)
+      return `${product}第 ${no} 步${screen ? ` · ${screen}` : ""}`
+    }
+    return basis
+  }
+
+  return (
+    <Page title={data.title} meta={["快送 11.2 · 小橙 8.9", "2026 年 9 月"]}>
+      <Section title="结论" description="两款 App 下单链路的核心差别">
+        <Text className="text-2xl leading-9 font-light">{data.summary}</Text>
+      </Section>
+
+      <Section title="核心指标" description="本次挖掘的样本与结果">
+        <Grid cols={9} fields={false} className="items-baseline">
+          {data.kpis.map((kpi) => (
+            <Stat
+              key={kpi.key}
+              span={3}
+              size="lg"
+              value={kpi.value}
+              unit={kpi.unit}
+              label={kpi.label}
+              captionBelow
+            />
+          ))}
+        </Grid>
+      </Section>
+
+      <Section title="产品对比" description="按产品看步骤数与链路判断">
+        <DataTable
+          columns={[
+            { key: "name", label: "产品", span: 2 },
+            { key: "version", label: "版本", span: 1 },
+            { key: "steps", label: "步骤数", span: 2, align: "right", bar: true },
+            { key: "verdict", label: "链路判断", span: 4 },
+          ]}
+          rows={productRows}
+        />
+      </Section>
+
+      <Section
+        title="链路明细"
+        description="从购物车到支付成功的逐步截图"
+        className="gap-12"
+      >
+        {Array.from({ length: maxStep }, (_, index) => index + 1).map((no) => {
+          const entries = data.chains.flatMap((chain) => {
+            const step = chain.steps.find((item) => item.no === no)
+            return step ? [{ chain, step }] : []
+          })
+          return (
+            <Group key={no} title={`第 ${no} 步`}>
+              {chunk(entries, 3).map((row, rowIndex) => (
+                <FigureStrip key={rowIndex}>
+                  {row.map(({ chain, step }) => {
+                    const issues = issuesForStep(chain.product, step.no)
+                    return (
+                      <Figure key={`${chain.product}-${step.no}`}>
+                        <FigureImage
+                          src={step.image}
+                          alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
+                        />
+                        <FigureLabel>
+                          {chain.product} · 第 {step.no} 步 · {step.screen}
+                          {issues.length > 0
+                            ? ` · ${issues
+                                .map((issue) => `${issue.id} ${issue.severity}`)
+                                .join("、")}`
+                            : ""}
+                        </FigureLabel>
+                        <FigureText>
+                          {step.content} · {step.action} · 输入 {step.inputs} 项
+                        </FigureText>
+                        {step.note ? <FigureLabel>{step.note}</FigureLabel> : null}
+                      </Figure>
+                    )
+                  })}
+                </FigureStrip>
+              ))}
+            </Group>
+          )
+        })}
+      </Section>
+
+      <Section title="问题清单" description="链路中发现的可用性问题">
+        <DataTable
+          columns={[
+            { key: "id", label: "编号", span: 1 },
+            { key: "where", label: "位置", span: 3 },
+            { key: "title", label: "问题", span: 3 },
+            { key: "severity", label: "严重度", span: 2, tone: ["高"] },
+          ]}
+          rows={issueRows}
+        />
+      </Section>
+
+      <Section title="下一步" description="基于对比与问题给出的改进建议">
+        <List
+          columns={3}
+          numbered
+          items={data.suggestions.map((s) => ({
+            title: s.title,
+            description: `${s.detail} · 依据:${s.basis.map(formatBasis).join(";")}`,
+          }))}
+        />
+      </Section>
+
+      <Section title="背景" description="任务、范围与版本信息">
+        <KV
+          labelCols={2}
+          items={[
+            { label: "任务", value: data.task },
+            { label: "范围", value: data.scope },
+            { label: "日期", value: data.date },
+            { label: "版本", value: "快送 11.2 · 小橙 8.9" },
+          ]}
+        />
+      </Section>
+    </Page>
+  )
+}
