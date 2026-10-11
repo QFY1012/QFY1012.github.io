@@ -1,0 +1,41 @@
+{
+ "case": "c6",
+ "design": {
+  "version": "c4",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/c4.md",
+  "sha": "0e02dcb3"
+ },
+ "base": "cvd-c1",
+ "change": {
+  "rule": "G1",
+  "old": "- **G1 核心指标一行排满**:`kpis` 整组放在「核心指标」一节,每个指标一个 `Stat`(`captionBelow`,四个都用 `size=\"lg\"`,不分主次),整组排成一行、不出现第二行只剩一项:4 个及以下时用 `<Grid cols={kpis.length} fields={false} className=\"items-baseline\">`,每个 `Stat` 不写 `span`;多于 4 个时每行 4 个,若最后一行只剩 1 个,就把它并回上一行均分(5 个排 3+2、6 个排 3+3),每一行 `Grid` 的 `cols` 等于该行的指标个数。",
+  "new": "- **G1 核心指标一行排满、结论在前**:`kpis` 整组放在「核心指标」一节,`key` 为 `issues` 的结论指标排在最前、用 `size=\"lg\"`,其余指标按数据原顺序跟在后面、用普通字号(不写 `size`),每个 `Stat` 都写 `captionBelow`、整组共用同一条基线;整组排成一行、不出现第二行只剩一项:4 个及以下时用 `<Grid cols={kpis.length} fields={false} className=\"items-baseline\">`,每个 `Stat` 不写 `span`;多于 4 个时每行 4 个,若最后一行只剩 1 个,就把它并回上一行均分(5 个排 3+2、6 个排 3+3),每一行 `Grid` 的 `cols` 等于该行的指标个数;`kpis` 里没有 `issues` 时整组按数据原顺序摆。",
+  "basis": [
+   "P-04"
+  ],
+  "why": "P-04 剩余的就是结论数字与三个基数项完全等权:只挪顺序(c3 已试)只能表达主次、不能加重主次,只换字号(c2 已试)又看不出差别。这次把两者合起来——结论指标 `issues` 排到最前并用大号字、其余保持普通字号,既给出阅读顺序也给出层级,同时保留 c1 验证有效的「整组一行排满、不拆行」。",
+  "problems": [
+   {
+    "id": "P-04",
+    "problem": "核心指标一节的几个指标数字完全等权，结论性的总括数字没有比其余指标更突出，读者一眼看不出该先读哪个、抓不到主结论；指标之间间距偏大，也削弱了它们同属一组的关联感。"
+   }
+  ]
+ },
+ "changedLines": 33,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 53,
+ "usage": {
+  "input": 10145,
+  "output": 1893
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过，核心指标一节现在是：`7 个 问题总数`（`size=\"lg\"`，排在最前）→ `9 组 检查的文字与背景组合` → `9 组 对比度不达标` → `4 对 色盲用户难以区分的颜色`，四个 `Stat` 都 `captionBelow`、共用同一条基线、一行排满；其余节（结论、模拟视图、类型分布、对比度、色对混淆、问题明细、背景信息）保持原样。\n\n修改内容：把 `kpis` 重排为 `issues` 在前、其余按数据原顺序，只给 `issues` 写 `size=\"lg\"`，并保留 `fail` 原有的「要求 ≥ 4.5:1」红色注释。",
+ "checks": []
+}

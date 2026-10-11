@@ -2,7 +2,7 @@
 // from what the checks say about its pages. The shared spec (design.md) stays fixed; the component
 // library changes only through the component branch (scripts/component-loop.mjs, approved by a person).
 //
-//   source judge.env && node scripts/ui-loop.mjs --skill flow [--max-rounds 12] [--stage-rounds 4] [--checkpoint 2]
+//   source judge.env && node scripts/ui-loop.mjs --skill flow [--max-rounds 0] [--stage-rounds 4] [--checkpoint 2]
 //
 // The Skill's samples are split in skills/split.json: training samples are what the Maintainer
 // and the Reviser learn from; held-out samples are only used to accept or reject a change.
@@ -32,8 +32,9 @@
 // When only 组件不够 problems are open, the loop stops and waits for the component branch; after a
 // merge (component-loop.mjs approve) the pages it edited become the current run, and the loop
 // checks them again from this stage.
-// A stage ends early (moving on, with what is left recorded) after --stage-rounds rounds or 3
-// rejected candidates in a row. The loop stops after --max-rounds, or at a human checkpoint
+// The program stage ends early (moving on, with what is left recorded) after --stage-rounds rounds
+// or 3 rejected candidates in a row. The 审美 stage runs until no problem is left open (or only
+// 组件不够 ones); it also stops after --max-rounds (default 0: no limit), or at a human checkpoint
 // every --checkpoint accepted versions (default 2; 0 turns it off).
 import fs from "node:fs"
 import path from "node:path"
@@ -52,7 +53,7 @@ const SK = arg("skill")
 const split = JSON.parse(fs.readFileSync(path.join(ROOT, "skills", "split.json"), "utf8"))[SK]
 if (!split) throw new Error("--skill must be one of skills/split.json")
 const NAME = split.name, TRAIN = split.train, HOLD = split.holdout, ALL = [...TRAIN, ...HOLD]
-const MAX_ROUNDS = Number(arg("max-rounds", "12"))
+const MAX_ROUNDS = Number(arg("max-rounds", "0"))
 const STAGE_ROUNDS = Number(arg("stage-rounds", "4"))
 // Stop for a person to blind-rank the current version against g0 after this many accepted versions; 0: never.
 const CHECKPOINT = Number(arg("checkpoint", "2"))
@@ -205,7 +206,7 @@ const nextStage = (why, passed = false) => {
 }
 
 while (true) {
-  if (state.round >= MAX_ROUNDS) { state.stop = `达到轮数上限 ${MAX_ROUNDS}`; break }
+  if (MAX_ROUNDS && state.round >= MAX_ROUNDS) { state.stop = `达到轮数上限 ${MAX_ROUNDS}`; break }
   if (CHECKPOINT && state.sinceCheckpoint >= CHECKPOINT) { state.stop = "人工检查点:请盲排当前版和 g0"; break }
   // A stage ends when every page passes it, or when it has run out of rounds.
   if (state.stage === "program") {
@@ -214,7 +215,7 @@ while (true) {
   }
   if (state.stage !== "aesthetic") {
     if (state.stageRounds >= STAGE_ROUNDS || state.rejected >= 3) { nextStage(state.rejected >= 3 ? "连续 3 个候选没通过" : `已跑 ${STAGE_ROUNDS} 轮`); continue }
-  } else if (state.rejected >= 3) { state.stop = "连续 3 个候选未通过把关"; break }
+  }
   // The current pages, generalised in this stage (again after a component merge or a stage change).
   if (state.maintained?.run !== state.currentRun || state.maintained?.stage !== state.stage) {
     log(`归纳当前版 ${state.currentRun} 在「${STAGE_NAME[state.stage]}」这一步的问题(训练页 ${TRAIN.join(",")})`)
