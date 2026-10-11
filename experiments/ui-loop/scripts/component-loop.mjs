@@ -1,16 +1,16 @@
-// The component branch of the loop: problems attributed to the component library become
-// one library change at a time, built on shadcn/ui, reviewed by a person twice.
+// The component branch of the loop, automatic up to one human review: problems attributed to the
+// component library become one library change at a time, built on shadcn/ui; the agent plans,
+// implements and checks it by itself, and a person (the design team) approves the demo before
+// anything is merged. The guide loop keeps running meanwhile.
 //
-//   node scripts/component-loop.mjs propose --runs flow-g0,cvd-g0   ① the agent writes a plan
-//   node scripts/component-loop.mjs approve k1                      plan ok → ②③④ implement, check, style check
-//                                                                    implementation ok → ⑥ merge, edit every Skill's pages
-//   node scripts/component-loop.mjs reject k1 "原因"                 at either review; the next proposal reads it
+//   node scripts/component-loop.mjs propose --runs flow-g0,cvd-g0   ①–④ plan, implement, check; ⑤ waits for review
+//   node scripts/component-loop.mjs approve k1                      ⑥ merge, edit every Skill's pages
+//   node scripts/component-loop.mjs reject k1 "原因"                 the next proposal reads it
 //
 // ① Plan: from the issues attributed to 组件库 (traces/<run>/<case>/attribution-*.json), the
 //    component agent picks one capability and writes plan.md: which shadcn component (or, when
 //    shadcn has none, which Radix primitive), what goes into ui/, the report component and its
 //    props, how each Skill would use it, and how it matches the existing components' style.
-//    Review material: library/k<n>-plan.md.
 // ② Implement in a copy of the library (traces/_components/k<n>/app): shadcn source copied
 //    from vendor/shadcn (like `shadcn add`) and then adapted to the spec (shadcn's own classes have
 //    shadows, backgrounds and off-grid sizes), the report component on top of it, using tokens only;
@@ -18,8 +18,9 @@
 // ③ Program checks on the component code (colours only from tokens, the type scale, 8px steps,
 //    no shadows or cards) and on the demo page.
 // ④ Style check: a model compares the new component with the existing ones on the demo page;
-//    any mismatch goes back to the agent (at most 2 times).
-// ⑤ Review material: library/k<n>.md (plan, the agent's account, checks, diff, demo).
+//    any finding of ③ or ④ goes back to the agent (at most 2 times).
+// ⑤ Human review: library/k<n>.md with the demo screenshot (library/k<n>-demo.png), the plan,
+//    the agent's account, the checks and the diff. Only one proposal waits for review at a time.
 // ⑥ Merge into app/ and components.md; the generator edits each Skill's current pages for the
 //    change (traces/<run>-k<n>/), whose checks start again from the program checks.
 // Everything is in library/changelog.md, accepted or not.
@@ -96,7 +97,7 @@ const PLAN_PROMPT = `先只写方案,不写代码。读需求、components.md、
 5. 风格怎么和现有组件统一:用哪些 token、字号、间距、线条,和哪个现有组件对齐。
 写完就结束。`
 
-const IMPL_PROMPT = (plan, note) => `方案已经审核通过${note ? `,审核意见:${note}` : ""}。按方案实现:
+const IMPL_PROMPT = (plan) => `方案写好了。按方案实现:
 
 <方案>
 ${plan}
@@ -204,21 +205,22 @@ async function propose() {
   })
   fs.renameSync(path.join(ws, "session.jsonl"), path.join(ws, "session-plan.jsonl"))
   const plan = fs.existsSync(path.join(ws, "plan.md")) ? read(path.join(ws, "plan.md")) : "(没有写出方案)"
-  state.proposals[name] = { status: "方案待审", demo, requests: requests.length, runs, plan, planRun: run }
+  state.proposals[name] = { status: "实现中", demo, requests: requests.length, runs, plan, planRun: run }
   state.next++
   save()
-  fs.writeFileSync(path.join(LIB, `${name}-plan.md`), `# 组件改动 ${name}:方案(待审)\n\n## 需求:归因为「组件库」的问题(${requests.length} 条,来自 ${Object.keys(count).length} 页)\n\n${requests.map((r) => `- **${r.run}/${r.case}**(${r.stage === "program" ? "程序检查" : "功能 judge"}):${r.what}\n  - 需要:${r.fix}`).join("\n")}\n\n## 方案\n\n${plan}\n`)
-  console.log(`${name}: plan written; review library/${name}-plan.md`)
+  fs.writeFileSync(path.join(LIB, `${name}-plan.md`), `# 组件改动 ${name}:方案\n\n## 需求:归因为「组件库」的问题(${requests.length} 条,来自 ${Object.keys(count).length} 页)\n\n${requests.map((r) => `- **${r.run}/${r.case}**(${r.stage === "program" ? "程序检查" : "功能 judge"}):${r.what}\n  - 需要:${r.fix}`).join("\n")}\n\n## 方案\n\n${plan}\n`)
+  console.log(`${name}: plan written, implementing`)
+  await implement(name)
 }
 
-async function implement(name, note) {
+async function implement(name) {
   const p = state.proposals[name]
   const ws = wsOf(name)
   const requests = JSON.parse(read(path.join(ws, "requests.json")))
   const priv = (n) => path.join(ROOT, "traces", "_components", ".private", `${name}-${n}`)
   const sys = SYSTEM(requests, "")
   let run = await runAgent({
-    name, ws, priv: priv("impl"), system: sys, maxShoots: 6, prompt: IMPL_PROMPT(p.plan, note),
+    name, ws, priv: priv("impl"), system: sys, maxShoots: 6, prompt: IMPL_PROMPT(p.plan),
     nudges: ["你还没有写出演示页 Page.tsx。请写出并运行检查。"], missing: () => !fs.existsSync(path.join(ws, "Page.tsx")),
   })
   let rounds = [], checks = [], lint = [], style = []
@@ -239,12 +241,25 @@ async function implement(name, note) {
   }
   const patch = libDiff(ws)
   fs.writeFileSync(path.join(LIB, `${name}.patch`), patch)
-  Object.assign(p, { status: "实现待审", note: note ?? "", summary: run.summary, checks, lint, style, backs: rounds.length - 1 })
+  if (fs.existsSync(path.join(ws, "thumb.png"))) fs.copyFileSync(path.join(ws, "thumb.png"), path.join(LIB, `${name}-demo.png`))
+  Object.assign(p, { status: "待审", summary: run.summary, checks, lint, style, backs: rounds.length - 1 })
   save()
   const list = (xs) => (xs.length ? xs.map((x) => `- ${x.file ? `${x.file}${x.line ? `:${x.line}` : ""} ` : ""}${x.where ? `${x.where}:` : ""}${x.msg ?? x.what}${x.fix ? `(${x.fix})` : ""}`).join("\n") : "无问题")
-  fs.writeFileSync(path.join(LIB, `${name}.md`), `# 组件改动 ${name}:实现(待审)
+  fs.writeFileSync(path.join(LIB, `${name}.md`), `# 组件改动 ${name}:待审
 
-方案见 library/${name}-plan.md${note ? `;审核意见:${note}` : ""}。打回修改 ${rounds.length - 1} 次。
+组件 Agent 自动完成了方案、实现和检查(自动打回修改 ${rounds.length - 1} 次),合并前需要人工审核:看示例效果对不对、和现有组件是否统一。\`approve ${name}\` 合并,\`reject ${name} "原因"\` 打回。
+
+## 示例效果
+
+演示页用 ${p.demo} 的真实数据,新组件和现有组件放在同一页:
+
+![演示页](${name}-demo.png)
+
+切块截图在 \`traces/_components/${name}/tile-*.png\`。
+
+## 方案
+
+${p.plan}
 
 ## 组件 Agent 的说明
 
@@ -302,18 +317,18 @@ function merge(name) {
   }
 }
 
-if (cmd === "propose") await propose()
-else if (cmd === "approve") {
-  const p = state.proposals[k]
-  if (p?.status === "方案待审") await implement(k, reason)
-  else if (p?.status === "实现待审") merge(k)
-  else throw new Error(`${k} is not waiting for review`)
+if (cmd === "propose") {
+  const pending = Object.entries(state.proposals).find(([, p]) => ["实现中", "待审"].includes(p.status))
+  if (pending) console.log(`${pending[0]} is ${pending[1].status}; one proposal at a time`)
+  else await propose()
+} else if (cmd === "approve") {
+  if (state.proposals[k]?.status !== "待审") throw new Error(`${k} is not waiting for review`)
+  merge(k)
 } else if (cmd === "reject") {
   const p = state.proposals[k]
-  if (!["方案待审", "实现待审"].includes(p?.status)) throw new Error(`${k} is not waiting for review`)
-  const stage = p.status === "方案待审" ? "方案" : "实现"
+  if (p?.status !== "待审") throw new Error(`${k} is not waiting for review`)
   p.status = "未采用"
-  p.reason = `${stage}被拒绝:${reason ?? ""}`
+  p.reason = reason ?? ""
   save()
-  fs.appendFileSync(LOG, `\n## ${k}  结果:未采用(${stage}阶段)\n\n需求 ${p.requests} 条。方案见 library/${k}-plan.md${stage === "实现" ? `,实现见 library/${k}.md` : ""}。\n\n没采用的原因:${reason ?? ""}\n`)
-} else throw new Error('usage: propose --runs a,b | approve k1 ["审核意见"] | reject k1 "原因"')
+  fs.appendFileSync(LOG, `\n## ${k}  结果:未采用\n\n需求 ${p.requests} 条。方案见 library/${k}-plan.md,实现见 library/${k}.md。\n\n没采用的原因:${reason ?? ""}\n`)
+} else throw new Error('usage: propose --runs a,b | approve k1 | reject k1 "原因"')

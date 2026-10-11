@@ -1,9 +1,10 @@
 // Attribution: for each page, merge the function judge's repeated runs and decide, for every
-// opinion that holds up (in at least 2 of the runs), which rule it comes from. The component
-// library is taken as complete for now (no component changes), so every problem is the guide's:
-// a rule is missing, unclear, or written but not followed (a rule the agent does not follow is
-// not doing its job either) → change the Skill's output guide, or the shared spec when the rule
-// lives there.
+// opinion that holds up (in at least 2 of the runs), which layer it belongs to:
+//   组件库  the component library cannot do it (a missing component or prop)  → a request to the
+//           component branch (component-loop.mjs: built automatically, merged after a human review)
+//   指南    the components can do it and the page did not: a rule is missing, unclear, or written
+//           but not followed (a rule the agent does not follow is not doing its job either)
+//           → change the Skill's output guide, or the shared spec when the rule lives there
 //
 //   node scripts/attribute.mjs --run flow-g0 --cases f1,f2 --guide skills/flow/guides/g0.md [--stage program|function] [--runs 3]
 //
@@ -23,10 +24,12 @@ export const SYSTEM = `你负责给报告页面的问题归因。会给你:功�
 步骤:
 1. 合并:几份清单里说的是同一件事的合并成一条,记下它出现在几次检查里。
 2. 出现次数不到 2 次的放进 dropped,不归因。程序检查的结果是确定的,每条都要归因(kind 写 program,runs 写 0)。
-3. 组件库当作是齐全的,其余每条都归到规则:写明该用哪个组件、怎么改,再看规则:输出指南和公共规范里都没有相关规则写「缺规则」;有但写得不清楚写「规则不清楚」;写清楚了 Page.tsx 却没照做写「没被照做」(规则没起作用,同样要改规则),并写明是哪条规则、在输出指南还是公共规范。
+3. 其余每条判断出在哪一层,标准是「现有组件库能不能解决」:
+   - 组件库:components.md 里没有能做到的组件或 props(例如要显示颜色本身,但不允许写颜色)。写明缺什么能力。
+   - 指南:现有组件和 props 能解决,页面却没做到。写明该用哪个组件、怎么改,再看规则:输出指南和公共规范里都没有相关规则写「缺规则」;有但写得不清楚写「规则不清楚」;写清楚了 Page.tsx 却没照做写「没被照做」(规则没起作用,同样要改规则),并写明是哪条规则、在输出指南还是公共规范。
    依据必须引用 components.md、design.md、输出指南或 Page.tsx 里的具体内容。
 
-只输出 JSON:{"issues":[{"kind":"unused 或 inconvenient 或 program","what":"一句话说清问题","runs":出现次数,"cause":"指南","rule":"缺规则 或 规则不清楚 或 没被照做","where":"输出指南 或 公共规范","evidence":"依据","fix":"用哪个组件怎么改,涉及哪条规则"}],"dropped":[{"what":"一句话","runs":1}]}`
+只输出 JSON:{"issues":[{"kind":"unused 或 inconvenient 或 program","what":"一句话说清问题","runs":出现次数,"cause":"组件库 或 指南","rule":"指南的细分:缺规则 或 规则不清楚 或 没被照做;组件库写空字符串","where":"指南的规则在哪:输出指南 或 公共规范;组件库写空字符串","evidence":"依据","fix":"组件库:缺什么能力;指南:用哪个组件怎么改,涉及哪条规则"}],"dropped":[{"what":"一句话","runs":1}]}`
 
 export async function attribute(run, cases, guideFile, stage = "function", runs = 3) {
   if (stage === "program") runs = 0
@@ -48,7 +51,8 @@ export async function attribute(run, cases, guideFile, stage = "function", runs 
   return Object.fromEntries(cases.map((c) => {
     const f = path.join(ROOT, "traces", run, c, `attribution-${stage}.json`)
     const j = fs.existsSync(f) ? JSON.parse(read(f)) : { issues: [] }
-    return [c, { 缺规则: j.issues.filter((i) => i.rule === "缺规则").length, 规则不清楚: j.issues.filter((i) => i.rule === "规则不清楚").length, 没被照做: j.issues.filter((i) => i.rule === "没被照做").length, dropped: j.dropped?.length ?? 0 }]
+    const by = (k) => j.issues.filter((i) => i.cause === k).length
+    return [c, { 组件库: by("组件库"), 指南: by("指南"), dropped: j.dropped?.length ?? 0 }]
   }))
 }
 
