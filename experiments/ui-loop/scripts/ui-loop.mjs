@@ -7,11 +7,12 @@
 // The Skill's samples are split in skills/split.json: training samples are what the Maintainer
 // and the Reviser learn from; held-out samples are only used to accept or reject a change.
 //
-// Three stages, in order; the pages move to the next stage when they pass this one:
+// Two stages, in order; the pages move on when they pass the first:
 //   program    program checks (shoot.mjs)                       pass: no findings on any page
-//   function   需求 judge: which version is more convenient     pass: no open 需求 problem on the training pages
 //   aesthetic  审美 judge: rubric31, which is better designed    (last stage; runs until a stop)
-// Both judges compare two versions of a page (compare.mjs), in both orders: a verdict counts when
+// (The 需求 judge is left out: it disagreed with people, e.g. it accepted a change that made the
+// pages worse because the change solved the problem it was asked to check.)
+// The judge compares two versions of a page (compare.mjs), in both orders: a verdict counts when
 // both orders pick the same version, and the better version's remaining problems count when both
 // orders name them. After each stage's checks the Maintainer generalises the training pages'
 // findings into problems, each 组件不够 or 布局问题 (experience.json / experience.md); in a judge
@@ -22,8 +23,7 @@
 //   2. Edit       the agent edits each current page for that one change (not from scratch)
 //   3. Gate       on the held-out samples:
 //                   program    fewer findings, no page with more
-//                   function   需求 judge, 3 rounds: no sample lost, at least half won; program checks not worse
-//                   aesthetic  审美 judge, the same; program checks and 需求 judge not worse (no sample lost)
+//                   aesthetic  审美 judge, 3 rounds: no sample lost, at least half won; program checks not worse
 //   4. Record     the training pages are compared once, current against candidate; the Recorder
 //                 (recorder.mjs) writes what the change did there, 成功 / 失败 / 没效果, and the gate's
 //                 results → record.json / changelog.md, accepted or not
@@ -62,7 +62,7 @@ const GUIDES = path.join(DIR, "guides")
 const STATE = path.join(DIR, "state.json")
 const EXP = path.join(DIR, "experience.md")
 const LOG = path.join(DIR, "changelog.md")
-const STAGES = ["program", "function", "aesthetic"]
+const STAGES = ["program", "aesthetic"]
 const STAGE_NAME = { program: "程序检查", function: "需求 judge", aesthetic: "审美 judge" }
 const read = (f) => fs.readFileSync(f, "utf8")
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), `[${SK}]`, ...a)
@@ -109,10 +109,9 @@ const open = (pick) => {
 }
 // Compare two runs on training pages. remember: the comparison is about the current pages (the
 // first look, or an accepted candidate), so the Maintainer reads it for those pages from now on.
-// focus: in the 需求 stage, the problems the candidate set out to fix; the judge checks them first.
-async function judgeTrain(a, b, cases, remember, focus) {
-  log(`训练页 ${cases.join(",")} 上比较 ${a} 和 ${b}(${STAGE_NAME[state.stage]},1 轮 × 两种顺序${focus ? `,先核对 ${focus.length} 个上一轮的问题` : ""})`)
-  await compare(a, b, cases, 1, state.stage, { focus })
+async function judgeTrain(a, b, cases, remember) {
+  log(`训练页 ${cases.join(",")} 上比较 ${a} 和 ${b}(${STAGE_NAME[state.stage]},1 轮 × 两种顺序)`)
+  await compare(a, b, cases, 1, state.stage)
   if (!remember) return
   state.judged ??= {}
   state.judged[state.stage] = { ...(state.judged[state.stage] ?? {}), ...Object.fromEntries(cases.map((c) => [c, [a, b]])) }
@@ -122,7 +121,7 @@ async function judgeTrain(a, b, cases, remember, focus) {
 // ---------- Reviser ----------
 async function revise(name) {
   const cur = read(path.join(GUIDES, `${state.current}.md`))
-  const sys = `你负责修改「${NAME}」这个 Skill 的输出指南。生成 Agent 按公共规范 design.md、组件库 components.md 和这份指南为这个 Skill 的报告写页面。页面依次经过程序检查、需求 judge(哪版更方便操作)、审美 judge(哪版更好看),两个 judge 都是新旧两版两两比较,现在在「${STAGE_NAME[state.stage]}」这一步。你每次只改一条规则,改动在留出的验证样本上通过把关才会被采用;验证样本你看不到。
+  const sys = `你负责修改「${NAME}」这个 Skill 的输出指南。生成 Agent 按公共规范 design.md、组件库 components.md 和这份指南为这个 Skill 的报告写页面。页面依次经过程序检查、审美 judge(哪版更好看),审美 judge 是新旧两版两两比较,现在在「${STAGE_NAME[state.stage]}」这一步。你每次只改一条规则,改动在留出的验证样本上通过把关才会被采用;验证样本你看不到。
 
 要求:
 - 只改输出指南;公共规范和组件库不归你改,不要在指南里重复公共规范已有的内容。
@@ -148,7 +147,7 @@ async function revise(name) {
     next = next.replace(/^# 输出指南 .*$/m, `# 输出指南 · ${NAME} ${name}(候选,基于 ${state.current})`)
     fs.writeFileSync(path.join(GUIDES, `${name}.md`), next)
     fs.mkdirSync(path.join(DIR, "changes"), { recursive: true })
-    // The problems this change sets out to fix, in their words now: the 需求 judge checks them first.
+    // The problems this change sets out to fix, in their words now.
     const basis = Object.fromEntries(open(() => true).map((p) => [p.id, p.problem]))
     r.problems = (r.basis ?? []).filter((id) => basis[id]).map((id) => ({ id, problem: basis[id] }))
     fs.writeFileSync(path.join(DIR, "changes", `${name}.json`), JSON.stringify(r, null, 1))
@@ -161,8 +160,7 @@ async function revise(name) {
 // ---------- gate ----------
 const mark = (x) => (x === "b" ? "赢" : x === "a" ? "输" : "平")
 const worse = (a, b) => HOLD.filter((c) => b[c] > a[c])
-const focusOf = (change) => (state.stage === "function" && change.problems?.length ? change.problems.map((p) => p.problem) : undefined)
-async function gate(base, cand, touched, change) {
+async function gate(base, cand, touched) {
   log(`门禁:验证页 ${HOLD.join(",")},${base}(当前版)对 ${cand}(候选)`)
   const fp = [findings(base, HOLD), findings(cand, HOLD)]
   log(`门禁 · 程序检查:${HOLD.map((c) => `${c} ${fp[0][c]}→${fp[1][c]}`).join(",")}`)
@@ -174,11 +172,9 @@ async function gate(base, cand, touched, change) {
   if (out.program.candidate > out.program.current) return { ...out, accept: false, why: `程序检查问题从 ${out.program.current} 个增加到 ${out.program.candidate} 个` }
   const hold = touched.filter((c) => HOLD.includes(c))
   if (!hold.length) return { ...out, accept: false, why: "验证样本的页面都没有改动,无法验证" }
-  // This stage's judge decides; the 需求 judge, an earlier stage in the 审美 stage, only must not lose.
   for (const kind of STAGES.slice(1, STAGES.indexOf(state.stage) + 1)) {
     log(`门禁 · ${STAGE_NAME[kind]}:验证页 ${hold.join(",")},3 轮 × 两种顺序`)
-    // 需求 judge in its own stage: check the problems the change set out to fix first.
-    await compare(base, cand, hold, 3, kind, { focus: kind === state.stage ? focusOf(change) : undefined })
+    await compare(base, cand, hold, 3, kind)
     const g = summarize(base, cand, hold, 3, kind)
     out[kind] = g.perCase
     const verdicts = Object.values(g.perCase).map((x) => x.verdict)
@@ -259,11 +255,11 @@ while (true) {
   generate(cr, ALL, cand, state.currentRun, path.join(DIR, "changes", `${cand}.json`))
   const lines = Object.fromEntries(ALL.map((c) => [c, meta(cr, c).changedLines ?? 0]))
   const touched = ALL.filter((c) => lines[c] > 0)
-  const g = await gate(state.currentRun, cr, touched, change)
+  const g = await gate(state.currentRun, cr, touched)
   // What the change did on the training pages, accepted or not: the Recorder writes it down.
   const trainTouched = touched.filter((c) => TRAIN.includes(c))
   log(`门禁结果:${g.accept ? "采用" : `未采用(${g.why})`};接着在训练页 ${trainTouched.join(",") || "(都没改动)"} 上看这次改动的效果`)
-  if (state.stage !== "program" && trainTouched.length) await judgeTrain(state.currentRun, cr, trainTouched, g.accept, focusOf(change))
+  if (state.stage !== "program" && trainTouched.length) await judgeTrain(state.currentRun, cr, trainTouched, g.accept)
   const rec = await record({ skill: SK, stage: state.stage, base: state.current, baseRun: state.currentRun, run: cr, candidate: cand, change, gate: g, cases: trainTouched })
   log(`修改记录 ${cand}:${rec.result || "训练页没改动"}${rec.lesson ? `。教训:${rec.lesson}` : ""}`)
 

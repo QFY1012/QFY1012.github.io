@@ -19,7 +19,7 @@ const list = (x) => (Array.isArray(x) ? x : x ? [String(x)] : [])
 const SYSTEM = (name) => `你是「${name}」这个 Skill 的修改记录员。Reviser 每次改输出指南的一条规则,生成 Agent 按新规则改页面,然后在训练页上比较改动前后两版,每页按两种顺序各比一次。你给这次改动写一条记录,下次改规则的人先读它:失败的做法不再试,成功的做法保留。
 
 1. 做法:一句话写这次让页面怎么做,写读者看得懂的话,不抄规则原文。
-2. 效果:只记两种顺序都这么说的,只有一种顺序说的不算。解决了什么、带出了什么更不方便的地方,一条一句话,写清在页面哪一节。
+2. 效果:只记两种顺序都这么说的,只有一种顺序说的不算。解决了什么、带出了什么新问题,一条一句话,写清在页面哪一节。
 3. 结论:成功(改后更好,带出的问题比解决的轻)、失败(改后更差,或带出的问题比解决的重)、没效果(两版差不多,或两种顺序说法不一致)。门禁采没采用另外记,不影响你的结论。
 4. 教训:一句话,下次改规则该保留什么、避开什么。
 
@@ -35,6 +35,7 @@ function judgeEvidence(stage, base, run, cases) {
         顺序: o.order === "AB" ? "改动前先给" : "改动后先给",
         更好: side(o, j.better),
         理由: j.reason,
+        ...(j["1"] ? { 各条: Object.fromEntries(Object.keys(j).filter((k) => /^\d+$/.test(k)).map((k) => [k, { ...j[k], better: side(o, j[k].better) }])) } : {}),
         ...(j.checks ? { 上一轮的问题: list(j.checks).map((k) => ({ 问题: k.problem, 改动前: o.A === base ? k.A : k.B, 改动后: o.A === base ? k.B : k.A })) } : {}),
         ...(j.worse ? { 更不方便: list(j.worse).map((w) => ({ 哪版: side(o, w.version), 哪一节: w.where, 为什么: w.why })) } : {}),
         剩余问题: list(j.next),

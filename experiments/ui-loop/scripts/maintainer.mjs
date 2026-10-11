@@ -2,12 +2,12 @@
 // short list of problems, each one either 组件不够 (the library lacks a component) or 布局问题
 // (the components are there, the page puts them together badly; fixed in the output guide).
 // It generalises; it does not list: the same problem on many pages, or in several runs of the
-// 需求 judge, is one problem with its evidence. The list is the experience library
+// judge, is one problem with its evidence. The list is the experience library
 // (skills/<skill>/experience.json and .md): the Reviser takes the 布局问题, the component agent
 // the 组件不够 problems. Each call updates the list: recurring problems gain evidence, problems
 // that no longer show up are marked solved.
 //
-//   source judge.env && node scripts/maintainer.mjs --skill flow --run flow-g0 --stage program|function|aesthetic [--base flow-g0]
+//   source judge.env && node scripts/maintainer.mjs --skill flow --run flow-g0 --stage program|aesthetic [--base flow-g0]
 //
 // Stages, in order (a page goes on only when it passes): program checks (checks.json), then the
 // 需求 judge and the 审美 judge, both pairwise comparisons of --base against --run (compare.mjs):
@@ -22,7 +22,7 @@ const ROOT = path.resolve(import.meta.dirname, "..")
 const read = (f) => fs.readFileSync(f, "utf8")
 const STAGE = { program: "程序检查", function: "需求 judge", aesthetic: "审美 judge" }
 
-export const SYSTEM = (name) => `你是「${name}」这个 Skill 的 Maintainer。生成 Agent 按公共规范 design.md、这个 Skill 的输出指南和组件库 components.md 为报告写页面。页面依次经过三步检测:程序检查、需求 judge(哪版更方便操作)、审美 judge(哪版更好看),两个 judge 都是两版页面两两比较、每次按两种顺序各比一次。会给你某一步在训练样本每一页上的原始意见,同一个问题往往在很多页、很多次检查里重复出现。
+export const SYSTEM = (name) => `你是「${name}」这个 Skill 的 Maintainer。生成 Agent 按公共规范 design.md、这个 Skill 的输出指南和组件库 components.md 为报告写页面。页面依次经过两步检测:程序检查、审美 judge(哪版更好看),审美 judge 是两版页面两两比较、每次按两种顺序各比一次。会给你某一步在训练样本每一页上的原始意见,同一个问题往往在很多页、很多次检查里重复出现。
 
 你的任务是归纳问题,不是罗列意见:
 1. 合并:说的是同一件事的意见合并成一个问题,不管它出现在哪一页、哪一次检查。问题用一句话写清楚:页面上什么地方不对、对看报告的人有什么影响。写成对这个 Skill 的所有报告都成立的说法,不写某一页的行号、变量名这类细节。
@@ -34,7 +34,7 @@ export const SYSTEM = (name) => `你是「${name}」这个 Skill 的 Maintainer�
 4. 更新:已有的问题清单一并给你。同一个问题再次出现就沿用它的 id,更新页数和证据;只解决了一部分的,原问题 status 写「已解决」,没解决的部分作为新问题、用新 id;这一步的原始意见里已经没有它的,status 写「已解决」(只对同一步的问题这样判断,别的步骤的问题原样保留);新问题用新 id。
 5. 证据:每个问题写出现在哪几页,以及两三条原始意见的摘要。
 
-只输出 JSON:{"problems":[{"id":"P-01","stage":"程序检查 或 需求 judge 或 审美 judge","problem":"一句话","cause":"组件不够 或 布局问题","good":"赢的做法,没有写空字符串","pages":["f1"],"evidence":["f1:原始意见摘要"],"status":"未解决 或 已解决"}]}`
+只输出 JSON:{"problems":[{"id":"P-01","stage":"程序检查 或 审美 judge","problem":"一句话","cause":"组件不够 或 布局问题","good":"赢的做法,没有写空字符串","pages":["f1"],"evidence":["f1:原始意见摘要"],"status":"未解决 或 已解决"}]}`
 
 // A judge stage's comparisons, page by page: pairs maps a page to the two runs compared on it
 // (a page the last candidate left unchanged keeps its earlier comparison). Both orders' verdicts
