@@ -567,7 +567,8 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
         }
       }
       if (!text) throw new Error(`服务端返回空回复(finish_reason ${finish ?? "无"},输出 ${usage?.completion_tokens ?? 0} token)`)
-      return { json: JSON.parse(text), raw: text, usage, latencyMs: Date.now() - t0 }
+      // Some replies wrap the JSON in a ```json fence despite response_format.
+      return { json: JSON.parse(text.trim().replace(/^```(?:json)?\s*|\s*```$/g, "")), raw: text, usage, latencyMs: Date.now() - t0 }
     } catch (e) {
       if (attempt >= 3) throw e
       // Say so, so a slow or failing endpoint is visible while it happens.
