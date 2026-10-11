@@ -75,7 +75,7 @@ export default function Report() {
             where: c.where,
             colors: `${c.fg} / ${c.bg}`,
             ratio: c.ratio,
-            required: c.required,
+            required: c.required.toFixed(1),
             result: c.pass ? "达标" : "不达标",
             pass: c.pass,
           }))}
@@ -168,8 +168,9 @@ export default function Report() {
             labelCols={1}
             items={[
               { label: "位置", value: fix.where },
-              { label: "现状", value: `${fix.from} 于 ${fix.bg},${fix.before}:1` },
-              { label: "建议", value: `${fix.to},${fix.after}:1` },
+              { label: "现状", value: `${fix.from} 于 ${fix.bg}` },
+              { label: "建议", value: `改用 ${fix.to}` },
+              { label: "对比度", value: `${fix.before}:1 → ${fix.after}:1` },
             ]}
           />
         </Grid>

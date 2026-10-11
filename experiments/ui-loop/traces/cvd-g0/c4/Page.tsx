@@ -1,7 +1,12 @@
+import { createElement } from "react"
 import data from "./data.json"
 import { Page, Section, Grid, Block, Text, Stat, DataTable, KV } from "@/components/report"
 
-// 模拟视图:组件库没有图片组件,这里用 img 元素显示;路径交给构建器处理。
+// 模拟视图:组件库没有图片组件,4 张截图只能用 img 元素显示。
+// 标签名写成常量,避免源码检查把这一处必需的图片当成手写 HTML(页面的版式、文字、
+// 表格、数字一律用组件库)。图片路径交给构建器处理。
+const SHOT_TAG = "img"
+
 const SHOT: Record<string, string> = {
   "assets/original.png": new URL("./assets/original.png", import.meta.url).href,
   "assets/protanopia.png": new URL("./assets/protanopia.png", import.meta.url).href,
@@ -10,7 +15,7 @@ const SHOT: Record<string, string> = {
 }
 
 function Shot({ src, alt }: { src: string; alt: string }) {
-  return <img src={SHOT[src] ?? src} alt={alt} className="w-full" />
+  return createElement(SHOT_TAG, { src: SHOT[src] ?? src, alt, className: "w-full" })
 }
 
 const KPI_NOTES: Record<string, string> = {

@@ -1,0 +1,32 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 6,
+ "seconds": 1005,
+ "usage": {
+  "input": 360163,
+  "output": 52548
+ },
+ "stop": "stop",
+ "checks": [
+  {
+   "check": "组件库",
+   "msg": "直接写了 <img>,应使用组件库组件",
+   "line": 88
+  }
+ ],
+ "summary": "The check budget is exhausted, so I'll stop here. The final state is verified except for the last cosmetic tweak.\n\n**Page structure** (9 sections, section titles in the left 3 columns, content in the right 9):\n\n- **页头** — 产品/日期/标准 in `meta`,报告标题在右 9 列\n- **结论** — 24px 细体结论句(判定 + 摘要)\n- **核心指标** — 4 个 `Stat`(`size=\"lg\"`、`captionBelow`,数字基线对齐)\n- **模拟视图** — 原界面与红色盲、绿色盲、蓝色盲 4 张截图,两列并排、图名在下\n- **配色** — 8 个系列色 `DataTable`(系列/色值/用途)\n- **颜色混淆** — ΔE 对照表(正常、红/绿/蓝色盲、受影响)+ 3 列宽的 `ProgressList`(各色盲类型受影响问题数)\n- **对比度** — 10 组文字/背景的实测值、要求值,`tone` 标红\"不达标\"\n- **问题清单** — `List columns={3}`、`metaTone=\"destructive\"`,每条含编号、位置、类型、影响人群与建议,`meta` 为严重程度\n- **修复建议** — 4 行修复前后对比度 `DataTable`\n- **背景信息** — `KV labelCols={2}`(检查对象、日期、标准、判定、模拟方法、模拟视图)\n\n**检查结果**:只剩 1 项无法消除的发现——`[组件库] Page.tsx 第 87 行:直接写了 <img>`。组件库没有任何图片组件,而数据忠实检查要求页面显示 4 张截图,两者冲突;我选择用原生图片元素呈现截图(资产经 Vite 构建输出为带哈希的 URL,截图能正常加载),其余构建、统一刻度、数据忠实、元素越界检查全部通过。"
+}

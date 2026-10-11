@@ -72,6 +72,7 @@ export default function Report() {
               key={k.key}
               span={3}
               size="lg"
+              captionBelow
               value={k.value}
               unit={k.unit}
               label={k.label}
