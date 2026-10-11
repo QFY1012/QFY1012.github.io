@@ -1,0 +1,26 @@
+{
+ "case": "f6",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 119,
+ "usage": {
+  "input": 58611,
+  "output": 12485
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已通过程序检查（构建、组件库、统一刻度、数据忠实、元素越界），截图核对也无问题。\n\n**页面结构**（`Page` 页头：左侧产品/周期，右侧标题「交互流程挖掘 · 预订机票」；每节标题在左 3 列，内容在右 9 列）：\n\n1. **结论** — 一句话判断，24px 细体，占满 9 列\n2. **核心指标** — 4 个 `Stat`（48px 细体、数字在上说明在下），一行 3 个\n3. **产品对比** — `DataTable`：产品 / 步骤数（带细条）/ 输入项 / 结论\n4. **环节对比** — `DataTable`：5 个环节 × 4 款产品的做法对照\n5. **共性模式** — `List` `numbered`，4 条模式 + 涉及产品\n6. **流程明细** — 每款产品一张 `DataTable`（步骤 / 页面 / 内容 / 操作 / 输入 / 问题），表下标注版本与结论，组间 48px\n7. **问题清单** — `List` `columns={3}`，风险等级用红色 `meta`\n8. **下一步** — `List` `columns={3}` `numbered`，4 条建议附依据\n9. **背景信息** — `KV` `labelCols={2}`：任务、范围、产品版本、数据日期"
+}
