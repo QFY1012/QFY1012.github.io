@@ -106,9 +106,10 @@ const open = (pick) => {
 }
 // Compare two runs on training pages. remember: the comparison is about the current pages (the
 // first look, or an accepted candidate), so the Maintainer reads it for those pages from now on.
-async function judgeTrain(a, b, cases, remember) {
-  log(`训练页 ${cases.join(",")} 上比较 ${a} 和 ${b}(${STAGE_NAME[state.stage]},1 轮 × 两种顺序)`)
-  await compare(a, b, cases, 1, state.stage)
+// focus: in the 需求 stage, the problems the candidate set out to fix; the judge checks them first.
+async function judgeTrain(a, b, cases, remember, focus) {
+  log(`训练页 ${cases.join(",")} 上比较 ${a} 和 ${b}(${STAGE_NAME[state.stage]},1 轮 × 两种顺序${focus ? `,先核对 ${focus.length} 个上一轮的问题` : ""})`)
+  await compare(a, b, cases, 1, state.stage, { focus })
   if (!remember) return
   state.judged ??= {}
   state.judged[state.stage] = { ...(state.judged[state.stage] ?? {}), ...Object.fromEntries(cases.map((c) => [c, [a, b]])) }
@@ -144,6 +145,9 @@ async function revise(name) {
     next = next.replace(/^# 输出指南 .*$/m, `# 输出指南 · ${NAME} ${name}(候选,基于 ${state.current})`)
     fs.writeFileSync(path.join(GUIDES, `${name}.md`), next)
     fs.mkdirSync(path.join(DIR, "changes"), { recursive: true })
+    // The problems this change sets out to fix, in their words now: the 需求 judge checks them first.
+    const basis = Object.fromEntries(open(() => true).map((p) => [p.id, p.problem]))
+    r.problems = (r.basis ?? []).filter((id) => basis[id]).map((id) => ({ id, problem: basis[id] }))
     fs.writeFileSync(path.join(DIR, "changes", `${name}.json`), JSON.stringify(r, null, 1))
     log(`reviser ${name}: ${r.rule} — ${r.why}`)
     return r
@@ -154,7 +158,8 @@ async function revise(name) {
 // ---------- gate ----------
 const mark = (x) => (x === "b" ? "赢" : x === "a" ? "输" : "平")
 const worse = (a, b) => HOLD.filter((c) => b[c] > a[c])
-async function gate(base, cand, touched) {
+const focusOf = (change) => (state.stage === "function" && change.problems?.length ? change.problems.map((p) => p.problem) : undefined)
+async function gate(base, cand, touched, change) {
   log(`门禁:验证页 ${HOLD.join(",")},${base}(当前版)对 ${cand}(候选)`)
   const fp = [findings(base, HOLD), findings(cand, HOLD)]
   log(`门禁 · 程序检查:${HOLD.map((c) => `${c} ${fp[0][c]}→${fp[1][c]}`).join(",")}`)
@@ -169,7 +174,8 @@ async function gate(base, cand, touched) {
   // This stage's judge decides; the 需求 judge, an earlier stage in the 审美 stage, only must not lose.
   for (const kind of STAGES.slice(1, STAGES.indexOf(state.stage) + 1)) {
     log(`门禁 · ${STAGE_NAME[kind]}:验证页 ${hold.join(",")},3 轮 × 两种顺序`)
-    await compare(base, cand, hold, 3, kind)
+    // 需求 judge in its own stage: check the problems the change set out to fix first.
+    await compare(base, cand, hold, 3, kind, { focus: kind === state.stage ? focusOf(change) : undefined })
     const g = summarize(base, cand, hold, 3, kind)
     out[kind] = g.perCase
     const verdicts = Object.values(g.perCase).map((x) => x.verdict)
@@ -250,11 +256,11 @@ while (true) {
   generate(cr, ALL, cand, state.currentRun, path.join(DIR, "changes", `${cand}.json`))
   const lines = Object.fromEntries(ALL.map((c) => [c, meta(cr, c).changedLines ?? 0]))
   const touched = ALL.filter((c) => lines[c] > 0)
-  const g = await gate(state.currentRun, cr, touched)
+  const g = await gate(state.currentRun, cr, touched, change)
   // What the change did on the training pages, accepted or not: a tried change for the next Reviser.
   const trainTouched = touched.filter((c) => TRAIN.includes(c))
   log(`门禁结果:${g.accept ? "采用" : `未采用(${g.why})`};接着在训练页 ${trainTouched.join(",") || "(都没改动)"} 上看这次改动的效果`)
-  if (state.stage !== "program" && trainTouched.length) await judgeTrain(state.currentRun, cr, trainTouched, g.accept)
+  if (state.stage !== "program" && trainTouched.length) await judgeTrain(state.currentRun, cr, trainTouched, g.accept, focusOf(change))
   const tried = trainTouched.length ? await attempt({ skill: SK, stage: state.stage, base: state.currentRun, run: cr, candidate: cand, change, accepted: g.accept, why: g.why, cases: trainTouched }) : null
 
   const base = state.current, baseRun = state.currentRun, stage = state.stage

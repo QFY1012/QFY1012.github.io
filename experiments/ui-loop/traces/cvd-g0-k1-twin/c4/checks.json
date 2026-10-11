@@ -1,6 +1,0 @@
-[
- {
-  "check": "能渲染",
-  "msg": "构建失败:Build failed with 1 error:  \u001b[31m[MISSING_EXPORT] \u001b[0m\"default\" is not exported by \"Page.tsx\".    \u001b[38;5;246m╭\u001b[0m\u001b[38;5;246m─\u001b[0m\u001b[38;5;246m[\u001b[0m ../../../app/src/main.tsx:4:8 \u001b[38;5;246m]\u001b[0m    \u001b[38;5;246m│\u001b[0m  \u001b[38;5;246m4 │\u001b[0m \u001b[38;5;249mi\u001b[0m\u001b[38;5;249mm\u001b[0m\u001b[38;5;249mp\u001b[0m\u001b[38;5;249mo\u001b[0m\u001b[38;5;249mr\u001b[0m\u001b[38;5;249mt\u001b[0m\u001b[38;5;249m \u001b[0mPage\u001b[38;5;249m \u001b[0m\u001b[38;5;249mf\u001b[0m\u001b[38;5;249mr\u001b[0m\u001b[38;5;249mo\u001b[0m\u001b[38;5;249mm\u001b[0m\u001b[38;5;249m \u001b[0m\u001b[38;5;249m\"\u001b[0m\u001b[38;5;249m@\u001b[0m\u001b[38;5;249mp\u001b[0m\u001b[38;5;249ma\u001b[0m\u001b[38;5;249mg\u001b[0m\u001b[38;5;249me\u001b[0m\u001b[38;5;249m\"\u001b[0m\u001b[38;5;249m;\u001b[0m"
- }
-]

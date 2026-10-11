@@ -15,8 +15,8 @@ import crypto from "node:crypto"
 import { systemRubric31Next, call, img } from "../../ui-judge/scripts/pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
-// variant (需求 judge only, for trying a way of asking): focus = check the problems found before (the
-// ones the candidate set out to fix) in each version, then anything else.
+// variant names a folder for trying a way of asking (scripts/bias-test.mjs), so the trial does not mix
+// with the loop's comparisons.
 const dirOf = (a, b, kind, variant) => path.join(ROOT, "traces", "_compare", ...(kind === "function" ? [variant ? `function-${variant}` : "function"] : []), `${a}__${b}`)
 
 // rubric31 as calibrated, plus one question at the end: what the better page still gets wrong.
@@ -60,7 +60,8 @@ export async function compare(a, b, cases, rounds = 3, kind = "aesthetic", { var
   const KEY = process.env.DEEPSEEK_API_KEY
   const dir = dirOf(a, b, kind, variant)
   fs.mkdirSync(dir, { recursive: true })
-  const sys = kind === "function" ? systemFunction(variant) : systemAesthetic()
+  // With the problems found before (focus), the 需求 judge checks those first.
+  const sys = kind === "function" ? systemFunction(focus ? "focus" : variant) : systemAesthetic()
   const name = kind === "function" ? "需求 judge" : "审美 judge"
   const jobs = []
   for (const c of cases)
