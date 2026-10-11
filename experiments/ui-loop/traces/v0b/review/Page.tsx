@@ -132,7 +132,7 @@ export default function Report() {
         <DataTable columns={issueColumns} rows={issueRows} />
       </Section>
 
-      <Section title="下一步" description="建议排期与复查安排" className="gap-12">
+      <Section title="下一步" description="建议排期与复查安排">
         <Grid cols={9} fields={false}>
           <Block span={6} title="建议">
             <List

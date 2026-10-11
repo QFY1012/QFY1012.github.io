@@ -1,0 +1,19 @@
+{
+ "case": "review",
+ "design": {
+  "version": "v0b",
+  "file": "designs/v0.md",
+  "sha": "cbcfb0f5"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 572,
+ "usage": {
+  "input": 81096,
+  "output": 24698
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已完成，程序检查全部通过（构建、组件库、统一刻度、数据忠实、元素越界）。\n\n**页面结构**（`Page.tsx`，左 3 列节标题 / 右 9 列内容，无卡片、靠留白与细线分组）：\n\n- **页头**：`meta` 走查对象与日期，标题「体验走查报告」。\n- **结论**：24px 细体结论句，占满 9 列。\n- **核心指标**：3 个 `Stat`（综合得分 72 为主指标，48px 细体；未关闭问题 23、较上次修复 9 为普通大小），上次值/问题分布写进 `note`。\n- **随时间变化**：`TrendChart`（`height=\"fill\"`、只标最后一点）占 6 列，右侧 3 列「各版本问题数」小表给出精确数值。\n- **分维度**：3 列块里的 `ProgressList compact`，五个维度得分。\n- **分类别**：3 列 `ProgressList`（组件使用量）+ 6 列 `DataTable`（不规范用法，处数列带细条）。\n- **明细**：问题表，严重程度列用 `tone` 标红，列 span 合计 9。\n- **下一步**：6 列 `List ordered` 建议 + 3 列 `KV` 复查安排。\n- **背景信息**：`KV labelCols={2}` 收口走查范围与执行方式。"
+}
