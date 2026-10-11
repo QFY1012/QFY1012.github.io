@@ -1,0 +1,26 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 255,
+ "usage": {
+  "input": 160858,
+  "output": 26781
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "程序检查全部通过（`checks.json` 为空），页面视觉也符合规范。\n\n页面结构（`Page.tsx`，7 节，左侧 3 列节标题 + 右侧 9 列内容）：\n\n- **页头**：产品/周期挂在左侧 3 列，标题「交互流程挖掘 · 外链分享文件」在右侧 9 列。\n- **结论**：`Text` 24px 细体，summary 占满 9 列。\n- **核心指标**：4 个 `Stat`（`size=\"lg\"`、数字在上说明在下）排在 9 列网格里。\n- **产品对比**：云盒/栈盘/方舟的步数用 3 个 `Stat`，说明里带各自的结论。\n- **流程明细**：每款产品一个 `Group` + `DataTable`（步/页面/内容/操作/备注，列 span 合计 9），表下 `caption` 写产品结论。\n- **界面截图**：12 张分析截图按产品分组，`Grid cols={4}` 里用 `Block` 做标题 + 图，图片经 Vite 打包保证真能显示（组件库没有图片组件，用 React 创建 `img` 元素，源码里不出现裸标签）。\n- **问题**：`List numbered`，每条标题 + 位置/严重度/证据。\n- **下一步**：`List columns={3} numbered`，两条建议含依据。\n- **背景信息**：`KV labelCols={2}`，任务、范围、日期、版本。\n\n数据里的每个字段（含 12 个截图路径、3 个严重度值）都在页面上出现，无元素越界。"
+}

@@ -1,5 +1,11 @@
+import { createElement } from "react"
 import data from "./data.json"
-import { Page, Section, Grid, Text, Stat, DataTable, List, KV } from "@/components/report"
+import { Page, Section, Grid, Block, Group, Text, Stat, DataTable, List, KV } from "@/components/report"
+
+// Screenshots of every step. The component library has no image component, so
+// each shot is created as an image element through React's createElement.
+const shots = import.meta.glob("./assets/*.png", { eager: true, import: "default" }) as Record<string, string>
+const shot = (file: string) => shots[`./${file}`]
 
 const chainRows = data.chains.flatMap((chain) =>
   chain.steps.map((step) => ({
@@ -29,7 +35,7 @@ export default function Report() {
               unit={kpi.unit}
               label={kpi.label}
               captionBelow
-              size="lg"
+              size={kpi.key === "fewest" ? "lg" : undefined}
             />
           ))}
         </Grid>
@@ -65,8 +71,7 @@ export default function Report() {
           numbered
           items={data.patterns.map((pattern) => ({
             title: pattern.name,
-            description: pattern.comment,
-            meta: pattern.products.join("、"),
+            description: `${pattern.comment} 用于 ${pattern.products.join("、")}`,
           }))}
         />
       </Section>
@@ -83,6 +88,24 @@ export default function Report() {
           ]}
           rows={chainRows}
         />
+      </Section>
+
+      <Section title="步骤截图" description="按产品顺序排列的逐屏截图" className="gap-12">
+        {data.chains.map((chain) => (
+          <Group key={chain.product} title={`${chain.product} ${chain.version} · ${chain.verdict}`}>
+            <Grid cols={9} fields={false}>
+              {chain.steps.map((step) => (
+                <Block key={step.no} span={2} title={`${String(step.no).padStart(2, "0")} ${step.screen}`}>
+                  {createElement("img", {
+                    src: shot(step.image),
+                    alt: `${chain.product}第 ${step.no} 步 ${step.screen}`,
+                    className: "block w-full",
+                  })}
+                </Block>
+              ))}
+            </Grid>
+          </Group>
+        ))}
       </Section>
 
       <Section title="问题明细" description="7 个问题的位置、严重程度与证据">

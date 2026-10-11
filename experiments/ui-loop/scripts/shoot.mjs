@@ -46,6 +46,8 @@ src.split("\n").forEach((line, i) => {
   if (c) add("统一刻度", `直接写了颜色类名 ${c[0]};颜色只能来自组件(下降、严重用组件的 direction、tone)`, n)
   for (const m of line.matchAll(/\btext-(xs|sm|base|lg|xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)\b/g)) add("统一刻度", `字号类名 ${m[0]} 不在规范里(只允许结论句的 text-2xl)`, n)
   for (const m of line.matchAll(/<(h[1-6]|p|span|table|ul|ol|li|img|svg|button)\b/g)) add("组件库", `直接写了 <${m[1]}>,应使用组件库组件`, n)
+  // The same tags through createElement / jsx() are the same thing written another way.
+  for (const m of line.matchAll(/\b(?:createElement|jsxs?)\(\s*["'`]([a-z][a-z0-9]*)["'`]/g)) if (m[1] !== "div") add("组件库", `用 createElement 直接画了 <${m[1]}>,应使用组件库组件`, n)
 })
 
 // ---------- build ----------

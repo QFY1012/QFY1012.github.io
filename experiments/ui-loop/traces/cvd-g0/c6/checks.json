@@ -1,10 +1,7 @@
 [
  {
-  "check": "数据忠实",
-  "msg": "页面上没有显示 4 张图:assets/original.png、assets/protanopia.png、assets/deuteranopia.png、assets/tritanopia.png"
- },
- {
-  "check": "数据忠实",
-  "msg": "页面上找不到 4 项数据:/summary「课程表用 9 种底色区分课程类别,全部是浅底配白」、/issues/2/suggestion「两类之一改用蓝紫色系」、/issues/3/suggestion「合并为一类或换色」、/issues/4/suggestion「考试加粗边框」"
+  "check": "组件库",
+  "msg": "用 createElement 直接画了 <img>,应使用组件库组件",
+  "line": 19
  }
 ]

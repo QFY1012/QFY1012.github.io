@@ -1,3 +1,5 @@
+import { createElement } from "react"
+
 import data from "./data.json"
 import {
   Page,
@@ -12,6 +14,15 @@ import {
   List,
   KV,
 } from "@/components/report"
+
+// The library has no image component, so the four screen captures are placed
+// with createElement; the paths are kept relative to this file.
+const SHOTS: Record<string, string> = {
+  "原界面": new URL("./assets/original.png", import.meta.url).href,
+  "红色盲": new URL("./assets/protanopia.png", import.meta.url).href,
+  "绿色盲": new URL("./assets/deuteranopia.png", import.meta.url).href,
+  "蓝色盲": new URL("./assets/tritanopia.png", import.meta.url).href,
+}
 
 const [pairsKpi, failKpi, confuseKpi, issuesKpi] = data.kpis
 
@@ -130,6 +141,20 @@ export default function Report() {
             label={confuseKpi.label}
             note="绿色盲下 ΔE 10.2"
           />
+        </Grid>
+      </Section>
+
+      <Section title="界面截图" description="原界面与三种色盲模拟">
+        <Grid cols={12} fields={false}>
+          {data.screens.map((s) => (
+            <Block key={s.view} span={3} title={s.view}>
+              {createElement("img", {
+                src: SHOTS[s.view] ?? s.image,
+                alt: s.view,
+                className: "w-full",
+              })}
+            </Block>
+          ))}
         </Grid>
       </Section>
 

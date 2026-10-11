@@ -1,9 +1,22 @@
+import * as React from "react"
 import data from "./data.json"
-import { Page, Section, Group, Grid, Text, Stat, DataTable, List, KV } from "@/components/report"
+import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, List, KV } from "@/components/report"
 
 const kpis: Record<string, { label: string; value: number; unit: string }> = Object.fromEntries(
   data.kpis.map((k) => [k.key, k]),
 )
+
+// The library has no image component, so the simulated screens are drawn as plain
+// images; Vite emits the four files next to the page.
+const SHOTS: Record<string, string> = {
+  "assets/original.png": new URL("./assets/original.png", import.meta.url).href,
+  "assets/protanopia.png": new URL("./assets/protanopia.png", import.meta.url).href,
+  "assets/deuteranopia.png": new URL("./assets/deuteranopia.png", import.meta.url).href,
+  "assets/tritanopia.png": new URL("./assets/tritanopia.png", import.meta.url).href,
+}
+
+const shot = (file: string, alt: string) =>
+  React.createElement("img", { key: file, src: SHOTS[file] ?? file, alt, className: "w-full" })
 
 const contrastRows = data.contrast.map((c) => ({
   where: c.where,
@@ -29,13 +42,17 @@ const issueRows = data.issues.map((i) => ({
   severity: i.severity,
 }))
 
+const suggestionRows = data.issues.map((i) => ({
+  id: i.id,
+  affects: i.affects.length > 0 ? i.affects.join("、") : "—",
+  suggestion: i.suggestion,
+}))
+
 export default function Report() {
   return (
     <Page title={data.title} meta={[data.target, data.date]}>
-      <Section title="结论" description={`依据标准 ${data.standard}`}>
-        <Text className="text-2xl leading-9 font-light">
-          不友好:课程表用 9 种底色区分课程类别,全部是浅底白字,文字对比度普遍不足;色盲模拟下多对颜色难以区分,类别名称只在第一次出现时标注一次。
-        </Text>
+      <Section title="结论" description={`依据 ${data.standard} 检查`}>
+        <Text className="text-2xl leading-9 font-light">{`${data.verdict}:${data.summary}`}</Text>
       </Section>
 
       <Section title="核心指标" description="本轮检查 9 组文字与底色组合的结果">
@@ -71,6 +88,16 @@ export default function Report() {
             unit={kpis.issues.unit}
             label={kpis.issues.label}
           />
+        </Grid>
+      </Section>
+
+      <Section title="模拟视图" description="按 Machado 2009 模型模拟出的屏幕">
+        <Grid cols={2} fields={false}>
+          {data.screens.map((s) => (
+            <Block key={s.view} title={s.view}>
+              {shot(s.image, s.view)}
+            </Block>
+          ))}
         </Grid>
       </Section>
 
@@ -122,20 +149,32 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="问题清单" description="7 个问题按严重程度排列">
-        <DataTable
-          columns={[
-            { key: "id", label: "编号", span: 1 },
-            { key: "title", label: "问题", span: 3 },
-            { key: "type", label: "类型", span: 2 },
-            { key: "location", label: "位置", span: 2 },
-            { key: "severity", label: "严重", span: 1, tone: ["高"] },
-          ]}
-          rows={issueRows}
-        />
+      <Section title="问题清单" description="7 个问题与对应的修改建议" className="gap-12">
+        <Group title="问题">
+          <DataTable
+            columns={[
+              { key: "id", label: "编号", span: 1 },
+              { key: "title", label: "问题", span: 3 },
+              { key: "type", label: "类型", span: 2 },
+              { key: "location", label: "位置", span: 2 },
+              { key: "severity", label: "严重", span: 1, tone: ["高"] },
+            ]}
+            rows={issueRows}
+          />
+        </Group>
+        <Group title="修改建议">
+          <DataTable
+            columns={[
+              { key: "id", label: "编号", span: 1 },
+              { key: "affects", label: "受影响色觉类型", span: 4 },
+              { key: "suggestion", label: "建议", span: 4 },
+            ]}
+            rows={suggestionRows}
+          />
+        </Group>
       </Section>
 
-      <Section title="下一步" description="对比度、标签、配色三方面的修改建议">
+      <Section title="下一步" description="优先处理的三件事">
         <List
           columns={3}
           numbered

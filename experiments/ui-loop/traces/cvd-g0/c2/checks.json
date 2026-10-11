@@ -1,0 +1,14 @@
+[
+ {
+  "check": "元素越界",
+  "msg": "div[progress-indicator] 超出页面左右边界 352px「」"
+ },
+ {
+  "check": "数据忠实",
+  "msg": "页面上没有显示 4 张图:assets/original.png、assets/protanopia.png、assets/deuteranopia.png、assets/tritanopia.png"
+ },
+ {
+  "check": "数据忠实",
+  "msg": "页面上找不到 2 项数据:/screens/0/view「原界面」、/issues/1/location「顶部标题」"
+ }
+]
