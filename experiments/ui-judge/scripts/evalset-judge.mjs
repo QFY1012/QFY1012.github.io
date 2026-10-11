@@ -139,13 +139,17 @@ async function judge() {
       const job = jobs.shift()
       const file = path.join(OUT, job.file)
       if (fs.existsSync(file)) { done++; continue }
+      const t0 = Date.now()
+      console.log(`  ${job.file} 开始`)
       try {
-        fs.writeFileSync(file, JSON.stringify({ cond: COND, effort: JUDGE_EFFORT, ...(await job.run()) }, null, 1))
+        const r = await job.run()
+        fs.writeFileSync(file, JSON.stringify({ cond: COND, effort: JUDGE_EFFORT, ...r }, null, 1))
+        console.log(`  ${job.file}:选 ${r.json?.better}(${Math.round((Date.now() - t0) / 1000)} 秒;${++done}/${total})`)
       } catch (e) {
         failed++
-        console.error(`FAIL ${job.file}: ${e.message}`)
+        done++
+        console.log(`  ✗ ${job.file} 失败:${e.message.slice(0, 120)}`)
       }
-      if (++done % 25 === 0) console.log(`${done}/${total}`)
     }
   }
   // dims-sep sends seven calls per job at once

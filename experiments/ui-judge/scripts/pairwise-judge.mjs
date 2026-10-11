@@ -47,6 +47,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric29      rubric9 reworded in design and CSS terms, same content
 //   rubric30      rubric29, criterion 1 compares whitespace (more is better; crowding worse than an almost empty screen)
 //   rubric31      rubric29, criterion 1 asks which whitespace fits better (too little and too much both count)
+//   rubric31next  rubric31 plus a last question: what the better page still gets wrong (for the UI loop)
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -385,6 +386,10 @@ export const RUBRIC_31 = RUBRIC_29.map((p, i) => i === 0 ? {
   see: "最挤的一屏有几种内容模块、模块间距约几个 line-height、有没有大半空白的一屏",
 } : p)
 export const systemRubric31 = () => systemRubricOf(RUBRIC_31)
+// rubric31next: rubric31 word for word, plus one question at the end for the UI loop: what the
+// better page still gets wrong (fed to the next round); the verdict part is unchanged.
+export const NEXT_AESTHETIC = "最后,按上面的标准列出更好的那版还剩的视觉问题,写清在哪里、是什么问题,给下一轮修改参考;没有就返回空列表。"
+export const systemRubric31Next = () => systemRubric31().replace(/\n只输出 JSON:\{(.*)\}$/s, (_, body) => `\n${NEXT_AESTHETIC}\n只输出 JSON:{${body},"next":[{"where":"页面上的哪一部分","problem":"什么问题"}]}`)
 // Built from rubric7's own prompt so nothing else differs from it.
 export const systemRubric28 = () => systemRubric7()
   .replace(`1. 疏朗:${RUBRIC_7[0].rule}`, `1. 疏朗:${RUBRIC_28[0].rule}`)
@@ -501,6 +506,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric29") return systemRubric29()
   if (cond === "rubric30") return systemRubric30()
   if (cond === "rubric31") return systemRubric31()
+  if (cond === "rubric31next") return systemRubric31Next()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
