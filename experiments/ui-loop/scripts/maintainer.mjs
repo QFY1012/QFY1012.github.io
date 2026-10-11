@@ -56,13 +56,16 @@ function stageInput(stage, run, cases, pairs, current) {
     `<Page.tsx>\n${read(path.join(ws(c), "Page.tsx"))}\n</Page.tsx>`, `</页面 ${c}>`].join("\n")).join("\n\n")
 }
 
+// A list the model sometimes writes as one string.
+const list = (x) => (Array.isArray(x) ? x : x ? [String(x)] : [])
+
 // experience.json and the experience.md the Reviser and the component agent read.
 function save(dir, name, exp) {
   fs.writeFileSync(path.join(dir, "experience.json"), JSON.stringify(exp, null, 1))
   const { problems, attempts } = exp
   const open = problems.filter((p) => p.status !== "已解决")
   const line = (p) => `- **${p.id}**(${p.stage},${p.pages.length} 页):${p.problem}${p.good ? `\n  - 赢的做法:${p.good}` : ""}\n  - 证据:${p.evidence.join(";")}`
-  const tried = (a) => `- **${a.candidate}**(${a.stage},规则 ${a.rule},${a.accepted ? "采用" : `未采用:${a.why}`}):${a.summary}依据 ${a.basis.join("、")}。\n  - 解决了:${a.fixed.join("、") || "无"};没解决:${a.unfixed.join("、") || "无"}\n  - 带出的新问题:${a.new.join(";") || "无"}\n  - 经验:${a.lesson}`
+  const tried = (a) => `- **${a.candidate}**(${a.stage},规则 ${a.rule},${a.accepted ? "采用" : `未采用:${a.why}`}):${a.summary}依据 ${list(a.basis).join("、")}。\n  - 解决了:${list(a.fixed).join("、") || "无"};没解决:${list(a.unfixed).join("、") || "无"}\n  - 带出的新问题:${list(a.new).join(";") || "无"}\n  - 经验:${a.lesson}`
   fs.writeFileSync(path.join(dir, "experience.md"), [
     `# 问题清单 · ${name}`, "",
     `Maintainer 从训练样本的检测结果归纳,每步更新(最近一次:${exp.updated.run},${exp.updated.stage})。Reviser 读「布局问题」和「试过的改法」,组件 Agent 读「组件不够」。`, "",
@@ -84,7 +87,7 @@ export async function maintain({ skill, run, stage, guide, pairs, current }) {
   process.stdout.write(`\n── Maintainer · ${split.name} · ${STAGE[stage]} · ${run}\n`)
   const r = await call(SYSTEM(split.name), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, label: `Maintainer ${split.name}`, onThink: (s) => process.stdout.write(`[思考中… ${s} 秒]\n`), onText: (t) => process.stdout.write(t) })
   process.stdout.write("\n")
-  const problems = r.json.problems ?? []
+  const problems = list(r.json.problems).map((p) => ({ ...p, pages: list(p.pages), evidence: list(p.evidence) }))
   const prevExp = fs.existsSync(expJson) ? JSON.parse(read(expJson)) : {}
   save(dir, split.name, { skill, updated: { run, stage: STAGE[stage] }, problems, attempts: prevExp.attempts ?? [] })
   return problems
@@ -120,7 +123,7 @@ export async function attempt({ skill, stage, base, run, candidate, change, acce
   process.stdout.write(`\n── Maintainer · ${split.name} · ${candidate} 的效果\n`)
   const r = await call(ATTEMPT(split.name, STAGE[stage]), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, label: `Maintainer ${split.name}`, onThink: (s) => process.stdout.write(`[思考中… ${s} 秒]\n`), onText: (t) => process.stdout.write(t) })
   process.stdout.write("\n")
-  const a = { candidate, stage: STAGE[stage], rule: change.rule, basis: change.basis ?? [], accepted, why: why ?? "", summary: r.json.summary ?? "", fixed: r.json.fixed ?? [], unfixed: r.json.unfixed ?? [], new: r.json.new ?? [], lesson: r.json.lesson ?? "" }
+  const a = { candidate, stage: STAGE[stage], rule: change.rule, basis: list(change.basis), accepted, why: why ?? "", summary: r.json.summary ?? "", fixed: list(r.json.fixed), unfixed: list(r.json.unfixed), new: list(r.json.new), lesson: r.json.lesson ?? "" }
   exp.attempts = [...(exp.attempts ?? []).filter((x) => x.candidate !== candidate), a]
   save(dir, split.name, exp)
   return a
