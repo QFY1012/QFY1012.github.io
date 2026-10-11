@@ -518,15 +518,16 @@ export const img = (file) => ({ type: "image_url", image_url: { url: `data:image
 export const JUDGE_URL = process.env.JUDGE_URL ?? "https://api.deepseek.com/chat/completions"
 export const JUDGE_MODEL = process.env.JUDGE_MODEL ?? "deepseek-flash"
 export const JUDGE_EFFORT = process.env.JUDGE_EFFORT ?? "low"
-// The reply is streamed; a request that gets no bytes for 10 seconds (not started, or stalled)
-// is dropped and sent again. A long reply that keeps arriving is not cut.
-const IDLE_MS = 10_000
+// The reply is streamed. A request is dropped and sent again when nothing arrives: 60 seconds for
+// the first bytes (reading a dozen screenshots takes the endpoint more than 10), then 10 seconds
+// between chunks once the reply has started. A long reply that keeps arriving is not cut.
+const FIRST_MS = 60_000, IDLE_MS = 10_000
 export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JUDGE_EFFORT }) {
   const body = { model, messages: [{ role: "system", content: sys }, { role: "user", content }], response_format: { type: "json_object" }, reasoning_effort: effort, max_tokens: 32000, stream: true, stream_options: { include_usage: true } }
   for (let attempt = 0; ; attempt++) {
     const t0 = Date.now()
     const ac = new AbortController()
-    let idle = setTimeout(() => ac.abort(new Error("10 秒没有收到回复")), IDLE_MS)
+    let idle = setTimeout(() => ac.abort(new Error("60 秒没有开始回复")), FIRST_MS)
     const alive = () => { clearTimeout(idle); idle = setTimeout(() => ac.abort(new Error("10 秒没有收到回复")), IDLE_MS) }
     try {
       const r = await fetch(JUDGE_URL, {
@@ -535,12 +536,12 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
         body: JSON.stringify(body),
         signal: ac.signal,
       })
-      alive()
       if (!r.ok) throw new Error(`${r.status} ${(await r.text()).slice(0, 300)}`)
       let buf = "", text = "", usage
       const dec = new TextDecoder()
       for await (const chunk of r.body) {
-        alive()
+        // Keep-alive lines (": ...") before the reply starts do not count as the reply.
+        if (text || /"delta"/.test(dec.decode(chunk, { stream: false }))) alive()
         buf += dec.decode(chunk, { stream: true })
         let i
         while ((i = buf.indexOf("\n")) >= 0) {

@@ -40,6 +40,7 @@ export async function functionJudge(run, cases, repeat = 1) {
           { type: "text", text: `<data.json>\n${fs.readFileSync(path.join(ws, "data.json"), "utf8")}\n</data.json>\n\n页面截图共 ${imgs.length} 张:` }, ...imgs,
         ], { key })
         fs.writeFileSync(file, JSON.stringify(r.json, null, 1))
+        console.log(`  需求 judge ${run}/${c} ${path.basename(file, ".json")}:数据没用完 ${r.json.unused?.length ?? 0} 条,不方便 ${r.json.inconvenient?.length ?? 0} 条`)
       } catch (e) {
         console.error(`FAIL ${run}/${c}: ${e.message}`)
       }
