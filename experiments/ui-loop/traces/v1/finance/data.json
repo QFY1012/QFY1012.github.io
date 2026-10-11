@@ -1,0 +1,54 @@
+{
+ "title": "2026 年 9 月财务月报",
+ "org": "澄川智能装备有限公司 · 财务管理部",
+ "period": "2026 年 9 月 1 日至 9 月 30 日",
+ "summary": "9 月实现营业收入 1.42 亿元，同比增长 11.6%，环比增长 6.0%；综合毛利率 34.8%，较上月回升 1.2 个百分点。期间费用合计 3,140 万元，其中销售费用超出月度预算 8.4%。经营活动现金净流入 1,860 万元，较上月减少 14.3%；应收账款余额升至 2.37 亿元，周转天数延长至 68 天，四季度需重点关注回款节奏与费用控制。",
+ "kpis": [
+  { "key": "revenue", "label": "营业收入", "value": 1.42, "unit": "亿元", "change": "+11.6%", "direction": "up", "note": "同比" },
+  { "key": "margin", "label": "综合毛利率", "value": 34.8, "unit": "%", "change": "+1.2 个百分点", "direction": "up", "note": "环比" },
+  { "key": "cash", "label": "经营现金净流入", "value": 1860, "unit": "万元", "change": "−14.3%", "direction": "down", "note": "环比" },
+  { "key": "dso", "label": "应收周转天数", "value": 68, "unit": "天", "change": "+7 天", "direction": "down", "note": "环比" }
+ ],
+ "monthly": [
+  { "month": "2025-10", "label": "10月", "revenue": 11820, "margin": 33.1, "cash": 1650 },
+  { "month": "2025-11", "label": "11月", "revenue": 12460, "margin": 33.6, "cash": 1420 },
+  { "month": "2025-12", "label": "12月", "revenue": 14980, "margin": 35.2, "cash": 3280 },
+  { "month": "2026-01", "label": "1月", "revenue": 9860, "margin": 32.4, "cash": -420 },
+  { "month": "2026-02", "label": "2月", "revenue": 8740, "margin": 31.8, "cash": -860 },
+  { "month": "2026-03", "label": "3月", "revenue": 11650, "margin": 33.0, "cash": 980 },
+  { "month": "2026-04", "label": "4月", "revenue": 12120, "margin": 33.5, "cash": 1240 },
+  { "month": "2026-05", "label": "5月", "revenue": 12780, "margin": 34.1, "cash": 1510 },
+  { "month": "2026-06", "label": "6月", "revenue": 13240, "margin": 34.6, "cash": 1730 },
+  { "month": "2026-07", "label": "7月", "revenue": 12890, "margin": 33.9, "cash": 1380 },
+  { "month": "2026-08", "label": "8月", "revenue": 13400, "margin": 33.6, "cash": 2170 },
+  { "month": "2026-09", "label": "9月", "revenue": 14210, "margin": 34.8, "cash": 1860 }
+ ],
+ "units": [
+  { "name": "工业机器人", "revenue": 5120, "budget": 4900, "attain": 104.5, "margin": 38.2, "yoy": "+16.4%" },
+  { "name": "数控系统", "revenue": 3480, "budget": 3600, "attain": 96.7, "margin": 36.5, "yoy": "+9.1%" },
+  { "name": "自动化产线", "revenue": 2860, "budget": 3200, "attain": 89.4, "margin": 27.9, "yoy": "+4.2%" },
+  { "name": "智能仓储", "revenue": 1640, "budget": 1500, "attain": 109.3, "margin": 31.4, "yoy": "+22.7%" },
+  { "name": "售后与服务", "revenue": 1110, "budget": 1050, "attain": 105.7, "margin": 46.8, "yoy": "+12.3%" }
+ ],
+ "expenses": [
+  { "name": "销售费用", "value": 1320, "share": 42.0, "budget": 1218, "attain": 108.4 },
+  { "name": "研发费用", "value": 1010, "share": 32.2, "budget": 1050, "attain": 96.2 },
+  { "name": "管理费用", "value": 690, "share": 22.0, "budget": 700, "attain": 98.6 },
+  { "name": "财务费用", "value": 120, "share": 3.8, "budget": 130, "attain": 92.3 }
+ ],
+ "receivables": { "balance": 23700, "change": 1940, "over90": 18.6, "dso": 68, "collected": 12480 },
+ "findings": [
+  { "title": "机器人与仓储拉动增长", "text": "工业机器人和智能仓储两大事业部合计贡献同比收入增量的 71%，智能仓储预算完成率 109.3%，为各事业部最高。" },
+  { "title": "销售费用超出预算", "text": "销售费用 1,320 万元，超出月度预算 8.4%，主要来自 9 月行业展会投放及西南新区域的渠道补贴。" },
+  { "title": "回款明显放缓", "text": "应收账款余额 2.37 亿元，较上月增加 1,940 万元，账龄 90 天以上部分占比升至 18.6%。" }
+ ],
+ "actions": [
+  { "owner": "财务管理部 · 销售运营", "due": "10 月 31 日", "text": "成立回款专项小组，对账龄 90 天以上的前 20 名客户逐户对账催收，10 月回款目标 6,000 万元。" },
+  { "owner": "市场部", "due": "10 月 15 日", "text": "冻结四季度非必要市场活动预算，销售费用率控制在 9.0% 以内。" },
+  { "owner": "自动化产线事业部", "due": "10 月 20 日", "text": "提交产线项目降本方案，目标将该事业部毛利率恢复至 30% 以上。" }
+ ],
+ "risks": [
+  { "level": "高", "title": "大客户回款延迟", "text": "两家大客户合计应收 4,200 万元，付款周期延长；若年底前仍未回款，预计需计提坏账准备约 630 万元。" },
+  { "level": "中", "title": "原材料涨价", "text": "钢材及伺服电机采购价自 10 月起上调 5%–7%，四季度综合毛利率可能承压 0.8–1.2 个百分点。" }
+ ]
+}

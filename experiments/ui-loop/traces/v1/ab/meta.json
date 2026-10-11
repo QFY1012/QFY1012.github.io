@@ -1,0 +1,19 @@
+{
+ "case": "ab",
+ "design": {
+  "version": "c1",
+  "file": "designs/c1.md",
+  "sha": "81c0782d"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 126,
+ "usage": {
+  "input": 29040,
+  "output": 11080
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": ""
+}

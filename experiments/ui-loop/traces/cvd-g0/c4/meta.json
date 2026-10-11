@@ -1,0 +1,26 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 419,
+ "usage": {
+  "input": 180681,
+  "output": 37186
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已完成，程序检查全部通过（构建、组件库、统一刻度、数据忠实、元素越界）。\n\n结构：页头（产品/周期在左 3 列，标题在右 9 列），然后依次是 9 节 —— 结论（24px 结论句，给出\"不友好\"判断）→ 核心指标（4 个 `Stat`，不达标 13 组为主指标放大）→ 易混淆（ΔE 对照表，低于 12 的红色标出）→ 分群（各色觉类型问题数）→ 色板（14 个 token 的色值与用途）→ 明细（18 组文字/背景对比度逐项检查，不达标标红）→ 问题（按严重度列出 5 个问题与建议）→ 下一步（5 条修改后的取值与对比度）→ 背景信息（检查对象、标准、方法与日期）。"
+}

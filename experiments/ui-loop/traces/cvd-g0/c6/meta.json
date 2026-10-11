@@ -1,0 +1,26 @@
+{
+ "case": "c6",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 146,
+ "usage": {
+  "input": 48596,
+  "output": 22954
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已完成，程序检查全部通过。\n\n**结构**（内容 9 列在右、节标题挂左侧 3 列，节间 192px）：\n\n1. **结论** — 24px 细体结论句，节说明写评估标准与判定\n2. **核心指标** — 4 个 `Stat`（`captionBelow`，3 个一行），主指标「对比度不达标 9 组」用 `size=\"lg\"` + `direction=\"down\"` 标红\n3. **分群** — 红色盲/绿色盲/蓝色盲各一个 `Stat`，`span={2}`\n4. **配色** — 9 种课程底色的类别、用途、色值 `DataTable`\n5. **对比度** — 3 列 `Block`（`ProgressList compact` 各类别对比度，刻度统一为要求值 4.5）+ 6 列 `Block`（位置/对比度/要求/结果明细，结果列 `tone` 标红）\n6. **混淆色** — 颜色对 × 正常/三种色盲的 CIEDE2000 ΔE 表，末列列受影响类型\n7. **问题** — P1–P7 的编号、问题、类型、位置、严重度，严重度列仅「高」标红\n8. **下一步** — 7 条建议 `List`（`numbered`、`columns={3}`）\n9. **背景信息** — `KV`（`labelCols={2}`）写分析对象、日期、标准、结论、检查范围、方法\n\n只用了组件库组件，无卡片、无底色；红色仅用于不达标/高严重度。"
+}

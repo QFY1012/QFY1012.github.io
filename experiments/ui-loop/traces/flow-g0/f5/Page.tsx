@@ -79,7 +79,11 @@ export default function Report() {
         </Grid>
       </Section>
 
-      <Section title="步骤明细" description="每款 App 从入口到提交成功的页面、内容与操作">
+      <Section
+        title="步骤明细"
+        description="每款 App 从入口到提交成功的页面、内容与操作"
+        className="gap-12"
+      >
         {data.chains.map((chain) => (
           <Group key={chain.product} title={`${chain.product} ${chain.version} · ${chain.verdict}`}>
             <DataTable

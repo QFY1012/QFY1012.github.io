@@ -76,9 +76,10 @@ export default function Report() {
         <Grid cols={9} fields={false} className="items-baseline">
           <Stat
             span={3}
+            size="lg"
             value={4}
-            unit="组"
-            label="检查的文字与背景组合"
+            unit="个"
+            label="问题总数"
             captionBelow
           />
           <Stat
@@ -97,10 +98,9 @@ export default function Report() {
           />
           <Stat
             span={3}
-            size="lg"
             value={4}
-            unit="个"
-            label="问题总数"
+            unit="组"
+            label="检查的文字与背景组合"
             captionBelow
           />
         </Grid>

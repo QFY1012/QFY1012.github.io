@@ -1,0 +1,26 @@
+{
+ "case": "f5",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 141,
+ "usage": {
+  "input": 33092,
+  "output": 8456
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已完成,程序检查全部通过。\n\n结构:页头(左列产品/周期/日期,右侧标题「交互流程挖掘 · 申请退货」)后依次为——**结论**(24px 细体结论句)、**核心指标**(4 个 48px 细体数字,一行 3 个,数字在下带说明)、**流程对比**(3 列 `ProgressList` 步骤条 + 6 列产品对比表,步骤数按最多 7 步对齐)、**步骤明细**(三款 App 各一组,列出每步的页面/内容/操作/输入项/备注,组间距 48px)、**共性模式**(编号列表,标题+说明+涉及产品)、**问题清单**(表格,严重度\"高\"标红)、**下一步**(三列并排编号建议,meta 写依据)、**背景信息**(KV,labelCols=2)。"
+}

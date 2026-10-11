@@ -1,0 +1,44 @@
+{
+ "title": "第三季度销售复盘",
+ "org": "华东销售部",
+ "period": "2026 年 7 月至 9 月",
+ "summary": "三季度收入 2.86 亿元，同比增长 9.4%，目标完成 96.3%；新客户增长明显，但老客户流失率上升，南京、合肥两区未达标。",
+ "kpis": [
+  { "key": "revenue", "label": "季度收入", "value": 2.86, "unit": "亿元", "change": "+9.4%", "direction": "up" },
+  { "key": "attain", "label": "目标完成率", "value": 96.3, "unit": "%", "change": "−3.7 个百分点", "direction": "down" },
+  { "key": "newcust", "label": "新签客户", "value": 412, "unit": "家", "change": "+18.0%", "direction": "up" },
+  { "key": "churn", "label": "客户流失率", "value": 3.1, "unit": "%", "change": "+0.6 个百分点", "direction": "down" }
+ ],
+ "weekly": [
+  { "week": 1, "revenue": 2050 }, { "week": 2, "revenue": 2120 }, { "week": 3, "revenue": 2080 },
+  { "week": 4, "revenue": 2190 }, { "week": 5, "revenue": 2160 }, { "week": 6, "revenue": 2240 },
+  { "week": 7, "revenue": 2210 }, { "week": 8, "revenue": 2180 }, { "week": 9, "revenue": 2260 },
+  { "week": 10, "revenue": 2230 }, { "week": 11, "revenue": 2310 }, { "week": 12, "revenue": 2290 },
+  { "week": 13, "revenue": 2280 }
+ ],
+ "regions": [
+  { "name": "上海", "revenue": 8920, "target": 8600, "attain": 103.7, "change": "+12.1%" },
+  { "name": "杭州", "revenue": 6140, "target": 6000, "attain": 102.3, "change": "+10.8%" },
+  { "name": "苏州", "revenue": 4870, "target": 4800, "attain": 101.5, "change": "+9.2%" },
+  { "name": "南京", "revenue": 3960, "target": 4500, "attain": 88.0, "change": "+2.4%" },
+  { "name": "宁波", "revenue": 2650, "target": 2700, "attain": 98.1, "change": "+8.7%" },
+  { "name": "合肥", "revenue": 2060, "target": 3100, "attain": 66.5, "change": "−6.3%" }
+ ],
+ "products": [
+  { "name": "企业版订阅", "revenue": 12480, "share": 43.6, "change": "+14.2%" },
+  { "name": "专业版订阅", "revenue": 7350, "share": 25.7, "change": "+6.1%" },
+  { "name": "实施服务", "revenue": 4920, "share": 17.2, "change": "+3.5%" },
+  { "name": "培训", "revenue": 2210, "share": 7.7, "change": "−2.8%" },
+  { "name": "其他", "revenue": 1640, "share": 5.7, "change": "+1.9%" }
+ ],
+ "findings": [
+  { "title": "企业版带动增长", "detail": "企业版收入同比增长 14.2%，贡献了本季度增量的六成，主要来自制造业客户。" },
+  { "title": "南京、合肥未达标", "detail": "两区合计缺口 1,580 万元；合肥有两名大客户经理离职，跟进中断。" },
+  { "title": "老客户流失上升", "detail": "流失率升至 3.1%，流失客户集中在专业版、签约不满一年的中小企业。" }
+ ],
+ "actions": [
+  { "title": "补齐合肥团队", "detail": "10 月底前到岗两名客户经理，由上海区派人带教一个季度。" },
+  { "title": "中小客户续约提醒", "detail": "签约满 9 个月的专业版客户，由客户成功团队提前回访。" },
+  { "title": "企业版行业方案", "detail": "把制造业的成单经验整理成方案，四季度在苏州、宁波试点。" }
+ ]
+}

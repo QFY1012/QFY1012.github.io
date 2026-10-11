@@ -1,0 +1,26 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 5,
+ "seconds": 402,
+ "usage": {
+  "input": 112849,
+  "output": 24212
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "All checks pass and the page reads well. Final structure:\n\n- **页头**: meta（手机银行线上开立二类账户 / 3 款银行 App / 2026 年 9 月）在左 3 列，标题「交互流程挖掘 · 线上开户」在右 9 列。\n- **结论**：24px 细体的整段判断。\n- **核心指标**：4 个 48px 大数字（对比产品 3 个、分析截图 26 张、步骤最少 7 步、发现问题 5 个）一行平铺。\n- **流程对比**：三家产品各一个普通大小 Stat（步骤数 + 输入项/判断），下面是「各环节做法」对照表（开始前说明、协议、身份验证、填写资料、绑卡 × 三家）。\n- **流程明细**：按产品分三组，每组一张步骤表（步骤 / 页面 / 内容 / 操作 / 备注）。\n- **共性模式**：编号列表，每条给出适用产品与说明。\n- **问题明细**：表格列出 P1–P5（编号 / 产品 / 步骤 / 问题 / 证据 / 严重度），严重度「高」标红。\n- **下一步**：左侧 6 列 ordered 建议列表，右侧 3 列 KV 写依据编号。\n- **背景信息**：KV 列任务、范围、日期、产品版本。\n\n程序检查（构建、组件库、统一刻度、数据忠实、元素越界）全部通过。"
+}

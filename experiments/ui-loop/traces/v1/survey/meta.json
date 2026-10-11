@@ -1,0 +1,19 @@
+{
+ "case": "survey",
+ "design": {
+  "version": "c1",
+  "file": "designs/c1.md",
+  "sha": "81c0782d"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 4,
+ "seconds": 603,
+ "usage": {
+  "input": 80530,
+  "output": 32738
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已完成,程序检查全部通过。\n\n结构:页头(左列产品与周期 + 标题「会员体验调研报告」)之后,按 C3 顺序排了 8 节——结论(24px 细体判断句)、核心指标(NPS 32 用 `size=\"lg\"`,推荐者/中立者/贬损者三个普通 `Stat`)、会员分群(四类会员各一个 `Stat`,说明里带满意度与样本量)、维度得分与痛点占比(各一个 3 列宽 `Block` 内的 `ProgressList` 排行)、用户原声(`List` numbered)、下一步(三列 numbered `List`)、背景信息(`KV`);满意度一行的「得分(与上次差值)」用非 compact 的 `ProgressList` 排版,以免 4.5rem 的标签列/2rem 的数值列把文字挤成两行。"
+}

@@ -1,0 +1,26 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 370,
+ "usage": {
+  "input": 104618,
+  "output": 24699
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已通过程序检查(构建、组件库、统一刻度、数据忠实、元素越界)全部通过。\n\n**结构说明**:整页按「结论 → 核心指标 → 系列色板 → 颜色混淆 → 受影响类型 → 对比度 → 问题明细 → 下一步 → 背景信息」九节展开——首节用 24px 细体给出判定与概述,核心指标用 4 个 `Stat`(主指标\"问题总数\"48px),三张 `DataTable` 分别呈现系列色、混淆色差(低于 12 的 ΔE 标红)与对比度(不达标标红),受影响类型用 3 个 `Stat` 分群,问题明细表以红色标出\"高\"严重度,下一步是三列编号建议列表加颜色替换前后对照表,末节 `KV` 汇总对象与口径。"
+}

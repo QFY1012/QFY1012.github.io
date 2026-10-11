@@ -120,7 +120,10 @@ export default function Report() {
           numbered
           items={data.fixes.map((f) => ({
             title: f.where,
-            description: `${f.from} → ${f.to}(底色 ${f.bg}),对比度 ${f.before} → ${f.after}`,
+            description:
+              f.from === f.to
+                ? `底色 ${f.bg},对比度 ${f.before} → ${f.after}`
+                : `${f.from} → ${f.to},对比度 ${f.before} → ${f.after}`,
           }))}
         />
       </Section>
