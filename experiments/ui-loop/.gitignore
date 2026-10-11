@@ -2,3 +2,4 @@ node_modules/
 traces/*/*/.build/
 traces/*/.private/
 traces/sbtest/
+traces/try1/
