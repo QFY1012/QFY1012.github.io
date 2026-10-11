@@ -15,7 +15,9 @@
 // (vendor/shadcn, read-only reference), components.md, and one sample the problems were seen on.
 // A reviewer who edits the code directly edits traces/_components/k<n>/app and then approves.
 // Program checks run on the demo page and on the component code before the review.
-// Review material: library/k<n>.md and library/k<n>-demo.png. Everything is in library/changelog.md.
+// Review material: library/k<n>.md and library/k<n>-demo.png. Every version is kept in
+// library/k<n>/r<round>/ (the demo page and its screenshots, the patch, the review notes, the
+// feedback that started it), so the whole process can be shown later. Everything is in library/changelog.md.
 import fs from "node:fs"
 import path from "node:path"
 import { execFileSync, spawnSync } from "node:child_process"
@@ -189,7 +191,18 @@ ${list(lint)}
 ${patch}
 \`\`\`
 `)
+  archive(name, round, prompt === PROMPT ? null : note)
   console.log(`${name}: ready for review, library/${name}.md`)
+}
+
+// One version of a component change, kept for good: library/<name>/r<round>/.
+function archive(name, round, feedback) {
+  const ws = wsOf(name), dir = path.join(LIB, name, `r${round}`)
+  fs.mkdirSync(dir, { recursive: true })
+  for (const f of ["Page.tsx", "shot.png", "thumb.png", "checks.json", "components.md"]) if (fs.existsSync(path.join(ws, f))) fs.copyFileSync(path.join(ws, f), path.join(dir, f))
+  fs.copyFileSync(path.join(LIB, `${name}.patch`), path.join(dir, "change.patch"))
+  fs.copyFileSync(path.join(LIB, `${name}.md`), path.join(dir, "review.md"))
+  if (feedback) fs.writeFileSync(path.join(dir, "feedback.md"), `# 第 ${round} 版的起因:审批意见\n\n${feedback}\n`)
 }
 
 async function propose() {
