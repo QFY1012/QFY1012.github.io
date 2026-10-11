@@ -50,10 +50,17 @@
 
 #### 组件库分支(`scripts/component-loop.mjs`)
 
-1. `propose`:收集归因为「组件库」的问题,交给组件 Agent。它在沙箱里拿到组件库的副本(`traces/_components/k<n>/app`)和 `components.md`,一次只加一项能力(新组件或新 props),更新说明,用真实样本做演示页并自查。审核材料写在 `library/k<n>.md`(需求、Agent 的说明、代码和文档的 diff、演示页截图)。
-2. **用户审核**:`approve k<n>` 合并进组件库;`reject k<n> "原因"` 记录原因,下次提议会读到。
-3. 合并后,生成 Agent 在每个 Skill 当前的页面上按这项改动修改(`traces/<run>-k<n>/`),再从程序检查开始重新检测。
-4. 不管采用没有都记在 `library/changelog.md`。
+组件库是公共层,一次只改一项能力(新组件,或给已有组件加 props),用户审两次。
+
+1. **交方案**(`propose --runs flow-g0,cvd-g0`):收集归因为「组件库」的问题,交给组件 Agent。它在沙箱里拿到组件库副本(`traces/_components/k<n>/`)、shadcn/ui new-york-v4 全部源码(`vendor/shadcn/`,离线副本)和一份真实样本,只写方案 `plan.md`:用哪个 shadcn 组件、ui/ 里放什么、报告组件名和 props、两个 Skill 各怎么用、怎么和现有组件风格统一。审核材料 `library/k<n>-plan.md`。
+2. **用户审方案**:`approve k<n> ["意见"]` 进入实现;`reject k<n> "原因"` 记下原因,下次提议会读到。
+3. **实现**:组件来源按顺序:先用 shadcn(源码原样复制进 `ui/`,和 `shadcn add` 一样);shadcn 没有合适的,才直接调 Radix 原语,按 shadcn 的写法写(data-slot、`cn()`、token 类名)。颜色、字号、间距只用 tokens,不改 `index.css`,不改已有组件。再更新 `components.md`,用样本数据写演示页,新组件和现有组件放在同一页。
+4. **程序检查组件代码**:新增的代码行不能有颜色值或非 token 颜色类、规范外的字号、不是 8 的倍数的尺寸、阴影、底色;原样复制的 shadcn 文件不查。演示页也跑一遍页面的程序检查。
+5. **风格一致检查**:judge 看演示页截图和 diff,逐项比较新组件和现有组件(字号字重、灰度层级、线条、间距对齐、圆角、多余装饰)。第 4、5 步有问题就打回组件 Agent 修改,最多 2 次。
+6. **用户审实现**:`library/k<n>.md`(方案、Agent 的说明、各项检查、diff、演示页截图)。`approve k<n>` 合并,`reject` 记原因。
+7. **合并**:组件和 `components.md` 进公共层;生成 Agent 在每个 Skill 当前的页面上按这项改动修改(`traces/<run>-k<n>/`),再从程序检查开始重新检测。
+
+tokens 只由用户改,组件 Agent 不动。不管采用没有都记在 `library/changelog.md`。
 
 #### 一轮(指南问题,改输出指南)
 
@@ -87,7 +94,9 @@ node scripts/skill-loop.mjs --skill flow [--max-rounds 6] [--setup-only]
 |---|---|
 | `design.md` | 规范 v0,手写;按用户选定的目标风格(A/B 实验报告、体验走查报告)整理 |
 | `components.md` | 组件库说明:组件和 props |
-| `app/` | 组件库(Radix 基础组件 + 报告组件)和构建环境 |
+| `app/` | 组件库(shadcn/ui 基础组件 + 报告组件)和构建环境 |
+| `vendor/shadcn/` | shadcn/ui new-york-v4 源码的离线副本,组件 Agent 从这里取组件 |
+| `library/` | 组件改动的方案、实现、diff 和修改记录 |
 | `designs/` | 每个版本和候选的规范:`v0.md`、`c1.md`、`v1.md`… |
 | `traces/<版本>/<报告>/` | 轨迹库:data.json、Agent 写的 Page.tsx、截图、程序检查、整段会话 session.jsonl、meta.json |
 | `traces/_compare/` | judge 的每次比较(两种顺序各一份),含逐条观察 |
