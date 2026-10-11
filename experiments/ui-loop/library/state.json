@@ -17,6 +17,17 @@
       "output": 56392
      },
      "seconds": 622
+    },
+    {
+     "feedback": "截图部件改成横向滚动:一组截图排成一行横向滚动,这样更省空间;超出宽度的部分隐藏,不把页面撑宽。图按同一高度、原比例显示,不裁剪,也就不需要 ratio 这类配置项。色觉无障碍分析的截图比例和手机截图不同(1200×760,手机截图是 375×760),演示页加一组这种比例的图,验证不同比例的图也能放进同样的横向排列。",
+     "summary": "改完并跑通检查(2 次,结果 `checks.json` 为空,程序检查全部通过)。说明如下:\n\n## 改了什么\n\n**1. 组件库 `app/src/components/report/index.tsx`(只动截图部件)**\n- 新增 `FigureStrip`:横向滚动的截图行,`flex w-full gap-3 overflow-x-auto`——一组截图排成一行,超出宽度的部分被裁掉、不撑宽页面。\n- `Figure` 改为 `flex shrink-0 flex-col gap-2`:作为行内一格,宽度随图不收缩,标签和说明仍在图下;去掉了原先给 `Grid` 用的 `span`。\n- `FigureImage` 改为 `<img className=\"h-96 w-auto max-w-none\">`:固定高度、按源图原比例显示、不裁剪,**去掉了 `ratio` prop** 和 `AspectRatio` 的用法与 import(以及 `SCREEN_RATIO` 常量)。\n- `FigureLabel`、`FigureText` 未动;其他已有组件、用法未动。`ui/aspect-ratio.tsx` 保留。\n\n**2. `components.md`**\n- 「截图」一节改写:表格列出 `FigureStrip / Figure / FigureImage / FigureLabel / FigureText`,写明「一行横向滚动、超出裁掉不撑宽」「固定高度、原比例、不裁剪所以不用传比例」;链路明细与模拟视图两个示例改成 `FigureStrip` 组合;顶部 import 示例补上 `FigureStrip`。\n\n**3. `Page.tsx`(演示页,只放新部件 + 一小段现有组件)**\n- 链路明细:5 张手机截图(375×760)一行横向滚动,每格「图 + 第 N 步·屏名 + 内容·操作·输入项」。\n- 模拟视图:一组 4 张 1200×760 的色觉分析图(原界面/红色盲/绿色盲/蓝色盲),放在带 `title`/`description` 的 `Block` 里,与手机截图同一套横向排列,验证不同比例也能并排。\n- 对照:一个 `Stat` + 一段 `Text` 作为现有组件的风格对照。\n\n**4. `assets/`**\n- 新生成 9 张 SVG:5 张 375×760 手机截图、4 张 1200×760 色觉模拟图。\n\n**检查结果**:`node $SHOOT .` → 程序检查全部通过(无越界、无组件库外元素、无直接 `<img>`、无颜色/字号类名违规);截图中手机组显示 4 张整图加第 5 张被裁的边,色觉组显示 1 张整图加第 2 张被裁的边,确认为横向滚动且不撑宽。",
+     "checks": [],
+     "lint": [],
+     "usage": {
+      "input": 141897,
+      "output": 31874
+     },
+     "seconds": 281
     }
    ]
   }
