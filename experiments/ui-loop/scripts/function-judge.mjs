@@ -53,6 +53,25 @@ export async function functionJudge(run, cases, repeat = 1) {
   }))
 }
 
+// The opinions that count on one page: the repeated runs merged, an opinion counts when it is in
+// at least 2 of them. Writes traces/<run>/<case>/function-counted.json; the gate compares counts.
+const MERGE = `下面是同一个报告页面的几次功能检查结果(每次一份清单:unused 是数据没用完,inconvenient 是不方便操作)。把说的是同一件事的合并成一条,记下它出现在几次检查里。
+
+只输出 JSON:{"issues":[{"kind":"unused 或 inconvenient","what":"一句话","runs":出现次数}]}`
+export async function counted(run, cases) {
+  const key = process.env.DEEPSEEK_API_KEY
+  await Promise.all(cases.map(async (c) => {
+    const ws = path.join(ROOT, "traces", run, c)
+    const out = path.join(ws, "function-counted.json")
+    if (fs.existsSync(out)) return
+    const runs = []
+    for (let n = 1; fs.existsSync(path.join(ws, `function-${n}.json`)); n++) runs.push(`<第 ${n} 次>\n${fs.readFileSync(path.join(ws, `function-${n}.json`), "utf8")}\n</第 ${n} 次>`)
+    const r = await call(MERGE, [{ type: "text", text: runs.join("\n\n") }], { key })
+    fs.writeFileSync(out, JSON.stringify({ issues: (r.json.issues ?? []).filter((i) => i.runs >= 2), dropped: (r.json.issues ?? []).filter((i) => i.runs < 2) }, null, 1))
+  }))
+  return Object.fromEntries(cases.map((c) => [c, JSON.parse(fs.readFileSync(path.join(ROOT, "traces", run, c, "function-counted.json"), "utf8")).issues.length]))
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const arg = (k, d) => {
     const i = process.argv.indexOf(`--${k}`)
