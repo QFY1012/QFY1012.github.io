@@ -27,5 +27,11 @@
  },
  "stop": "stop",
  "summary": "The page renders correctly with the new components. The 步骤截图 section now uses `FigureStrip`/`Figure`/`FigureImage`/`FigureLabel`/`FigureText`: each product is a `Group`, and its steps form one horizontally-scrollable strip with the step label and content/action/inputs caption below each screenshot — replacing the previous `createElement(\"img\", …)` workaround. Program checks all pass.\n\nPage structure (unchanged except the screenshot section): 结论 → 核心指标 → 产品对比 → 环节差异 → 典型模式 → 流程明细 → 步骤截图（现用 FigureStrip）→ 问题明细 → 下一步 → 背景信息。",
- "checks": []
+ "checks": [],
+ "reshot": [
+  {
+   "at": "2026-10-11T16:06:57.770Z",
+   "why": "Figure 的图被横向拉长(图下说明比图宽时撑开外框),组件修好后页面不变、重新截图"
+  }
+ ]
 }

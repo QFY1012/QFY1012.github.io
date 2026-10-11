@@ -105,8 +105,9 @@ export function FigureStrip({ className, children, ...props }: React.ComponentPr
   )
 }
 
+// As wide as its image: the label and text wrap under it instead of widening (and stretching) the image.
 export function Figure({ className, ...props }: React.ComponentProps<"figure">) {
-  return <figure data-slot="figure" className={cn("flex shrink-0 flex-col gap-2", className)} {...props} />
+  return <figure data-slot="figure" className={cn("flex w-min shrink-0 flex-col gap-2", className)} {...props} />
 }
 
 // The image keeps its own ratio at the strip's height, so nothing is cropped.

@@ -14,6 +14,7 @@
 // against --run, from compare.mjs). Only training samples are read; held-out samples are for the gate.
 import fs from "node:fs"
 import path from "node:path"
+import { spawnSync } from "node:child_process"
 import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
 import { observations } from "./compare.mjs"
 
@@ -48,6 +49,23 @@ function stageInput(stage, run, cases, base) {
   }).join("\n\n")
 }
 
+// experience.json and the experience.md the Reviser and the component agent read.
+function save(dir, name, exp) {
+  fs.writeFileSync(path.join(dir, "experience.json"), JSON.stringify(exp, null, 1))
+  const { problems, attempts } = exp
+  const open = problems.filter((p) => p.status !== "已解决")
+  const line = (p) => `- **${p.id}**(${p.stage},${p.pages.length} 页):${p.problem}${p.good ? `\n  - 赢的做法:${p.good}` : ""}\n  - 证据:${p.evidence.join(";")}`
+  const tried = (a) => `- **${a.candidate}**(${a.stage},规则 ${a.rule},${a.accepted ? "采用" : `未采用:${a.why}`}):${a.summary}依据 ${a.basis.join("、")}。\n  - 解决了:${a.fixed.join("、") || "无"};没解决:${a.unfixed.join("、") || "无"}\n  - 带出的新问题:${a.new.join(";") || "无"}\n  - 经验:${a.lesson}`
+  fs.writeFileSync(path.join(dir, "experience.md"), [
+    `# 问题清单 · ${name}`, "",
+    `Maintainer 从训练样本的检测结果归纳,每步更新(最近一次:${exp.updated.run},${exp.updated.stage})。Reviser 读「布局问题」和「试过的改法」,组件 Agent 读「组件不够」。`, "",
+    "## 组件不够", "", ...open.filter((p) => p.cause === "组件不够").map(line), "",
+    "## 布局问题", "", ...open.filter((p) => p.cause === "布局问题").map(line), "",
+    "## 已解决", "", ...problems.filter((p) => p.status === "已解决").map((p) => `- **${p.id}**(${p.stage}):${p.problem}`), "",
+    "## 试过的改法", "", "每个候选改了一条规则后,训练页上的效果;没采用的也留着,下次改规则先看这里。", "", ...(attempts ?? []).map(tried), "",
+  ].join("\n"))
+}
+
 export async function maintain({ skill, run, stage, base, guide }) {
   const split = JSON.parse(read(path.join(ROOT, "skills", "split.json")))[skill]
   const dir = path.join(ROOT, "skills", skill)
@@ -60,17 +78,49 @@ export async function maintain({ skill, run, stage, base, guide }) {
   const r = await call(SYSTEM(split.name), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, onThink: () => process.stdout.write("[思考中…]\n"), onText: (t) => process.stdout.write(t) })
   process.stdout.write("\n")
   const problems = r.json.problems ?? []
-  fs.writeFileSync(expJson, JSON.stringify({ skill, updated: { run, stage: STAGE[stage] }, problems }, null, 1))
-  const open = problems.filter((p) => p.status !== "已解决")
-  const line = (p) => `- **${p.id}**(${p.stage},${p.pages.length} 页):${p.problem}${p.good ? `\n  - 赢的做法:${p.good}` : ""}\n  - 证据:${p.evidence.join(";")}`
-  fs.writeFileSync(path.join(dir, "experience.md"), [
-    `# 问题清单 · ${split.name}`, "",
-    `Maintainer 从训练样本的检测结果归纳,每步更新(最近一次:${run},${STAGE[stage]})。Reviser 读「布局问题」,组件 Agent 读「组件不够」。`, "",
-    "## 组件不够", "", ...open.filter((p) => p.cause === "组件不够").map(line), "",
-    "## 布局问题", "", ...open.filter((p) => p.cause === "布局问题").map(line), "",
-    "## 已解决", "", ...problems.filter((p) => p.status === "已解决").map((p) => `- **${p.id}**(${p.stage}):${p.problem}`), "",
-  ].join("\n"))
+  const prevExp = fs.existsSync(expJson) ? JSON.parse(read(expJson)) : {}
+  save(dir, split.name, { skill, updated: { run, stage: STAGE[stage] }, problems, attempts: prevExp.attempts ?? [] })
   return problems
+}
+
+// One candidate's effect on the training pages, kept as a tried change (「试过的改法」) so the next
+// Reviser sees what the change fixed, what it broke and why, whether it was accepted or not.
+// Only training pages are read; of the held-out samples only the gate's verdict is passed on.
+const ATTEMPT = (name, stage) => `你是「${name}」这个 Skill 的 Maintainer。Reviser 刚改了输出指南的一条规则,生成 Agent 按新规则改了页面。会给你这条改动、它有没有被采用,问题清单,以及每个训练页改动前后在「${stage}」这一步的检测结果和 Page.tsx 的改动。
+
+总结这次改动在训练页上的效果,写成一条经验,给下一次改规则时参考:
+1. 解决了问题清单里的哪些问题(改动前有、改动后没有了),没解决哪些(改动想解决、改动后还在)。
+2. 带出了哪些新问题:改动后才出现、改动前没有的意见,归纳成一两句话,写清是改动里哪一处造成的。同一个问题只是换了说法或拆成几条的,不算新问题。
+3. 经验:这个方向对不对,下次怎么改(在原改法上补什么、去掉什么,或者换个方向)。
+只依据给你的检测结果和代码改动。
+
+只输出 JSON:{"summary":"一句话说这次改了什么","fixed":["P-03"],"unfixed":["P-02"],"new":["一句话"],"lesson":"一两句话"}`
+
+function pageResults(stage, run, c) {
+  const ws = path.join(ROOT, "traces", run, c)
+  if (stage === "program") return fs.existsSync(path.join(ws, "checks.json")) ? read(path.join(ws, "checks.json")) : "[]"
+  const f = path.join(ws, "function-counted.json")
+  return fs.existsSync(f) ? JSON.stringify(JSON.parse(read(f)).issues, null, 1) : "(没有检测结果)"
+}
+
+export async function attempt({ skill, stage, base, run, candidate, change, accepted, why, cases }) {
+  const split = JSON.parse(read(path.join(ROOT, "skills", "split.json")))[skill]
+  const dir = path.join(ROOT, "skills", skill)
+  const exp = JSON.parse(read(path.join(dir, "experience.json")))
+  const pages = stage === "aesthetic"
+    ? `<审美 judge:${base}(改动前)对 ${run}(改动后)的两两比较>\n${JSON.stringify(observations(base, run, cases, 1), null, 1)}\n</审美 judge>`
+    : cases.map((c) => {
+      const diff = spawnSync("git", ["diff", "--no-index", "--no-color", "-U2", path.join(ROOT, "traces", base, c, "Page.tsx"), path.join(ROOT, "traces", run, c, "Page.tsx")], { encoding: "utf8" }).stdout
+      return `<页面 ${c}>\n<改动前的意见>\n${pageResults(stage, base, c)}\n</改动前的意见>\n<改动后的意见>\n${pageResults(stage, run, c)}\n</改动后的意见>\n<Page.tsx 改动>\n${diff}\n</Page.tsx 改动>\n</页面 ${c}>`
+    }).join("\n\n")
+  const user = `<改动 ${candidate}>\n${JSON.stringify(change, null, 1)}\n</改动>\n\n<结果>${accepted ? "采用" : `未采用:${why}`}</结果>\n\n<问题清单>\n${JSON.stringify(exp.problems.filter((p) => p.status !== "已解决"), null, 1)}\n</问题清单>\n\n<训练页,${STAGE[stage]}>\n${pages}\n</训练页>`
+  process.stdout.write(`\n── Maintainer · ${split.name} · ${candidate} 的效果\n`)
+  const r = await call(ATTEMPT(split.name, STAGE[stage]), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, onThink: () => process.stdout.write("[思考中…]\n"), onText: (t) => process.stdout.write(t) })
+  process.stdout.write("\n")
+  const a = { candidate, stage: STAGE[stage], rule: change.rule, basis: change.basis ?? [], accepted, why: why ?? "", summary: r.json.summary ?? "", fixed: r.json.fixed ?? [], unfixed: r.json.unfixed ?? [], new: r.json.new ?? [], lesson: r.json.lesson ?? "" }
+  exp.attempts = [...(exp.attempts ?? []).filter((x) => x.candidate !== candidate), a]
+  save(dir, split.name, exp)
+  return a
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

@@ -27,5 +27,11 @@
  },
  "stop": "stop",
  "summary": "修改完成,程序检查全部通过。\n\n改动只有「流程」一节:原来因为组件库没有图片组件,截图是用 `React.createElement(\"img\", …)` 自己画的;现在改用 `FigureStrip` + `Figure` + `FigureImage` + `FigureLabel` + `FigureText`——每个产品一行,按步骤横向排开(超出部分由 `FigureStrip` 的横向滚动裁掉),图下是「第 N 步 · 屏名」标签,再下面是内容 · 操作 · 备注说明。同时删掉了原来的 `SHOTS` glob 和 `Shot` 函数。其余各节(结论、核心指标、产品对比、共性做法、问题、下一步、背景信息)保持不变。",
- "checks": []
+ "checks": [],
+ "reshot": [
+  {
+   "at": "2026-10-11T16:06:53.539Z",
+   "why": "Figure 的图被横向拉长(图下说明比图宽时撑开外框),组件修好后页面不变、重新截图"
+  }
+ ]
 }

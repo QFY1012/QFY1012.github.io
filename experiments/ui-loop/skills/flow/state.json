@@ -2,8 +2,8 @@
  "current": "g0",
  "currentRun": "flow-g0-k1",
  "versions": 0,
- "round": 1,
- "rejected": 1,
+ "round": 0,
+ "rejected": 0,
  "sinceCheckpoint": 0,
  "history": [
   {
@@ -54,30 +54,27 @@
     },
     "accept": false,
     "why": "需求 judge 算数的意见在 f5 上变多"
-   }
+   },
+   "void": "Figure 组件把截图横向拉长(图下说明比图宽时撑开外框),当前版和 c1 的截图都受影响,这一轮的需求 judge 结果作废。组件修好后两版页面不变、重新截图,c1 重新检测。"
   }
  ],
  "components": [
   "k1"
  ],
  "stage": "function",
- "stageRounds": 1,
- "maintained": {
-  "run": "flow-g0-k1",
-  "stage": "function"
- },
+ "stageRounds": 0,
  "pending": {
-  "name": "c2",
+  "name": "c1",
   "change": {
    "rule": "G1",
    "old": "",
-   "new": "- **G1 链路明细**:明细一节按 `chains` 一款产品一组,`Group` 的 `title` 写 `${product} · ${version}`;组内按 `no` 升序把该产品 `steps` 里的每一步放成一个 `Figure`,一行最多 4 步,步骤多于 4 步时另起一个 `FigureStrip` 装下一段(第 1–4 步一行、第 5–8 步一行,依次类推),每段都从新的一行开始,整条链路不挤在同一行、不靠横向滚动才能看全,页面上出现的步数与 `steps` 长度一致、一步不少;每个 `Figure` 从上到下依次是 `FigureImage`(`src` 用 `step.image`,`alt` 写 `${product} 第 ${no} 步:${screen}`;`image` 为空时不放这一项,只留标签和说明)、`FigureLabel`(写「第 ${no} 步 · ${screen}」)、`FigureText`(写 `${content} · ${action}`,`inputs` 大于 0 时再接「 · 输入 ${inputs} 项」,`note` 非空时再接 ` · ${note}`);每一步的屏幕名、内容、操作、输入项、备注只写在这张图下面,明细一节不再另放步骤表格;产品数、步骤数不同做法不变,产品依次上下排开。",
+   "new": "- **G1 链路明细**:明细一节里,按 `chains` 一款产品一组:`Group` 的 `title` 写 `${product} · ${version}`,组内放一个 `FigureStrip`,按 `no` 升序把该产品 `steps` 里的每一步放成一个 `Figure`,个数与 `steps` 长度一致,靠后的步骤留在同一行的滚动区里,不省略也不折成两行裁掉。每个 `Figure` 从上到下依次是 `FigureImage`(`src` 用 `step.image`,`alt` 写 `${product} 第 ${no} 步:${screen}`)、`FigureLabel`(写「第 ${no} 步 · ${screen}」)、`FigureText`(写 `${content} · ${action} · 输入 ${inputs} 项`,末尾再接 `note`,`note` 为空则省略)。每一步的备注和输入项数只写在这张图下面,不再另开表格;产品数、步骤数不同时做法不变,产品依次上下排开。",
    "basis": [
     "P-02",
     "P-03",
     "P-07"
    ],
-   "why": "P-02 是本步涉及页数最多(4 页)、后果最重的一条:整段截图和说明直接看不到,核心指标的张数也对不上。c1 把一条链路整体塞进同一个滚动区,f5 上意见反而变多,说明靠横向滚动仍看不到靠后的步骤;这一版在原改法上补足:每行最多 4 步、超出换行成新的 FigureStrip,并把输入项、备注写进图下说明、对无图和无输入的情况分别处理。"
+   "why": "P-02 与 P-04、P-05、P-06 同为 4 页,但 P-02 是整步截图和说明直接缺失、核心指标张数也对不上,最严重。这一条同时补足 P-03(图与说明分家)和 P-07(输入项没出现):一步一格,图下带内容、操作、输入项和备注,整条链路都留在滚动区里。"
   }
  }
 }

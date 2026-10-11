@@ -27,5 +27,11 @@
  },
  "stop": "stop",
  "summary": "修改完成,程序检查全部通过。\n\n改动只有一处:`流程明细` 一节原先用 `useEffect`/`DOM` 自己拼 `<img>`(被检查标为「不是组件库画的元素」),现在改用新增的 `FigureStrip` + `Figure` + `FigureImage` + `FigureLabel` + `FigureText`:每个产品一组,按步骤横向排开,图高一致、超出宽度可横向滚动,屏名作 `FigureLabel`、内容/操作/输入项和备注作 `FigureText`。其余各节(KPI、流程对比、问题、下一步、背景信息)保持原样。",
- "checks": []
+ "checks": [],
+ "reshot": [
+  {
+   "at": "2026-10-11T16:06:55.129Z",
+   "why": "Figure 的图被横向拉长(图下说明比图宽时撑开外框),组件修好后页面不变、重新截图"
+  }
+ ]
 }
