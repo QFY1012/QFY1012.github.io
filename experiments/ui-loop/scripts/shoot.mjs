@@ -20,8 +20,9 @@ import { createRequire } from "node:module"
 
 const require = createRequire(import.meta.url)
 
-const APP = path.resolve(import.meta.dirname, "..", "app")
 const ws = path.resolve(process.argv[2] ?? ".")
+// The component library: the shared one, or a candidate the component agent is working on in <ws>/app.
+const APP = fs.existsSync(path.join(ws, "app", "index.html")) ? path.join(ws, "app") : path.resolve(import.meta.dirname, "..", "app")
 const OUT = path.join(ws, ".build")
 const VIEWPORT = { width: 1440, height: 900 }
 const CLIP_X = (VIEWPORT.width - 1152) / 2 - 48
@@ -76,6 +77,8 @@ try {
     },
     build: { outDir: OUT, emptyOutDir: true, chunkSizeWarningLimit: 8000 },
   })
+  // The data's images (assets/<file>), served next to the page so components can show them.
+  if (fs.existsSync(path.join(ws, "assets"))) fs.cpSync(path.join(ws, "assets"), path.join(OUT, "assets"), { recursive: true })
 } catch (e) {
   add("能渲染", `构建失败:${String(e.message ?? e).split("\n").slice(0, 6).join(" ")}`)
   finish()
@@ -83,7 +86,7 @@ try {
 }
 
 // ---------- render ----------
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".woff2": "font/woff2", ".woff": "font/woff" }
+const MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".woff2": "font/woff2", ".woff": "font/woff" }
 const server = http.createServer((req, res) => {
   const p = path.join(OUT, decodeURIComponent(new URL(req.url, "http://x").pathname))
   if (!p.startsWith(OUT) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) return res.writeHead(404).end()
@@ -103,8 +106,12 @@ try {
   for (const e of errors) add("能渲染", `页面报错:${e.slice(0, 200)}`)
 
   const dom = await page.evaluate(() => {
+    // Images, canvases and the like that no library component drew: the page made them itself,
+    // however the code spells it (<img>, createElement, a variable holding "img", new Image()...).
+    const raw = [...document.querySelectorAll("img,canvas,video,iframe,picture,object,embed")].filter((e) => !e.hasAttribute("data-slot")).map((e) => e.tagName.toLowerCase())
+    const images = [...document.images].map((i) => i.getAttribute("src") ?? "")
     const main = document.querySelector("main")
-    if (!main) return { height: document.body.scrollHeight, text: document.body.innerText, out: [], unknown: 0 }
+    if (!main) return { height: document.body.scrollHeight, text: document.body.innerText, images, out: [], unknown: 0, raw }
     const mr = main.getBoundingClientRect()
     const out = []
     for (const el of main.querySelectorAll("*")) {
@@ -115,10 +122,7 @@ try {
         out.push(`${el.tagName.toLowerCase()}[${el.getAttribute("data-slot") ?? ""}] 超出页面左右边界 ${Math.round(Math.max(mr.left - r.left, r.right - mr.right))}px「${t}」`)
       }
     }
-    return { height: Math.ceil(document.documentElement.scrollHeight), text: document.body.innerText, images: [...document.images].map((i) => i.getAttribute("src") ?? ""), out: out.slice(0, 10), unknown: document.querySelectorAll("[data-slot=unknown]").length,
-      // Images, canvases and the like that no library component drew: the page made them itself,
-      // however the code spells it (<img>, createElement, a variable holding "img", new Image()...).
-      raw: [...document.querySelectorAll("img,canvas,video,iframe,picture,object,embed")].filter((e) => !e.hasAttribute("data-slot")).map((e) => e.tagName.toLowerCase()) }
+    return { height: Math.ceil(document.documentElement.scrollHeight), text: document.body.innerText, images, out: out.slice(0, 10), unknown: document.querySelectorAll("[data-slot=unknown]").length, raw }
   })
   if (dom.unknown) add("组件库", `${dom.unknown} 个组件类型未知`)
   if (dom.raw.length) {

@@ -1,13 +1,16 @@
-// Attribution: for each page, merge the function judge's repeated runs and decide, for every
-// opinion that holds up (in at least 2 of the runs), which layer it belongs to:
-//   组件库  the component library cannot do it (a missing component or prop)  → change components (shared layer)
-//   组合    the components can do it, the page uses or arranges them wrongly   → change the Skill's output guide
-//   没照做  the spec or guide already says it, Page.tsx does not follow        → no rule change, recorded
+// Attribution: for each page, merge the 需求 judge's repeated runs (the function judge) and decide,
+// for every opinion that holds up (in at least 2 of the runs) and every program-check finding,
+// which layer it belongs to:
+//   组件库  the component library cannot do it (a missing component)  → the component branch
+//           (scripts/component-loop.mjs: the component agent builds it, a person approves the demo)
+//   指南    the components can do it and the page did not: a rule is missing, unclear, or written
+//           but not followed (a rule the agent does not follow is not doing its job either)
+//           → change the Skill's output guide, or the shared spec when the rule lives there
 //
 //   node scripts/attribute.mjs --run flow-g0 --cases f1,f2 --guide skills/flow/guides/g0.md [--stage program|function] [--runs 3]
 //
 // The checks run in order and a page goes on only when it passes: program checks, then the
-// function judge, then the aesthetic judge. --stage program attributes the program-check
+// 需求 judge, then the 审美 judge; the problems of every stage are attributed the same way. --stage program attributes the program-check
 // findings only; --stage function also reads traces/<run>/<case>/function-<n>.json.
 // Writes traces/<run>/<case>/attribution-<stage>.json.
 import fs from "node:fs"
@@ -17,18 +20,17 @@ import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
 const ROOT = path.resolve(import.meta.dirname, "..")
 const read = (f) => fs.readFileSync(f, "utf8")
 
-export const SYSTEM = `你负责给报告页面的问题归因。会给你:功能 judge 对同一页的几次检查结果(每次一份清单:unused 是数据没用完,inconvenient 是不方便操作)、程序检查的结果(构建、组件库、统一刻度、数据忠实,带 Page.tsx 行号)、页面代码 Page.tsx、组件库说明 components.md、公共规范 design.md、这个 Skill 的输出指南。
+export const SYSTEM = `你负责给报告页面的问题归因。会给你:需求 judge 对同一页的几次检查结果(每次一份清单:unused 是数据没用完,inconvenient 是不方便操作)、程序检查的结果(构建、组件库、统一刻度、数据忠实,带 Page.tsx 行号)、页面代码 Page.tsx、组件库说明 components.md、公共规范 design.md、这个 Skill 的输出指南。
 
 步骤:
 1. 合并:几份清单里说的是同一件事的合并成一条,记下它出现在几次检查里。
 2. 出现次数不到 2 次的放进 dropped,不归因。程序检查的结果是确定的,每条都要归因(kind 写 program,runs 写 0)。
 3. 其余每条判断出在哪一层,标准是「现有组件库能不能解决」:
-   - 组件库:components.md 里没有能做到的组件或 props(例如要显示图片,但没有图片组件;要显示颜色本身,但不允许写颜色)。写明缺什么能力。
-   - 组合:现有组件和 props 能解决,只是页面用错了组件或排法不对。写明该用哪个组件、怎么改;再看输出指南和公共规范里有没有相关规则:没有写「缺规则」,有但写得不清楚写「规则不清楚」。
-   - 没照做:公共规范或输出指南里已经写清楚了,Page.tsx 没照做。写明是哪条规则。
+   - 组件库:components.md 里没有能做到的组件(例如要显示图片,但没有图片组件;要显示颜色本身,但不允许写颜色)。写明缺什么能力。
+   - 指南:现有组件能解决,页面却没做到。写明该用哪个组件、怎么改,再看规则:输出指南和公共规范里都没有相关规则写「缺规则」;有但写得不清楚写「规则不清楚」;写清楚了 Page.tsx 却没照做写「没被照做」(规则没起作用,同样要改规则),并写明是哪条规则、在输出指南还是公共规范。
    依据必须引用 components.md、design.md、输出指南或 Page.tsx 里的具体内容。
 
-只输出 JSON:{"issues":[{"kind":"unused 或 inconvenient 或 program","what":"一句话说清问题","runs":出现次数,"cause":"组件库 或 组合 或 没照做","evidence":"依据","fix":"组件库:缺什么能力;组合:用哪个组件怎么改,以及缺规则还是规则不清楚;没照做:哪条规则"}],"dropped":[{"what":"一句话","runs":1}]}`
+只输出 JSON:{"issues":[{"kind":"unused 或 inconvenient 或 program","what":"一句话说清问题","runs":出现次数,"cause":"组件库 或 指南","rule":"指南的细分:缺规则 或 规则不清楚 或 没被照做;组件库写空字符串","where":"指南的规则在哪:输出指南 或 公共规范;组件库写空字符串","evidence":"依据","fix":"组件库:缺什么能力;指南:用哪个组件怎么改,涉及哪条规则"}],"dropped":[{"what":"一句话","runs":1}]}`
 
 export async function attribute(run, cases, guideFile, stage = "function", runs = 3) {
   if (stage === "program") runs = 0
@@ -51,7 +53,7 @@ export async function attribute(run, cases, guideFile, stage = "function", runs 
     const f = path.join(ROOT, "traces", run, c, `attribution-${stage}.json`)
     const j = fs.existsSync(f) ? JSON.parse(read(f)) : { issues: [] }
     const by = (k) => j.issues.filter((i) => i.cause === k).length
-    return [c, { 组件库: by("组件库"), 组合: by("组合"), 没照做: by("没照做"), dropped: j.dropped?.length ?? 0 }]
+    return [c, { 组件库: by("组件库"), 指南: by("指南"), dropped: j.dropped?.length ?? 0 }]
   }))
 }
 

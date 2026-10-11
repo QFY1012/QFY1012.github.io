@@ -1,13 +1,11 @@
 // The generator agent: reads a report's data.json, writes Page.tsx with the
 // component library following design.md, and checks its own page with shoot.mjs.
-// Built on pi (@mariozechner/pi-coding-agent) with its read / write / edit / bash tools.
-// read / write / edit are limited to the workspace; every bash command runs in
-// scripts/sandbox.sh, which sees only the workspace and the read-only build tooling,
-// has no API keys in its environment and no network.
+// The agent session and its sandbox are in scripts/agent.mjs.
 //
 //   source judge.env && node scripts/generate.mjs --run r0-v0 --cases ops,sales [--design design.md] [--version v0]
 //     [--data skills/flow/data] [--guide skills/flow/guides/g0.md]      a Skill's data and output guide
-//     [--base flow-g0 --change change.json]                              edit the base run's pages for one rule change
+//     [--base flow-g0 --change change.json]                              edit the base run's pages for one change:
+//                                                                        a guide rule, or (kind "component") a component library change
 //
 // One workspace per report in traces/<run>/<case>/ (the trajectory store):
 //   data.json        the upstream Skill output (copied from ../ui-judge/data/)
@@ -19,16 +17,10 @@ import fs from "node:fs"
 import path from "node:path"
 import { execFileSync } from "node:child_process"
 import { createHash } from "node:crypto"
-import { getModel } from "@mariozechner/pi-ai"
-import {
-  AuthStorage, createAgentSession, createExtensionRuntime, ModelRegistry, SessionManager, SettingsManager,
-  createBashToolDefinition, createEditToolDefinition, createReadToolDefinition, createWriteToolDefinition,
-} from "@mariozechner/pi-coding-agent"
+import { runAgent, SHOOT, SANDBOX } from "./agent.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 const DATA = path.resolve(ROOT, process.argv.includes("--data") ? process.argv[process.argv.indexOf("--data") + 1] : "../ui-judge/data")
-const SHOOT = path.join(ROOT, "scripts", "shoot.mjs")
-const SANDBOX = path.join(ROOT, "scripts", "sandbox.sh")
 const arg = (k, d) => {
   const i = process.argv.indexOf(`--${k}`)
   return i > 0 ? process.argv[i + 1] : d
@@ -39,27 +31,15 @@ const CASES = arg("cases", "ops").split(",")
 const DESIGN = path.resolve(ROOT, arg("design", "design.md"))
 const VERSION = arg("version", "v0")
 const MAX_SHOOTS = Number(arg("max-shoots", "5"))
-const EFFORT = process.env.GEN_EFFORT ?? "high"
 const GUIDE = arg("guide") ? path.resolve(ROOT, arg("guide")) : null
 const BASE = arg("base")
 const CHANGE = arg("change") ? JSON.parse(fs.readFileSync(path.resolve(ROOT, arg("change")), "utf8")) : null
-
-const KEY = process.env.DEEPSEEK_API_KEY
-if (!KEY) throw new Error("set DEEPSEEK_API_KEY (source judge.env)")
-// The judge's endpoint and model, through pi's OpenAI-compatible client.
-const base = getModel("deepseek", "deepseek-v4-flash")
-const model = {
-  ...base,
-  id: process.env.GEN_MODEL ?? process.env.JUDGE_MODEL ?? "deepseek-v4.1-flash",
-  baseUrl: (process.env.JUDGE_URL ?? "https://api.deepseek.com/chat/completions").replace(/\/chat\/completions$/, ""),
-  input: ["text", "image"],
-  compat: { ...base.compat, thinkingFormat: "openai" },
-}
 
 const design = fs.readFileSync(DESIGN, "utf8")
 const components = fs.readFileSync(path.join(ROOT, "components.md"), "utf8")
 const guide = GUIDE ? fs.readFileSync(GUIDE, "utf8") : null
 const designHash = createHash("sha256").update(design).digest("hex").slice(0, 8)
+const componentsHash = createHash("sha256").update(components).digest("hex").slice(0, 8)
 const guideHash = guide ? createHash("sha256").update(guide).digest("hex").slice(0, 8) : null
 
 const system = () => `你是报告页面的前端设计师。工作目录里有上游分析 Skill 输出的 data.json,你要用组件库写出这份报告的页面 Page.tsx。
@@ -86,18 +66,6 @@ ${components}
 <输出指南>
 ${guide}
 </输出指南>` : ""}`
-
-const loader = {
-  getExtensions: () => ({ extensions: [], errors: [], runtime: createExtensionRuntime() }),
-  getSkills: () => ({ skills: [], diagnostics: [] }),
-  getPrompts: () => ({ prompts: [], diagnostics: [] }),
-  getThemes: () => ({ themes: [], diagnostics: [] }),
-  getAgentsFiles: () => ({ agentsFiles: [] }),
-  getSystemPrompt: system,
-  getAppendSystemPrompt: () => [],
-  extendResources: () => {},
-  reload: async () => {},
-}
 
 // Lines of Page.tsx that differ from the base page (removed + added), by longest common subsequence.
 function lineDiff(a, b) {
@@ -127,64 +95,21 @@ async function generate(name) {
   // Page.tsx outside a TypeScript project would pick up the site's Astro tsconfig.
   fs.writeFileSync(path.join(ws, "tsconfig.json"), JSON.stringify({ compilerOptions: { jsx: "react-jsx", resolveJsonModule: true } }))
 
-  // read / write / edit: only inside the workspace.
-  const inside = (p, only) => {
-    const abs = path.resolve(ws, p ?? "")
-    return only ? abs === path.join(ws, only) : abs === ws || abs.startsWith(ws + path.sep)
-  }
-  const fence = (def, only) => ({
-    ...def,
-    execute: (id, params, ...rest) =>
-      inside(params.path, only)
-        ? def.execute(id, params, ...rest)
-        : Promise.reject(new Error(only ? `只能写 ${only}` : "只能访问工作目录内的文件")),
-  })
-  // bash: every command runs in the sandbox; checks past the limit are refused.
-  let shoots = 0
-  const q = (x) => `'${x.replace(/'/g, `'\\''`)}'`
-  const bash = createBashToolDefinition(ws, {
-    spawnHook: ({ command }) => {
-      if (/node\s+("?\$SHOOT"?|\S*shoot\.mjs)/.test(command) && ++shoots > MAX_SHOOTS) command = `echo "检查已运行 ${MAX_SHOOTS} 次,不能再运行;请结束。"`
-      return { command: `${q(SANDBOX)} ${q(ws)} ${q(command)}`, cwd: ws, env: { PATH: process.env.PATH } }
-    },
-  })
+  const prompt = !baseWs ? `请为这份报告生成页面。报告数据在 data.json。`
+    : CHANGE?.kind === "component" ? `工作目录里的 Page.tsx 是已经写好的页面,thumb.png 是它的截图。组件库这次有一项改动(上面的组件库说明已经是改动后的版本):
+${CHANGE.summary}
 
-  // Session file and credentials live outside the workspace, so the sandbox never sees them.
-  const priv = path.join(ROOT, "traces", RUN, ".private", name)
-  fs.rmSync(priv, { recursive: true, force: true })
-  fs.mkdirSync(priv, { recursive: true })
-  const auth = AuthStorage.create(path.join(priv, "auth.json"))
-  auth.setRuntimeApiKey("deepseek", KEY)
-  const sessionManager = SessionManager.create(ws, priv)
-  const { session } = await createAgentSession({
-    cwd: ws,
-    agentDir: path.join(priv, "pi"),
-    model,
-    thinkingLevel: EFFORT,
-    authStorage: auth,
-    modelRegistry: ModelRegistry.inMemory(auth),
-    resourceLoader: loader,
-    noTools: "builtin",
-    customTools: [fence(createReadToolDefinition(ws)), fence(createWriteToolDefinition(ws)), fence(createEditToolDefinition(ws)), bash],
-    sessionManager,
-    settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: true, maxRetries: 3 } }),
-  })
-
-  const t0 = Date.now()
-  session.subscribe((e) => {
-    if (e.type === "tool_execution_start") console.log(`${name}: ${e.toolName} ${String(e.args?.path ?? e.args?.command ?? "").slice(0, 70)}`)
-  })
-  await session.prompt(!baseWs ? `请为这份报告生成页面。报告数据在 data.json。`
+请按这项改动修改 Page.tsx:只改和它有关的地方(例如原来没法呈现、或绕过组件库自己画的内容,改用新组件),其他部分保持原样;如果页面用不上这项改动,就不要改,直接结束。改了就运行检查。`
     : CHANGE ? `工作目录里的 Page.tsx 是按上一版输出指南写好的页面,thumb.png 是它的截图。输出指南这次只改了一条规则:
 ${CHANGE.old ? `原文:${CHANGE.old.trim()}\n改为:${CHANGE.new.trim()}` : `新增:${CHANGE.new.trim()}`}
 
 请按这条规则修改 Page.tsx:只改和这条规则有关的地方,其他部分保持原样;如果页面已经符合这条规则,就不要改,直接结束。改了就运行检查。`
-    : `工作目录里的 Page.tsx 是已经写好的页面。检查它是否符合规范和输出指南,需要的话修改。`)
-  // The model sometimes ends a turn after long thinking without writing anything.
-  for (let nudge = 0; nudge < 2 && !fs.existsSync(path.join(ws, "Page.tsx")); nudge++) {
-    console.log(`${name}: no Page.tsx yet, nudge ${nudge + 1}`)
-    await session.prompt(`你还没有写出 Page.tsx。请现在用 write 写出页面,然后运行检查。`)
-  }
+    : `工作目录里的 Page.tsx 是已经写好的页面。检查它是否符合规范和输出指南,需要的话修改。`
+  const run = await runAgent({
+    name, ws, priv: path.join(ROOT, "traces", RUN, ".private", name), system: system(), prompt, maxShoots: MAX_SHOOTS,
+    nudges: [`你还没有写出 Page.tsx。请现在用 write 写出页面,然后运行检查。`, `你还没有写出 Page.tsx。请现在用 write 写出页面,然后运行检查。`],
+    missing: () => !fs.existsSync(path.join(ws, "Page.tsx")),
+  })
 
   // Shoot once more so the stored screenshots and checks match the final Page.tsx.
   let final = []
@@ -192,20 +117,13 @@ ${CHANGE.old ? `原文:${CHANGE.old.trim()}\n改为:${CHANGE.new.trim()}` : `新
     execFileSync(SANDBOX, [ws, `node ${SHOOT} .`], { stdio: "ignore" })
     final = JSON.parse(fs.readFileSync(path.join(ws, "checks.json"), "utf8"))
   }
-  const usage = session.messages.filter((m) => m.role === "assistant").reduce((u, m) => ({ input: u.input + (m.usage?.input ?? 0), output: u.output + (m.usage?.output ?? 0) }), { input: 0, output: 0 })
-  const sessionFile = session.sessionFile
-  if (sessionFile && fs.existsSync(sessionFile)) fs.renameSync(sessionFile, path.join(ws, "session.jsonl"))
-  fs.rmSync(priv, { recursive: true, force: true })
   fs.writeFileSync(path.join(ws, "meta.json"), JSON.stringify({
-    case: name, design: { version: VERSION, file: path.relative(ROOT, DESIGN), sha: designHash },
+    case: name, design: { version: VERSION, file: path.relative(ROOT, DESIGN), sha: designHash }, components: componentsHash,
     guide: GUIDE ? { file: path.relative(ROOT, GUIDE), sha: guideHash } : null, base: BASE ?? null, change: CHANGE,
     changedLines: baseWs ? lineDiff(path.join(baseWs, "Page.tsx"), path.join(ws, "Page.tsx")) : null,
-    model: model.id, effort: EFFORT, shoots, seconds: Math.round((Date.now() - t0) / 1000), usage,
-    stop: session.messages.at(-1)?.stopReason, checks: final,
-    summary: session.messages.filter((m) => m.role === "assistant").at(-1)?.content?.filter((c) => c.type === "text").map((c) => c.text).join("") ?? "",
+    ...run, checks: final,
   }, null, 1))
-  session.dispose()
-  console.log(`${name}: done, ${shoots} shoots, ${final.length} check findings`)
+  console.log(`${name}: done, ${run.shoots} shoots, ${final.length} check findings`)
 }
 
 await Promise.all(CASES.map((c) => generate(c).catch((e) => console.error(`${c}: FAIL ${e.stack ?? e}`))))
