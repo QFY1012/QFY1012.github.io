@@ -60,17 +60,22 @@ export default function Report() {
 
       <Section title="核心指标" description="两款 App 的对比规模与结果">
         <Grid cols={9} fields={false} className="items-baseline">
-          {data.kpis.map((kpi) => (
-            <Stat
-              key={kpi.key}
-              span={3}
-              size="lg"
-              value={kpi.value}
-              unit={kpi.unit}
-              label={kpi.label}
-              captionBelow
-            />
-          ))}
+          {["fewest", "products", "screens", "issues"].map((key) => {
+            const kpi = data.kpis.find((item) => item.key === key)
+            if (!kpi) return null
+            const main = kpi.key === "fewest"
+            return (
+              <Stat
+                key={kpi.key}
+                span={main ? 9 : 3}
+                size={main ? "lg" : undefined}
+                value={kpi.value}
+                unit={kpi.unit}
+                label={kpi.label}
+                captionBelow
+              />
+            )
+          })}
         </Grid>
       </Section>
 
@@ -88,7 +93,7 @@ export default function Report() {
 
       <Section
         title="链路明细"
-        description="从购物车到支付成功的每一步"
+        description="每一步的截图、页面、操作与备注"
         className="gap-12"
       >
         {data.chains.map((chain) => (
@@ -145,8 +150,7 @@ export default function Report() {
           columns={3}
           items={data.suggestions.map((suggestion) => ({
             title: suggestion.title,
-            description: suggestion.detail,
-            meta: `依据 ${suggestion.basis.join(" / ")}`,
+            description: `${suggestion.detail} · 依据 ${suggestion.basis.join("、")}`,
           }))}
         />
       </Section>

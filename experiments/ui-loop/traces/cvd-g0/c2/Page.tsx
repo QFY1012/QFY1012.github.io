@@ -26,6 +26,7 @@ export default function Report() {
   }))
 
   const fix = data.fixes[0]
+  const views = data.screens.map((s) => s.view).join("、")
 
   return (
     <Page title={data.title} meta={[data.target, data.date]}>
@@ -108,15 +109,17 @@ export default function Report() {
       </Section>
 
       <Section title="分类型" description="各色盲类型发现的问题数,单位:个">
-        <ProgressList
-          compact
-          span={3}
-          items={data.byType.map((t) => ({
-            label: t.type,
-            value: t.issues,
-            max: 2,
-          }))}
-        />
+        <Grid cols={9} fields={false}>
+          <ProgressList
+            compact
+            span={3}
+            items={data.byType.map((t) => ({
+              label: t.type,
+              value: t.issues,
+              max: 2,
+            }))}
+          />
+        </Grid>
       </Section>
 
       <Section title="配色" description="品牌配色与用途">
@@ -136,15 +139,15 @@ export default function Report() {
             { key: "id", label: "编号", span: 1 },
             { key: "title", label: "问题", span: 3 },
             { key: "type", label: "类型", span: 2 },
+            { key: "location", label: "位置", span: 2 },
             { key: "severity", label: "严重度", span: 1, tone: ["中"] },
-            { key: "affects", label: "影响类型", span: 2 },
           ]}
           rows={data.issues.map((i) => ({
             id: i.id,
             title: i.title,
             type: i.type,
+            location: i.location,
             severity: i.severity,
-            affects: i.affects.length ? i.affects.join("、") : "—",
           }))}
         />
       </Section>
@@ -179,6 +182,7 @@ export default function Report() {
             { label: "产品 / 页面", value: data.target },
             { label: "检查日期", value: data.date },
             { label: "检查标准", value: data.standard },
+            { label: "模拟视图", value: views },
             { label: "检查方法", value: data.method },
           ]}
         />

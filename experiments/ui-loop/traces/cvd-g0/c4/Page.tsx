@@ -1,4 +1,3 @@
-import { createElement } from "react"
 import data from "./data.json"
 import { Page, Section, Grid, Block, Text, Stat, DataTable, KV } from "@/components/report"
 
@@ -11,14 +10,14 @@ const SHOT: Record<string, string> = {
 }
 
 function Shot({ src, alt }: { src: string; alt: string }) {
-  return createElement("img", { src: SHOT[src] ?? src, alt, className: "w-full" })
+  return <img src={SHOT[src] ?? src} alt={alt} className="w-full" />
 }
 
 const KPI_NOTES: Record<string, string> = {
   pairs: "覆盖 14 个颜色 token",
   fail: "共检查 18 组文字与背景组合",
   confuse: "success 与 error、warning 与 success",
-  issues: "详见问题一节",
+  issues: "详见问题",
 }
 
 export default function Report() {
@@ -141,7 +140,6 @@ export default function Report() {
               unit="个"
               label={t.type}
               captionBelow
-              note="问题数"
             />
           ))}
         </Grid>

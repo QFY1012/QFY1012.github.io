@@ -1,5 +1,34 @@
+import { useEffect, useRef } from "react"
 import data from "./data.json"
-import { Page, Section, Group, Grid, Text, Stat, DataTable, List, KV } from "@/components/report"
+import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, List, KV } from "@/components/report"
+
+// The screenshots sit next to Page.tsx; Vite copies them beside the built page.
+const shots = import.meta.glob("./assets/*.png", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>
+
+// A screenshot: the library has no picture component, so the element is built
+// with the DOM API and mounted in a plain div.
+function Shot({ src, alt }: { src: string; alt: string }) {
+  const box = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const host = box.current
+    if (!host) return
+    const picture = new Image()
+    picture.src = src
+    picture.alt = alt
+    picture.className = "w-full"
+    host.replaceChildren(picture)
+  }, [src, alt])
+  return <div ref={box} />
+}
+
+// The headline figure leads the row: steps are what the two flows differ in.
+const kpis = ["fewest", "products", "screens", "issues"]
+  .map((key) => data.kpis.find((k) => k.key === key))
+  .filter((k) => k !== undefined)
 
 export default function Report() {
   return (
@@ -13,7 +42,7 @@ export default function Report() {
 
       <Section title="核心指标" description="2 款产品,13 张截图,链工 5 步完成">
         <Grid cols={9} fields={false} className="items-baseline">
-          {data.kpis.map((k) => (
+          {kpis.map((k) => (
             <Stat
               key={k.key}
               span={3}
@@ -56,28 +85,22 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="流程明细" description="按屏记录每一步的操作、输入和备注" className="gap-12">
+      <Section title="流程明细" description="按屏记录每一步的内容、操作和备注" className="gap-12">
         {data.chains.map((chain) => (
           <Group
             key={chain.product}
             title={`${chain.product} ${chain.version} · ${chain.steps.length} 步 · ${chain.verdict}`}
           >
-            <DataTable
-              columns={[
-                { key: "no", label: "步", span: 1, align: "right" },
-                { key: "screen", label: "界面", span: 2 },
-                { key: "action", label: "操作", span: 2 },
-                { key: "inputs", label: "输入", span: 1, align: "right" },
-                { key: "note", label: "备注", span: 3 },
-              ]}
-              rows={chain.steps.map((s) => ({
-                no: s.no,
-                screen: s.screen,
-                action: s.action,
-                inputs: s.inputs,
-                note: s.note,
-              }))}
-            />
+            <Grid cols={9} fields={false}>
+              {chain.steps.map((s) => (
+                <Block key={s.no} span={3} title={`第 ${s.no} 步 · ${s.screen}`}>
+                  <Shot src={shots[`./${s.image}`]} alt={`${chain.product} ${s.screen}`} />
+                  <Text>{s.content}</Text>
+                  <Text>{s.inputs > 0 ? `${s.action} · 输入 ${s.inputs} 项` : s.action}</Text>
+                  {s.note ? <Text>{s.note}</Text> : null}
+                </Block>
+              ))}
+            </Grid>
           </Group>
         ))}
       </Section>

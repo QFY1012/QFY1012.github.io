@@ -1,7 +1,7 @@
 [
  {
   "check": "组件库",
-  "msg": "用 createElement 直接画了 <img>,应使用组件库组件",
-  "line": 14
+  "msg": "直接写了 <img>,应使用组件库组件",
+  "line": 13
  }
 ]

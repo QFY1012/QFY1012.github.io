@@ -1,10 +1,1 @@
-[
- {
-  "check": "数据忠实",
-  "msg": "页面上没有显示 13 张图:assets/p1-01.png、assets/p1-02.png、assets/p1-03.png、assets/p1-04.png、assets/p1-05.png、assets/p1-06.png 等"
- },
- {
-  "check": "数据忠实",
-  "msg": "页面上找不到 13 项数据:/chains/0/steps/0/content「楼层列表」、/chains/0/steps/1/content「会议室和容量」、/chains/0/steps/2/content「日历」、/chains/0/steps/3/content「时间轴,一次显示 4 小时」、/chains/0/steps/4/content「主题(必填)、备注」、/chains/0/steps/5/content「搜索同事」、/chains/0/steps/6/content「汇总信息」、/chains/0/steps/7/content「会议信息、加入日历」、/chains/1/steps/0/content「日期、开始时间、时长、人数」、/chains/1/steps/1/content「符合条件的会议室,按距离排序」、/chains/1/steps/2/content「主题(选填)、参会人」、/chains/1/steps/3/content「汇总信息」 等"
- }
-]
+[]

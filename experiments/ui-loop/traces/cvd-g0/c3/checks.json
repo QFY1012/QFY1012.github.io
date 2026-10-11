@@ -1,10 +1,1 @@
-[
- {
-  "check": "数据忠实",
-  "msg": "页面上没有显示 4 张图:assets/original.png、assets/protanopia.png、assets/deuteranopia.png、assets/tritanopia.png"
- },
- {
-  "check": "数据忠实",
-  "msg": "页面上找不到 4 项数据:/contrast/0/fg「#FFFFFF」、/contrast/1/fg「#1C1C1E」、/contrast/2/fg「#FFFFFF」、/contrast/3/fg「#FFFFFF」"
- }
-]
+[]

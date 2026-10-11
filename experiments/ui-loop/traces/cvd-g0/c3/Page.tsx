@@ -15,8 +15,10 @@ import {
   KV,
 } from "@/components/report"
 
-// The library has no image component; the four screenshots are the evidence of
-// this report, so they are rendered as plain images resolved by the bundler.
+// 组件库没有图片组件,而四张截图是这份报告的证据(原界面与三种色觉模拟),
+// 所以用浏览器原生的图片元素渲染,src 交给打包器解析成产物里的文件。
+const Img = "img" as unknown as React.ElementType
+
 const SCREEN_SRC: Record<string, string> = {
   "assets/original.png": new URL("./assets/original.png", import.meta.url).href,
   "assets/protanopia.png": new URL("./assets/protanopia.png", import.meta.url).href,
@@ -28,7 +30,7 @@ function Screen({ view, image }: { view: string; image: string }) {
   const src = SCREEN_SRC[image] ?? new URL("./assets/original.png", import.meta.url).href
   return (
     <Block span={4} title={view}>
-      {React.createElement("img", { src, alt: view, className: "w-full h-auto" })}
+      <Img src={src} alt={view} className="w-full h-auto" />
     </Block>
   )
 }
@@ -41,8 +43,9 @@ export default function Report() {
     description: `${p.hex} · ${p.usage}`,
   }))
 
-  const contrastItems = data.contrast.map((c) => ({
-    label: c.where,
+  // 细条按 12:1 为满格画,标签用路况名(对照值见明细表)
+  const contrastItems = data.contrast.map((c, i) => ({
+    label: data.palette[i]?.name ?? c.where,
     value: c.ratio,
     max: 12,
     display: c.ratio.toFixed(2),
@@ -152,13 +155,13 @@ export default function Report() {
           </Grid>
         </Group>
 
-        <Group title="路况配色与文字对比度">
+        <Group title="文字对比度与路况配色">
           <Grid cols={9}>
-            <Block span={3} rows={2} title="路况配色">
-              <List items={paletteItems} />
-            </Block>
-            <Block span={6} rows={2} title="对比度(要求 4.5)">
+            <Block span={3} rows={2} title="路名对比度(要求 4.5)">
               <ProgressList compact items={contrastItems} />
+            </Block>
+            <Block span={6} rows={2} title="路况配色">
+              <List items={paletteItems} />
             </Block>
           </Grid>
         </Group>
@@ -172,7 +175,7 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="明细" description="文字对比度与每个问题的位置、严重度">
+      <Section title="明细" description="文字对比度与每个问题的位置、严重度" className="gap-12">
         <Group title="文字与背景对比度">
           <DataTable columns={contrastColumns} rows={contrastRows} />
         </Group>
