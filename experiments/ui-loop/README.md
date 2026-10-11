@@ -1,6 +1,53 @@
 # 输出层自迭代(ui-loop)
 
-上游 Skill 输出报告数据(JSON),生成 Agent 按设计规范 design.md 用组件库写出页面。loop 根据 judge 对页面的两两比较,一次改一条规则,改进 design.md。
+上游 Skill 输出报告数据(JSON),生成 Agent 按设计规范和组件库写出页面。loop 根据 judge 对页面的两两比较,一次改一条规则。
+
+## 两层:公共层和 Skill 输出指南
+
+| 层 | 文件 | 谁改 | 改了要重测什么 |
+|---|---|---|---|
+| 公共层 | `design.md`(公共规范)、`components.md` 和 `app/`(组件库) | 设计系统负责人;loop 不改 | 所有 Skill |
+| Skill 输出指南 | `skills/<skill>/guides/g<N>.md` | 这个 Skill 的 loop | 只有这个 Skill 的样本 |
+
+输出指南只写这个 Skill 的数据怎么呈现(哪个字段用哪个组件、放在哪一节),不重复公共规范。生成时两者一起给生成 Agent。
+
+一开始先只修改 design.md,所有 Skill 共用,结果一处修改要重测所有报告:a 发现的问题改了规则,b 的页面变差,说不清是改动造成的还是生成本身的随机差异。按 Skill 拆开后,改动只影响这个 Skill 的页面。下面「整份规范的 loop」保留作对照。
+
+### Skill 输出指南的 loop(`scripts/skill-loop.mjs`)
+
+试点两个 Skill:交互流程挖掘(同一任务、几个产品的界面链路对比)和色觉无障碍分析(界面对色盲是否友好)。每个 Skill 6 份样本(`skills/make_data.py` 生成,数据是编的),4 份训练、2 份留出验证(`skills/split.json`)。
+
+- **训练样本**:生成、比较,judge 的观察交给 Maintainer 和 Reviser,用来找问题、写修改。
+- **留出的验证样本**:Maintainer 和 Reviser 看不到,只用来决定这次修改是否采用。修改是照着训练样本写的,在训练样本上变好说明不了什么;在没参与找问题的样本上也变好,才说明这条规则对这个 Skill 普遍有效。
+
+准备:空指南 g0 从头生成全部样本;训练样本再生成一次,两版比较,Maintainer 归纳第一批经验。
+
+每一轮:
+
+1. **Reviser** 读当前指南、经验库、修改记录和训练样本数据,只改一条规则,得到候选 `guides/c<k>.md`。
+2. **改页面**:生成 Agent 拿当前版的页面和这一条改动,只改和这条规则有关的地方,不从头重写。两版页面的差别就来自这条改动。没改动的页面不送 judge。
+3. **judge**:rubric31 两两比较,两种顺序都选同一版才算。训练样本比 1 轮,验证样本比 3 轮。
+4. **把关**:验证样本一份都不输、至少赢一半,程序检查问题不增加,才采用。
+5. **Maintainer** 用训练样本的比较更新这个 Skill 的经验库;和数据类型无关的经验标「公共」,以后可能提到公共规范。
+6. **记录**:`skills/<skill>/changelog.md`,不管采用没有都写,包括每份样本改了多少行、每轮赢输。
+
+停止:连续 3 个候选没通过、到轮数上限(默认 6)、每采用 2 个版本的人工检查点。最后用最终指南从头生成验证样本,和 g0 比较,再由用户盲排。
+
+```sh
+node scripts/skill-loop.mjs --skill flow [--max-rounds 6] [--setup-only]
+```
+
+| 文件 | 作用 |
+|---|---|
+| `skills/<skill>/data/` | 样本数据 |
+| `skills/<skill>/guides/` | 输出指南各版本和候选 |
+| `skills/<skill>/changes/` | 每个候选的那一条改动 |
+| `skills/<skill>/experience.md` | 这个 Skill 的经验库 |
+| `skills/<skill>/changelog.md` | 修改记录 |
+| `skills/<skill>/state.json` | loop 进度 |
+| `traces/<skill>-<版本>/<样本>/` | 页面、截图、会话、meta.json(含相对上一版改动的行数) |
+
+## 整份规范的 loop(对照)
 
 ## 文件
 

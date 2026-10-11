@@ -6,6 +6,8 @@
 // has no API keys in its environment and no network.
 //
 //   source judge.env && node scripts/generate.mjs --run r0-v0 --cases ops,sales [--design design.md] [--version v0]
+//     [--data skills/flow/data] [--guide skills/flow/guides/g0.md]      a Skill's data and output guide
+//     [--base flow-g0 --change change.json]                              edit the base run's pages for one rule change
 //
 // One workspace per report in traces/<run>/<case>/ (the trajectory store):
 //   data.json        the upstream Skill output (copied from ../ui-judge/data/)
@@ -24,7 +26,7 @@ import {
 } from "@mariozechner/pi-coding-agent"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
-const DATA = path.resolve(ROOT, "..", "ui-judge", "data")
+const DATA = path.resolve(ROOT, process.argv.includes("--data") ? process.argv[process.argv.indexOf("--data") + 1] : "../ui-judge/data")
 const SHOOT = path.join(ROOT, "scripts", "shoot.mjs")
 const SANDBOX = path.join(ROOT, "scripts", "sandbox.sh")
 const arg = (k, d) => {
@@ -38,6 +40,9 @@ const DESIGN = path.resolve(ROOT, arg("design", "design.md"))
 const VERSION = arg("version", "v0")
 const MAX_SHOOTS = Number(arg("max-shoots", "5"))
 const EFFORT = process.env.GEN_EFFORT ?? "high"
+const GUIDE = arg("guide") ? path.resolve(ROOT, arg("guide")) : null
+const BASE = arg("base")
+const CHANGE = arg("change") ? JSON.parse(fs.readFileSync(path.resolve(ROOT, arg("change")), "utf8")) : null
 
 const KEY = process.env.DEEPSEEK_API_KEY
 if (!KEY) throw new Error("set DEEPSEEK_API_KEY (source judge.env)")
@@ -53,13 +58,15 @@ const model = {
 
 const design = fs.readFileSync(DESIGN, "utf8")
 const components = fs.readFileSync(path.join(ROOT, "components.md"), "utf8")
+const guide = GUIDE ? fs.readFileSync(GUIDE, "utf8") : null
 const designHash = createHash("sha256").update(design).digest("hex").slice(0, 8)
+const guideHash = guide ? createHash("sha256").update(guide).digest("hex").slice(0, 8) : null
 
 const system = () => `你是报告页面的前端设计师。工作目录里有上游分析 Skill 输出的 data.json,你要用组件库写出这份报告的页面 Page.tsx。
 
 工作方式:
-1. 读 data.json,想清楚每条信息属于哪一类内容(规范 B 部分)、放在哪一节(规范 C 部分)。
-2. 用 write 写出 Page.tsx。
+1. 读 data.json,想清楚每条信息属于哪一类内容(规范 B 部分)、放在哪一节(规范 C 部分)${guide ? ",并照输出指南的规则做" : ""}。
+2. 用 write 写出 Page.tsx。如果工作目录里已经有 Page.tsx,先读它和 thumb.png,在它的基础上用 edit 修改。
 3. 用 bash 运行 \`node \$SHOOT .\`:它会构建页面、截图,并做程序检查(构建、组件库、统一刻度、数据忠实、元素越界),问题带行号。
 4. 用 read 看 thumb.png(整页)和需要细看的 tile-N.png,对照规范检查自己的页面;有程序检查问题或不符合规范的地方就改,改完再运行一次。
 5. 页面符合规范、程序检查通过后就结束,最后用一两句话说明页面的结构。检查最多运行 ${MAX_SHOOTS} 次。
@@ -72,7 +79,11 @@ ${design}
 
 <components.md>
 ${components}
-</components.md>`
+</components.md>${guide ? `
+
+<输出指南>
+${guide}
+</输出指南>` : ""}`
 
 const loader = {
   getExtensions: () => ({ extensions: [], errors: [], runtime: createExtensionRuntime() }),
@@ -86,12 +97,28 @@ const loader = {
   reload: async () => {},
 }
 
+// Lines of Page.tsx that differ from the base page (removed + added), by longest common subsequence.
+function lineDiff(a, b) {
+  if (!fs.existsSync(a) || !fs.existsSync(b)) return null
+  const x = fs.readFileSync(a, "utf8").split("\n"), y = fs.readFileSync(b, "utf8").split("\n")
+  let prev = new Array(y.length + 1).fill(0)
+  for (let i = 1; i <= x.length; i++) {
+    const cur = [0]
+    for (let j = 1; j <= y.length; j++) cur[j] = x[i - 1] === y[j - 1] ? prev[j - 1] + 1 : Math.max(prev[j], cur[j - 1])
+    prev = cur
+  }
+  return x.length + y.length - 2 * prev[y.length]
+}
+
 async function generate(name) {
   const ws = path.join(ROOT, "traces", RUN, name)
   if (fs.existsSync(path.join(ws, "meta.json"))) return console.log(`${name}: already done`)
   fs.rmSync(ws, { recursive: true, force: true })
   fs.mkdirSync(ws, { recursive: true })
   fs.copyFileSync(path.join(DATA, `${name}.json`), path.join(ws, "data.json"))
+  // Edit mode: start from the base run's page and its screenshots.
+  const baseWs = BASE ? path.join(ROOT, "traces", BASE, name) : null
+  if (baseWs) for (const f of fs.readdirSync(baseWs)) if (f === "Page.tsx" || f === "checks.json" || f === "tiles.json" || f.endsWith(".png")) fs.copyFileSync(path.join(baseWs, f), path.join(ws, f))
 
   // Page.tsx outside a TypeScript project would pick up the site's Astro tsconfig.
   fs.writeFileSync(path.join(ws, "tsconfig.json"), JSON.stringify({ compilerOptions: { jsx: "react-jsx", resolveJsonModule: true } }))
@@ -143,7 +170,12 @@ async function generate(name) {
   session.subscribe((e) => {
     if (e.type === "tool_execution_start") console.log(`${name}: ${e.toolName} ${String(e.args?.path ?? e.args?.command ?? "").slice(0, 70)}`)
   })
-  await session.prompt(`请为这份报告生成页面。报告数据在 data.json。`)
+  await session.prompt(!baseWs ? `请为这份报告生成页面。报告数据在 data.json。`
+    : CHANGE ? `工作目录里的 Page.tsx 是按上一版输出指南写好的页面,thumb.png 是它的截图。输出指南这次只改了一条规则:
+${CHANGE.old ? `原文:${CHANGE.old.trim()}\n改为:${CHANGE.new.trim()}` : `新增:${CHANGE.new.trim()}`}
+
+请按这条规则修改 Page.tsx:只改和这条规则有关的地方,其他部分保持原样;如果页面已经符合这条规则,就不要改,直接结束。改了就运行检查。`
+    : `工作目录里的 Page.tsx 是已经写好的页面。检查它是否符合规范和输出指南,需要的话修改。`)
 
   // Shoot once more so the stored screenshots and checks match the final Page.tsx.
   let final = []
@@ -157,6 +189,8 @@ async function generate(name) {
   fs.rmSync(priv, { recursive: true, force: true })
   fs.writeFileSync(path.join(ws, "meta.json"), JSON.stringify({
     case: name, design: { version: VERSION, file: path.relative(ROOT, DESIGN), sha: designHash },
+    guide: GUIDE ? { file: path.relative(ROOT, GUIDE), sha: guideHash } : null, base: BASE ?? null, change: CHANGE,
+    changedLines: baseWs ? lineDiff(path.join(baseWs, "Page.tsx"), path.join(ws, "Page.tsx")) : null,
     model: model.id, effort: EFFORT, shoots, seconds: Math.round((Date.now() - t0) / 1000), usage,
     stop: session.messages.at(-1)?.stopReason, checks: final,
     summary: session.messages.filter((m) => m.role === "assistant").at(-1)?.content?.filter((c) => c.type === "text").map((c) => c.text).join("") ?? "",
