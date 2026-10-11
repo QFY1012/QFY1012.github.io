@@ -72,7 +72,9 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
     noTools: "builtin",
     customTools: [fence(createReadToolDefinition(ws)), fence(createWriteToolDefinition(ws)), fence(createEditToolDefinition(ws)), bash],
     sessionManager: SessionManager.create(ws, priv),
-    settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: true, maxRetries: 3 } }),
+    // A request the endpoint never answers is dropped after 4 minutes and retried (the SDK default
+    // waits 10). The deadline is for the reply to start; a long streamed reply is not cut.
+    settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: true, maxRetries: 3, provider: { timeoutMs: 240_000 } } }),
   })
   const t0 = Date.now()
   // live.md in <priv>: the reply being streamed (thinking and text), so a long step can be read
