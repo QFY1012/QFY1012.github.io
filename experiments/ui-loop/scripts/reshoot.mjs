@@ -19,7 +19,7 @@ const cases = fs.readdirSync(dir).filter((c) => fs.existsSync(path.join(dir, c, 
 
 async function reshoot(c) {
   const ws = path.join(dir, c)
-  for (const f of fs.readdirSync(ws)) if (/^tile-\d+\.png$|^function-.*\.json$/.test(f)) fs.rmSync(path.join(ws, f))
+  for (const f of fs.readdirSync(ws)) if (/^tile-\d+\.png$/.test(f)) fs.rmSync(path.join(ws, f))
   await promisify(execFile)("node", [path.join(ROOT, "scripts", "shoot.mjs"), ws], { cwd: ROOT })
   const checks = JSON.parse(fs.readFileSync(path.join(ws, "checks.json"), "utf8"))
   const metaFile = path.join(ws, "meta.json")

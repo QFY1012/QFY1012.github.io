@@ -7,23 +7,27 @@
 // The Skill's samples are split in skills/split.json: training samples are what the Maintainer
 // and the Reviser learn from; held-out samples are only used to accept or reject a change.
 //
-// Three stages, in order; the pages move to the next stage when every page passes this one:
-//   program    program checks (shoot.mjs)            pass: no findings
-//   function   需求 judge, 3 runs a page             pass: no opinion that is in 2 of the 3 runs
-//   aesthetic  审美 judge, rubric31, pairwise         (last stage; runs until a stop)
-// After each stage's checks the Maintainer generalises the training pages' findings into problems,
-// each 组件不够 or 布局问题 (experience.json / experience.md).
+// Three stages, in order; the pages move to the next stage when they pass this one:
+//   program    program checks (shoot.mjs)                       pass: no findings on any page
+//   function   需求 judge: which version is more convenient     pass: no open 需求 problem on the training pages
+//   aesthetic  审美 judge: rubric31, which is better designed    (last stage; runs until a stop)
+// Both judges compare two versions of a page (compare.mjs), in both orders: a verdict counts when
+// both orders pick the same version, and the better version's remaining problems count when both
+// orders name them. After each stage's checks the Maintainer generalises the training pages'
+// findings into problems, each 组件不够 or 布局问题 (experience.json / experience.md); in a judge
+// stage, the first look compares the current pages with a second generation of the same guide.
 //
 // Each round (state in skills/<skill>/state.json, so a stopped run resumes):
 //   1. Reviser    reads the guide, the 布局问题 and changelog.md; changes one rule → guides/c<k>.md
 //   2. Edit       the agent edits each current page for that one change (not from scratch)
-//   3. Check      the candidate's pages in this stage's check (pages left unchanged keep their results)
-//   4. Gate       on the held-out samples:
+//   3. Gate       on the held-out samples:
 //                   program    fewer findings, no page with more
-//                   function   fewer counted opinions, no page with more; program checks not worse
-//                   aesthetic  no sample lost, at least half won (3 rounds); earlier stages not worse
-//   5. Maintainer on the training pages: what the change fixed and broke → 「试过的改法」
-//   6. Record     changelog.md entry either way
+//                   function   需求 judge, 3 rounds: no sample lost, at least half won; program checks not worse
+//                   aesthetic  审美 judge, the same; program checks and 需求 judge not worse (no sample lost)
+//   4. Maintainer on the training pages (compared once, current against candidate; pages left
+//                 unchanged keep their earlier comparison): the problem list, and what the change
+//                 fixed and broke → 「试过的改法」
+//   5. Record     changelog.md entry either way
 // When only 组件不够 problems are open, the loop stops and waits for the component branch; after a
 // merge (component-loop.mjs approve) the pages it edited become the current run, and the loop
 // checks them again from this stage.
@@ -35,7 +39,6 @@ import path from "node:path"
 import { execFileSync } from "node:child_process"
 import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
 import { compare, summarize } from "./compare.mjs"
-import { functionJudge, counted } from "./function-judge.mjs"
 import { maintain as maintain_, attempt } from "./maintainer.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
@@ -81,40 +84,39 @@ const trainData = () => TRAIN.map((c) => `<${c}.json>\n${read(path.join(DIR, "da
 
 // ---------- checks ----------
 const findings = (r, cases) => Object.fromEntries(cases.map((c) => [c, meta(r, c).checks?.length ?? 0]))
-// 需求 judge on the pages that changed; a page the agent left unchanged keeps its base results.
-async function functionCounts(r, cases, base) {
-  for (const c of cases)
-    if (base && r !== base && (meta(r, c).changedLines ?? 1) === 0)
-      for (const f of fs.readdirSync(ws(base, c))) if (/^function-/.test(f) && !fs.existsSync(path.join(ws(r, c), f))) fs.copyFileSync(path.join(ws(base, c), f), path.join(ws(r, c), f))
-  await functionJudge(r, cases, 3)
-  return counted(r, cases)
-}
 const sum = (o) => Object.values(o).reduce((a, b) => a + b, 0)
-const passes = async (r) => state.stage === "program" ? sum(findings(r, ALL)) === 0
-  : state.stage === "function" ? sum(await functionCounts(r, ALL)) === 0 : false
 
 // ---------- Maintainer ----------
 // scripts/maintainer.mjs: generalises a stage's findings on the training pages into problems,
-// each either 组件不够 or 布局问题 → experience.json / experience.md.
-async function maintain(r, base) {
-  if (state.stage === "function") await functionCounts(r, TRAIN)
-  const ps = await maintain_({ skill: SK, run: r, stage: state.stage, base, guide: path.relative(ROOT, path.join(GUIDES, `${state.current}.md`)) })
-  state.maintained = { run: r, stage: state.stage }
+// each either 组件不够 or 布局问题 → experience.json / experience.md. In a judge stage it reads the
+// comparisons in state.judged (page → the two runs last compared on it), about the current run.
+async function maintain(current) {
+  const pairs = state.judged?.[state.stage]
+  const ps = await maintain_({ skill: SK, run: state.currentRun, stage: state.stage, guide: path.relative(ROOT, path.join(GUIDES, `${state.current}.md`)), pairs, current })
+  state.maintained = { run: state.currentRun, stage: state.stage }
   save()
   // The whole list, so the terminal shows what the Maintainer concluded.
-  log(`maintainer (${STAGE_NAME[state.stage]}, ${r}): ${ps.filter((p) => p.status !== "已解决").length} 个未解决问题`)
+  log(`maintainer (${STAGE_NAME[state.stage]}, ${state.currentRun}): ${ps.filter((p) => p.status !== "已解决").length} 个未解决问题`)
   for (const p of ps) console.log(`  ${p.id} [${p.cause}] ${p.status} ${p.stage} · ${p.pages.join(",")}\n    ${p.problem}${p.good ? `\n    赢的做法:${p.good}` : ""}${(p.evidence ?? []).map((e) => `\n    - ${e}`).join("")}`)
   return ps
 }
-const open = (cause) => {
+const open = (pick) => {
   const f = path.join(DIR, "experience.json")
-  return fs.existsSync(f) ? JSON.parse(read(f)).problems.filter((p) => p.status !== "已解决" && p.cause === cause) : []
+  return fs.existsSync(f) ? JSON.parse(read(f)).problems.filter((p) => p.status !== "已解决" && pick(p)) : []
+}
+// Compare two runs on training pages and remember, per page, which comparison is the latest.
+async function judgeTrain(a, b, cases) {
+  log(`训练页 ${cases.join(",")} 上比较 ${a} 和 ${b}(${STAGE_NAME[state.stage]},1 轮 × 两种顺序)`)
+  await compare(a, b, cases, 1, state.stage)
+  state.judged ??= {}
+  state.judged[state.stage] = { ...(state.judged[state.stage] ?? {}), ...Object.fromEntries(cases.map((c) => [c, [a, b]])) }
+  save()
 }
 
 // ---------- Reviser ----------
 async function revise(name) {
   const cur = read(path.join(GUIDES, `${state.current}.md`))
-  const sys = `你负责修改「${NAME}」这个 Skill 的输出指南。生成 Agent 按公共规范 design.md、组件库 components.md 和这份指南为这个 Skill 的报告写页面。页面依次经过程序检查、需求 judge(方不方便操作)、审美 judge(新旧两版两两比较),现在在「${STAGE_NAME[state.stage]}」这一步。你每次只改一条规则,改动在留出的验证样本上通过把关才会被采用;验证样本你看不到。
+  const sys = `你负责修改「${NAME}」这个 Skill 的输出指南。生成 Agent 按公共规范 design.md、组件库 components.md 和这份指南为这个 Skill 的报告写页面。页面依次经过程序检查、需求 judge(哪版更方便操作)、审美 judge(哪版更好看),两个 judge 都是新旧两版两两比较,现在在「${STAGE_NAME[state.stage]}」这一步。你每次只改一条规则,改动在留出的验证样本上通过把关才会被采用;验证样本你看不到。
 
 要求:
 - 只改输出指南;公共规范和组件库不归你改,不要在指南里重复公共规范已有的内容。
@@ -148,6 +150,7 @@ async function revise(name) {
 }
 
 // ---------- gate ----------
+const mark = (x) => (x === "b" ? "赢" : x === "a" ? "输" : "平")
 const worse = (a, b) => HOLD.filter((c) => b[c] > a[c])
 async function gate(base, cand, touched) {
   log(`门禁:验证页 ${HOLD.join(",")},${base}(当前版)对 ${cand}(候选)`)
@@ -159,21 +162,20 @@ async function gate(base, cand, touched) {
     return { ...out, accept: out.program.candidate < out.program.current && !bad.length, why: bad.length ? `程序检查问题在 ${bad.join("、")} 上变多` : out.program.candidate >= out.program.current ? `验证样本的程序检查问题没有减少(${out.program.current} → ${out.program.candidate})` : "" }
   }
   if (out.program.candidate > out.program.current) return { ...out, accept: false, why: `程序检查问题从 ${out.program.current} 个增加到 ${out.program.candidate} 个` }
-  const fc = [await functionCounts(base, HOLD), await functionCounts(cand, HOLD, base)]
-  out.function = { current: sum(fc[0]), candidate: sum(fc[1]), perCase: Object.fromEntries(HOLD.map((c) => [c, [fc[0][c], fc[1][c]]])) }
-  log(`门禁 · 需求 judge 算数的意见:${HOLD.map((c) => `${c} ${fc[0][c]}→${fc[1][c]}`).join(",")}(合计 ${out.function.current}→${out.function.candidate})`)
-  if (state.stage === "function") {
-    const bad = worse(...fc)
-    return { ...out, accept: out.function.candidate < out.function.current && !bad.length, why: bad.length ? `需求 judge 算数的意见在 ${bad.join("、")} 上变多` : out.function.candidate >= out.function.current ? `验证样本算数的意见没有减少(${out.function.current} → ${out.function.candidate})` : "" }
-  }
-  if (out.function.candidate > out.function.current) return { ...out, accept: false, why: `需求 judge 算数的意见从 ${out.function.current} 条增加到 ${out.function.candidate} 条` }
   const hold = touched.filter((c) => HOLD.includes(c))
-  await compare(base, cand, hold, 3)
-  const g = summarize(base, cand, hold, 3)
-  const verdicts = Object.values(g.perCase).map((x) => x.verdict)
-  const lost = verdicts.filter((v) => v === "a").length, won = verdicts.filter((v) => v === "b").length, need = Math.ceil(HOLD.length / 2)
-  out.aesthetic = g.perCase
-  return { ...out, accept: hold.length > 0 && lost === 0 && won >= need, why: !hold.length ? "验证样本的页面都没有改动,无法验证" : lost ? `验证样本输了 ${lost} 份` : won < need ? `验证样本只赢 ${won} 份` : "" }
+  if (!hold.length) return { ...out, accept: false, why: "验证样本的页面都没有改动,无法验证" }
+  // This stage's judge decides; the 需求 judge, an earlier stage in the 审美 stage, only must not lose.
+  for (const kind of STAGES.slice(1, STAGES.indexOf(state.stage) + 1)) {
+    log(`门禁 · ${STAGE_NAME[kind]}:验证页 ${hold.join(",")},3 轮 × 两种顺序`)
+    await compare(base, cand, hold, 3, kind)
+    const g = summarize(base, cand, hold, 3, kind)
+    out[kind] = g.perCase
+    const verdicts = Object.values(g.perCase).map((x) => x.verdict)
+    const lost = verdicts.filter((v) => v === "a").length, won = verdicts.filter((v) => v === "b").length, need = Math.ceil(HOLD.length / 2)
+    log(`门禁 · ${STAGE_NAME[kind]}:${hold.map((c) => `${c} ${g.perCase[c].rounds.map(mark).join("")}`).join(",")}(赢 ${won} 份,输 ${lost} 份)`)
+    if (lost) return { ...out, accept: false, why: `${STAGE_NAME[kind]}在验证样本上输了 ${lost} 份` }
+    if (kind === state.stage) return { ...out, accept: won >= need, why: won < need ? `${STAGE_NAME[kind]}在验证样本上只赢 ${won} 份` : "" }
+  }
 }
 
 // ---------- the loop ----------
@@ -194,29 +196,40 @@ const nextStage = (why, passed = false) => {
   state.rejected = 0
   save()
 }
-const mark = (x) => (x === "b" ? "赢" : x === "a" ? "输" : "平")
 
 while (true) {
   if (state.round >= MAX_ROUNDS) { state.stop = `达到轮数上限 ${MAX_ROUNDS}`; break }
   if (state.sinceCheckpoint >= 2) { state.stop = "人工检查点:请盲排当前版和 g0"; break }
   // A stage ends when every page passes it, or when it has run out of rounds.
+  if (state.stage === "program") {
+    log(`检查当前版 ${state.currentRun} 是否全部通过「程序检查」`)
+    if (sum(findings(state.currentRun, ALL)) === 0) { nextStage("所有页面都通过", true); continue }
+  }
   if (state.stage !== "aesthetic") {
-    log(`检查当前版 ${state.currentRun} 是否全部通过「${STAGE_NAME[state.stage]}」`)
-    if (await passes(state.currentRun)) { nextStage("所有页面都通过", true); continue }
     if (state.stageRounds >= STAGE_ROUNDS || state.rejected >= 3) { nextStage(state.rejected >= 3 ? "连续 3 个候选没通过" : `已跑 ${STAGE_ROUNDS} 轮`); continue }
   } else if (state.rejected >= 3) { state.stop = "连续 3 个候选未通过把关"; break }
   // The current pages, generalised in this stage (again after a component merge or a stage change).
   if (state.maintained?.run !== state.currentRun || state.maintained?.stage !== state.stage) {
     log(`归纳当前版 ${state.currentRun} 在「${STAGE_NAME[state.stage]}」这一步的问题(训练页 ${TRAIN.join(",")})`)
-    if (state.stage === "aesthetic") {
-      // The first look in this stage: the current pages against a second generation of the same guide.
+    if (state.stage !== "program") {
+      // The first look in a judge stage: the current pages against a second generation of the same guide.
       const twin = `${state.currentRun}-twin`
-      if (!fs.existsSync(path.join(ROOT, "traces", twin))) execFileSync("node", [path.join(ROOT, "scripts", "generate.mjs"), "--run", twin, "--cases", TRAIN.join(","), "--data", path.join("skills", SK, "data"), "--guide", path.relative(ROOT, path.join(GUIDES, `${state.current}.md`)), "--version", state.current], { stdio: "inherit", cwd: ROOT })
-      await compare(state.currentRun, twin, TRAIN, 1)
-      await maintain(twin, state.currentRun)
-    } else await maintain(state.currentRun)
+      if (!fs.existsSync(path.join(ROOT, "traces", twin))) {
+        log(`生成 ${twin}:按当前指南 ${state.current} 再写一遍训练页,用来和当前版比较`)
+        execFileSync("node", [path.join(ROOT, "scripts", "generate.mjs"), "--run", twin, "--cases", TRAIN.join(","), "--data", path.join("skills", SK, "data"), "--guide", path.relative(ROOT, path.join(GUIDES, `${state.current}.md`)), "--version", state.current], { stdio: "inherit", cwd: ROOT })
+      }
+      state.judged = { ...state.judged, [state.stage]: {} }
+      await judgeTrain(state.currentRun, twin, TRAIN)
+      await maintain(`两版都按当前指南生成,都是当前版`)
+    } else await maintain()
   }
-  const layout = open("布局问题"), parts = open("组件不够")
+  // A judge stage passes when the training pages have no open problem from it.
+  if (state.stage !== "program" && !open((p) => p.stage === STAGE_NAME[state.stage]).length) {
+    if (state.stage === "aesthetic") { state.stop = "训练页上没有算数的审美问题了"; break }
+    nextStage("训练页上没有算数的需求问题", true)
+    continue
+  }
+  const layout = open((p) => p.cause === "布局问题"), parts = open((p) => p.cause === "组件不够")
   if (!layout.length) {
     if (parts.length) { state.stop = `只剩「组件不够」的问题(${parts.map((p) => p.id).join("、")}),等组件分支:node scripts/component-loop.mjs propose`; break }
     if (state.stage === "aesthetic") { state.stop = "审美阶段没有可改的问题"; break }
@@ -236,14 +249,10 @@ while (true) {
   const lines = Object.fromEntries(ALL.map((c) => [c, meta(cr, c).changedLines ?? 0]))
   const touched = ALL.filter((c) => lines[c] > 0)
   const g = await gate(state.currentRun, cr, touched)
-  if (state.stage === "aesthetic" && touched.some((c) => TRAIN.includes(c))) {
-    await compare(state.currentRun, cr, touched.filter((c) => TRAIN.includes(c)), 1)
-    await maintain(cr, state.currentRun)
-  }
   // What the change did on the training pages, accepted or not: a tried change for the next Reviser.
   const trainTouched = touched.filter((c) => TRAIN.includes(c))
-  log(`门禁结果:${g.accept ? "采用" : `未采用(${g.why})`};接着在训练页 ${trainTouched.join(",")} 上看这次改动的效果`)
-  if (state.stage === "function") await functionCounts(cr, trainTouched, state.currentRun)
+  log(`门禁结果:${g.accept ? "采用" : `未采用(${g.why})`};接着在训练页 ${trainTouched.join(",") || "(都没改动)"} 上看这次改动的效果`)
+  if (state.stage !== "program" && trainTouched.length) await judgeTrain(state.currentRun, cr, trainTouched)
   const tried = trainTouched.length ? await attempt({ skill: SK, stage: state.stage, base: state.currentRun, run: cr, candidate: cand, change, accepted: g.accept, why: g.why, cases: trainTouched }) : null
 
   const base = state.current, baseRun = state.currentRun, stage = state.stage
@@ -257,6 +266,11 @@ while (true) {
     state.sinceCheckpoint++
   } else state.rejected++
   state.stageRounds++
+  // The problem list is about the current run: refreshed from this round's comparisons (judge stages).
+  if (state.stage !== "program") {
+    if (trainTouched.length) await maintain(`当前版是 ${state.currentRun}`)
+    else state.maintained = { run: state.currentRun, stage: state.stage }
+  }
   fs.appendFileSync(LOG, `
 ## 候选 ${cand}(基于 ${base},${STAGE_NAME[stage]}阶段)  结果:${g.accept ? `采用,成为 ${state.current}` : "未采用"}
 
@@ -265,7 +279,7 @@ ${change.old ? `  原文:${change.old.trim()}\n` : "  (新增规则)\n"}  改为
 依据:${(change.basis ?? []).join("、")}。${change.why}
 改动行数(Page.tsx,相对当前版):${ALL.map((c) => `${c} ${lines[c]}`).join(",")}
 验证样本程序检查问题:当前 ${g.program.current} 个,候选 ${g.program.candidate} 个
-${g.function ? `验证样本需求 judge 算数的意见:当前 ${g.function.current} 条,候选 ${g.function.candidate} 条\n` : ""}${g.aesthetic ? `验证样本审美 judge(3 轮,每轮两种顺序都选同一版才算):${HOLD.map((c) => (g.aesthetic[c] ? `${c} ${g.aesthetic[c].rounds.map(mark).join("")}` : `${c} 未改动`)).join(",")}\n` : ""}${g.accept ? "" : `没采用的原因:${g.why}\n`}${tried ? `训练页上的效果(Maintainer):解决了 ${tried.fixed.join("、") || "无"};没解决 ${tried.unfixed.join("、") || "无"};新问题:${tried.new.join(";") || "无"}。${tried.lesson}\n` : ""}`)
+${["function", "aesthetic"].filter((k) => g[k]).map((k) => `验证样本${STAGE_NAME[k]}(候选对当前版,3 轮,每轮两种顺序都选同一版才算):${HOLD.map((c) => (g[k][c] ? `${c} ${g[k][c].rounds.map(mark).join("")}` : `${c} 未改动`)).join(",")}\n`).join("")}${g.accept ? "" : `没采用的原因:${g.why}\n`}${tried ? `训练页上的效果(Maintainer):解决了 ${tried.fixed.join("、") || "无"};没解决 ${tried.unfixed.join("、") || "无"};新问题:${tried.new.join(";") || "无"}。${tried.lesson}\n` : ""}`)
   state.history.push({ round: k, stage, candidate: cand, base, baseRun, change, accept: g.accept, why: g.why, lines, gate: g })
   state.round = k
   delete state.pending
