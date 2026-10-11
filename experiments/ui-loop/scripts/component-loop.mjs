@@ -58,6 +58,8 @@ export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库
 6. 在 components.md 里补上:有哪些部件、什么时候用、最小的组合示例。
 7. 程序检查和代码检查是为了发现问题,不是要绕过的关卡:不要为了让检查通过去改写法、藏元素,也不要在文件系统里找检查脚本或参考答案。觉得检查结果和需求冲突,照需求做,在结束时的说明里写清楚冲突在哪。
 
+检查:用 bash 运行 \`node \$SHOOT .\`,它会构建演示页、截图(thumb.png 是整页缩略图,tile-*.png 是从上到下的切块),并做程序检查,结果写在 checks.json。用 read 看截图,不对就改。
+
 工具只能访问工作目录,bash 在沙箱里运行、不能联网。
 
 <规范 A 部分(页面和组件共用的基础)>
@@ -76,7 +78,7 @@ export const PROMPT = `请补上上面的问题需要的组件能力:
 1. 读 components.md、现有报告组件的代码和 shadcn/index.json,决定用哪个 shadcn 部件(或 Radix 原语)、拆成哪几个部件。
 2. 写组件,更新 components.md。
 3. 写演示页 Page.tsx:用 data.json 和 assets/ 的真实数据,把原来呈现不了的内容用新部件呈现出来,其余内容用现有组件排,让人能看出新部件和现有组件放在一起是否统一。
-4. 用 bash 运行 \`node \$SHOOT .\` 构建、截图、检查,用 read 看 thumb.png 和切块,不对就改。检查最多运行 6 次。
+4. 运行检查,看截图,不对就改。检查最多运行 6 次。
 5. 结束时说明:新部件叫什么、各管什么、来自哪个 shadcn 部件或 Radix 原语、怎么组合;需求里哪些没做及原因。`
 
 // The Maintainer's open 组件不够 problems of every Skill.
