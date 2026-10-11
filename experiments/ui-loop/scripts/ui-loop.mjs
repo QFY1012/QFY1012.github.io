@@ -101,7 +101,9 @@ async function maintain(r, base) {
   const ps = await maintain_({ skill: SK, run: r, stage: state.stage, base, guide: path.relative(ROOT, path.join(GUIDES, `${state.current}.md`)) })
   state.maintained = { run: r, stage: state.stage }
   save()
-  log(`maintainer (${STAGE_NAME[state.stage]}): ${ps.filter((p) => p.status !== "已解决").map((p) => `${p.id} ${p.cause}`).join(", ") || "no open problems"}`)
+  // The whole list, so the terminal shows what the Maintainer concluded.
+  log(`maintainer (${STAGE_NAME[state.stage]}, ${r}): ${ps.filter((p) => p.status !== "已解决").length} 个未解决问题`)
+  for (const p of ps) console.log(`  ${p.id} [${p.cause}] ${p.status} ${p.stage} · ${p.pages.join(",")}\n    ${p.problem}${p.good ? `\n    赢的做法:${p.good}` : ""}${(p.evidence ?? []).map((e) => `\n    - ${e}`).join("")}`)
   return ps
 }
 const open = (cause) => {
