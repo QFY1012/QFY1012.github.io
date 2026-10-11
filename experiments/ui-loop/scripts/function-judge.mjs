@@ -35,6 +35,8 @@ export async function functionJudge(run, cases, repeat = 1) {
       if (fs.existsSync(file)) continue
       const ws = path.join(ROOT, "traces", run, c)
       const imgs = pageImages(ws)
+      const t0 = Date.now()
+      console.log(`  需求 judge ${run}/${c} ${path.basename(file, ".json")} 开始(${imgs.length} 张图)`)
       try {
         let r
         // Now and then the model says the screenshots never arrived and returns empty lists with a
@@ -42,22 +44,27 @@ export async function functionJudge(run, cases, repeat = 1) {
         for (let n = 0; n < 3; n++) {
           r = await call(SYSTEM, [
             { type: "text", text: `<data.json>\n${fs.readFileSync(path.join(ws, "data.json"), "utf8")}\n</data.json>\n\n页面截图共 ${imgs.length} 张:` }, ...imgs,
-          ], { key })
+          ], { key, label: `需求 judge ${run}/${c} ${path.basename(file, ".json")}` })
           if (!(r.json.note && !r.json.unused?.length && !r.json.inconvenient?.length)) break
           console.error(`  需求 judge ${run}/${c}:没看到截图(${r.json.note.slice(0, 40)}…),重试`)
           if (n === 2) throw new Error("3 次都没看到截图")
         }
         fs.writeFileSync(file, JSON.stringify(r.json, null, 1))
-        console.log(`  需求 judge ${run}/${c} ${path.basename(file, ".json")}:数据没用完 ${r.json.unused?.length ?? 0} 条,不方便 ${r.json.inconvenient?.length ?? 0} 条`)
+        done++
+        console.log(`  需求 judge ${run}/${c} ${path.basename(file, ".json")}:数据没用完 ${r.json.unused?.length ?? 0} 条,不方便 ${r.json.inconvenient?.length ?? 0} 条(${Math.round((Date.now() - t0) / 1000)} 秒;本批 ${done}/${todo})`)
       } catch (e) {
-        console.error(`FAIL ${run}/${c}: ${e.message}`)
+        console.log(`  ✗ 需求 judge ${run}/${c} ${path.basename(file, ".json")} 失败:${e.message.slice(0, 120)}(这一轮结束后补跑)`)
       }
     }
   }
   // A run that failed (no reply, no screenshots seen) is asked again: a page with fewer runs has
   // fewer opinions that reach 2 of 3, which would flatter it at the gate.
   const all = [...jobs]
+  const todo = all.filter((j) => !fs.existsSync(j.file)).length
+  let done = 0
+  if (todo) console.log(`  需求 judge ${run}:${cases.join(",")} 共 ${todo} 次检查要跑(每页 ${repeat} 次,已有的跳过)`)
   for (let pass = 0; pass < 3; pass++) {
+    if (pass && all.some((j) => !fs.existsSync(j.file))) console.log(`  需求 judge ${run}:补跑第 ${pass} 轮,还缺 ${all.filter((j) => !fs.existsSync(j.file)).length} 次`)
     jobs.splice(0, jobs.length, ...all.filter((j) => !fs.existsSync(j.file)))
     if (!jobs.length) break
     await Promise.all(Array.from({ length: 8 }, worker))
@@ -84,7 +91,9 @@ export async function counted(run, cases) {
     if (fs.existsSync(out)) return
     const runs = []
     for (let n = 1; fs.existsSync(path.join(ws, `function-${n}.json`)); n++) runs.push(`<第 ${n} 次>\n${fs.readFileSync(path.join(ws, `function-${n}.json`), "utf8")}\n</第 ${n} 次>`)
-    const r = await call(MERGE, [{ type: "text", text: runs.join("\n\n") }], { key })
+    console.log(`  汇总 ${run}/${c}:合并 ${runs.length} 次检查的意见…`)
+    const r = await call(MERGE, [{ type: "text", text: runs.join("\n\n") }], { key, label: `汇总 ${run}/${c}` })
+    console.log(`  汇总 ${run}/${c}:算数(≥2 次)${(r.json.issues ?? []).filter((i) => i.runs >= 2).length} 条`)
     fs.writeFileSync(out, JSON.stringify({ issues: (r.json.issues ?? []).filter((i) => i.runs >= 2), dropped: (r.json.issues ?? []).filter((i) => i.runs < 2) }, null, 1))
   }))
   return Object.fromEntries(cases.map((c) => [c, JSON.parse(fs.readFileSync(path.join(ROOT, "traces", run, c, "function-counted.json"), "utf8")).issues.length]))

@@ -127,11 +127,14 @@ async function revise(name) {
 只输出 JSON:{"rule":"规则编号(新增的写新编号,如 G3)","old":"被改写的那一整行原文(必须和指南里的一行完全一致;新增规则写空字符串)","new":"新的一整行,以 - **编号 名称**: 开头","basis":["P-01"],"why":"一两句话"}`
   const user = `<公共规范 design.md>\n${read(path.join(ROOT, "design.md"))}\n</公共规范>\n\n<components.md>\n${read(path.join(ROOT, "components.md"))}\n</components.md>\n\n<输出指南 当前版 ${state.current}>\n${cur}\n</输出指南>\n\n<训练样本数据>\n${trainData()}\n</训练样本数据>\n\n<问题清单>\n${read(EXP)}\n</问题清单>\n\n<修改记录>\n${read(LOG)}\n</修改记录>`
   for (let n = 0; n < 3; n++) {
-    const r = (await call(sys, [{ type: "text", text: user }], { key: KEY })).json
-    if (!/^- \*\*G\d+/.test(r.new?.trim() ?? "")) continue
+    // Streamed, like the Maintainer, so the terminal shows the Reviser at work.
+    process.stdout.write(`\n── Reviser · ${NAME} · ${name}${n ? `(第 ${n + 1} 次)` : ""}\n`)
+    const r = (await call(sys, [{ type: "text", text: user }], { key: KEY, label: `Reviser ${name}`, onThink: () => process.stdout.write("[思考中…]\n"), onText: (t) => process.stdout.write(t) })).json
+    process.stdout.write("\n")
+    if (!/^- \*\*G\d+/.test(r.new?.trim() ?? "")) { log(`reviser ${name}: 回复里没有 - **G<编号>** 开头的新规则,重写`); continue }
     let next
     if (r.old) {
-      if (!cur.includes(r.old)) continue
+      if (!cur.includes(r.old)) { log(`reviser ${name}: 要改写的原文在指南里找不到,重写`); continue }
       next = cur.replace(r.old, r.new.trim())
     } else next = cur.includes("(暂无)") ? cur.replace("(暂无)", r.new.trim()) : cur.trimEnd() + "\n" + r.new.trim() + "\n"
     next = next.replace(/^# 输出指南 .*$/m, `# 输出指南 · ${NAME} ${name}(候选,基于 ${state.current})`)
@@ -147,7 +150,9 @@ async function revise(name) {
 // ---------- gate ----------
 const worse = (a, b) => HOLD.filter((c) => b[c] > a[c])
 async function gate(base, cand, touched) {
+  log(`门禁:验证页 ${HOLD.join(",")},${base}(当前版)对 ${cand}(候选)`)
   const fp = [findings(base, HOLD), findings(cand, HOLD)]
+  log(`门禁 · 程序检查:${HOLD.map((c) => `${c} ${fp[0][c]}→${fp[1][c]}`).join(",")}`)
   const out = { program: { current: sum(fp[0]), candidate: sum(fp[1]) } }
   if (state.stage === "program") {
     const bad = worse(...fp)
@@ -156,6 +161,7 @@ async function gate(base, cand, touched) {
   if (out.program.candidate > out.program.current) return { ...out, accept: false, why: `程序检查问题从 ${out.program.current} 个增加到 ${out.program.candidate} 个` }
   const fc = [await functionCounts(base, HOLD), await functionCounts(cand, HOLD, base)]
   out.function = { current: sum(fc[0]), candidate: sum(fc[1]), perCase: Object.fromEntries(HOLD.map((c) => [c, [fc[0][c], fc[1][c]]])) }
+  log(`门禁 · 需求 judge 算数的意见:${HOLD.map((c) => `${c} ${fc[0][c]}→${fc[1][c]}`).join(",")}(合计 ${out.function.current}→${out.function.candidate})`)
   if (state.stage === "function") {
     const bad = worse(...fc)
     return { ...out, accept: out.function.candidate < out.function.current && !bad.length, why: bad.length ? `需求 judge 算数的意见在 ${bad.join("、")} 上变多` : out.function.candidate >= out.function.current ? `验证样本算数的意见没有减少(${out.function.current} → ${out.function.candidate})` : "" }
@@ -195,11 +201,13 @@ while (true) {
   if (state.sinceCheckpoint >= 2) { state.stop = "人工检查点:请盲排当前版和 g0"; break }
   // A stage ends when every page passes it, or when it has run out of rounds.
   if (state.stage !== "aesthetic") {
+    log(`检查当前版 ${state.currentRun} 是否全部通过「${STAGE_NAME[state.stage]}」`)
     if (await passes(state.currentRun)) { nextStage("所有页面都通过", true); continue }
     if (state.stageRounds >= STAGE_ROUNDS || state.rejected >= 3) { nextStage(state.rejected >= 3 ? "连续 3 个候选没通过" : `已跑 ${STAGE_ROUNDS} 轮`); continue }
   } else if (state.rejected >= 3) { state.stop = "连续 3 个候选未通过把关"; break }
   // The current pages, generalised in this stage (again after a component merge or a stage change).
   if (state.maintained?.run !== state.currentRun || state.maintained?.stage !== state.stage) {
+    log(`归纳当前版 ${state.currentRun} 在「${STAGE_NAME[state.stage]}」这一步的问题(训练页 ${TRAIN.join(",")})`)
     if (state.stage === "aesthetic") {
       // The first look in this stage: the current pages against a second generation of the same guide.
       const twin = `${state.currentRun}-twin`
@@ -217,6 +225,7 @@ while (true) {
   }
 
   const k = state.round + 1, cand = `c${k}`, cr = run(cand)
+  log(`━━ 第 ${k} 轮(${STAGE_NAME[state.stage]}):候选 ${cand},基于 ${state.current}(${state.currentRun})`)
   let change = state.pending?.name === cand ? state.pending.change : null
   if (!change) {
     change = await revise(cand)
@@ -233,6 +242,7 @@ while (true) {
   }
   // What the change did on the training pages, accepted or not: a tried change for the next Reviser.
   const trainTouched = touched.filter((c) => TRAIN.includes(c))
+  log(`门禁结果:${g.accept ? "采用" : `未采用(${g.why})`};接着在训练页 ${trainTouched.join(",")} 上看这次改动的效果`)
   if (state.stage === "function") await functionCounts(cr, trainTouched, state.currentRun)
   const tried = trainTouched.length ? await attempt({ skill: SK, stage: state.stage, base: state.currentRun, run: cr, candidate: cand, change, accepted: g.accept, why: g.why, cases: trainTouched }) : null
 

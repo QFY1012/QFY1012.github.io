@@ -83,6 +83,7 @@ function lineDiff(a, b) {
 async function generate(name) {
   const ws = path.join(ROOT, "traces", RUN, name)
   if (fs.existsSync(path.join(ws, "meta.json"))) return console.log(`${name}: already done`)
+  console.log(`${name}: 开始${BASE ? `改页面(在 ${BASE} 上改)` : "写页面"}`)
   fs.rmSync(ws, { recursive: true, force: true })
   fs.mkdirSync(ws, { recursive: true })
   fs.copyFileSync(path.join(DATA, `${name}.json`), path.join(ws, "data.json"))

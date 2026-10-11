@@ -523,7 +523,7 @@ export const JUDGE_EFFORT = process.env.JUDGE_EFFORT ?? "low"
 // between chunks once the reply has started. A long reply that keeps arriving is not cut.
 const FIRST_MS = 60_000, IDLE_MS = 10_000
 // onText: called with each piece of the reply as it arrives (thinking is not passed, only marked by onThink once).
-export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JUDGE_EFFORT, onText, onThink }) {
+export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JUDGE_EFFORT, onText, onThink, label }) {
   const body = { model, messages: [{ role: "system", content: sys }, { role: "user", content }], response_format: { type: "json_object" }, reasoning_effort: effort, max_tokens: 32000, stream: true, stream_options: { include_usage: true } }
   for (let attempt = 0; ; attempt++) {
     const t0 = Date.now()
@@ -561,6 +561,8 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
       return { json: JSON.parse(text), raw: text, usage, latencyMs: Date.now() - t0 }
     } catch (e) {
       if (attempt >= 3) throw e
+      // Say so, so a slow or failing endpoint is visible while it happens.
+      if (label) console.log(`  ↻ ${label}:第 ${attempt + 1} 次请求失败(${String(e.message).slice(0, 80)}),${2 * 2 ** attempt} 秒后重试`)
       await new Promise((r) => setTimeout(r, 2000 * 2 ** attempt))
     } finally {
       clearTimeout(idle)
