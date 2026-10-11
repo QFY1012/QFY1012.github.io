@@ -72,9 +72,9 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
     noTools: "builtin",
     customTools: [fence(createReadToolDefinition(ws)), fence(createWriteToolDefinition(ws)), fence(createEditToolDefinition(ws)), bash],
     sessionManager: SessionManager.create(ws, priv),
-    // A request the endpoint never answers is dropped after 4 minutes and retried (the SDK default
-    // waits 10). The deadline is for the reply to start; a long streamed reply is not cut.
-    settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: true, maxRetries: 3, provider: { timeoutMs: 240_000 } } }),
+    // A request the endpoint does not answer within 10 seconds is dropped and retried (the SDK
+    // default waits 10 minutes). The deadline is for the response to start; a long streamed reply is not cut.
+    settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: true, maxRetries: 3, provider: { timeoutMs: 10_000 } } }),
   })
   const t0 = Date.now()
   // stream: print the reply to stdout as it arrives (text and tool calls; thinking only marked), with the wait
