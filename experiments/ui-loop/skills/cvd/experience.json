@@ -22,7 +22,7 @@
     "c2:页面上没有显示 4 张图:assets/original.png、assets/protanopia.png、assets/deuteranopia.png、assets/tritanopia.png",
     "c3/c4:页面上有不是组件库画的元素:4 个 <img>;组件库没有的能力不要自己画,应写出缺什么组件"
    ],
-   "status": "未解决"
+   "status": "已解决"
   },
   {
    "id": "P-02",

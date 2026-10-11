@@ -10,5 +10,9 @@
   "k1"
  ],
  "stage": "function",
- "stageRounds": 0
+ "stageRounds": 0,
+ "maintained": {
+  "run": "flow-g0-k1",
+  "stage": "function"
+ }
 }

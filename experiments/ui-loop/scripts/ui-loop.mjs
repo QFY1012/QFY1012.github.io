@@ -172,8 +172,15 @@ async function gate(base, cand, touched) {
 
 // ---------- the loop ----------
 generate(run("g0"), ALL, "g0")
-const nextStage = (why) => {
+const nextStage = (why, passed = false) => {
   const i = STAGES.indexOf(state.stage)
+  // Every page passed this stage: what the Maintainer still had open for it is solved.
+  const f = path.join(DIR, "experience.json")
+  if (passed && fs.existsSync(f)) {
+    const ex = JSON.parse(fs.readFileSync(f, "utf8"))
+    for (const p of ex.problems) if (p.stage === STAGE_NAME[state.stage] && p.status !== "已解决") p.status = "已解决"
+    fs.writeFileSync(f, JSON.stringify(ex, null, 1))
+  }
   fs.appendFileSync(LOG, `\n## 「${STAGE_NAME[state.stage]}」阶段结束:${why}\n\n进入「${STAGE_NAME[STAGES[i + 1]]}」。\n`)
   log(`stage ${state.stage} → ${STAGES[i + 1]}: ${why}`)
   state.stage = STAGES[i + 1]
@@ -188,7 +195,7 @@ while (true) {
   if (state.sinceCheckpoint >= 2) { state.stop = "人工检查点:请盲排当前版和 g0"; break }
   // A stage ends when every page passes it, or when it has run out of rounds.
   if (state.stage !== "aesthetic") {
-    if (await passes(state.currentRun)) { nextStage("所有页面都通过"); continue }
+    if (await passes(state.currentRun)) { nextStage("所有页面都通过", true); continue }
     if (state.stageRounds >= STAGE_ROUNDS || state.rejected >= 3) { nextStage(state.rejected >= 3 ? "连续 3 个候选没通过" : `已跑 ${STAGE_ROUNDS} 轮`); continue }
   } else if (state.rejected >= 3) { state.stop = "连续 3 个候选未通过把关"; break }
   // The current pages, generalised in this stage (again after a component merge or a stage change).
