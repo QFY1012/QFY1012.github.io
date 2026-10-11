@@ -7,7 +7,6 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Node, type SpecNode } from "./render"
 
 const SPAN = ["", "col-span-1", "col-span-2", "col-span-3", "col-span-4", "col-span-5", "col-span-6", "col-span-7", "col-span-8", "col-span-9", "col-span-10", "col-span-11", "col-span-12"]
@@ -91,23 +90,21 @@ export function Text({ children, className, span }: Placed & { children: string 
   return <Node node={{ type: "text", text: children, className }} ctx={{ span }} />
 }
 
-// Screenshots: one screen per Figure, composed in a Grid (one cell per screen,
-// the grid sets the cell width). The image is held to the phone-screenshot
-// ratio, so a row of figures keeps one height and the labels line up.
-const SCREEN_RATIO = 375 / 760
-
-export function Figure({ span, className, ...props }: Placed & React.ComponentProps<"figure">) {
-  return <figure data-slot="figure" className={cn("flex flex-col gap-2", span && SPAN[span], className)} {...props} />
+// Screenshots: one screen per Figure, laid out in a FigureStrip that scrolls
+// sideways. Every image is drawn at the same height and keeps its own width, so
+// phone screenshots and wider analysis screenshots line up in one row without
+// being cropped; anything past the right edge is clipped and reached by scrolling.
+export function FigureStrip({ className, ...props }: React.ComponentProps<"div">) {
+  return <div data-slot="figure-strip" className={cn("flex w-full gap-3 overflow-x-auto", className)} {...props} />
 }
 
-// ratio: width / height. Defaults to a phone screenshot; pass the source's own
-// ratio when the images are not 375x760 so they are not cropped.
-export function FigureImage({ ratio = SCREEN_RATIO, className, ...props }: React.ComponentProps<"img"> & { ratio?: number }) {
-  return (
-    <AspectRatio ratio={ratio} className="w-full overflow-hidden">
-      <img data-slot="figure-image" className={cn("h-full w-full object-cover", className)} {...props} />
-    </AspectRatio>
-  )
+export function Figure({ className, ...props }: React.ComponentProps<"figure">) {
+  return <figure data-slot="figure" className={cn("flex shrink-0 flex-col gap-2", className)} {...props} />
+}
+
+// The image keeps its own ratio at the strip's height, so nothing is cropped.
+export function FigureImage({ className, ...props }: React.ComponentProps<"img">) {
+  return <img data-slot="figure-image" className={cn("h-96 w-auto max-w-none", className)} {...props} />
 }
 
 // The screen or view name, on the line the design gives 12px notes.

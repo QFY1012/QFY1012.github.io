@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="375" height="760" viewBox="0 0 375 760" font-family="system-ui, -apple-system, 'Noto Sans SC', sans-serif">
+  <rect width="375" height="760" fill="#ffffff"/>
+  <rect x="0" y="0" width="375" height="104" fill="#fafafa"/>
+  <text x="24" y="46" font-size="13" fill="#a1a1aa">9:41</text>
+  <text x="351" y="46" font-size="13" fill="#a1a1aa" text-anchor="end">5G</text>
+  <text x="24" y="84" font-size="22" font-weight="600" fill="#18181b">登录</text>
+  <rect x="24" y="116" width="327" height="1" fill="#e4e4e7"/>
+  <rect x="24" y="150" width="64" height="64" rx="10" fill="#e4e4e7"/>
+  <rect x="104" y="156" width="194" height="14" rx="7" fill="#d4d4d8"/>
+  <rect x="104" y="182" width="125" height="12" rx="6" fill="#e4e4e7"/>
+  <rect x="330" y="172" width="20" height="20" rx="6" fill="#f4f4f5"/>
+  <rect x="24" y="266" width="64" height="64" rx="10" fill="#e4e4e7"/>
+  <rect x="104" y="272" width="202" height="14" rx="7" fill="#d4d4d8"/>
+  <rect x="104" y="298" width="119" height="12" rx="6" fill="#e4e4e7"/>
+  <rect x="330" y="288" width="20" height="20" rx="6" fill="#f4f4f5"/>
+  <rect x="24" y="382" width="64" height="64" rx="10" fill="#e4e4e7"/>
+  <rect x="104" y="388" width="210" height="14" rx="7" fill="#d4d4d8"/>
+  <rect x="104" y="414" width="113" height="12" rx="6" fill="#e4e4e7"/>
+  <rect x="330" y="404" width="20" height="20" rx="6" fill="#f4f4f5"/>
+  <rect x="24" y="498" width="64" height="64" rx="10" fill="#e4e4e7"/>
+  <rect x="104" y="504" width="218" height="14" rx="7" fill="#d4d4d8"/>
+  <rect x="104" y="530" width="107" height="12" rx="6" fill="#e4e4e7"/>
+  <rect x="330" y="520" width="20" height="20" rx="6" fill="#f4f4f5"/>
+  <rect x="0" y="688" width="375" height="72" fill="#fafafa"/>
+  <rect x="0" y="688" width="375" height="1" fill="#e4e4e7"/>
+  <rect x="48" y="712" width="24" height="24" rx="6" fill="#d4d4d8"/><rect x="144" y="712" width="24" height="24" rx="6" fill="#2563eb"/><rect x="240" y="712" width="24" height="24" rx="6" fill="#d4d4d8"/><rect x="336" y="712" width="24" height="24" rx="6" fill="#d4d4d8"/>
+</svg>
