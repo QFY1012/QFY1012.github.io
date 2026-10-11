@@ -10,7 +10,7 @@
 // program checks on the training pages into the first problem list (experience.md).
 
 // Each round (state in skills/<skill>/state.json, so a stopped run resumes):
-//   1. Reviser    reads the guide, the 指南 problems in experience.md and changelog.md; changes one rule → guides/c<k>.md
+//   1. Reviser    reads the guide, the 布局问题 in experience.md and changelog.md; changes one rule → guides/c<k>.md
 //   2. Edit       the agent edits each current page for that one change (not from scratch),
 //                 so differences between the two pages come from the change
 //   3. Judge      candidate against current, rubric31, both orders: training 1 round,
@@ -67,7 +67,7 @@ const trainData = () => TRAIN.map((c) => `<${c}.json>\n${read(path.join(DIR, "da
 
 // ---------- Maintainer ----------
 // scripts/maintainer.mjs: generalises a stage's findings on the training pages into problems,
-// each attributed to the component library or to this guide → experience.json / experience.md.
+// each either 组件不够 or 布局问题 → experience.json / experience.md.
 const maintain = (r, stage, base) => maintain_({ skill: SK, run: r, stage, base, guide: path.relative(ROOT, path.join(GUIDES, `${state.current}.md`)) })
   .then((ps) => log(`maintainer (${stage}): ${ps.filter((p) => p.status !== "已解决").length} open problems`))
 
@@ -81,7 +81,7 @@ async function revise(name) {
 - 只改一处:改写一条已有规则,或新增一条规则。
 - 规则写这个 Skill 的数据怎么呈现:哪个字段(写字段名,如 chains、stages)用哪个组件、什么 props、放在哪一节、什么顺序。写成生成 Agent 能照着做、能检查的具体做法,不写「美观」「清晰」这类说法。
 - 规则要对这个 Skill 的所有报告都适用:训练样本里数据多少不同(产品个数、步骤数、表格行数),写清楚不同情况怎么做,不要只针对某一份样本。
-- 依据问题清单里「指南」一栏的问题(组件库的问题不归你管),先解决涉及页数最多的;写明依据哪几个问题(id)。
+- 依据问题清单里「布局问题」一栏(「组件不够」不归你管),先解决涉及页数最多的;写明依据哪几个问题(id)。
 - 先读修改记录:被拒绝过的改法不要重复;方向对但带出新问题的,在原改法上补足。
 
 只输出 JSON:{"rule":"规则编号(新增的写新编号,如 G3)","old":"被改写的那一整行原文(必须和指南里的一行完全一致;新增规则写空字符串)","new":"新的一整行,以 - **编号 名称**: 开头","basis":["E-01"],"why":"一两句话"}`

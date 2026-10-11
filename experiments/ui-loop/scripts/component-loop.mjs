@@ -1,6 +1,6 @@
 // The component branch. Problems that the Maintainer generalises from any of the three stages
-// (program checks, the 需求 judge, the 审美 judge) and attributes to the component library
-// (skills/<skill>/experience.json) go to the component agent. It adds what
+// (program checks, the 需求 judge, the 审美 judge) as 组件不够 (skills/<skill>/experience.json)
+// go to the component agent. It adds what
 // is missing, built from shadcn/ui the way shadcn builds things (small composable parts, no
 // configuration props), in the style of the existing components, and draws a demo page. A person
 // reviews the demo: approves it, sends feedback for another round, or edits the code directly.
@@ -37,7 +37,7 @@ const wsOf = (name) => path.join(ROOT, "traces", "_components", name)
 const privOf = (name, n) => path.join(ROOT, "traces", "_components", ".private", `${name}-${n}`)
 
 const designA = read(path.join(ROOT, "design.md")).match(/## A 基础[\s\S]*?(?=\n## B)/)?.[0] ?? ""
-export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库。生成 Agent 用组件库写报告页面;页面经过程序检查、需求 judge、审美 judge,Maintainer 把检测意见归纳成问题,下面这些被归因为「组件库」:组件库缺能力,改页面写法和输出指南都解决不了。你要补上这项能力。
+export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库。生成 Agent 用组件库写报告页面;页面经过程序检查、需求 judge、审美 judge,Maintainer 把检测意见归纳成问题,下面这些被归为「组件不够」:组件库缺能力,怎么排都解决不了。你要补上这项能力。
 
 工作目录:
 - app/src/components/report/:报告组件(index.tsx 导出,内容组件的绘制在 render.tsx)。生成 Agent 只从 @/components/report import。
@@ -61,9 +61,9 @@ export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库
 ${designA}
 </规范 A 部分>
 
-<归因为组件库的问题>
+<组件不够的问题>
 ${requests.map((r) => `- [${r.skill},${r.stage},${r.pages.length} 页] ${r.problem}\n  场景:${r.scenes}`).join("\n")}
-</归因为组件库的问题>${rejected ? `
+</组件不够的问题>${rejected ? `
 
 <之前没被采用的组件改动>
 ${rejected}
@@ -76,11 +76,11 @@ export const PROMPT = `请补上上面的问题需要的组件能力:
 4. 用 bash 运行 \`node \$SHOOT .\` 构建、截图、检查,用 read 看 thumb.png 和切块,不对就改。检查最多运行 6 次。
 5. 结束时说明:新部件叫什么、各管什么、来自哪个 shadcn 部件或 Radix 原语、怎么组合;需求里哪些没做及原因。`
 
-// The Maintainer's open 组件库 problems of every Skill.
+// The Maintainer's open 组件不够 problems of every Skill.
 function collect() {
   return Object.entries(split).flatMap(([sk, sp]) => {
     const f = path.join(ROOT, "skills", sk, "experience.json")
-    return fs.existsSync(f) ? JSON.parse(read(f)).problems.filter((p) => p.cause === "组件库" && p.status !== "已解决").map((p) => ({ ...p, sk, skill: sp.name })) : []
+    return fs.existsSync(f) ? JSON.parse(read(f)).problems.filter((p) => p.cause === "组件不够" && p.status !== "已解决").map((p) => ({ ...p, sk, skill: sp.name })) : []
   })
 }
 
@@ -171,7 +171,7 @@ async function build(name, prompt) {
 
 ${run.summary}
 
-## 需求(Maintainer 归纳的组件库问题,${p.requests} 条)
+## 需求(Maintainer 归纳的「组件不够」问题,${p.requests} 条)
 
 ${JSON.parse(read(path.join(ws, "requests.json"))).map((r) => `- **${r.skill} ${r.id}**(${r.stage},${r.pages.join("、")}):${r.problem}\n  - 场景:${r.scenes}`).join("\n")}
 
@@ -196,7 +196,7 @@ async function propose() {
   const pending = Object.entries(state.proposals).find(([, p]) => p.status === "待审")
   if (pending) return console.log(`${pending[0]} is waiting for review; one change at a time`)
   const requests = collect()
-  if (!requests.length) return console.log("no issues attributed to 组件库")
+  if (!requests.length) return console.log("no 组件不够 problems")
   const name = `k${state.next}`
   const ws = wsOf(name)
   fs.rmSync(ws, { recursive: true, force: true })
