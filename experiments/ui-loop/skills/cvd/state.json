@@ -2,8 +2,8 @@
  "current": "g0",
  "currentRun": "cvd-g0-k1",
  "versions": 0,
- "round": 1,
- "rejected": 1,
+ "round": 2,
+ "rejected": 2,
  "sinceCheckpoint": 0,
  "history": [
   {
@@ -102,27 +102,63 @@
     "accept": false,
     "why": "需求 judge 算数的意见在 c5、c6 上变多"
    }
+  },
+  {
+   "round": 2,
+   "stage": "function",
+   "candidate": "c2",
+   "base": "g0",
+   "baseRun": "cvd-g0-k1",
+   "change": {
+    "rule": "G1",
+    "old": "",
+    "new": "- **G1 颜色表的内容与排布**:`palette`、`confusions`、`contrast`、`fixes` 四张表合并到同一节「色板与检查」,紧跟展示 `screens` 的「模拟视图」一节之后、排在展示 `issues` 的问题清单一节之前;这一节写成 `<Section className=\"gap-12\">`,四张表按配色 → 混淆色 → 对比度 → 色值修正的顺序,每张表用一个 `Group` 包住一张 `DataTable`,表名写在 `Group` 的 `title` 里(显示在表格上方),组与组之间 48px;某个数组缺失或为空时对应的 `Group` 整块不渲染,四张表都为空时这一节不出现。凡单元格里出现颜色值都写成「名称 色值」(如 `系列 2 #52C41A`),名称取 `palette` 里 `hex` 相同的 `name`,在 `palette` 里找不到的只写色值;`palette` 表自己的色值列只写 `hex`,不再重复名称。各表列与 span(每张表各列 span 之和为 9):`palette`——名称 2、色值 2、用途 5;`confusions`——位置 `where` 2、颜色对 2(`colors` 两个色值按上面的写法用「/」相连)、正常 `normal` 1(右对齐)、红色盲 1(右对齐)、绿色盲 1(右对齐)、蓝色盲 1(右对齐)、受影响 `affected` 1(用「、」拼,空数组写「—」),四个色差列里属于该行 `affected` 的数值用该列的 `tone` 标红;`contrast`——位置 `where` 3、文字色 `fg` 1、背景色 `bg` 1、对比度 `ratio` 1(右对齐)、要求 `required` 1(右对齐)、结果 2(`pass` 为 false 写「不达标」并用该列的 `tone` 标红);`fixes`——位置 `where` 2、原色 `from` 1、修正色 `to` 1、背景 `bg` 1、修复前 `before` 2(右对齐)、修复后 `after` 2(右对齐)。",
+    "basis": [
+     "P-05"
+    ],
+    "why": "P-05 与 P-06 并列最多(各 4 页),P-05 的原改法方向已被验证有效(合并四表 + 统一「名称 色值」),按其失败原因补足三点后重提:palette 的色值列不再重复名称、四张表按数据有无整组条件渲染(去掉只有表头的空表、并把叫法从「修复」改为「色值修正」)、表名移到表格上方并给四表留 48px 分隔。"
+   },
+   "accept": false,
+   "why": "需求 judge 算数的意见在 c5 上变多",
+   "lines": {
+    "c1": 181,
+    "c2": 220,
+    "c3": 161,
+    "c4": 134,
+    "c5": 132,
+    "c6": 104
+   },
+   "gate": {
+    "program": {
+     "current": 0,
+     "candidate": 0
+    },
+    "function": {
+     "current": 16,
+     "candidate": 19,
+     "perCase": {
+      "c5": [
+       7,
+       10
+      ],
+      "c6": [
+       9,
+       9
+      ]
+     }
+    },
+    "accept": false,
+    "why": "需求 judge 算数的意见在 c5 上变多"
+   }
   }
  ],
  "components": [
   "k1"
  ],
  "stage": "function",
- "stageRounds": 1,
+ "stageRounds": 2,
  "maintained": {
   "run": "cvd-g0-k1",
   "stage": "function"
- },
- "pending": {
-  "name": "c2",
-  "change": {
-   "rule": "G1",
-   "old": "",
-   "new": "- **G1 颜色表的内容与排布**:`palette`、`confusions`、`contrast`、`fixes` 四张表合并到同一节「色板与检查」,紧跟展示 `screens` 的「模拟视图」一节之后、排在展示 `issues` 的问题清单一节之前;这一节写成 `<Section className=\"gap-12\">`,四张表按配色 → 混淆色 → 对比度 → 色值修正的顺序,每张表用一个 `Group` 包住一张 `DataTable`,表名写在 `Group` 的 `title` 里(显示在表格上方),组与组之间 48px;某个数组缺失或为空时对应的 `Group` 整块不渲染,四张表都为空时这一节不出现。凡单元格里出现颜色值都写成「名称 色值」(如 `系列 2 #52C41A`),名称取 `palette` 里 `hex` 相同的 `name`,在 `palette` 里找不到的只写色值;`palette` 表自己的色值列只写 `hex`,不再重复名称。各表列与 span(每张表各列 span 之和为 9):`palette`——名称 2、色值 2、用途 5;`confusions`——位置 `where` 2、颜色对 2(`colors` 两个色值按上面的写法用「/」相连)、正常 `normal` 1(右对齐)、红色盲 1(右对齐)、绿色盲 1(右对齐)、蓝色盲 1(右对齐)、受影响 `affected` 1(用「、」拼,空数组写「—」),四个色差列里属于该行 `affected` 的数值用该列的 `tone` 标红;`contrast`——位置 `where` 3、文字色 `fg` 1、背景色 `bg` 1、对比度 `ratio` 1(右对齐)、要求 `required` 1(右对齐)、结果 2(`pass` 为 false 写「不达标」并用该列的 `tone` 标红);`fixes`——位置 `where` 2、原色 `from` 1、修正色 `to` 1、背景 `bg` 1、修复前 `before` 2(右对齐)、修复后 `after` 2(右对齐)。",
-   "basis": [
-    "P-05"
-   ],
-   "why": "P-05 与 P-06 并列最多(各 4 页),P-05 的原改法方向已被验证有效(合并四表 + 统一「名称 色值」),按其失败原因补足三点后重提:palette 的色值列不再重复名称、四张表按数据有无整组条件渲染(去掉只有表头的空表、并把叫法从「修复」改为「色值修正」)、表名移到表格上方并给四表留 48px 分隔。"
-  }
  }
 }
