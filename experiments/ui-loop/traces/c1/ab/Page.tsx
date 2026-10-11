@@ -35,14 +35,14 @@ export default function Report() {
       key: "control",
       label: "对照组",
       align: "right" as const,
-      span: 2,
+      span: 1,
       muteWhen: { key: "significant", equals: false },
     },
     {
       key: "treatment",
       label: "实验组",
       align: "right" as const,
-      span: 2,
+      span: 1,
       muteWhen: { key: "significant", equals: false },
     },
     {
@@ -57,13 +57,13 @@ export default function Report() {
       key: "ciText",
       label: "95% 置信区间",
       align: "right" as const,
-      span: 1,
+      span: 2,
       muteWhen: { key: "significant", equals: false },
     },
     {
       key: "ci",
       label: "",
-      span: 1,
+      span: 2,
       interval: { low: "ciLow", high: "ciHigh", domain: [-10, 13] },
     },
   ]

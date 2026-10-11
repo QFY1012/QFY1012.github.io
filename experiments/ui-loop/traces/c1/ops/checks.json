@@ -1,0 +1,46 @@
+[
+ {
+  "check": "元素越界",
+  "msg": "table[table] 超出页面左右边界 294px「品类\t成交额(万元)\t环比\t占比\n水果\t8920\t+14.2」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "colgroup[] 超出页面左右边界 294px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "col[] 超出页面左右边界 122px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "col[] 超出页面左右边界 294px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "thead[table-header] 超出页面左右边界 294px「品类\t成交额(万元)\t环比\t占比」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "tr[table-row] 超出页面左右边界 294px「品类\t成交额(万元)\t环比\t占比」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "th[table-head] 超出页面左右边界 122px「环比」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "th[table-head] 超出页面左右边界 294px「占比」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "tbody[table-body] 超出页面左右边界 294px「水果\t8920\t+14.2%\t\n25.9\n\n蔬菜\t6150\t」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "tr[table-row] 超出页面左右边界 294px「水果\t8920\t+14.2%\t\n25.9」"
+ },
+ {
+  "check": "数据忠实",
+  "msg": "页面上找不到 3 项数据:/dauWeekly/0/dau「121.9」、/dauWeekly/1/dau「123.8」、/dauWeekly/2/dau「125.8」"
+ }
+]

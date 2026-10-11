@@ -72,6 +72,7 @@ export default function Report() {
           series={[{ key: "issues", label: "问题数" }]}
           height="h-48"
           pointLabels="last"
+          yTicks={[23, 30, 32, 35, 37, 41]}
         />
       </Section>
 
