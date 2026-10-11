@@ -108,7 +108,7 @@ export default function Report() {
         ))}
       </Section>
 
-      <Section title="问题明细" description="7 个问题的位置、严重程度与证据">
+      <Section title="问题明细" description={`${data.issues.length} 个问题的位置、严重程度与证据`}>
         <DataTable
           columns={[
             { key: "id", label: "编号", span: 1 },

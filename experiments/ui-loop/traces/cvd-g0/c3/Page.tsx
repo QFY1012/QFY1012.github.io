@@ -1,3 +1,5 @@
+import * as React from "react"
+
 import data from "./data.json"
 import {
   Page,
@@ -12,6 +14,24 @@ import {
   List,
   KV,
 } from "@/components/report"
+
+// The library has no image component; the four screenshots are the evidence of
+// this report, so they are rendered as plain images resolved by the bundler.
+const SCREEN_SRC: Record<string, string> = {
+  "assets/original.png": new URL("./assets/original.png", import.meta.url).href,
+  "assets/protanopia.png": new URL("./assets/protanopia.png", import.meta.url).href,
+  "assets/deuteranopia.png": new URL("./assets/deuteranopia.png", import.meta.url).href,
+  "assets/tritanopia.png": new URL("./assets/tritanopia.png", import.meta.url).href,
+}
+
+function Screen({ view, image }: { view: string; image: string }) {
+  const src = SCREEN_SRC[image] ?? new URL("./assets/original.png", import.meta.url).href
+  return (
+    <Block span={4} title={view}>
+      {React.createElement("img", { src, alt: view, className: "w-full h-auto" })}
+    </Block>
+  )
+}
 
 export default function Report() {
   const kpi = (key: string) => data.kpis.find((k) => k.key === key)!
@@ -89,7 +109,7 @@ export default function Report() {
   }))
 
   return (
-    <Page title={data.title} meta={[data.target, data.date]}>
+    <Page title={data.title} meta={[data.target, `${data.date} · ${data.standard}`]}>
       <Section title="结论" description={`判定:${data.verdict} · 标准 ${data.standard}`}>
         <Text className="text-2xl leading-9 font-light">{`${data.verdict}:${data.summary}`}</Text>
       </Section>
@@ -100,6 +120,14 @@ export default function Report() {
           <Stat span={3} value={kpi("fail").value} unit={kpi("fail").unit} captionBelow label={kpi("fail").label} />
           <Stat span={3} value={kpi("confuse").value} unit={kpi("confuse").unit} captionBelow label={kpi("confuse").label} />
           <Stat span={3} value={kpi("pairs").value} unit={kpi("pairs").unit} captionBelow label={kpi("pairs").label} />
+        </Grid>
+      </Section>
+
+      <Section title="模拟视图" description="原界面与三种色觉模拟下的同一屏">
+        <Grid cols={9} fields={false}>
+          {data.screens.map((s) => (
+            <Screen key={s.view} view={s.view} image={s.image} />
+          ))}
         </Grid>
       </Section>
 
@@ -124,13 +152,13 @@ export default function Report() {
           </Grid>
         </Group>
 
-        <Group title="文字与背景对比度 / 路况配色">
+        <Group title="路况配色与文字对比度">
           <Grid cols={9}>
-            <Block span={3} rows={2} title="对比度(要求 4.5)">
-              <ProgressList compact items={contrastItems} />
-            </Block>
-            <Block span={6} rows={2} title="路况配色">
+            <Block span={3} rows={2} title="路况配色">
               <List items={paletteItems} />
+            </Block>
+            <Block span={6} rows={2} title="对比度(要求 4.5)">
+              <ProgressList compact items={contrastItems} />
             </Block>
           </Grid>
         </Group>
@@ -144,8 +172,13 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="明细" description="每个问题的位置、严重度与影响人群">
-        <DataTable columns={issueColumns} rows={issueRows} />
+      <Section title="明细" description="文字对比度与每个问题的位置、严重度">
+        <Group title="文字与背景对比度">
+          <DataTable columns={contrastColumns} rows={contrastRows} />
+        </Group>
+        <Group title="问题清单">
+          <DataTable columns={issueColumns} rows={issueRows} />
+        </Group>
       </Section>
 
       <Section title="下一步" description="针对四个问题的修复建议">

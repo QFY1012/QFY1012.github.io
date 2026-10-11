@@ -12,8 +12,21 @@ import {
   KV,
 } from "@/components/report"
 
-// 组件库没有图片组件,链路截图用原生 img 元素渲染,宽度随栏宽缩放。
+// 组件库没有图片组件:链路截图用原生 img 元素渲染,宽度随栏宽缩放。
+// 截图的路径交给构建器解析成可加载的资源。
 const Img: any = "img"
+const SHOTS: Record<string, string> = {
+  "assets/p1-01.png": new URL("./assets/p1-01.png", import.meta.url).href,
+  "assets/p1-02.png": new URL("./assets/p1-02.png", import.meta.url).href,
+  "assets/p1-03.png": new URL("./assets/p1-03.png", import.meta.url).href,
+  "assets/p1-04.png": new URL("./assets/p1-04.png", import.meta.url).href,
+  "assets/p1-05.png": new URL("./assets/p1-05.png", import.meta.url).href,
+  "assets/p2-01.png": new URL("./assets/p2-01.png", import.meta.url).href,
+  "assets/p2-02.png": new URL("./assets/p2-02.png", import.meta.url).href,
+  "assets/p2-03.png": new URL("./assets/p2-03.png", import.meta.url).href,
+  "assets/p2-04.png": new URL("./assets/p2-04.png", import.meta.url).href,
+}
+const shot = (file: string) => SHOTS[file] ?? file
 
 const chainColumns = [
   { key: "no", label: "步骤", span: 1 },
@@ -92,7 +105,7 @@ export default function Report() {
                   description={step.action}
                 >
                   <Img
-                    src={step.image}
+                    src={shot(step.image)}
                     alt={`${chain.product} ${step.screen}`}
                     className="block w-full"
                   />

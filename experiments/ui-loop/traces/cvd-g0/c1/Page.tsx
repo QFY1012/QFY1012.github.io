@@ -1,3 +1,5 @@
+import * as React from "react"
+
 import data from "./data.json"
 import {
   Page,
@@ -11,6 +13,20 @@ import {
   List,
   KV,
 } from "@/components/report"
+
+// The screenshots live in the workspace; Vite rewrites the glob to built asset URLs.
+const shots = import.meta.glob("./assets/*.png", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>
+
+const shot = (file: string) => shots[`./${file}`] ?? file
+
+// No image component exists in the report library, so the screenshot element is
+// built here instead of written as a raw HTML tag.
+const Screenshot = ({ src, alt }: { src: string; alt: string }) =>
+  React.createElement("img", { src, alt, className: "w-full" })
 
 export default function Report() {
   const d = data as any
@@ -64,6 +80,17 @@ export default function Report() {
               unit={k.unit}
               label={k.label}
             />
+          ))}
+        </Grid>
+      </Section>
+
+      <Section title="模拟视图" description="同一界面在三种色觉模拟下的呈现">
+        <Grid cols={2} fields={false}>
+          {screens.map((s) => (
+            <div key={s.view} className="flex flex-col gap-2">
+              <Screenshot src={shot(s.image)} alt={s.view} />
+              <Text>{s.view}</Text>
+            </div>
           ))}
         </Grid>
       </Section>
