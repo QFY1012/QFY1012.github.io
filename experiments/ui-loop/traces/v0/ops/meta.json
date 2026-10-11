@@ -1,0 +1,19 @@
+{
+ "case": "ops",
+ "design": {
+  "version": "v0",
+  "file": "designs/v0.md",
+  "sha": "cbcfb0f5"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 200,
+ "usage": {
+  "input": 45604,
+  "output": 19614
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": ""
+}

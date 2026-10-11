@@ -1,0 +1,19 @@
+{
+ "case": "sales",
+ "design": {
+  "version": "v0",
+  "file": "designs/v0.md",
+  "sha": "cbcfb0f5"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 69,
+ "usage": {
+  "input": 22196,
+  "output": 7842
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "程序检查全部通过，页面结构与截图核对无误。\n\n**页面结构**（页头 `meta` 华东销售部 / 2026 年 7 月至 9 月，标题「第三季度销售复盘」，全部节标题挂左侧 3 列、内容在右侧 9 列）：\n\n1. **结论** — 24px 细体结论句，占满 9 列\n2. **核心指标** — 一行 4 个 `Stat`（收入 `size=\"lg\"`，其余 30px），说明在下，下降/上升的环比写在 `note` 里，完成率与流失率标红\n3. **收入走势** — `TrendChart` 周收入折线，`h-48`，只标最后一个点\n4. **区域表现** — `DataTable` 收入/目标/完成率/同比对照，未达标完成率与负增长标红\n5. **产品结构** — `DataTable`，占比列带细条（`bar`），培训同比标红\n6. **主要发现** — 编号 `List`，三条带标题与说明\n7. **下一步** — `List columns={3} numbered`，三条动作并排\n8. **背景信息** — `KV labelCols={2}`，负责团队、周期、覆盖区域、统计周数"
+}
