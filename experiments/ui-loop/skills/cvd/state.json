@@ -10,5 +10,9 @@
   "k1"
  ],
  "stage": "function",
- "stageRounds": 0
+ "stageRounds": 0,
+ "maintained": {
+  "run": "cvd-g0-k1",
+  "stage": "function"
+ }
 }
