@@ -1,0 +1,328 @@
+{
+ "title": "色觉无障碍分析 · 课程表",
+ "target": "校园 App · 周课程表",
+ "date": "2026-09-03",
+ "standard": "WCAG 2.2 AA",
+ "verdict": "不友好",
+ "method": "按 Machado 2009 模型模拟红色盲、绿色盲、蓝色盲;色差为 CIEDE2000 ΔE,小于 12 视为难以区分",
+ "summary": "课程表用 9 种底色区分课程类别,全部是浅底配白字,9 组里有 8 组对比度不达标。9 种颜色中有 5 对至少有一种色盲用户分不清,类别名称只在第一次出现时写一次。",
+ "kpis": [
+  {
+   "key": "pairs",
+   "label": "检查的文字与背景组合",
+   "value": 9,
+   "unit": "组"
+  },
+  {
+   "key": "fail",
+   "label": "对比度不达标",
+   "value": 9,
+   "unit": "组"
+  },
+  {
+   "key": "confuse",
+   "label": "色盲用户难以区分的颜色",
+   "value": 4,
+   "unit": "对"
+  },
+  {
+   "key": "issues",
+   "label": "问题总数",
+   "value": 7,
+   "unit": "个"
+  }
+ ],
+ "palette": [
+  {
+   "name": "必修",
+   "hex": "#5B8FF9",
+   "usage": "必修课"
+  },
+  {
+   "name": "选修",
+   "hex": "#5AD8A6",
+   "usage": "选修课"
+  },
+  {
+   "name": "实验",
+   "hex": "#F6BD16",
+   "usage": "实验课"
+  },
+  {
+   "name": "体育",
+   "hex": "#E8684A",
+   "usage": "体育课"
+  },
+  {
+   "name": "讲座",
+   "hex": "#6DC8EC",
+   "usage": "讲座"
+  },
+  {
+   "name": "考试",
+   "hex": "#9270CA",
+   "usage": "考试"
+  },
+  {
+   "name": "自习",
+   "hex": "#FF9D4D",
+   "usage": "自习"
+  },
+  {
+   "name": "社团",
+   "hex": "#269A99",
+   "usage": "社团"
+  },
+  {
+   "name": "其他",
+   "hex": "#FF99C3",
+   "usage": "其他"
+  }
+ ],
+ "contrast": [
+  {
+   "where": "必修课格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#5B8FF9",
+   "ratio": 3.11,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "选修课格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#5AD8A6",
+   "ratio": 1.78,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "实验课格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#F6BD16",
+   "ratio": 1.72,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "体育课格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#E8684A",
+   "ratio": 3.23,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "讲座格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#6DC8EC",
+   "ratio": 1.89,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "考试格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#9270CA",
+   "ratio": 3.89,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "自习格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#FF9D4D",
+   "ratio": 2.06,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "社团格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#269A99",
+   "ratio": 3.41,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "其他格子文字",
+   "fg": "#FFFFFF",
+   "bg": "#FF99C3",
+   "ratio": 1.98,
+   "required": 4.5,
+   "pass": false
+  }
+ ],
+ "confusions": [
+  {
+   "where": "选修与实验",
+   "colors": [
+    "#5AD8A6",
+    "#F6BD16"
+   ],
+   "normal": 38.1,
+   "红色盲": 18.2,
+   "绿色盲": 22.6,
+   "蓝色盲": 52.2,
+   "affected": []
+  },
+  {
+   "where": "体育与自习",
+   "colors": [
+    "#E8684A",
+    "#FF9D4D"
+   ],
+   "normal": 18.3,
+   "红色盲": 15.5,
+   "绿色盲": 10.9,
+   "蓝色盲": 10.9,
+   "affected": [
+    "绿色盲",
+    "蓝色盲"
+   ]
+  },
+  {
+   "where": "必修与考试",
+   "colors": [
+    "#5B8FF9",
+    "#9270CA"
+   ],
+   "normal": 18.8,
+   "红色盲": 9.2,
+   "绿色盲": 6.8,
+   "蓝色盲": 33.1,
+   "affected": [
+    "红色盲",
+    "绿色盲"
+   ]
+  },
+  {
+   "where": "讲座与选修",
+   "colors": [
+    "#6DC8EC",
+    "#5AD8A6"
+   ],
+   "normal": 29.7,
+   "红色盲": 31.7,
+   "绿色盲": 28.5,
+   "蓝色盲": 5.1,
+   "affected": [
+    "蓝色盲"
+   ]
+  },
+  {
+   "where": "社团与必修",
+   "colors": [
+    "#269A99",
+    "#5B8FF9"
+   ],
+   "normal": 29.9,
+   "红色盲": 21.8,
+   "绿色盲": 18.1,
+   "蓝色盲": 8.9,
+   "affected": [
+    "蓝色盲"
+   ]
+  }
+ ],
+ "byType": [
+  {
+   "type": "红色盲",
+   "issues": 5
+  },
+  {
+   "type": "绿色盲",
+   "issues": 5
+  },
+  {
+   "type": "蓝色盲",
+   "issues": 5
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "title": "浅底白字普遍不达标",
+   "type": "对比度不足",
+   "location": "全部课程格子",
+   "severity": "高",
+   "affects": [],
+   "suggestion": "格子改为浅色底配深色字"
+  },
+  {
+   "id": "P2",
+   "title": "类别只在第一次出现时标注",
+   "type": "仅靠颜色",
+   "location": "课程格子",
+   "severity": "高",
+   "affects": [
+    "红色盲",
+    "绿色盲",
+    "蓝色盲"
+   ],
+   "suggestion": "每个格子左上角写类别简称"
+  },
+  {
+   "id": "P3",
+   "title": "选修与实验红绿色盲分不清",
+   "type": "混淆色",
+   "location": "课程格子",
+   "severity": "中",
+   "affects": [
+    "红色盲",
+    "绿色盲"
+   ],
+   "suggestion": "两类之一改用蓝紫色系"
+  },
+  {
+   "id": "P4",
+   "title": "体育与自习颜色过近",
+   "type": "混淆色",
+   "location": "课程格子",
+   "severity": "中",
+   "affects": [
+    "红色盲",
+    "绿色盲",
+    "蓝色盲"
+   ],
+   "suggestion": "合并为一类或换色"
+  },
+  {
+   "id": "P5",
+   "title": "必修与考试蓝色盲难以区分",
+   "type": "混淆色",
+   "location": "课程格子",
+   "severity": "中",
+   "affects": [
+    "蓝色盲"
+   ],
+   "suggestion": "考试加粗边框"
+  },
+  {
+   "id": "P6",
+   "title": "考试没有更醒目的提示",
+   "type": "仅靠颜色",
+   "location": "考试周",
+   "severity": "中",
+   "affects": [
+    "红色盲",
+    "绿色盲",
+    "蓝色盲"
+   ],
+   "suggestion": "考试格子加图标与倒计时"
+  },
+  {
+   "id": "P7",
+   "title": "9 个类别过多",
+   "type": "混淆色",
+   "location": "整体",
+   "severity": "低",
+   "affects": [
+    "红色盲",
+    "绿色盲",
+    "蓝色盲"
+   ],
+   "suggestion": "合并为 5 个以内,其余用文字标签"
+  }
+ ]
+}
