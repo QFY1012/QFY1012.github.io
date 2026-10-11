@@ -1,0 +1,31 @@
+{
+ "case": "c3",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5d5b8cb8",
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": "cvd-g0",
+ "change": {
+  "kind": "component",
+  "name": "k1",
+  "summary": "组件库新增:FigureStrip、Figure、FigureImage、FigureLabel、FigureText。用法见 components.md。"
+ },
+ "changedLines": 35,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 89,
+ "usage": {
+  "input": 16094,
+  "output": 2524
+ },
+ "stop": "stop",
+ "summary": "The change works correctly: the four screenshots (原界面 + three color-vision simulations) now render as a `FigureStrip` of `Figure`s, each with a `FigureImage` and a `FigureLabel` below it, replacing the previous custom `<img>` hack. Program checks passed, and the rest of the page is unchanged.\n\nSummary: I swapped the hand-rolled `img` element (and its `Screen` helper/`SCREEN_SRC` map) in the 「模拟视图」 section for the new `FigureStrip` / `Figure` / `FigureImage` / `FigureLabel` components, following the 模拟视图 example — four screenshots in one strip, view name labeled under each image. No other sections were touched.",
+ "checks": []
+}

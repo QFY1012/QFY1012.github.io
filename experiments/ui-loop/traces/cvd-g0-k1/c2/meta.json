@@ -1,0 +1,31 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5d5b8cb8",
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": "cvd-g0",
+ "change": {
+  "kind": "component",
+  "name": "k1",
+  "summary": "组件库新增:FigureStrip、Figure、FigureImage、FigureLabel、FigureText。用法见 components.md。"
+ },
+ "changedLines": 18,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 75,
+ "usage": {
+  "input": 18990,
+  "output": 3446
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过,数据忠实检查也不再报缺图。\n\n改动:新增了「模拟视图」一节,放在「混淆色」之后。用新组件 `FigureStrip` + `Figure` + `FigureImage` + `FigureLabel` 把 `data.screens` 里的 4 张截图(原界面、红色盲、绿色盲、蓝色盲)按「原界面 + 三种色觉模拟」一组横向排开,每张图下方用 `FigureLabel` 标出视图名;其余部分保持原样。",
+ "checks": []
+}
