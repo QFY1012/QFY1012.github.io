@@ -27,13 +27,13 @@ export const SYSTEM = (name) => `你是「${name}」这个 Skill 的 Maintainer�
 1. 合并:说的是同一件事的意见合并成一个问题,不管它出现在哪一页、哪一次检查。问题用一句话写清楚:页面上什么地方不对、对看报告的人有什么影响。写成对这个 Skill 的所有报告都成立的说法,不写某一页的行号、变量名这类细节。
 2. 算数:程序检查的结果每条都算。需求 judge 每页跑了几次,一条意见在同一页至少 2 次检查里出现才算数;只出现 1 次的不归纳。审美 judge 的比较里,让一版输掉的做法是问题;让一版赢的做法写进相关问题的 good 里作参考。
 3. 归因,只分两类,标准是「现有组件够不够用」:
-   - 组件不够:components.md 里没有能做到的组件,怎么排都解决不了。写缺什么能力、在哪些场景需要(要呈现什么内容、典型的数量和排法)。
+   - 组件不够:components.md 里没有能做到的组件,怎么排都解决不了。problem 只写一句:「<页面的哪一部分>要展示<什么内容>,但组件库缺少<什么样的组件>,所以无法展示」,不写后果和页面现在的写法(那些放进 evidence)。
    - 布局问题:现有组件够用,是页面选的组件、组合和排法有问题。
    依据必须来自给你的 components.md、Page.tsx 或 judge 的意见。
 4. 更新:已有的问题清单一并给你。同一个问题再次出现就沿用它的 id,更新页数和证据;这一步的原始意见里已经没有它的,status 写「已解决」(只对同一步的问题这样判断,别的步骤的问题原样保留);新问题用新 id。
 5. 证据:每个问题写出现在哪几页,以及两三条原始意见的摘要。
 
-只输出 JSON:{"problems":[{"id":"P-01","stage":"程序检查 或 需求 judge 或 审美 judge","problem":"一句话","cause":"组件不够 或 布局问题","scenes":"组件不够:在哪些场景需要;布局问题写空字符串","good":"审美阶段赢的做法,没有写空字符串","pages":["f1"],"evidence":["f1:原始意见摘要"],"status":"未解决 或 已解决"}]}`
+只输出 JSON:{"problems":[{"id":"P-01","stage":"程序检查 或 需求 judge 或 审美 judge","problem":"一句话","cause":"组件不够 或 布局问题","good":"审美阶段赢的做法,没有写空字符串","pages":["f1"],"evidence":["f1:原始意见摘要"],"status":"未解决 或 已解决"}]}`
 
 // What one stage said about each training page.
 function stageInput(stage, run, cases, base) {
@@ -59,7 +59,7 @@ export async function maintain({ skill, run, stage, base, guide }) {
   const problems = r.json.problems ?? []
   fs.writeFileSync(expJson, JSON.stringify({ skill, updated: { run, stage: STAGE[stage] }, problems }, null, 1))
   const open = problems.filter((p) => p.status !== "已解决")
-  const line = (p) => `- **${p.id}**(${p.stage},${p.pages.length} 页):${p.problem}${p.scenes ? `\n  - 场景:${p.scenes}` : ""}${p.good ? `\n  - 赢的做法:${p.good}` : ""}\n  - 证据:${p.evidence.join(";")}`
+  const line = (p) => `- **${p.id}**(${p.stage},${p.pages.length} 页):${p.problem}${p.good ? `\n  - 赢的做法:${p.good}` : ""}\n  - 证据:${p.evidence.join(";")}`
   fs.writeFileSync(path.join(dir, "experience.md"), [
     `# 问题清单 · ${split.name}`, "",
     `Maintainer 从训练样本的检测结果归纳,每步更新(最近一次:${run},${STAGE[stage]})。Reviser 读「布局问题」,组件 Agent 读「组件不够」。`, "",

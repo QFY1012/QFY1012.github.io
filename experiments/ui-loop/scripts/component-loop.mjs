@@ -45,7 +45,7 @@ const usable = JSON.parse(read(path.join(SHADCN, "index.json"))).filter((e) => !
 const EFFORT = process.env.GEN_EFFORT ?? "medium"
 
 const designA = read(path.join(ROOT, "design.md")).match(/## A 基础[\s\S]*?(?=\n## B)/)?.[0] ?? ""
-export const SYSTEM = (requests, rejected) => `你给报告页面的组件库补组件。下面是 Maintainer 归纳出的需求:组件库缺的能力和要用到它的场景。
+export const SYSTEM = (requests, rejected) => `你给报告页面的组件库补组件。下面是 Maintainer 归纳出的需求:页面要展示什么、缺什么组件。
 
 工作目录:
 - app/src/components/report/index.tsx:报告组件,页面只从这里 import。
@@ -67,7 +67,7 @@ ${designA}
 </视觉规范>
 
 <需求>
-${requests.map((r) => `- ${r.problem}\n  场景:${r.scenes}`).join("\n")}
+${requests.map((r) => `- ${r.problem}`).join("\n")}
 </需求>${rejected ? `
 
 <之前没被采用的改动>
@@ -175,7 +175,7 @@ ${run.summary}
 
 ## 需求(Maintainer 归纳的「组件不够」问题,${p.requests} 条)
 
-${JSON.parse(read(path.join(ws, "requests.json"))).map((r) => `- **${r.skill} ${r.id}**(${r.stage},${r.pages.join("、")}):${r.problem}\n  - 场景:${r.scenes}`).join("\n")}
+${JSON.parse(read(path.join(ws, "requests.json"))).map((r) => `- **${r.skill} ${r.id}**(${r.stage},${r.pages.join("、")}):${r.problem}`).join("\n")}
 
 ## 检查
 
