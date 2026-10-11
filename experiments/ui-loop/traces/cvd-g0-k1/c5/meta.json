@@ -1,0 +1,31 @@
+{
+ "case": "c5",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5d5b8cb8",
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": "cvd-g0",
+ "change": {
+  "kind": "component",
+  "name": "k1",
+  "summary": "组件库新增:FigureStrip、Figure、FigureImage、FigureLabel、FigureText。用法见 components.md。"
+ },
+ "changedLines": 30,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 150,
+ "usage": {
+  "input": 51898,
+  "output": 4401
+ },
+ "stop": "stop",
+ "summary": "检查通过,页面改好了。\n\n改动只有一处:把原来绕过组件库、用 `createElement(\"img\", …)` 自己画的「界面截图」节,换成新组件——一个 `FigureStrip`,里面每张模拟视图一个 `Figure`(`FigureImage` + `FigureLabel` 视图名在下),四张手机截图等高并排,超出部分由条带自身横向滚动。`SHOTS` 路径映射和 `createElement` 引入随之删掉,其余各节(结论、核心指标、色差、配色、对比度、问题清单、改进建议、背景信息)保持原样。\n\n页面结构:页头 → 结论(判定句+说明)→ 核心指标(4 个 `Stat`)→ 界面截图(`FigureStrip` 四张:原界面、红色盲、绿色盲、蓝色盲)→ 色差(按色觉类型问题数 `ProgressList` + 颜色对 ΔE 表)→ 配色 → 对比度 → 问题清单 → 改进建议(`List` + 修复前后对比表)→ 背景信息(`KV`)。这次没有缺组件的内容。",
+ "checks": []
+}

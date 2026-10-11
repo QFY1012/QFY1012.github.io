@@ -1,0 +1,12 @@
+{
+ "current": "g0",
+ "currentRun": "cvd-g0-k1",
+ "versions": 0,
+ "round": 0,
+ "rejected": 0,
+ "sinceCheckpoint": 0,
+ "history": [],
+ "components": [
+  "k1"
+ ]
+}
