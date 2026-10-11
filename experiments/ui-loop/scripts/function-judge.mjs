@@ -54,7 +54,16 @@ export async function functionJudge(run, cases, repeat = 1) {
       }
     }
   }
-  await Promise.all(Array.from({ length: 8 }, worker))
+  // A run that failed (no reply, no screenshots seen) is asked again: a page with fewer runs has
+  // fewer opinions that reach 2 of 3, which would flatter it at the gate.
+  const all = [...jobs]
+  for (let pass = 0; pass < 3; pass++) {
+    jobs.splice(0, jobs.length, ...all.filter((j) => !fs.existsSync(j.file)))
+    if (!jobs.length) break
+    await Promise.all(Array.from({ length: 8 }, worker))
+  }
+  const missing = all.filter((j) => !fs.existsSync(j.file))
+  if (missing.length) throw new Error(`需求 judge 没跑完:${missing.map((j) => path.relative(path.join(ROOT, "traces"), j.file)).join("、")}`)
   return Object.fromEntries(cases.map((c) => {
     const f = path.join(ROOT, "traces", run, c, repeat > 1 ? "function-1.json" : "function.json")
     const j = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : null
