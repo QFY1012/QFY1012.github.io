@@ -44,6 +44,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric26      rubric25 with criterion 1 judging breathing room only, not how many kinds fit on a screen
 //   rubric27      rubric9 with rubric25's criterion 2 only, criteria not ranked
 //   rubric28      rubric7 with criterion 1 a bar to clear, not "the emptier the better"
+//   rubric29      rubric9 reworded in design and CSS terms, same content
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -350,6 +351,20 @@ export const RUBRIC_28 = RUBRIC_7.map((p, i) => i === 0 ? {
   rule: "只看是否过线,不比谁更空。过线指:" + p.rule + "。两版都过线,这一条记「平」;都没过线,超出少的那版更好",
   see: p.see + "、是否过线",
 } : p)
+// rubric29: rubric9 with the same content in design and CSS terms
+// (whitespace, section spacing, gap, line-height, type scale, emphasis,
+// accent colour, card, grid) instead of everyday words, as the person asked.
+// Nothing is added or removed; only the wording of each criterion changes.
+export const RUBRIC_29 = [
+  { name: "信息密度适中", rule: "只看是否达标,不比谁的 whitespace 更多。达标指:每屏(每张切块)不超过三种内容模块,一段正文、一组 KPI 数字、一张图表、一张表格、一个列表各算一种;模块之间的 section spacing 至少约两个正文 line-height。两版都达标,这一条记「平」;都不达标,超出少的那版更好", bad: "一屏里同时塞了正文、一排 KPI、两张图表和一张表格,模块之间只隔一个 line-height", see: "最密的一屏有几种内容模块、模块间距约几个 line-height、是否达标" },
+  { name: "分组清楚,有垂直韵律", rule: "按接近原则(proximity)分组:spacing 至少分两级,区块之间的 section spacing 约是区块内元素 gap 的两倍以上;所有 spacing 都差不多大,就等于没有分组", bad: "所有模块按同一个 gap 排成均匀的 card grid", see: "区块内 gap 和 section spacing 大约多少" },
+  { name: "容器样式有功能", rule: "每一处 card、border、分隔线(divider)、背景色(background)、box-shadow 和颜色,都要说得出作用:区分独立的对象、表示状态(如 alert),或突出全页的 focal point;说不出作用的就是多余的装饰", bad: "每个模块都套着同样的白底圆角(border-radius)card", see: "说不出作用的容器样式,没有就写「无」" },
+  { name: "字体层级清楚", rule: "type scale 只分少数几级(如 h1、h2、正文、caption),font-size 和 font-weight 的每一级对应内容结构里的一层,同一层用同一级,相邻两级的对比一眼可辨;内容的重要程度靠阅读顺序和所在层级体现。emphasis 是相对的:放大、加粗(bold)、加强调色、加 border 的地方越多,每一处就越弱", bad: "页面上有五六种 font-size,h2 和正文只差一点,另有几处数字和提示被各自放大、加色,分不出哪些是同一层", see: "字体层级(type scale)分了几级、每级对应哪层内容、有几处额外 emphasis" },
+  { name: "色彩统一", rule: "除中性色(黑白灰)外,accent color 不超过两种,饱和度接近;视觉重量最大的一块(实心填色面积最大的)是最重要的内容;线宽(stroke width)接近", bad: "全页是黑灰细线,唯独一个次要模块用了大面积高饱和的荧光色块", see: "用到哪些 accent color、视觉重量最大的一块是什么、线宽是否接近" },
+  { name: "同类组件一致", rule: "同一类内容(几个 KPI、几张图表、几条发现)用同样的 font-size、spacing 和组件形式", bad: "三条发现,一条用 card,两条用纯文本", see: "哪些同类内容用了不同的组件或样式" },
+  { name: "网格对齐", rule: "模块之间的留白都是规整的矩形,模块边缘落在少数几条共同的对齐线(栏线、基线)上", bad: "几块内容高低不齐,之间留下 L 形或锯齿形的空白", see: "哪些模块边缘没落在对齐线上、哪些留白不成矩形" },
+]
+export const systemRubric29 = () => systemRubricOf(RUBRIC_29)
 // Built from rubric7's own prompt so nothing else differs from it.
 export const systemRubric28 = () => systemRubric7()
   .replace(`1. 疏朗:${RUBRIC_7[0].rule}`, `1. 疏朗:${RUBRIC_28[0].rule}`)
@@ -463,6 +478,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric26") return systemRubric26()
   if (cond === "rubric27") return systemRubric27()
   if (cond === "rubric28") return systemRubric28()
+  if (cond === "rubric29") return systemRubric29()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
