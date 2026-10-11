@@ -1,0 +1,31 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5d5b8cb8",
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": "flow-g0",
+ "change": {
+  "kind": "component",
+  "name": "k1",
+  "summary": "组件库新增:FigureStrip、Figure、FigureImage、FigureLabel、FigureText。用法见 components.md。"
+ },
+ "changedLines": 22,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 83,
+ "usage": {
+  "input": 20457,
+  "output": 3125
+ },
+ "stop": "stop",
+ "summary": "改动完成,程序检查全部通过。\n\n改动只在「界面截图」一节:删掉了原来用 `React.createElement(\"img\")` 自画的截图(程序检查原先报的“组件库”问题),改用新的 `FigureStrip` + `Figure` + `FigureImage` + `FigureLabel` + `FigureText`,每个产品一组一行、按步骤横向排开,图下依次是「第 N 步 · 屏名」和「内容 · 操作」;超出宽度的部分按组件库行为裁掉并可横向滚动(方舟 5 步即如此)。`import.meta.glob` 只保留用于把 data.json 里的相对路径解析成构建后的 URL,其余各节(结论、核心指标、产品对比、流程明细、问题、下一步、背景信息)未动。\n\n页面结构:结论 → 核心指标(4 个 Stat)→ 产品对比(3 个 Stat)→ 流程明细(3 组 DataTable)→ 界面截图(3 组 FigureStrip)→ 问题(List)→ 下一步(List)→ 背景信息(KV),页头为「云盒 · 栈盘 · 方舟 / 2026 年 9 月版本」+ 报告标题。",
+ "checks": []
+}

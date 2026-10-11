@@ -9,6 +9,11 @@ import {
   DataTable,
   List,
   KV,
+  FigureStrip,
+  Figure,
+  FigureImage,
+  FigureLabel,
+  FigureText,
 } from "@/components/report"
 
 export default function Report() {
@@ -82,6 +87,20 @@ export default function Report() {
             key={c.product}
             title={`${c.product} · ${c.version} · ${c.steps.length} 步`}
           >
+            <FigureStrip>
+              {c.steps.map((s) => (
+                <Figure key={s.no}>
+                  <FigureImage
+                    src={s.image}
+                    alt={`${c.product} 第 ${s.no} 步:${s.screen}`}
+                  />
+                  <FigureLabel>第 {s.no} 步 · {s.screen}</FigureLabel>
+                  <FigureText>
+                    {s.content} · {s.action} · 输入 {s.inputs} 项
+                  </FigureText>
+                </Figure>
+              ))}
+            </FigureStrip>
             <DataTable
               columns={[
                 { key: "no", label: "步", span: 1, align: "right" },
