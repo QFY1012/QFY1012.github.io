@@ -41,24 +41,6 @@ const issueRows = data.issues.map((it) => ({
   evidence: it.evidence,
 }))
 
-// 链路明细:每行最多 3 步,超出的接着排下一行
-const STEPS_PER_ROW = 3
-
-function chunkSteps<T>(steps: T[], size: number): T[][] {
-  const rows: T[][] = []
-  for (let i = 0; i < steps.length; i += size) {
-    rows.push(steps.slice(i, i + size))
-  }
-  return rows
-}
-
-// 命中该步的问题编号:问题的产品等于该产品,或为「全部」,且步骤号相同
-function issueIdsFor(product: string, no: number) {
-  return data.issues
-    .filter((it) => (it.product === product || it.product === "全部") && it.step === no)
-    .map((it) => it.id)
-}
-
 export default function Report() {
   return (
     <Page title={data.title} meta={[data.task, data.scope, data.date]}>
@@ -67,7 +49,7 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="对比范围与总体规模">
-        <Grid cols={9} fields={false} className="items-baseline">
+        <Grid cols={12} fields={false} className="items-baseline">
           {data.kpis.map((k) => (
             <Stat
               key={k.key}
@@ -112,29 +94,23 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="链路明细" description="三家银行的开户步骤,每行最多 3 步,按顺序接着排" className="gap-12">
+      <Section title="流程明细" description="三家银行的开户步骤,从左到右按顺序" className="gap-12">
         {data.chains.map((chain) => (
           <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
-            {chunkSteps(chain.steps, STEPS_PER_ROW).map((row, rowIndex) => (
-              <FigureStrip key={rowIndex}>
-                {row.map((step) => {
-                  const issueIds = issueIdsFor(chain.product, step.no)
-                  return (
-                    <Figure key={step.no}>
-                      <FigureImage src={step.image} alt={`${chain.product} 第 ${step.no} 步:${step.screen}`} />
-                      <FigureLabel>
-                        第 {step.no} 步 · {step.screen}
-                        {issueIds.length > 0 ? ` · ${issueIds.join("、")}` : ""}
-                      </FigureLabel>
-                      <FigureText>
-                        {step.content} · {step.action} · 输入 {step.inputs} 项
-                      </FigureText>
-                      {step.note ? <FigureText>{step.note}</FigureText> : null}
-                    </Figure>
-                  )
-                })}
-              </FigureStrip>
-            ))}
+            <FigureStrip>
+              {chain.steps.map((step) => (
+                <Figure key={step.no}>
+                  <FigureImage src={step.image} alt={`${chain.product} 第 ${step.no} 步:${step.screen}`} />
+                  <FigureLabel>
+                    第 {step.no} 步 · {step.screen}
+                  </FigureLabel>
+                  <FigureText>
+                    {step.content} · {step.action} · 输入 {step.inputs} 项
+                  </FigureText>
+                  {step.note ? <FigureText>{step.note}</FigureText> : null}
+                </Figure>
+              ))}
+            </FigureStrip>
             <Text>{chain.verdict}</Text>
           </Group>
         ))}

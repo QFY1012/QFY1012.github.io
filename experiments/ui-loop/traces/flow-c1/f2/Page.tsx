@@ -16,14 +16,6 @@ import {
   FigureText,
 } from "@/components/report"
 
-function chunk<T>(items: T[], size: number): T[][] {
-  const rows: T[][] = []
-  for (let i = 0; i < items.length; i += size) {
-    rows.push(items.slice(i, i + size))
-  }
-  return rows
-}
-
 export default function Report() {
   const productRows = data.chains.map((chain) => ({
     name: chain.product,
@@ -31,14 +23,6 @@ export default function Report() {
     steps: chain.steps.length,
     verdict: chain.verdict,
   }))
-
-  const issuesForStep = (product: string, no: number) =>
-    data.issues
-      .filter(
-        (issue) =>
-          (issue.product === product || issue.product === "全部") && issue.step === no,
-      )
-      .map((issue) => issue.id)
 
   const issueRows = data.issues.map((issue) => ({
     id: issue.id,
@@ -56,7 +40,7 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="本次挖掘的样本与结果">
-        <Grid cols={9} fields={false} className="items-baseline">
+        <Grid cols={12} fields={false} className="items-baseline">
           {data.kpis.map((kpi) => (
             <Stat
               key={kpi.key}
@@ -85,30 +69,27 @@ export default function Report() {
 
       <Section title="链路明细" description="从购物车到支付成功的逐步截图">
         {data.chains.map((chain) => (
-          <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
-            {chunk(chain.steps, 3).map((row, rowIndex) => (
-              <FigureStrip key={rowIndex}>
-                {row.map((step) => {
-                  const issueIds = issuesForStep(chain.product, step.no)
-                  return (
-                    <Figure key={step.no}>
-                      <FigureImage
-                        src={step.image}
-                        alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
-                      />
-                      <FigureLabel>
-                        第 {step.no} 步 · {step.screen}
-                        {issueIds.length > 0 ? ` · ${issueIds.join("、")}` : ""}
-                      </FigureLabel>
-                      <FigureText>
-                        {step.content} · {step.action} · 输入 {step.inputs} 项
-                      </FigureText>
-                      {step.note ? <FigureLabel>{step.note}</FigureLabel> : null}
-                    </Figure>
-                  )
-                })}
-              </FigureStrip>
-            ))}
+          <Group
+            key={chain.product}
+            title={`${chain.product} · ${chain.version} · ${chain.verdict}`}
+          >
+            <FigureStrip>
+              {chain.steps.map((step) => (
+                <Figure key={step.no}>
+                  <FigureImage
+                    src={step.image}
+                    alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
+                  />
+                  <FigureLabel>
+                    第 {step.no} 步 · {step.screen}
+                  </FigureLabel>
+                  <FigureText>
+                    {step.content} · {step.action} · 输入 {step.inputs} 项
+                  </FigureText>
+                  {step.note ? <FigureLabel>{step.note}</FigureLabel> : null}
+                </Figure>
+              ))}
+            </FigureStrip>
           </Group>
         ))}
       </Section>

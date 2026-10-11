@@ -84,41 +84,11 @@ const byTypeItems = data.byType.map((t) => ({
   display: String(t.issues),
 }))
 
-// 问题清单:一行一条,按严重度 高→中→低、同档按编号排。
-const severityRank: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-const sortedIssues = [...data.issues].sort(
-  (a, b) =>
-    (severityRank[a.severity] ?? 3) - (severityRank[b.severity] ?? 3) ||
-    a.id.localeCompare(b.id),
-)
-const issueColumns = [
-  { key: "id", label: "编号", span: 1 },
-  { key: "title", label: "问题", span: 2 },
-  { key: "type", label: "类型", span: 1 },
-  { key: "location", label: "位置", span: 1 },
-  { key: "affects", label: "影响", span: 1 },
-  { key: "severity", label: "严重度", span: 1, tone: ["高"] },
-  { key: "suggestion", label: "建议", span: 2 },
-]
-const issueRows = sortedIssues.map((it) => ({
-  id: it.id,
+// 问题清单:标题、类型与位置、影响范围、建议,严重度作标记。
+const issueItems = data.issues.map((it) => ({
   title: it.title,
-  type: it.type,
-  location: it.location,
-  affects: it.affects.join("、"),
-  severity: it.severity,
-  suggestion: it.suggestion,
-}))
-
-// 下一步:高严重度问题必须出现,不足三条时按严重度往下补足。
-const nextStepIssues = (() => {
-  const high = sortedIssues.filter((it) => it.severity === "高")
-  const rest = sortedIssues.filter((it) => it.severity !== "高")
-  return [...high, ...rest].slice(0, Math.max(3, high.length))
-})()
-const nextStepItems = nextStepIssues.map((it) => ({
-  title: `${it.id} ${it.title}`,
-  description: it.suggestion,
+  description: `${it.type} · ${it.location} · 影响:${it.affects.length ? it.affects.join("、") : "—"} · 建议:${it.suggestion}`,
+  meta: it.severity,
 }))
 
 export default function Report() {
@@ -153,13 +123,12 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="关键指标" description="本次检查的四个数字">
+      <Section title="核心指标" description="本次检查的四个数字">
         <Group>
-          <Grid cols={4} fields={false}>
+          <Grid cols={data.kpis.length} fields={false} className="items-baseline">
             {data.kpis.map((k) => (
               <Stat
                 key={k.key}
-                span={1}
                 size="lg"
                 captionBelow
                 label={k.label}
@@ -204,15 +173,9 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="明细" description="问题清单,按严重度 高→中→低">
-        <Group title="问题清单">
-          <DataTable columns={issueColumns} rows={issueRows} />
-        </Group>
-      </Section>
-
-      <Section title="下一步" description="高严重度问题优先处理">
+      <Section title="问题清单" description="按严重度">
         <Group>
-          <List numbered columns={3} items={nextStepItems} />
+          <List ordered items={issueItems} />
         </Group>
       </Section>
     </Page>

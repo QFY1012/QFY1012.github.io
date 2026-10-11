@@ -21,21 +21,6 @@ import {
 const stepText = (step: (typeof data.chains)[number]["steps"][number]) =>
   `${step.content} · ${step.action} · 输入 ${step.inputs} 项${step.note ? ` · ${step.note}` : ""}`
 
-const issueIdsFor = (product: string, stepNo: number) =>
-  data.issues
-    .filter(
-      (issue) =>
-        (issue.product === product || issue.product === "全部") && issue.step === stepNo,
-    )
-    .map((issue) => issue.id)
-
-const chunk = <T,>(items: T[], size: number) =>
-  items.reduce<T[][]>((rows, item, index) => {
-    if (index % size === 0) rows.push([])
-    rows[rows.length - 1].push(item)
-    return rows
-  }, [])
-
 export default function Report() {
   return (
     <Page title={data.title} meta={[data.task, data.scope, data.date]}>
@@ -44,7 +29,7 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="对比产品、分析截图与步骤数的整体口径">
-        <Grid cols={9} fields={false} className="items-baseline">
+        <Grid cols={12} fields={false} className="items-baseline">
           {data.kpis.map((kpi) => (
             <Stat
               key={kpi.key}
@@ -106,26 +91,20 @@ export default function Report() {
       >
         {data.chains.map((chain) => (
           <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
-            {chunk(chain.steps, 3).map((rowSteps, rowIndex) => (
-              <FigureStrip key={rowIndex}>
-                {rowSteps.map((step) => {
-                  const issueIds = issueIdsFor(chain.product, step.no)
-                  return (
-                    <Figure key={step.no}>
-                      <FigureImage
-                        src={step.image}
-                        alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
-                      />
-                      <FigureLabel>
-                        第 {step.no} 步 · {step.screen}
-                        {issueIds.length > 0 ? ` · ${issueIds.join("、")}` : ""}
-                      </FigureLabel>
-                      <FigureText>{stepText(step)}</FigureText>
-                    </Figure>
-                  )
-                })}
-              </FigureStrip>
-            ))}
+            <FigureStrip>
+              {chain.steps.map((step) => (
+                <Figure key={step.no}>
+                  <FigureImage
+                    src={step.image}
+                    alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
+                  />
+                  <FigureLabel>
+                    第 {step.no} 步 · {step.screen}
+                  </FigureLabel>
+                  <FigureText>{stepText(step)}</FigureText>
+                </Figure>
+              ))}
+            </FigureStrip>
           </Group>
         ))}
       </Section>

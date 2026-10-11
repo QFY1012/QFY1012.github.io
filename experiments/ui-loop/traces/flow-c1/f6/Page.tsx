@@ -22,13 +22,6 @@ export default function Report() {
   const stepText = (step: any) =>
     [step.content, step.action, `输入 ${step.inputs} 项`, step.note].filter(Boolean).join(" · ")
 
-  const stepRows = (steps: any[]) =>
-    steps.reduce((rows: any[][], step: any, i: number) => {
-      if (i % 3 === 0) rows.push([])
-      rows[rows.length - 1].push(step)
-      return rows
-    }, [])
-
   return (
     <Page
       title={data.title}
@@ -39,11 +32,11 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="对比范围与主要发现">
-        <Grid cols={9} fields={false} className="items-baseline">
+        <Grid cols={12} fields={false} className="items-baseline">
           {kpis.map((k: any) => (
             <Stat
               key={k.key}
-              span={3}
+              span={12 / kpis.length}
               value={k.value}
               unit={k.unit}
               label={k.label}
@@ -100,35 +93,21 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="链路明细" description="每款 App 从首页到支付的步骤与截图" className="gap-12">
+      <Section title="交互链路" description="每款 App 从首页到支付的步骤与截图" className="gap-12">
         {chains.map((chain: any) => (
-          <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
-            {stepRows(chain.steps).map((row: any[], rowIndex: number) => (
-              <FigureStrip key={rowIndex}>
-                {row.map((step: any) => {
-                  const ids = issues
-                    .filter(
-                      (it: any) =>
-                        (it.product === chain.product || it.product === "全部") &&
-                        it.step === step.no
-                    )
-                    .map((it: any) => it.id)
-                  const label = `第 ${step.no} 步 · ${step.screen}${
-                    ids.length ? ` · ${ids.join("、")}` : ""
-                  }`
-                  return (
-                    <Figure key={step.no}>
-                      <FigureImage
-                        src={step.image}
-                        alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
-                      />
-                      <FigureLabel>{label}</FigureLabel>
-                      <FigureText>{stepText(step)}</FigureText>
-                    </Figure>
-                  )
-                })}
-              </FigureStrip>
-            ))}
+          <Group key={chain.product} title={`${chain.product} · ${chain.version} · ${chain.verdict}`}>
+            <FigureStrip>
+              {chain.steps.map((step: any) => (
+                <Figure key={step.no}>
+                  <FigureImage
+                    src={step.image}
+                    alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}
+                  />
+                  <FigureLabel>第 {step.no} 步 · {step.screen}</FigureLabel>
+                  <FigureText>{stepText(step)}</FigureText>
+                </Figure>
+              ))}
+            </FigureStrip>
           </Group>
         ))}
       </Section>

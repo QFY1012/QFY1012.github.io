@@ -1,11 +1,112 @@
 {
- "current": "g0",
- "currentRun": "cvd-g0",
- "versions": 0,
- "round": 0,
+ "current": "g1",
+ "currentRun": "cvd-c1",
+ "versions": 1,
+ "round": 1,
  "rejected": 0,
- "sinceCheckpoint": 0,
- "history": [],
+ "sinceCheckpoint": 1,
+ "history": [
+  {
+   "round": 1,
+   "stage": "aesthetic",
+   "candidate": "c1",
+   "base": "g0",
+   "baseRun": "cvd-g0",
+   "change": {
+    "rule": "G1",
+    "old": "",
+    "new": "- **G1 核心指标一行排满**:`kpis` 整组放在「核心指标」一节,每个指标一个 `Stat`(`captionBelow`,四个都用 `size=\"lg\"`,不分主次),整组排成一行、不出现第二行只剩一项:4 个及以下时用 `<Grid cols={kpis.length} fields={false} className=\"items-baseline\">`,每个 `Stat` 不写 `span`;多于 4 个时每行 4 个,若最后一行只剩 1 个,就把它并回上一行均分(5 个排 3+2、6 个排 3+3),每一行 `Grid` 的 `cols` 等于该行的指标个数。",
+    "basis": [
+     "P-01"
+    ],
+    "why": "P-01 里四个同级 KPI 被排成 3+1,第 4 个孤立在第二行、右侧留下大片空白;改成整组同一行排满(每行 cols 等于该行个数),并写明多于 4 个时的分行办法,对这个 Skill 的每份报告都成立。",
+    "problems": [
+     {
+      "id": "P-01",
+      "problem": "核心指标一节的四个同级指标被排成一行三项、第二行一项，右侧留下大片空白，读者看不出这四个数字属于同一组。"
+     }
+    ]
+   },
+   "accept": true,
+   "why": "",
+   "lines": {
+    "c1": 10,
+    "c2": 11,
+    "c3": 5,
+    "c4": 47,
+    "c5": 34,
+    "c6": 9
+   },
+   "gate": {
+    "program": {
+     "current": 0,
+     "candidate": 0
+    },
+    "aesthetic": {
+     "c5": {
+      "rounds": [
+       "b",
+       "b",
+       "分"
+      ],
+      "verdict": "b"
+     },
+     "c6": {
+      "rounds": [
+       "b",
+       "b",
+       "b"
+      ],
+      "verdict": "b"
+     }
+    },
+    "accept": true,
+    "why": ""
+   }
+  }
+ ],
  "stage": "aesthetic",
- "stageRounds": 0
+ "stageRounds": 1,
+ "judged": {
+  "aesthetic": {
+   "c1": [
+    "cvd-g0",
+    "cvd-c1"
+   ],
+   "c2": [
+    "cvd-g0",
+    "cvd-c1"
+   ],
+   "c3": [
+    "cvd-g0",
+    "cvd-c1"
+   ],
+   "c4": [
+    "cvd-g0",
+    "cvd-c1"
+   ]
+  }
+ },
+ "maintained": {
+  "run": "cvd-c1",
+  "stage": "aesthetic"
+ },
+ "pending": {
+  "name": "c2",
+  "change": {
+   "rule": "G1",
+   "old": "- **G1 核心指标一行排满**:`kpis` 整组放在「核心指标」一节,每个指标一个 `Stat`(`captionBelow`,四个都用 `size=\"lg\"`,不分主次),整组排成一行、不出现第二行只剩一项:4 个及以下时用 `<Grid cols={kpis.length} fields={false} className=\"items-baseline\">`,每个 `Stat` 不写 `span`;多于 4 个时每行 4 个,若最后一行只剩 1 个,就把它并回上一行均分(5 个排 3+2、6 个排 3+3),每一行 `Grid` 的 `cols` 等于该行的指标个数。",
+   "new": "- **G1 核心指标一行排满、总括数字加重**:`kpis` 整组放在「核心指标」一节,每个指标一个 `Stat`(`captionBelow`),按 `kpis` 里的顺序排、不重排,整组排成一行、不出现第二行只剩一项:4 个及以下时用 `<Grid cols={kpis.length} fields={false} className=\"items-baseline\">`,每个 `Stat` 不写 `span`;多于 4 个时每行 4 个,若最后一行只剩 1 个,就把它并回上一行均分(5 个排 3+2、6 个排 3+3),每一行 `Grid` 的 `cols` 等于该行的指标个数。其中 `key` 为 `issues`(问题总数)的那一个是结论性的总括数字,写 `size=\"lg\"`;其余指标不写 `size`(默认 30px),同一行各数字底部对齐。",
+   "basis": [
+    "P-04"
+   ],
+   "why": "P-04 说四个 KPI 等权、结论数字抓不出来;这条只把结论性的 issues 抬到 lg、其余保持 30px,并保留原规则「一行排满、共基线」,不碰指标顺序,避开 c1/c4 顺序结论打架的坑。",
+   "problems": [
+    {
+     "id": "P-04",
+     "problem": "核心指标一节的几个指标数字完全等权，结论性的总括数字没有比其余指标更突出，读者一眼看不出该先读哪个、抓不到主结论；指标之间间距偏大，也削弱了它们同属一组的关联感。"
+    }
+   ]
+  }
+ }
 }

@@ -18,9 +18,6 @@ import {
 } from "@/components/report"
 
 export default function Report() {
-  const mainKpi = data.kpis.find((k) => k.key === "issues")!
-  const subKpis = data.kpis.filter((k) => k.key !== "issues")
-
   const typeItems = data.byType.map((t) => ({
     label: t.type,
     value: t.issues,
@@ -72,28 +69,17 @@ export default function Report() {
     tritan: c["蓝色盲"],
   }))
 
-  const severityRank: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-  const sortedIssues = [...data.issues].sort(
-    (a, b) => severityRank[a.severity] - severityRank[b.severity] || a.id.localeCompare(b.id),
-  )
-
   const issueColumns = [
-    { key: "id", label: "编号", span: 1 },
-    { key: "title", label: "问题", span: 2 },
-    { key: "type", label: "类型", span: 1 },
-    { key: "location", label: "位置", span: 1 },
-    { key: "affects", label: "影响", span: 1 },
+    { key: "title", label: "问题", span: 3 },
+    { key: "place", label: "位置 · 类型", span: 3 },
     { key: "severity", label: "严重", span: 1, tone: ["高"] },
-    { key: "suggestion", label: "建议", span: 2 },
+    { key: "affects", label: "影响", span: 2 },
   ]
-  const issueRows = sortedIssues.map((i) => ({
-    id: i.id,
-    title: i.title,
-    type: i.type,
-    location: i.location,
-    affects: i.affects.join("、"),
+  const issueRows = data.issues.map((i) => ({
+    title: `${i.id} · ${i.title}`,
+    place: `${i.location} · ${i.type}`,
     severity: i.severity,
-    suggestion: i.suggestion,
+    affects: i.affects.join("、") || "—",
   }))
 
   const fixColumns = [
@@ -113,10 +99,7 @@ export default function Report() {
     after: f.after,
   }))
 
-  const highIssues = sortedIssues.filter((i) => i.severity === "高")
-  const steps = [...highIssues, ...sortedIssues.filter((i) => i.severity !== "高")]
-    .slice(0, Math.max(3, highIssues.length))
-    .map((i) => ({ title: `${i.id} ${i.title}`, description: i.suggestion }))
+  const steps = data.issues.map((i) => ({ title: i.title, description: i.suggestion }))
 
   const facts = [
     { label: "分析对象", value: data.target },
@@ -142,10 +125,9 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="对比度与色觉混淆统计">
-        <Grid cols={9} fields={false} className="items-baseline">
-          <Stat span={3} size="lg" captionBelow value={mainKpi.value} unit={mainKpi.unit} label={mainKpi.label} />
-          {subKpis.map((k) => (
-            <Stat key={k.key} span={2} captionBelow value={k.value} unit={k.unit} label={k.label} />
+        <Grid cols={data.kpis.length} fields={false} className="items-baseline">
+          {data.kpis.map((k) => (
+            <Stat key={k.key} size="lg" captionBelow value={k.value} unit={k.unit} label={k.label} />
           ))}
         </Grid>
       </Section>
@@ -173,7 +155,7 @@ export default function Report() {
         <DataTable columns={contrastColumns} rows={contrastRows} />
       </Section>
 
-      <Section title="明细" description="逐条列出问题、位置、类型、影响与建议">
+      <Section title="问题" description="逐条列出问题、位置、类型与影响">
         <DataTable columns={issueColumns} rows={issueRows} />
       </Section>
 

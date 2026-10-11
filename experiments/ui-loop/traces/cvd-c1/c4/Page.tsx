@@ -33,28 +33,13 @@ const confusionRows = data.confusions.map((row) => ({
   affected: row.affected.join("、"),
 }))
 
-const severityOrder: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-
-const sortedIssues = [...data.issues].sort((a, b) => {
-  const diff = severityOrder[a.severity] - severityOrder[b.severity]
-  return diff !== 0 ? diff : a.id.localeCompare(b.id)
-})
-
-const highIssueCount = sortedIssues.filter(
-  (issue) => issue.severity === "高"
-).length
-
-const issueRows = sortedIssues.map((issue) => ({
+const issueRows = data.issues.map((issue) => ({
   id: issue.id,
   title: issue.title,
   type: issue.type,
   location: issue.location,
-  affects: issue.affects.join("、"),
   severity: issue.severity,
-  suggestion: issue.suggestion,
 }))
-
-const nextSteps = sortedIssues.slice(0, Math.max(3, highIssueCount))
 
 const fixRows = data.fixes.map((fix) => ({
   where: fix.where,
@@ -93,33 +78,26 @@ export default function Report() {
         description={`14 个颜色 token,${data.kpis[0].value} 组文字与背景组合`}
       >
         <Group>
-          <Grid cols={9} fields={false} className="items-baseline">
-            <Stat
-              span={3}
-              size="lg"
-              value={13}
-              unit="组"
-              label="对比度不达标"
-              captionBelow
-              note="WCAG 2.2 AA 正文阈值 4.5:1"
-            />
-          </Grid>
-          <Grid cols={9} fields={false} className="items-baseline">
-            <Stat
-              span={3}
-              value={18}
-              unit="组"
-              label="检查的文字与背景组合"
-              captionBelow
-            />
-            <Stat
-              span={3}
-              value={2}
-              unit="对"
-              label="色盲用户难以区分的颜色"
-              captionBelow
-            />
-            <Stat span={3} value={5} unit="个" label="问题总数" captionBelow />
+          <Grid
+            cols={data.kpis.length}
+            fields={false}
+            className="items-baseline"
+          >
+            {data.kpis.map((kpi) => (
+              <Stat
+                key={kpi.key}
+                size="lg"
+                value={kpi.value}
+                unit={kpi.unit}
+                label={kpi.label}
+                captionBelow
+                note={
+                  kpi.key === "fail"
+                    ? "WCAG 2.2 AA 正文阈值 4.5:1"
+                    : undefined
+                }
+              />
+            ))}
           </Grid>
         </Group>
       </Section>
@@ -204,18 +182,16 @@ export default function Report() {
 
       <Section
         title="问题清单"
-        description={`${data.issues.length} 个问题,按严重程度排列`}
+        description={`${data.issues.length} 个问题,按编号排列`}
       >
         <Group>
           <DataTable
             columns={[
               { key: "id", label: "编号", span: 1 },
-              { key: "title", label: "问题", span: 2 },
-              { key: "type", label: "类型", span: 1 },
-              { key: "location", label: "位置", span: 1 },
-              { key: "affects", label: "影响", span: 1 },
+              { key: "title", label: "问题", span: 3 },
+              { key: "type", label: "类型", span: 2 },
+              { key: "location", label: "位置", span: 2 },
               { key: "severity", label: "严重", span: 1, tone: ["高"] },
-              { key: "suggestion", label: "建议", span: 2 },
             ]}
             rows={issueRows}
             caption="严重程度为「高」的问题标红"
@@ -245,14 +221,14 @@ export default function Report() {
 
       <Section
         title="下一步"
-        description="按严重程度排列,编号与问题清单一一对应"
+        description="按问题给出的整改建议"
       >
         <Group>
           <List
             numbered
             columns={3}
-            items={nextSteps.map((issue) => ({
-              title: `${issue.id} ${issue.title}`,
+            items={data.issues.map((issue) => ({
+              title: issue.title,
               description: `${
                 issue.affects.length > 0
                   ? `影响 ${issue.affects.join("、")} · `

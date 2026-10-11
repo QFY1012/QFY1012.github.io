@@ -41,37 +41,18 @@ const confusionRows = data.confusions.map((c) => ({
   affected: c.affected.length ? c.affected.join("、") : "—",
 }))
 
-// 问题清单按严重度「高 → 中 → 低」排,同档按编号排。
-const severityOrder: Record<string, number> = { 高: 0, 中: 1, 低: 2 }
-
-const issueRows = [...data.issues]
-  .sort(
-    (a, b) =>
-      (severityOrder[a.severity] ?? 9) - (severityOrder[b.severity] ?? 9) ||
-      a.id.localeCompare(b.id),
-  )
-  .map((i) => ({
-    id: i.id,
-    title: i.title,
-    type: i.type,
-    location: i.location,
-    affects: i.affects.length ? i.affects.join("、") : "",
-    severity: i.severity,
-    suggestion: i.suggestion,
-  }))
-
-// 「下一步」与问题清单同号:高严重度的问题必须出现,不足三条时按严重度往下补足。
-const highCount = issueRows.filter((r) => r.severity === "高").length
-const nextItems = issueRows.slice(0, Math.max(3, highCount)).map((r) => ({
-  title: `${r.id} ${r.title}`,
-  description: r.suggestion,
+const issueRows = data.issues.map((i) => ({
+  title: i.title,
+  type: i.type,
+  location: i.location,
+  severity: i.severity,
+  affects: i.affects.length ? i.affects.join("、") : "—",
+  suggestion: i.suggestion,
 }))
 
-const fixRows = data.fixes.map((f) => ({
-  where: f.where,
-  from: f.from,
-  to: f.to,
-  contrast: `${f.before} → ${f.after}`,
+const fixItems = data.fixes.map((f) => ({
+  title: f.where,
+  description: `${f.from} → ${f.to} · 对比度 ${f.before} → ${f.after}`,
 }))
 
 export default function Report() {
@@ -82,29 +63,17 @@ export default function Report() {
       </Section>
 
       <Section title="核心指标" description="正文对比度要求 4.5:1,色差 ΔE 小于 12 视为难以区分">
-        <Grid cols={9} fields={false} className="items-baseline">
-          <Stat
-            span={3}
-            value={kpi("issues").value}
-            unit={kpi("issues").unit}
-            size="lg"
-            captionBelow
-            label={kpi("issues").label}
-          />
-          <Stat
-            span={3}
-            value={kpi("fail").value}
-            unit={kpi("fail").unit}
-            captionBelow
-            label={kpi("fail").label}
-          />
-          <Stat
-            span={3}
-            value={kpi("confuse").value}
-            unit={kpi("confuse").unit}
-            captionBelow
-            label={kpi("confuse").label}
-          />
+        <Grid cols={data.kpis.length} fields={false} className="items-baseline">
+          {data.kpis.map((k) => (
+            <Stat
+              key={k.key}
+              value={k.value}
+              unit={k.unit}
+              size="lg"
+              captionBelow
+              label={k.label}
+            />
+          ))}
         </Grid>
       </Section>
 
@@ -182,39 +151,23 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="明细" description="问题清单:类型、位置、影响与建议" className="gap-12">
-        <Group title="建议替换的色值与对比度">
-          <DataTable
-            columns={[
-              { key: "where", label: "位置", span: 2 },
-              { key: "from", label: "原色值", span: 2 },
-              { key: "to", label: "建议色值", span: 2 },
-              { key: "contrast", label: "对比度(前 → 后)", align: "right", span: 3 },
-            ]}
-            rows={fixRows}
-            caption="白底上的替换色值与替换前后的对比度。"
-          />
-        </Group>
-
-        <Group title="问题清单">
-          <DataTable
-            columns={[
-              { key: "id", label: "编号", span: 1 },
-              { key: "title", label: "问题", span: 2 },
-              { key: "type", label: "类型", span: 1 },
-              { key: "location", label: "位置", span: 1 },
-              { key: "affects", label: "影响", span: 1 },
-              { key: "severity", label: "严重度", span: 1, tone: ["高"] },
-              { key: "suggestion", label: "建议", span: 2 },
-            ]}
-            rows={issueRows}
-            caption="影响 = 受该问题影响的色觉类型;严重程度分高、中、低。"
-          />
-        </Group>
+      <Section title="明细" description="问题清单:类型、位置、影响与建议">
+        <DataTable
+          columns={[
+            { key: "title", label: "问题", span: 2 },
+            { key: "type", label: "类型", span: 1 },
+            { key: "location", label: "位置", span: 1 },
+            { key: "severity", label: "严重", span: 1, tone: ["高"] },
+            { key: "affects", label: "影响", span: 2 },
+            { key: "suggestion", label: "建议", span: 2 },
+          ]}
+          rows={issueRows}
+          caption="影响 = 受该问题影响的色觉类型;严重程度分高、中、低。"
+        />
       </Section>
 
-      <Section title="下一步" description="按问题清单的编号逐条修复,高严重度优先">
-        <List numbered columns={3} items={nextItems} />
+      <Section title="下一步" description="建议替换的色值与替换后的对比度">
+        <List numbered columns={3} items={fixItems} />
       </Section>
 
       <Section title="背景信息" description="检查范围与口径">
