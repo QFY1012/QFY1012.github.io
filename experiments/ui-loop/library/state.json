@@ -2,10 +2,23 @@
  "next": 2,
  "proposals": {
   "k1": {
-   "status": "制作中",
+   "status": "待审",
    "demo": "flow/f1",
    "requests": 2,
-   "rejected": ""
+   "rejected": "",
+   "rounds": [
+    {
+     "feedback": null,
+     "summary": "完成。程序检查全部通过(`checks.json` 为空)。\n\n## 新部件(4 个,都从 `@/components/report` 导出)\n\n| 部件 | 管什么 | 来源 |\n|---|---|---|\n| `Figure` | 一张截图的外框(`<figure>`),把图、标签、说明纵向排开;接受 `span` 在 `Grid` 里占几列 | 自建函数组件(`data-slot` + `cn` + 原生 props) |\n| `FigureImage` | 截图本体(`<img data-slot=\"figure-image\">`),外套等比框,默认手机比例 375/760,`ratio` 可传源图比例 | 用 shadcn 的 `aspect-ratio`(Radix `AspectRatio` 原语)做外框 |\n| `FigureLabel` | 视图名 / 屏名 / 步号(`<figcaption>`),12px 灰色 | 自建 |\n| `FigureText` | 图下的说明(内容、操作、输入项),14px 正文 | 自建 |\n\n- shadcn 里没有能承载图片的部件,最接近的只有 `aspect-ratio`,已原样复制到 `app/src/components/ui/aspect-ratio.tsx`(它本身无阴影、底色,字号也合规,无需改样式)。其余三个是自建的组合部件。\n- 没有加切换样式/结构的配置 props:名称在图上方还是下方,由 `FigureLabel` 相对 `FigureImage` 的先后顺序决定;每格宽度由 `Grid` 的列数 / `Figure` 的 `span` 决定,高度由等比框自动跟上。\n\n**组合方式**\n- 链路明细(一格一屏):`Group`(一个产品一组)→ `Grid cols={4} fields={false}` → 每格一个 `Figure` = `FigureImage` + `FigureLabel` + `FigureText`。4 列定宽 + 固定比例,一排截图等高、标签对齐。\n- 模拟视图(一组四张):`Block`(`title`/`description` 放说明文字)→ `Grid cols={4}` → 4 个 `Figure` = `FigureImage` + `FigureLabel`。\n\n## 演示页\n用真实 `data.json` / `assets/` 排了完整报告:结论句 + KPI、产品对比、**交互链路(26 张截图全部呈现,一个产品一组、一格一屏)**、阶段对比、常见模式、问题(严重度标红)、建议,最后是 **「视图对照」:四张一行、每张带视图名、放在 `Block` 里带说明文字**,展示新部件与现有组件的统一。\n\n## 需求里没做的及原因\n- **色觉模拟图本身没有生成**:`data.json` 是「交互流程挖掘」报告,`assets/` 里只有 26 张真实界面截图,没有红色盲/绿色盲/蓝色盲的模拟图。所以「视图对照」用真实截图 + 视图名演示「四张一行、每张带视图名称」的排法,不伪造模拟图;组件支持任意图片和视图名,换一份带模拟图的 data 即可直接排。\n- **没做缩放/灯箱/懒加载等交互**:需求只要求承载图片和标签,规范也不允许卡片、底色、阴影、标签,所以保持静态。\n- **`ratio` 默认 375/760**:若以后出现非手机比例的截图,页面需要传 `ratio`,否则会被 `object-cover` 裁切——已在 `components.md` 写明。",
+     "checks": [],
+     "lint": [],
+     "usage": {
+      "input": 573998,
+      "output": 56392
+     },
+     "seconds": 622
+    }
+   ]
   }
  }
 }
