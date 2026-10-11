@@ -77,7 +77,7 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
     settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: true, maxRetries: 3, provider: { timeoutMs: 240_000 } } }),
   })
   const t0 = Date.now()
-  // stream: print the reply to stdout as it arrives (thinking, text, tool calls), with the wait
+  // stream: print the reply to stdout as it arrives (text and tool calls; thinking only marked), with the wait
   // before it starts; for one agent at a time (parallel agents would interleave). Otherwise one
   // line per tool call.
   const hhmmss = () => new Date().toLocaleTimeString("zh-CN", { hour12: false, timeZone: "Asia/Shanghai" })
@@ -99,7 +99,8 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
     } else if (e.type === "message_update") {
       const a = e.assistantMessageEvent
       if (a.type === "start") process.stdout.write(`,${((Date.now() - asked) / 1000).toFixed(0)} 秒后开始回复`)
-      else if (a.type === "thinking_delta") say("思考", a.delta)
+      // Thinking is not printed, only marked.
+      else if (a.type === "thinking_start") say("思考中…", "")
       else if (a.type === "text_delta") say("回复", a.delta)
     } else if (e.type === "tool_execution_start") {
       kind = ""

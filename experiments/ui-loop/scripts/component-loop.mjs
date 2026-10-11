@@ -12,7 +12,7 @@
 //   node scripts/component-loop.mjs reject k1 "原因"                 the next proposal reads it
 //
 // The work happens in a copy of the library, traces/_components/k<n>/: app/ (the library), shadcn/
-// (vendor/shadcn, read-only reference), components.md, and one sample the problems were seen on.
+// (vendor/shadcn, read-only reference), components.md and the requests; the agent makes its own test data.
 // A reviewer who edits the code directly edits traces/_components/k<n>/app and then approves.
 // Program checks run on the demo page and on the component code before the review.
 // Review material: library/k<n>.md and library/k<n>-demo.png. Every version is kept in
@@ -45,49 +45,36 @@ const usable = JSON.parse(read(path.join(SHADCN, "index.json"))).filter((e) => !
 const EFFORT = process.env.GEN_EFFORT ?? "medium"
 
 const designA = read(path.join(ROOT, "design.md")).match(/## A 基础[\s\S]*?(?=\n## B)/)?.[0] ?? ""
-export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库。生成 Agent 用组件库写报告页面;页面经过程序检查、需求 judge、审美 judge,Maintainer 把检测意见归纳成问题,下面这些被归为「组件不够」:组件库缺能力,怎么排都解决不了。你要补上这项能力。
+export const SYSTEM = (requests, rejected) => `你给报告页面的组件库补组件。下面是 Maintainer 归纳出的需求:组件库缺的能力和要用到它的场景。
 
 工作目录:
-- app/src/components/report/:报告组件(index.tsx 导出,内容组件的绘制在 render.tsx)。生成 Agent 只从 @/components/report import。
-- app/src/components/ui/:shadcn/ui 的基础组件。
-- app/src/index.css:tokens(颜色、字体、圆角),不能改。
-- components.md:组件库说明,生成 Agent 只读这份说明来用组件。
-- shadcn/ui/:shadcn/ui new-york-v4 组件源码(只读参考)。能用的有:${usable}。只读你要用的那一两个。
-- data.json 和 assets/:一份真实的样本数据,演示页从里面取内容。
+- app/src/components/report/index.tsx:报告组件,页面只从这里 import。
+- app/src/components/ui/:shadcn/ui 基础组件。app/src/index.css 是 tokens,不能改。
+- components.md:组件库说明。
+- shadcn/ui/:shadcn/ui 组件源码,只读参考。能用的有:${usable}。
 
 规则:
-1. 只改需要的地方:补上缺的能力,已有的组件和它们的用法一律不改。
-2. 写法和 shadcn 一样:做成几个可以组合的小部件,每个部件是一个函数组件,带 data-slot,接受 className 和原生属性(...props),用 cn() 合并 className。不加用来切换样式或结构的配置 props,怎么组合由页面决定。
-3. 先找 shadcn/ 里有没有能用的部件:有就复制到 app/src/components/ui/,再按规范改样式,复制来的部件和你新写的代码一样必须全部符合规范(shadcn 原版带阴影、底色,有的字号不在规范里);没有合适的,才直接用 Radix 原语(import { X } from "radix-ui")写。
-4. 风格和现有组件一致(现有组件的写法:正文 text-sm leading-6;标签、说明这类次要文字 text-xs 或 text-sm 加 text-muted-foreground;强调用 font-medium;数字 tabular-nums;一组内的间距 gap-2、gap-3,组和组之间 gap-6;分隔只用细线 border-b;不必通读 render.tsx);颜色、字号只用 token 类名和规范 A 部分的几级;不加卡片、底色和阴影。
-5. 新部件从 app/src/components/report/index.tsx 导出。
-6. 在 components.md 里补上:有哪些部件、什么时候用、最小的组合示例。
-7. 程序检查和代码检查是为了发现问题,不是要绕过的关卡:不要为了让检查通过去改写法、藏元素,也不要在文件系统里找检查脚本或参考答案。觉得检查结果和需求冲突,照需求做,在结束时的说明里写清楚冲突在哪。
+1. 只新增,已有的组件和用法不改。
+2. 写法和 shadcn 一样:几个可组合的小部件,每个是函数组件,带 data-slot,接受 className 和原生属性,用 cn() 合并。不加切换样式或结构的配置 props。
+3. 先用 shadcn 的部件:复制到 app/src/components/ui/ 再按规范改样式;没有合适的才用 Radix 原语(import { X } from "radix-ui")。
+4. 视觉按下面的规范,和现有组件一致:正文 text-sm leading-6;次要文字 text-xs 或 text-sm 加 text-muted-foreground;间距 gap-2、gap-3,组间 gap-6;颜色、字号只用 token 类名;不加卡片、底色和阴影。
+5. 新部件从 report/index.tsx 导出,在 components.md 里写明:有哪些部件、什么时候用、最小组合示例。
 
-演示页 Page.tsx 只放新部件:每个需求场景一组,用 assets/ 里的真实图片和 data.json 里对应的文字;再放一小段现有组件(比如一个 Section 里的一段 Text)对照风格就够,不要把整份报告排出来。
+测试:测试数据自己造,覆盖需求里的场景。需要图片就自己生成(比如写几张不同尺寸的 SVG),放在 assets/ 下,页面里用 assets/文件名 引用。演示页 Page.tsx 只放新部件,再放一小段现有组件对照风格。用 bash 运行 \`node \$SHOOT .\` 构建、截图(thumb.png、tile-*.png)并做程序检查(结果在 checks.json),看截图,不对就改。检查最多运行 6 次。
 
-检查:用 bash 运行 \`node \$SHOOT .\`,它会构建演示页、截图(thumb.png 是整页缩略图,tile-*.png 是从上到下的切块),并做程序检查,结果写在 checks.json。用 read 看截图,不对就改。
-
-工具只能访问工作目录,bash 在沙箱里运行、不能联网。
-
-<规范 A 部分(页面和组件共用的基础)>
+<视觉规范>
 ${designA}
-</规范 A 部分>
+</视觉规范>
 
-<组件不够的问题>
-${requests.map((r) => `- [${r.skill},${r.stage},${r.pages.length} 页] ${r.problem}\n  场景:${r.scenes}`).join("\n")}
-</组件不够的问题>${rejected ? `
+<需求>
+${requests.map((r) => `- ${r.problem}\n  场景:${r.scenes}`).join("\n")}
+</需求>${rejected ? `
 
-<之前没被采用的组件改动>
+<之前没被采用的改动>
 ${rejected}
-</之前没被采用的组件改动>` : ""}`
+</之前没被采用的改动>` : ""}`
 
-export const PROMPT = `请补上上面的问题需要的组件能力:
-1. 读 components.md 和 report/index.tsx,从上面的 shadcn 列表里选部件(或 Radix 原语),定下拆成哪几个部件。
-2. 写组件,更新 components.md。
-3. 写演示页 Page.tsx。
-4. 运行检查,看截图,不对就改。检查最多运行 6 次。
-5. 结束时说明:新部件叫什么、各管什么、来自哪个 shadcn 部件或 Radix 原语、怎么组合;需求里哪些没做及原因。`
+export const PROMPT = `请补上需求里缺的组件能力,写演示页测试,结束时说明:新部件叫什么、各管什么、来自哪个 shadcn 部件或 Radix 原语、怎么组合;需求里哪些没做及原因。`
 
 // The Maintainer's open 组件不够 problems of every Skill.
 function collect() {
@@ -176,7 +163,7 @@ async function build(name, prompt) {
 
 ## 示例效果
 
-演示页用 ${p.demo} 的真实数据,新部件和现有组件放在同一页:
+演示页用组件 Agent 自造的测试数据,新部件和一小段现有组件放在同一页:
 
 ![演示页](${name}-demo.png)
 
@@ -230,18 +217,13 @@ async function propose() {
   fs.cpSync(path.join(ROOT, "app"), path.join(ws, "app"), { recursive: true })
   fs.cpSync(SHADCN, path.join(ws, "shadcn"), { recursive: true })
   fs.copyFileSync(path.join(ROOT, "components.md"), path.join(ws, "components.md"))
-  // Demo data: a sample of the problem seen on the most pages.
-  const top = [...requests].sort((a, b) => b.pages.length - a.pages.length)[0]
-  const sk = top.sk, demoCase = top.pages[0], demo = `${sk}/${demoCase}`
-  fs.copyFileSync(path.join(ROOT, "skills", sk, "data", `${demoCase}.json`), path.join(ws, "data.json"))
-  if (fs.existsSync(path.join(ROOT, "skills", sk, "data", demoCase))) fs.cpSync(path.join(ROOT, "skills", sk, "data", demoCase), path.join(ws, "assets"), { recursive: true })
   fs.writeFileSync(path.join(ws, "tsconfig.json"), JSON.stringify({ compilerOptions: { jsx: "react-jsx", resolveJsonModule: true } }))
   fs.writeFileSync(path.join(ws, "requests.json"), JSON.stringify(requests, null, 1))
   const rejected = Object.entries(state.proposals).filter(([, p]) => p.status === "未采用").map(([n, p]) => `${n}:${(p.rounds?.at(-1)?.summary ?? "").slice(0, 600)}\n  没采用的原因:${p.reason}`).join("\n")
-  state.proposals[name] = { status: "制作中", demo, requests: requests.length, rejected }
+  state.proposals[name] = { status: "制作中", requests: requests.length, rejected }
   state.next++
   save()
-  console.log(`${name}: ${requests.length} problems; demo on ${demo}`)
+  console.log(`${name}: ${requests.length} problems`)
   await build(name, PROMPT)
 }
 

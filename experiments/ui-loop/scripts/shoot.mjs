@@ -138,7 +138,8 @@ try {
   for (const o of dom.out) add("元素越界", o)
 
   // Data coverage: every short value outside long series should appear on the page.
-  const data = JSON.parse(fs.readFileSync(path.join(ws, "data.json"), "utf8"))
+  // A component demo has no data.json (the agent makes its own test data): nothing to compare.
+  const data = fs.existsSync(path.join(ws, "data.json")) ? JSON.parse(fs.readFileSync(path.join(ws, "data.json"), "utf8")) : {}
   const text = dom.text.replace(/\s+/g, "")
   const missing = [], missingImages = []
   // Long series (more than 8 items) are only checked for their images.
