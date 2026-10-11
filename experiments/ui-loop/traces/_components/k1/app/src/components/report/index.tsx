@@ -99,7 +99,7 @@ export function Text({ children, className, span }: Placed & { children: string 
 export function FigureStrip({ className, children, ...props }: React.ComponentProps<typeof ScrollArea>) {
   return (
     <ScrollArea data-slot="figure-strip" type="always" className={cn("w-full min-w-0", className)} {...props}>
-      <div className="flex w-max gap-6 pb-4">{children}</div>
+      <div className="flex w-max gap-12 pb-4">{children}</div>
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   )

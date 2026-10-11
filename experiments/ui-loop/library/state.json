@@ -39,6 +39,17 @@
       "output": 3688
      },
      "seconds": 114
+    },
+    {
+     "feedback": "还需要更宽的间距",
+     "summary": "改完了,程序检查全部通过(`checks.json` 为空)。\n\n## 改了什么\n\n审批意见是「还需要更宽的间距」。间距涉及的地方就是截图部件横向排列的间距,所以只改了 `app/src/components/report/index.tsx` 里 `FigureStrip` 内部那一行:\n\n- 图与图之间的间距从 `gap-6`(24px)加宽到 `gap-12`(48px)。\n\n```\n<div className=\"flex w-max gap-12 pb-4\">{children}</div>\n```\n\n48px 是 24 的倍数,符合 A1 的纵向刻度(间距取 24 的倍数);只动了这一处,组件结构、`data-slot`、其余间距(`Figure` 内图与标签/说明的 `gap-2`、`pb-4` 滚动条留白)和演示页 `Page.tsx` 都没动。演示页仍然只放新部件(`FigureStrip`/`Figure`/`FigureImage`/`FigureLabel`/`FigureText`)加一小段现有组件对照。\n\n## 效果\n\n- 链路明细:5 张手机截图之间现在有 48px 留白,「第 N 步」标签和说明文字不再彼此贴住,一行读起来更清楚。\n- 模拟视图:4 张色觉模拟图同样拉开到 48px,宽高比不同的图(手机 375×760、分析图 1200×760)仍按原比例并排对齐,超出部分继续靠 shadcn `ScrollArea` 横向滚动。\n\n`components.md` 里对部件的说明(有哪些部件、何时用、最小示例)保持不变,这次不涉及文档改动。",
+     "checks": [],
+     "lint": [],
+     "usage": {
+      "input": 35028,
+      "output": 6714
+     },
+     "seconds": 125
     }
    ]
   }
