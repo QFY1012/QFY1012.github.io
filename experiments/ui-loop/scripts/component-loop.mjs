@@ -54,8 +54,8 @@ export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库
 规则:
 1. 只改需要的地方:补上缺的能力,已有的组件和它们的用法一律不改。
 2. 写法和 shadcn 一样:做成几个可以组合的小部件,每个部件是一个函数组件,带 data-slot,接受 className 和原生属性(...props),用 cn() 合并 className。不加用来切换样式或结构的配置 props,怎么组合由页面决定。
-3. 先找 shadcn/ 里有没有能用的部件:有就复制到 app/src/components/ui/,再按规范改样式,复制来的部件和你新写的代码一样必须全部符合规范(shadcn 原版带阴影、底色,很多字号和尺寸不在规范里);没有合适的,才直接用 Radix 原语(import { X } from "radix-ui")写。
-4. 风格和现有组件一致:看 report/render.tsx 和 report/index.tsx 里现有组件的字号、文字灰度、线条、间距、对齐,照着用;颜色、字号只用 token 类名和规范 A 部分的几级;不加卡片、底色和阴影。所有尺寸(间距、宽高、行高、位置)都必须是 8 的倍数:Tailwind 的数字类每级 4px,只能用偶数级(p-2、gap-4、h-8),任意值也只能是 8 的倍数。
+3. 先找 shadcn/ 里有没有能用的部件:有就复制到 app/src/components/ui/,再按规范改样式,复制来的部件和你新写的代码一样必须全部符合规范(shadcn 原版带阴影、底色,有的字号不在规范里);没有合适的,才直接用 Radix 原语(import { X } from "radix-ui")写。
+4. 风格和现有组件一致:看 report/render.tsx 和 report/index.tsx 里现有组件的字号、文字灰度、线条、间距、对齐,照着用;颜色、字号只用 token 类名和规范 A 部分的几级;不加卡片、底色和阴影。
 5. 新部件从 app/src/components/report/index.tsx 导出。
 6. 在 components.md 里补上:有哪些部件、什么时候用、最小的组合示例。
 
@@ -97,7 +97,7 @@ const diff = (a, b) => spawnSync("git", ["diff", "--no-index", "--no-color", a, 
 const libDiff = (ws) => diff(path.join(ROOT, "app", "src"), path.join(ws, "app", "src")) + diff(path.join(ROOT, "components.md"), path.join(ws, "components.md"))
 
 // Program checks on the component code: existing code and tokens unchanged; every new line
-// (files copied from shadcn included) uses tokens, the type scale and 8px steps, no shadows or backgrounds.
+// (files copied from shadcn included) uses tokens and the type scale, no shadows or backgrounds.
 function lintComponents(ws) {
   const out = []
   const src = path.join(ws, "app", "src")
@@ -118,10 +118,6 @@ function lintComponents(ws) {
       const c = line.match(/\b(?:text|bg|border|fill|stroke|ring|outline)-(?:red|green|blue|slate|gray|zinc|neutral|stone|orange|amber|yellow|lime|emerald|teal|cyan|sky|indigo|violet|purple|fuchsia|pink|rose|white|black)(?:-\d+)?\b/)
       if (c) add(`颜色类名 ${c[0]} 不是 token`)
       for (const m of line.matchAll(/\btext-(base|lg|4xl|6xl|7xl|8xl|9xl)\b/g)) add(`字号 ${m[0]} 不在规范的几级里`)
-      for (const m of line.matchAll(/\[-?(\d+(?:\.\d+)?)px\]/g)) if (Number(m[1]) % 8) add(`尺寸 ${m[1]}px 不是 8 的倍数`)
-      // Tailwind's spacing scale is 4px a step: p-1.5 is 6px, h-9 is 36px.
-      for (const m of line.matchAll(/(?<![\w-])-?(?:p[xytrblse]?|m[xytrblse]?|gap(?:-[xy])?|space-[xy]|size|[hw]|min-[hw]|max-[hw]|inset(?:-[xy])?|top|right|bottom|left|start|end|leading|basis|translate-[xy]|scroll-[mp][xytrbl]?|indent)-(\d+(?:\.\d+)?)(?![\w./])/g))
-        if ((Number(m[1]) * 4) % 8) add(`尺寸 ${m[0]}(${Number(m[1]) * 4}px)不是 8 的倍数`)
       for (const m of line.matchAll(/\bshadow(?:-\w+)?\b/g)) if (m[0] !== "shadow-none") add(`用了阴影 ${m[0]}`)
       if (/\bbg-(card|muted|accent|secondary|popover)\b/.test(line)) add("加了底色;规范不用卡片和底色")
     })
@@ -193,7 +189,7 @@ ${JSON.parse(read(path.join(ws, "requests.json"))).map((r) => `- **${r.run}/${r.
 演示页程序检查:
 ${list(checks)}
 
-组件代码检查(已有代码和 tokens 不改;新增代码只用 token、规范的字号、8 的倍数,无阴影和底色;从 shadcn 复制来的文件也查):
+组件代码检查(已有代码和 tokens 不改;新增代码只用 token、规范的字号,无阴影和底色;从 shadcn 复制来的文件也查):
 ${list(lint)}
 
 ## 改动
