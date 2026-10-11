@@ -4,7 +4,7 @@
 
 ```tsx
 import data from "./data.json"
-import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, TrendChart, BarChart, ProgressList, List, KV, Figure, FigureImage, FigureLabel, FigureText } from "@/components/report"
+import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, TrendChart, BarChart, ProgressList, List, KV, Figure, FigureRow, FigureImage, FigureLabel, FigureText } from "@/components/report"
 ```
 
 不直接写 HTML 标签(`<div>` 除外,也尽量不用),不写 `style`,不写颜色类名和任意值类名(如 `text-[13px]`)。字号、颜色、间距都由组件给出;规范允许的类名只有 design.md 里写明的几个。
@@ -38,20 +38,21 @@ import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, TrendChart, B
 
 ## 截图
 
-一组可组合的部件,用来放界面截图(链路里的一格一屏、模拟视图的一组四张)。放在 `Grid` 里,一格就是一个 `Figure`;图、标签、说明的上下顺序由页面决定。
+一组可组合的部件,用来放界面截图(链路里的一格一屏、模拟视图的一组四张)。`FigureRow` 是一行横向滚动的条,里面每个 `Figure` 是一格;图、标签、说明的上下顺序由页面决定。
 
 | 组件 | props | 说明 |
 |---|---|---|
-| `Figure` | `span?`(在 `Grid` 里占几列) | 一张截图的外框,纵向排图、标签和说明 |
-| `FigureImage` | `src`, `alt`, `ratio?` | 截图本体。`ratio` 是宽/高,默认 375/760(手机截图);换别的比例的图时传源图自己的比例,否则会裁切 |
+| `FigureRow` | `className?` | 一行截图。横向滚动,超出一屏的部分隐藏,不把页面撑宽 |
+| `Figure` | `className?` | 一张截图的外框,纵向排图、标签和说明;宽度由图片决定,标签和说明在图片宽度内换行 |
+| `FigureImage` | `src`, `alt` | 截图本体。按同一高度、源图比例显示,不裁剪;宽度随比例不同而不同,所以不需要传比例 |
 | `FigureLabel` | children(字符串) | 图下面或上面的视图名(屏名、步号),12px 灰色 |
 | `FigureText` | children(字符串) | 图下面的说明(内容、操作、输入项),14px 正文 |
 
-链路明细:一个产品一组,组内一格一屏。`Grid` 的列数定每格宽度,`FigureImage` 按比例定高,所以一排截图等高、标签对齐。
+链路明细:一个产品一组,组内一格一屏,按步骤顺序排在一条 `FigureRow` 里横向滚动。
 
 ```tsx
 <Group title={`${chain.product} · ${chain.version}`}>
-  <Grid cols={4} fields={false}>
+  <FigureRow>
     {chain.steps.map((step) => (
       <Figure key={step.no}>
         <FigureImage src={step.image} alt={`${chain.product} 第 ${step.no} 步:${step.screen}`} />
@@ -59,21 +60,21 @@ import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, TrendChart, B
         <FigureText>{step.content} · {step.action} · 输入 {step.inputs} 项</FigureText>
       </Figure>
     ))}
-  </Grid>
+  </FigureRow>
 </Group>
 ```
 
-模拟视图:一组四张(原界面 + 三种色觉模拟),每张带视图名,四张一行;要放说明文字就用 `Block` 的 `title`/`description` 包住这一组。`FigureLabel` 放在 `FigureImage` 前就是名称在上,放在后就是名称在下。
+模拟视图:一组四张(原界面 + 三种色觉模拟)也排在同一条 `FigureRow` 里,每张带视图名;要放说明文字就用 `Block` 的 `title`/`description` 包住这一组。`FigureLabel` 放在 `FigureImage` 前就是名称在上,放在后就是名称在下。
 
 ```tsx
 <Block title="色觉模拟" description="原界面与红色盲、绿色盲、蓝色盲模拟对照">
-  <Grid cols={4} fields={false}>
+  <FigureRow>
     {views.map((view) => (
       <Figure key={view.name}>
         <FigureImage src={view.image} alt={view.name} />
         <FigureLabel>{view.name}</FigureLabel>
       </Figure>
     ))}
-  </Grid>
+  </FigureRow>
 </Block>
 ```
