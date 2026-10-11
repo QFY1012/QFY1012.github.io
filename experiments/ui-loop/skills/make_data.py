@@ -11,6 +11,9 @@ issues and fixes. Contrast ratios and the colour
 differences under simulated colour blindness are computed, not typed in.
 
 Samples 1-4 are for training, 5-6 are held out (see split.json).
+Images live in data/<sample>/ and are referenced as assets/<file> (the generator copies the
+folder into the workspace as assets/): make_images.mjs draws them, simulate_cvd.py adds the
+colour-blind views.
 """
 import json
 import math
@@ -37,6 +40,10 @@ def chain(product, version, verdict, *steps):
 
 
 def flow(name, *, title, task, scope, date, summary, chains, issues, suggestions, stages=None, patterns=None):
+    # Each screen's screenshot: assets/p<product>-<step>.png (drawn by make_images.mjs).
+    for pi, c in enumerate(chains):
+        for st in c["steps"]:
+            st["image"] = f"assets/p{pi + 1}-{st['no']:02d}.png"
     n = [len(c["steps"]) for c in chains]
     products = [{"name": c["product"], "steps": len(c["steps"]), "inputs": sum(s["inputs"] for s in c["steps"]), "verdict": c["verdict"]} for c in chains]
     fewest = min(products, key=lambda p: p["steps"])
@@ -367,6 +374,9 @@ CVD = {
 }
 
 
+SIM = {"红色盲": "protanopia", "绿色盲": "deuteranopia", "蓝色盲": "tritanopia"}
+
+
 def lab(lrgb):
     r, g, b = (max(0.0, min(1.0, x)) for x in lrgb)
     x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047
@@ -426,6 +436,8 @@ def cvd(name, *, title, target, date, summary, palette, pairs, confuse, issues, 
         "title": title, "target": target, "date": date, "standard": standard, "verdict": verdict,
         "method": "按 Machado 2009 模型模拟红色盲、绿色盲、蓝色盲;色差为 CIEDE2000 ΔE,小于 12 视为难以区分",
         "summary": summary,
+        # The interface as checked, and as seen with each colour blindness (simulate_cvd.py).
+        "screens": [{"view": "原界面", "image": "assets/original.png"}] + [{"view": k, "image": f"assets/{SIM[k]}.png"} for k in CVD],
         "kpis": [
             {"key": "pairs", "label": "检查的文字与背景组合", "value": len(contrasts), "unit": "组"},
             {"key": "fail", "label": "对比度不达标", "value": failing, "unit": "组"},

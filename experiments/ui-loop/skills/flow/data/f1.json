@@ -62,7 +62,8 @@
      "content": "权益介绍、立即开户按钮",
      "action": "点击立即开户",
      "inputs": 0,
-     "note": "没有说明需要准备身份证和一类卡"
+     "note": "没有说明需要准备身份证和一类卡",
+     "image": "assets/p1-01.png"
     },
     {
      "no": 2,
@@ -70,7 +71,8 @@
      "content": "一份开户协议,底部勾选框",
      "action": "勾选并下一步",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-02.png"
     },
     {
      "no": 3,
@@ -78,7 +80,8 @@
      "content": "正反面两个拍摄框",
      "action": "拍摄正反面",
      "inputs": 0,
-     "note": "反光时没有实时提示"
+     "note": "反光时没有实时提示",
+     "image": "assets/p1-03.png"
     },
     {
      "no": 4,
@@ -86,7 +89,8 @@
      "content": "识别出的姓名、证件号、有效期",
      "action": "确认无误",
      "inputs": 0,
-     "note": "有效期识别错误时只能重拍"
+     "note": "有效期识别错误时只能重拍",
+     "image": "assets/p1-04.png"
     },
     {
      "no": 5,
@@ -94,7 +98,8 @@
      "content": "职业、地址、手机号、年收入,共 7 项",
      "action": "填写后下一步",
      "inputs": 7,
-     "note": "职业是 86 项的长列表"
+     "note": "职业是 86 项的长列表",
+     "image": "assets/p1-05.png"
     },
     {
      "no": 6,
@@ -102,7 +107,8 @@
      "content": "卡号输入、短信验证码",
      "action": "输入并验证",
      "inputs": 2,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-06.png"
     },
     {
      "no": 7,
@@ -110,7 +116,8 @@
      "content": "6 位交易密码,输入两次",
      "action": "设置密码",
      "inputs": 2,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-07.png"
     },
     {
      "no": 8,
@@ -118,7 +125,8 @@
      "content": "取景框和眨眼提示",
      "action": "完成核验",
      "inputs": 0,
-     "note": "失败后要从设置密码重来"
+     "note": "失败后要从设置密码重来",
+     "image": "assets/p1-08.png"
     },
     {
      "no": 9,
@@ -126,7 +134,8 @@
      "content": "账号、限额说明",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-09.png"
     }
    ]
   },
@@ -141,7 +150,8 @@
      "content": "所需材料清单、开始按钮",
      "action": "开始开户",
      "inputs": 0,
-     "note": "开始前列出身份证和一类卡"
+     "note": "开始前列出身份证和一类卡",
+     "image": "assets/p2-01.png"
     },
     {
      "no": 2,
@@ -149,7 +159,8 @@
      "content": "取景框、光线提示",
      "action": "完成核验",
      "inputs": 0,
-     "note": "先核验再拍证件,失败成本低"
+     "note": "先核验再拍证件,失败成本低",
+     "image": "assets/p2-02.png"
     },
     {
      "no": 3,
@@ -157,7 +168,8 @@
      "content": "正反面拍摄,实时反光提示",
      "action": "拍摄",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-03.png"
     },
     {
      "no": 4,
@@ -165,7 +177,8 @@
      "content": "身份信息和自动带出的地址,职业可搜索",
      "action": "确认",
      "inputs": 2,
-     "note": "地址从身份证带出,可修改"
+     "note": "地址从身份证带出,可修改",
+     "image": "assets/p2-04.png"
     },
     {
      "no": 5,
@@ -173,7 +186,8 @@
      "content": "支持从相册识别卡号",
      "action": "绑定",
      "inputs": 1,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-05.png"
     },
     {
      "no": 6,
@@ -181,7 +195,8 @@
      "content": "6 位交易密码",
      "action": "设置",
      "inputs": 2,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-06.png"
     },
     {
      "no": 7,
@@ -189,7 +204,8 @@
      "content": "账号、下一步引导",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-07.png"
     }
    ]
   },
@@ -204,7 +220,8 @@
      "content": "活动横幅、开户入口",
      "action": "点击开户",
      "inputs": 0,
-     "note": "入口在横幅下方,不明显"
+     "note": "入口在横幅下方,不明显",
+     "image": "assets/p3-01.png"
     },
     {
      "no": 2,
@@ -212,7 +229,8 @@
      "content": "开户协议,需滚动到底",
      "action": "同意",
      "inputs": 0,
-     "note": "必须滚动到底才能勾选"
+     "note": "必须滚动到底才能勾选",
+     "image": "assets/p3-02.png"
     },
     {
      "no": 3,
@@ -220,7 +238,8 @@
      "content": "隐私协议",
      "action": "同意",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-03.png"
     },
     {
      "no": 4,
@@ -228,7 +247,8 @@
      "content": "正反面拍摄",
      "action": "拍摄",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-04.png"
     },
     {
      "no": 5,
@@ -236,7 +256,8 @@
      "content": "识别结果",
      "action": "确认",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-05.png"
     },
     {
      "no": 6,
@@ -244,7 +265,8 @@
      "content": "职业、单位名称",
      "action": "下一步",
      "inputs": 2,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-06.png"
     },
     {
      "no": 7,
@@ -252,7 +274,8 @@
      "content": "省市区、详细地址",
      "action": "下一步",
      "inputs": 4,
-     "note": "地址格式错误在绑卡时才报"
+     "note": "地址格式错误在绑卡时才报",
+     "image": "assets/p3-07.png"
     },
     {
      "no": 8,
@@ -260,7 +283,8 @@
      "content": "卡号、预留手机号、验证码",
      "action": "绑定",
      "inputs": 3,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-08.png"
     },
     {
      "no": 9,
@@ -268,7 +292,8 @@
      "content": "取景框",
      "action": "核验",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-09.png"
     },
     {
      "no": 10,
@@ -276,7 +301,8 @@
      "content": "交易密码两次",
      "action": "设置",
      "inputs": 2,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-10.png"
     }
    ]
   }

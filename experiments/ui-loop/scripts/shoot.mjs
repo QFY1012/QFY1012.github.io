@@ -113,7 +113,7 @@ try {
         out.push(`${el.tagName.toLowerCase()}[${el.getAttribute("data-slot") ?? ""}] 超出页面左右边界 ${Math.round(Math.max(mr.left - r.left, r.right - mr.right))}px「${t}」`)
       }
     }
-    return { height: Math.ceil(document.documentElement.scrollHeight), text: document.body.innerText, out: out.slice(0, 10), unknown: document.querySelectorAll("[data-slot=unknown]").length }
+    return { height: Math.ceil(document.documentElement.scrollHeight), text: document.body.innerText, images: [...document.images].map((i) => i.getAttribute("src") ?? ""), out: out.slice(0, 10), unknown: document.querySelectorAll("[data-slot=unknown]").length }
   })
   if (dom.unknown) add("组件库", `${dom.unknown} 个组件类型未知`)
   for (const o of dom.out) add("元素越界", o)
@@ -121,17 +121,26 @@ try {
   // Data coverage: every short value outside long series should appear on the page.
   const data = JSON.parse(fs.readFileSync(path.join(ws, "data.json"), "utf8"))
   const text = dom.text.replace(/\s+/g, "")
-  const missing = []
-  const walk = (v, p) => {
-    if (Array.isArray(v)) return v.length > 8 ? undefined : v.forEach((x, i) => walk(x, `${p}/${i}`))
-    if (v && typeof v === "object") return Object.entries(v).forEach(([k, x]) => walk(x, `${p}/${k}`))
+  const missing = [], missingImages = []
+  // Long series (more than 8 items) are only checked for their images.
+  const walk = (v, p, imagesOnly = false) => {
+    if (Array.isArray(v)) return v.forEach((x, i) => walk(x, `${p}/${i}`, imagesOnly || v.length > 8))
+    if (v && typeof v === "object") return Object.entries(v).forEach(([k, x]) => walk(x, `${p}/${k}`, imagesOnly))
     if (typeof v === "boolean" || v == null) return
     if (/\/(key|direction|significant|id)$/.test(p)) return
+    // An image counts when the page shows it: an <img> with the same file name (the build may add a hash).
+    if (typeof v === "string" && /\.(png|jpe?g|webp|svg)$/i.test(v)) {
+      const stem = path.basename(v).replace(/\.\w+$/, "")
+      if (!dom.images.some((src) => path.basename(src.split("?")[0]).startsWith(stem))) missingImages.push(v)
+      return
+    }
+    if (imagesOnly) return
     const s = String(v).replace(/\s+/g, "")
     const alts = typeof v === "number" ? [s, v.toLocaleString("en-US"), v.toFixed(1)] : [s]
     if (!alts.some((a) => text.includes(a))) missing.push(`${p}「${String(v).slice(0, 24)}」`)
   }
   walk(data, "")
+  if (missingImages.length) add("数据忠实", `页面上没有显示 ${missingImages.length} 张图:${missingImages.slice(0, 6).join("、")}${missingImages.length > 6 ? " 等" : ""}`)
   if (missing.length) add("数据忠实", `页面上找不到 ${missing.length} 项数据:${missing.slice(0, 12).join("、")}${missing.length > 12 ? " 等" : ""}`)
 
   const clip = { x: CLIP_X, y: 0, width: CLIP_W, height: dom.height }

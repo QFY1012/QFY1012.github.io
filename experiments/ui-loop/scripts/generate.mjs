@@ -116,6 +116,8 @@ async function generate(name) {
   fs.rmSync(ws, { recursive: true, force: true })
   fs.mkdirSync(ws, { recursive: true })
   fs.copyFileSync(path.join(DATA, `${name}.json`), path.join(ws, "data.json"))
+  // Images the data refers to as assets/<file>.
+  if (fs.existsSync(path.join(DATA, name))) fs.cpSync(path.join(DATA, name), path.join(ws, "assets"), { recursive: true })
   // Edit mode: start from the base run's page and its screenshots.
   const baseWs = BASE ? path.join(ROOT, "traces", BASE, name) : null
   if (baseWs) for (const f of fs.readdirSync(baseWs)) if (f === "Page.tsx" || f === "checks.json" || f === "tiles.json" || f.endsWith(".png")) fs.copyFileSync(path.join(baseWs, f), path.join(ws, f))

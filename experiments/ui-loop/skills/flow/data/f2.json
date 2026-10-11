@@ -56,7 +56,8 @@
      "content": "菜品、满减进度条",
      "action": "去结算",
      "inputs": 0,
-     "note": "满减差额只在进度条末端用小字显示"
+     "note": "满减差额只在进度条末端用小字显示",
+     "image": "assets/p1-01.png"
     },
     {
      "no": 2,
@@ -64,7 +65,8 @@
      "content": "地址、送达时间、金额明细",
      "action": "选择优惠券",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-02.png"
     },
     {
      "no": 3,
@@ -72,7 +74,8 @@
      "content": "可用券列表,默认选第一张",
      "action": "选券并返回",
      "inputs": 0,
-     "note": "默认券不是最优券"
+     "note": "默认券不是最优券",
+     "image": "assets/p1-03.png"
     },
     {
      "no": 4,
@@ -80,7 +83,8 @@
      "content": "支付方式列表,可再次改券",
      "action": "支付",
      "inputs": 0,
-     "note": "支付页还能改券,打断支付"
+     "note": "支付页还能改券,打断支付",
+     "image": "assets/p1-04.png"
     },
     {
      "no": 5,
@@ -88,7 +92,8 @@
      "content": "预计送达时间",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-05.png"
     }
    ]
   },
@@ -103,7 +108,8 @@
      "content": "菜品、还差 X 元满减的提示",
      "action": "去结算",
      "inputs": 0,
-     "note": "差额提示在结算按钮上方"
+     "note": "差额提示在结算按钮上方",
+     "image": "assets/p2-01.png"
     },
     {
      "no": 2,
@@ -111,7 +117,8 @@
      "content": "地址、已选最优券、金额明细",
      "action": "提交订单",
      "inputs": 0,
-     "note": "最优券默认选中,可点开更换"
+     "note": "最优券默认选中,可点开更换",
+     "image": "assets/p2-02.png"
     },
     {
      "no": 3,
@@ -119,7 +126,8 @@
      "content": "支付方式列表",
      "action": "支付",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-03.png"
     },
     {
      "no": 4,
@@ -127,7 +135,8 @@
      "content": "预计送达时间、订单入口",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-04.png"
     }
    ]
   }
