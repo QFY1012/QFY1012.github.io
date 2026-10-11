@@ -19,31 +19,67 @@ import {
 
 const [pairsKpi, failKpi, confuseKpi, issuesKpi] = data.kpis
 
+const paletteName = new Map(
+  data.palette.map((p) => [p.hex.toUpperCase(), p.name])
+)
+
+const colorLabel = (hex: string) => {
+  const name = paletteName.get(hex.toUpperCase())
+  return name ? `${name} ${hex}` : hex
+}
+
+const confusionTone = (key: "红色盲" | "绿色盲" | "蓝色盲") =>
+  data.confusions
+    .filter((c) => c.affected.includes(key))
+    .map((c) => String(c[key]))
+
+const paletteColumns = [
+  { key: "name", label: "名称", span: 2 },
+  { key: "hex", label: "色值", span: 2 },
+  { key: "usage", label: "用途", span: 5 },
+]
+
 const confusionColumns = [
-  { key: "where", label: "颜色对", span: 2 },
+  { key: "where", label: "位置", span: 2 },
+  { key: "pair", label: "颜色对", span: 2 },
   { key: "normal", label: "正常", align: "right", span: 1 },
-  { key: "protan", label: "红色盲", align: "right", span: 1 },
-  { key: "deuter", label: "绿色盲", align: "right", span: 1, tone: ["10.2"] },
-  { key: "tritan", label: "蓝色盲", align: "right", span: 1 },
+  {
+    key: "protan",
+    label: "红色盲",
+    align: "right",
+    span: 1,
+    tone: confusionTone("红色盲"),
+  },
+  {
+    key: "deuter",
+    label: "绿色盲",
+    align: "right",
+    span: 1,
+    tone: confusionTone("绿色盲"),
+  },
+  {
+    key: "tritan",
+    label: "蓝色盲",
+    align: "right",
+    span: 1,
+    tone: confusionTone("蓝色盲"),
+  },
+  { key: "affected", label: "受影响", span: 1 },
 ]
 
 const confusionRows = data.confusions.map((c) => ({
   where: c.where,
+  pair: c.colors.map(colorLabel).join(" / "),
   normal: c.normal,
   protan: c["红色盲"],
   deuter: c["绿色盲"],
   tritan: c["蓝色盲"],
+  affected: c.affected.length > 0 ? c.affected.join("、") : "—",
 }))
-
-const paletteColumns = [
-  { key: "name", label: "名称", span: 3 },
-  { key: "hex", label: "色值", span: 2 },
-  { key: "usage", label: "用途", span: 4 },
-]
 
 const contrastColumns = [
   { key: "where", label: "位置", span: 3 },
-  { key: "fg", label: "前景色", span: 1 },
+  { key: "fg", label: "文字色", span: 1 },
   { key: "bg", label: "背景色", span: 1 },
   { key: "ratio", label: "对比度", align: "right", span: 1 },
   { key: "required", label: "要求", align: "right", span: 1 },
@@ -52,11 +88,29 @@ const contrastColumns = [
 
 const contrastRows = data.contrast.map((c) => ({
   where: c.where,
-  fg: c.fg,
-  bg: c.bg,
+  fg: colorLabel(c.fg),
+  bg: colorLabel(c.bg),
   ratio: c.ratio,
   required: c.required,
   result: c.pass ? "达标" : "不达标",
+}))
+
+const fixColumns = [
+  { key: "where", label: "位置", span: 2 },
+  { key: "from", label: "原色", span: 1 },
+  { key: "to", label: "建议色", span: 1 },
+  { key: "bg", label: "背景", span: 1 },
+  { key: "before", label: "修复前", align: "right", span: 2 },
+  { key: "after", label: "修复后", align: "right", span: 2 },
+]
+
+const fixRows = data.fixes.map((f) => ({
+  where: f.where,
+  from: colorLabel(f.from),
+  to: colorLabel(f.to),
+  bg: colorLabel(f.bg),
+  before: f.before,
+  after: f.after,
 }))
 
 const issueColumns = [
@@ -77,20 +131,9 @@ const issueRows = data.issues.map((i) => ({
   affects: i.affects.length > 0 ? i.affects.join("、") : "—",
 }))
 
-const fixColumns = [
-  { key: "where", label: "位置", span: 3 },
-  { key: "from", label: "原色", span: 2 },
-  { key: "to", label: "新色", span: 2 },
-  { key: "before", label: "修改前", align: "right", span: 1 },
-  { key: "after", label: "修改后", align: "right", span: 1 },
-]
-
 export default function Report() {
   return (
-    <Page
-      title={data.title}
-      meta={[data.target, data.date, data.standard]}
-    >
+    <Page title={data.title} meta={[data.target, data.date, data.standard]}>
       <Section title="结论" description="整体判定与一句话结论">
         <Group>
           <Text className="text-2xl leading-9 font-light">{data.verdict}</Text>
@@ -137,7 +180,7 @@ export default function Report() {
         </Grid>
       </Section>
 
-      <Section title="界面截图" description="原界面与三种色盲模拟">
+      <Section title="模拟视图" description="原界面与三种色觉模拟">
         <FigureStrip>
           {data.screens.map((s) => (
             <Figure key={s.view}>
@@ -148,9 +191,26 @@ export default function Report() {
         </FigureStrip>
       </Section>
 
-      <Section title="色差" description="ΔE 为 CIEDE2000,小于 12 视为难以区分">
+      <Section title="色板与检查" description="配色、混淆色、对比度与修复建议">
+        <Group>
+          <DataTable columns={paletteColumns} rows={data.palette} caption="配色" />
+          <DataTable
+            columns={confusionColumns}
+            rows={confusionRows}
+            caption="混淆色"
+          />
+          <DataTable
+            columns={contrastColumns}
+            rows={contrastRows}
+            caption="对比度"
+          />
+          <DataTable columns={fixColumns} rows={fixRows} caption="修复" />
+        </Group>
+      </Section>
+
+      <Section title="色觉类型" description="各色觉类型下的问题数">
         <Grid cols={9}>
-          <Block span={3} rows={2} title="按色觉类型的问题数">
+          <Block span={3} rows={1} title="按色觉类型的问题数">
             <ProgressList
               compact
               items={data.byType.map((t) => ({
@@ -161,22 +221,7 @@ export default function Report() {
               }))}
             />
           </Block>
-          <Block span={6} rows={2} title="颜色对的色差 ΔE">
-            <DataTable
-              columns={confusionColumns}
-              rows={confusionRows}
-              caption="受影响:绿色盲(上涨与下跌)"
-            />
-          </Block>
         </Grid>
-      </Section>
-
-      <Section title="配色" description="行情页当前使用的颜色与用途">
-        <DataTable columns={paletteColumns} rows={data.palette} />
-      </Section>
-
-      <Section title="对比度" description="正文文字需 4.5:1,大字号需 3:1">
-        <DataTable columns={contrastColumns} rows={contrastRows} />
       </Section>
 
       <Section title="问题清单" description="共 4 个问题,1 高、2 中、1 低">
@@ -195,11 +240,6 @@ export default function Report() {
             title: i.title,
             description: i.suggestion,
           }))}
-        />
-        <DataTable
-          columns={fixColumns}
-          rows={data.fixes}
-          caption="白底上的对比度:修改前 → 修改后"
         />
       </Section>
 

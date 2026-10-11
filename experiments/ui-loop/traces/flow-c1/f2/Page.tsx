@@ -30,14 +30,6 @@ const SHOTS: Record<string, string> = {
 }
 const shot = (file: string) => SHOTS[file] ?? file
 
-const chainColumns = [
-  { key: "no", label: "步骤", span: 1 },
-  { key: "screen", label: "页面", span: 2 },
-  { key: "content", label: "页面内容", span: 2 },
-  { key: "action", label: "操作", span: 2 },
-  { key: "note", label: "备注", span: 2 },
-]
-
 const productColumns = [
   { key: "name", label: "产品", span: 2 },
   { key: "steps", label: "下单步骤", span: 2, align: "right" as const },
@@ -99,10 +91,7 @@ export default function Report() {
         className="gap-12"
       >
         {data.chains.map((chain) => (
-          <Group
-            key={chain.product}
-            title={`${chain.product} ${chain.version} · ${chain.steps.length} 步`}
-          >
+          <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
             <FigureStrip>
               {chain.steps.map((step) => (
                 <Figure key={step.no}>
@@ -114,21 +103,12 @@ export default function Report() {
                     第 {step.no} 步 · {step.screen}
                   </FigureLabel>
                   <FigureText>
-                    {step.content} · {step.action}
+                    {step.content} · {step.action} · 输入 {step.inputs} 项
+                    {step.note ? ` · ${step.note}` : ""}
                   </FigureText>
                 </Figure>
               ))}
             </FigureStrip>
-            <DataTable
-              columns={chainColumns}
-              rows={chain.steps.map((step) => ({
-                no: step.no,
-                screen: step.screen,
-                content: step.content,
-                action: step.action,
-                note: step.note || "—",
-              }))}
-            />
           </Group>
         ))}
       </Section>

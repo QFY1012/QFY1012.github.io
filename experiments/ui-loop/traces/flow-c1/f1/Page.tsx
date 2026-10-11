@@ -83,37 +83,24 @@ export default function Report() {
         className="gap-12"
       >
         {data.chains.map((c) => (
-          <Group
-            key={c.product}
-            title={`${c.product} · ${c.version} · ${c.steps.length} 步`}
-          >
+          <Group key={c.product} title={`${c.product} · ${c.version}`}>
             <FigureStrip>
-              {c.steps.map((s) => (
-                <Figure key={s.no}>
-                  <FigureImage
-                    src={s.image}
-                    alt={`${c.product} 第 ${s.no} 步:${s.screen}`}
-                  />
-                  <FigureLabel>第 {s.no} 步 · {s.screen}</FigureLabel>
-                  <FigureText>
-                    {s.content} · {s.action} · 输入 {s.inputs} 项
-                  </FigureText>
-                </Figure>
-              ))}
+              {[...c.steps]
+                .sort((a, b) => a.no - b.no)
+                .map((s) => (
+                  <Figure key={s.no}>
+                    <FigureImage
+                      src={s.image}
+                      alt={`${c.product} 第 ${s.no} 步:${s.screen}`}
+                    />
+                    <FigureLabel>第 {s.no} 步 · {s.screen}</FigureLabel>
+                    <FigureText>
+                      {s.content} · {s.action} · 输入 {s.inputs} 项
+                      {s.note ? ` · ${s.note}` : ""}
+                    </FigureText>
+                  </Figure>
+                ))}
             </FigureStrip>
-            <DataTable
-              columns={[
-                { key: "no", label: "步", span: 1, align: "right" },
-                { key: "screen", label: "屏幕", span: 2 },
-                { key: "flow", label: "内容与操作", span: 3 },
-                { key: "inputs", label: "输入项", span: 1, align: "right", bar: true },
-                { key: "note", label: "备注", span: 2 },
-              ]}
-              rows={c.steps.map((s) => ({
-                ...s,
-                flow: `${s.content} → ${s.action}`,
-              }))}
-            />
           </Group>
         ))}
       </Section>

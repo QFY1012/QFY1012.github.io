@@ -85,10 +85,7 @@ export default function Report() {
 
       <Section title="流程明细" description="按屏记录每一步的内容、操作和备注" className="gap-12">
         {data.chains.map((chain) => (
-          <Group
-            key={chain.product}
-            title={`${chain.product} ${chain.version} · ${chain.steps.length} 步 · ${chain.verdict}`}
-          >
+          <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
             <FigureStrip>
               {chain.steps.map((s) => (
                 <Figure key={s.no}>
@@ -100,10 +97,9 @@ export default function Report() {
                     第 {s.no} 步 · {s.screen}
                   </FigureLabel>
                   <FigureText>
-                    {s.content} · {s.action}
-                    {s.inputs > 0 ? ` · 输入 ${s.inputs} 项` : ""}
+                    {s.content} · {s.action} · 输入 {s.inputs} 项
+                    {s.note ? ` · ${s.note}` : ""}
                   </FigureText>
-                  {s.note ? <FigureText>{s.note}</FigureText> : null}
                 </Figure>
               ))}
             </FigureStrip>

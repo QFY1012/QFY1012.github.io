@@ -1,17 +1,9 @@
 import data from "./data.json"
-import { Page, Section, Group, Grid, Text, Stat, DataTable, List, KV, FigureStrip, Figure, FigureImage, FigureLabel, FigureText } from "@/components/report"
+import { Page, Section, Group, Grid, Text, Stat, List, KV, FigureStrip, Figure, FigureImage, FigureLabel, FigureText } from "@/components/report"
 
 // 截图由 Vite 打包,这里只把 data.json 里的相对路径换成构建后的 URL。
 const shots = import.meta.glob("./assets/*.png", { eager: true, query: "?url", import: "default" }) as Record<string, string>
 const shotSrc = (path: string) => shots[`./${path}`] ?? `./${path}`
-
-const chainColumns = [
-  { key: "no", label: "步", span: 1 },
-  { key: "screen", label: "页面", span: 2 },
-  { key: "content", label: "内容", span: 2 },
-  { key: "action", label: "操作", span: 2 },
-  { key: "note", label: "备注", span: 2 },
-]
 
 export default function Report() {
   const { title, task, scope, date, summary, kpis, products, chains, issues, suggestions } = data
@@ -38,33 +30,15 @@ export default function Report() {
         </Grid>
       </Section>
 
-      <Section title="流程明细" description="从文件列表到发送的完整路径" className="gap-12">
+      <Section title="明细" description="从文件列表到发送的完整路径,每一步的实际界面" className="gap-12">
         {chains.map((c) => (
-          <Group key={c.product} title={`${c.product} ${c.version}`}>
-            <DataTable
-              columns={chainColumns}
-              rows={c.steps.map((s) => ({
-                no: String(s.no),
-                screen: s.screen,
-                content: s.content,
-                action: s.action,
-                note: s.note || "—",
-              }))}
-              caption={`结论：${c.verdict}`}
-            />
-          </Group>
-        ))}
-      </Section>
-
-      <Section title="界面截图" description="每一步的实际界面" className="gap-12">
-        {chains.map((c) => (
-          <Group key={c.product} title={`${c.product} ${c.version}`}>
+          <Group key={c.product} title={`${c.product} · ${c.version}`}>
             <FigureStrip>
               {c.steps.map((s) => (
                 <Figure key={s.no}>
                   <FigureImage src={shotSrc(s.image)} alt={`${c.product} 第 ${s.no} 步:${s.screen}`} />
                   <FigureLabel>第 {s.no} 步 · {s.screen}</FigureLabel>
-                  <FigureText>{s.content} · {s.action}</FigureText>
+                  <FigureText>{s.content} · {s.action} · 输入 {s.inputs} 项{s.note ? ` · ${s.note}` : ""}</FigureText>
                 </Figure>
               ))}
             </FigureStrip>

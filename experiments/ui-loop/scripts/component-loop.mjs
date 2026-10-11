@@ -54,7 +54,7 @@ export const SYSTEM = (requests, rejected) => `你给报告页面的组件库补
 - shadcn/ui/:shadcn/ui 组件源码,只读参考。能用的有:${usable}。
 
 规则:
-1. 只新增,已有的组件和用法不改。
+1. 只改需要的地方:可以新增组件,也可以修改已有组件,但和需求无关的地方不动。改了已有组件,在结束时的说明里写清楚改了哪个、为什么。
 2. 写法和 shadcn 一样:几个可组合的小部件,每个是函数组件,带 data-slot,接受 className 和原生属性,用 cn() 合并。不加切换样式或结构的配置 props。
 3. 先用 shadcn 的部件:复制到 app/src/components/ui/ 再按规范改样式;没有合适的才用 Radix 原语(import { X } from "radix-ui")。
 4. 视觉按下面的规范,和现有组件一致:正文 text-sm leading-6;次要文字 text-xs 或 text-sm 加 text-muted-foreground;间距 gap-2、gap-3,组间 gap-6;颜色、字号只用 token 类名;不加卡片、底色和阴影。
@@ -87,8 +87,9 @@ function collect() {
 const diff = (a, b) => spawnSync("git", ["diff", "--no-index", "--no-color", a, b], { encoding: "utf8" }).stdout.replaceAll(path.dirname(a), "").replaceAll(path.dirname(b), "")
 const libDiff = (ws) => diff(path.join(ROOT, "app", "src"), path.join(ws, "app", "src")) + diff(path.join(ROOT, "components.md"), path.join(ws, "components.md"))
 
-// Program checks on the component code: existing code and tokens unchanged; every new line
-// (files copied from shadcn included) uses tokens and the type scale, no shadows or backgrounds.
+// Program checks on the component code: tokens unchanged; every new or changed line (files copied
+// from shadcn included) uses tokens and the type scale, no shadows or backgrounds. Existing
+// components may be changed; the reviewer sees how in the patch.
 function lintComponents(ws) {
   const out = []
   const src = path.join(ws, "app", "src")
@@ -99,9 +100,7 @@ function lintComponents(ws) {
     const old = path.join(ROOT, "app", "src", rel)
     const before = fs.existsSync(old) ? read(old).split("\n") : []
     const now = read(f).split("\n")
-    const nowSet = new Set(now), beforeSet = new Set(before)
-    const removed = before.filter((l) => l.trim() && !nowSet.has(l))
-    if (removed.length) out.push({ file: rel, msg: `删改了 ${removed.length} 行已有代码(第一处:${removed[0].trim().slice(0, 80)});已有组件不能改,只能新增` })
+    const beforeSet = new Set(before)
     now.forEach((line, i) => {
       if (beforeSet.has(line)) return
       const add = (msg) => out.push({ file: rel, line: i + 1, msg })

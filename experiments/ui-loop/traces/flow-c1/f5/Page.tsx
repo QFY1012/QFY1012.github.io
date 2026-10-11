@@ -29,13 +29,13 @@ export default function Report() {
 
       <Section title="流程" description={`从进入退货入口到提交成功,共 ${totalSteps} 张截图`} className="gap-12">
         {data.chains.map((c) => (
-          <Group key={c.product} title={`${c.product} ${c.version} · ${c.steps.length} 步`}>
+          <Group key={c.product} title={`${c.product} · ${c.version}`}>
             <FigureStrip>
               {c.steps.map((s) => (
                 <Figure key={s.no}>
                   <FigureImage src={s.image} alt={`${c.product} 第 ${s.no} 步:${s.screen}`} />
                   <FigureLabel>第 {s.no} 步 · {s.screen}</FigureLabel>
-                  <FigureText>{s.note ? `${s.content} · ${s.action} · ${s.note}` : `${s.content} · ${s.action}`}</FigureText>
+                  <FigureText>{`${s.content} · ${s.action} · 输入 ${s.inputs} 项${s.note ? ` · ${s.note}` : ""}`}</FigureText>
                 </Figure>
               ))}
             </FigureStrip>

@@ -4,17 +4,6 @@ import { Page, Section, Grid, Group, Text, Stat, DataTable, List, KV, FigureStri
 const shots = import.meta.glob("./assets/*.png", { eager: true, import: "default" }) as Record<string, string>
 const shot = (file: string) => shots[`./${file}`]
 
-const chainRows = data.chains.flatMap((chain) =>
-  chain.steps.map((step) => ({
-    product: chain.product,
-    no: step.no,
-    screen: step.screen,
-    content: step.content,
-    action: step.action,
-    note: step.note,
-  })),
-)
-
 export default function Report() {
   return (
     <Page title={data.title} meta={[data.scope, data.date]}>
@@ -73,29 +62,17 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="流程明细" description="四个产品的逐屏步骤与备注">
-        <DataTable
-          columns={[
-            { key: "product", label: "产品", span: 1 },
-            { key: "no", label: "步骤", span: 1, align: "right" },
-            { key: "screen", label: "页面", span: 2 },
-            { key: "content", label: "内容", span: 2 },
-            { key: "action", label: "操作", span: 1 },
-            { key: "note", label: "备注", span: 2 },
-          ]}
-          rows={chainRows}
-        />
-      </Section>
-
-      <Section title="步骤截图" description="按产品顺序排列的逐屏截图" className="gap-12">
+      <Section title="流程明细" description="四个产品的逐屏步骤、备注与输入项" className="gap-12">
         {data.chains.map((chain) => (
-          <Group key={chain.product} title={`${chain.product} ${chain.version} · ${chain.verdict}`}>
+          <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
             <FigureStrip>
               {chain.steps.map((step) => (
                 <Figure key={step.no}>
                   <FigureImage src={shot(step.image)} alt={`${chain.product} 第 ${step.no} 步:${step.screen}`} />
                   <FigureLabel>第 {step.no} 步 · {step.screen}</FigureLabel>
-                  <FigureText>{step.content} · {step.action} · 输入 {step.inputs} 项</FigureText>
+                  <FigureText>
+                    {step.content} · {step.action} · 输入 {step.inputs} 项{step.note ? ` · ${step.note}` : ""}
+                  </FigureText>
                 </Figure>
               ))}
             </FigureStrip>
