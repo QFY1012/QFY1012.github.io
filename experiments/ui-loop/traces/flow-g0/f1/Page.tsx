@@ -94,8 +94,7 @@ export default function Report() {
           numbered
           items={data.patterns.map((pattern) => ({
             title: pattern.name,
-            description: pattern.comment,
-            meta: pattern.products.join("、"),
+            description: `${pattern.products.join("、")} · ${pattern.comment}`,
           }))}
         />
       </Section>

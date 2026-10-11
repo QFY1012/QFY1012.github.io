@@ -1,0 +1,26 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 349,
+ "usage": {
+  "input": 109982,
+  "output": 33781
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面完成,程序检查(构建、组件库、统一刻度、数据忠实、元素越界)全部通过。\n\n页面结构:页头为「色觉无障碍分析 · 订单状态页」;依次是 结论(判定 + 摘要的 24px 结论句)、核心指标(4 个 `Stat` 一行底部对齐,不达标项标红)、色觉混淆(按色盲类型的问题数 3 个 `Stat` + 配送进度条两色 ΔE 对照表,难以区分的「绿色盲」标红)、对比度(3 列宽的 `ProgressList` 得分 + 6 行逐项检查表,不达标行标红)、色板、问题清单(明细表)、下一步(`List` 修改建议 6 列 + `KV` 已验证修复 3 列)、背景信息(`KV`)。"
+}
