@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 350,
+ "usage": {
+  "input": 76847,
+  "output": 23446
+ },
+ "stop": "stop",
+ "summary": "页面已通过程序检查（构建、组件库、统一刻度、数据忠实、元素越界全部通过），截图确认排版正常。\n\n**页面结构（`Page.tsx`，全部使用 `@/components/report` 组件，共 7 节，按 C3 顺序）**\n\n1. **页头** — `Page` 的 `meta`（企业网盘 / 2026 年 9 月）在左 3 列，`title`（交互流程挖掘 · 外链分享文件）在右 9 列。\n2. **结论** — `Text` 结论句字号（`text-2xl leading-9 font-light`），一句话判断占满 9 列。\n3. **核心指标** — `Grid cols={9} fields={false} items-baseline`，4 个 `Stat`（`captionBelow`）每个 `span={3}`，数字底部对齐；主指标「步骤最少(栈盘)」用 `size=\"lg\"`，其余普通大小。\n4. **产品对比** — `DataTable`（产品 span2 / 步骤数 span2 右对齐 / 结论 span5，合计 9）。\n5. **交互链路** — `Section className=\"gap-12\"`（组间 48px），每款产品一个 `Group`（标题「云盒 · 5.3」等），内含 `FigureStrip`：每步一张 `FigureImage` + `FigureLabel`（第 N 步 · 屏名）+ `FigureText`（内容 · 操作 · 输入项 · 备注），截图可横向滚动。\n6. **问题** — `DataTable`（位置 span2 / 问题 span3 / 严重度 span1 右对齐、`tone: [\"高\"]` 只把「高」标红 / 证据 span3），下方 `caption` 写评定口径。\n7. **下一步** — `List columns={3} numbered`，两条建议（标题 + 说明 + 依据）。\n8. **背景信息** — `KV labelCols={2}`，含任务、范围、日期、对比产品数、分析截图数。\n\n**数据覆盖情况**：`title / task / scope / date / summary / kpis / products / chains（含 12 张截图）/ issues / suggestions` 全部呈现；各步骤的 `inputs` 均为 0，按原值写入 `FigureText`（「输入 0 项」）。没有缺失、无法用组件表达的数据。\n\n**唯一提示**：工作目录没有 `package.json`，我额外保留的 `index.html` 是上一轮误建的独立版本，与本次 `Page.tsx` 无关，可忽略。",
+ "checks": []
+}

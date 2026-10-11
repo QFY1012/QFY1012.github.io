@@ -1,0 +1,27 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 199,
+ "usage": {
+  "input": 26413,
+  "output": 11333
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查（构建、组件库、统一刻度、数据忠实、元素越界）全部通过。\n\n**页面结构**（节标题在左 3 列，内容在右 9 列）：\n\n1. **结论** — 一句话结论，24px 细体，占满 9 列\n2. **核心指标** — 4 个 `Stat`（对比产品 2 个、分析截图 9 张、步骤最少 4 步、发现问题 3 个），无主次，均用 48px 大数字，说明在数字下方\n3. **产品对比** — `DataTable`：产品 / 版本 / 步骤数（右对齐 + 细条）/ 链路判断\n4. **链路明细** — 每款产品一个 `Group`，用 `FigureStrip` 横向排开逐步截图，图下依次是步骤名、内容·操作·输入项、以及该步的备注\n5. **问题** — `DataTable`：编号 / 产品 / 步骤 / 问题 / 严重度（仅「高」标红）/ 证据\n6. **下一步** — `List`（三列并排、带序号），每条含建议与依据\n7. **背景** — `KV`（labelCols=2）：任务、范围、日期、版本\n\n数据中每步的 `inputs` 全为 0，我按图注格式保留了「输入 0 项」；没有组件库无法表达的数据。",
+ "checks": []
+}

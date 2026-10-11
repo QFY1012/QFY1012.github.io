@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>交互流程挖掘 · 外链分享文件</title>
+<style>
+  :root{
+    --bg:#f4f6fa;
+    --card:#ffffff;
+    --ink:#1a2233;
+    --ink-2:#4a5568;
+    --ink-3:#8b95a7;
+    --line:#e7ebf2;
+    --brand:#3b6ef6;
+    --brand-ink:#2b56cc;
+    --c-yunhe:#3b6ef6;
+    --c-zhanpan:#f5820b;
+    --c-fangzhou:#17a34a;
+    --sev-high:#e5484d;
+    --sev-mid:#e8930c;
+    --sev-low:#8b95a7;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(20,30,60,.04), 0 8px 24px -12px rgba(20,30,60,.18);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px 80px}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background:linear-gradient(135deg,#2f5fe8 0%,#3b6ef6 45%,#5b8bff 100%);
+    color:#fff;
+    padding:48px 0 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;
+    background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%);border-radius:50%;
+  }
+  header.hero .wrap{padding-bottom:0}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:600;letter-spacing:.04em;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
+    padding:5px 12px;border-radius:999px;margin-bottom:18px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:#9fe0ff}
+  h1.title{font-size:34px;line-height:1.25;margin:0 0 14px;font-weight:700;letter-spacing:-.01em}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:14px;color:rgba(255,255,255,.86)}
+  .hero-meta b{color:#fff;font-weight:600}
+  .hero-meta span{display:inline-flex;align-items:center;gap:6px}
+
+  /* ---------- Summary ---------- */
+  .summary{
+    margin-top:-26px;position:relative;z-index:2;
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:22px 24px;display:flex;gap:16px;border:1px solid var(--line);
+  }
+  .summary .bar{width:4px;border-radius:4px;background:linear-gradient(180deg,var(--brand),#7aa2ff);flex:0 0 auto}
+  .summary p{margin:0;color:var(--ink-2);font-size:15px}
+  .summary strong{color:var(--ink)}
+
+  /* ---------- Sections ---------- */
+  section{margin-top:44px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px}
+  .sec-head h2{
+    font-size:20px;margin:0;font-weight:700;letter-spacing:-.01em;
+    display:flex;align-items:center;gap:10px;
+  }
+  .sec-head h2::before{content:"";width:4px;height:18px;border-radius:3px;background:var(--brand)}
+  .sec-head .hint{font-size:13px;color:var(--ink-3)}
+
+  /* ---------- KPI ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .kpi{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brand);opacity:.85}
+  .kpi .num{font-size:30px;font-weight:750;letter-spacing:-.02em;color:var(--ink);line-height:1.1}
+  .kpi .num .unit{font-size:14px;font-weight:600;color:var(--ink-3);margin-left:3px}
+  .kpi .label{font-size:13px;color:var(--ink-3);margin-top:6px}
+
+  /* ---------- Products ---------- */
+  .products{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .product{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow);border-top:4px solid var(--pc,#ccc);
+  }
+  .product .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .product .name{font-size:17px;font-weight:700}
+  .product .ver{font-size:12px;color:var(--ink-3);background:#f1f4f9;border-radius:999px;padding:2px 9px}
+  .product .steps-big{display:flex;align-items:baseline;gap:6px;margin:14px 0 4px}
+  .product .steps-big .n{font-size:28px;font-weight:750;color:var(--pc)}
+  .product .steps-big .u{font-size:13px;color:var(--ink-3)}
+  .product .verdict{font-size:13.5px;color:var(--ink-2);margin-top:8px;padding-top:12px;border-top:1px dashed var(--line)}
+
+  /* ---------- Chains ---------- */
+  .chain{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 24px;margin-bottom:20px;
+  }
+  .chain-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:6px}
+  .chain-head .pname{font-size:18px;font-weight:750;display:flex;align-items:center;gap:10px}
+  .chain-head .pname .swatch{width:12px;height:12px;border-radius:4px;background:var(--pc)}
+  .chain-head .pver{font-size:12px;color:var(--ink-3);background:#f1f4f9;border-radius:999px;padding:2px 10px}
+  .chain-head .pverdict{font-size:13px;color:var(--ink-2);margin-left:auto;background:#f7f9fd;border:1px solid var(--line);padding:4px 12px;border-radius:999px}
+  .chain-head .pverdict::before{content:"结论 · ";color:var(--ink-3)}
+
+  .steps{margin-top:14px;position:relative}
+  .step{
+    display:grid;grid-template-columns:96px 40px 1fr;gap:16px;align-items:start;
+    padding:16px 0;border-top:1px solid var(--line);
+  }
+  .step:first-child{border-top:none;padding-top:8px}
+  .shot{
+    display:block;width:96px;border-radius:12px;border:1px solid var(--line);
+    background:#f8fafc;overflow:hidden;box-shadow:0 6px 16px -10px rgba(20,30,60,.35);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .shot:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 26px -12px rgba(20,30,60,.45)}
+  .shot img{display:block;width:100%;height:auto}
+  .rail{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+  .badge{
+    width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+    background:var(--pc);color:#fff;font-weight:700;font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px -4px var(--pc);
+  }
+  .rail .line{flex:1 1 auto;width:2px;background:var(--line);border-radius:2px;min-height:14px}
+  .step:last-child .rail .line{background:transparent}
+  .step-body{min-width:0;padding-top:2px}
+  .step-body .screen{font-size:15px;font-weight:650;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .step-body .content{font-size:13.5px;color:var(--ink-2);margin-top:3px}
+  .step-body .action{
+    display:inline-flex;align-items:center;gap:6px;margin-top:9px;font-size:12.5px;font-weight:600;
+    color:var(--pc);background:color-mix(in srgb, var(--pc) 10%, #fff);
+    border:1px solid color-mix(in srgb, var(--pc) 22%, #fff);
+    padding:3px 10px;border-radius:8px;
+  }
+  .step-body .note{
+    font-size:12.5px;color:#9a6b12;background:#fff8ec;border:1px solid #f6e3c4;
+    border-radius:8px;padding:6px 10px;margin-top:9px;display:inline-block;
+  }
+  .step-body .note.flag{color:#b23b3f;background:#fdf0f0;border-color:#f6d3d4}
+  .tag-issue{
+    font-size:11px;font-weight:700;color:#fff;background:var(--sev-high);
+    border-radius:6px;padding:1px 7px;letter-spacing:.02em;
+  }
+  .tag-issue.mid{background:var(--sev-mid)}
+  .tag-issue.low{background:var(--sev-low)}
+
+  /* ---------- Issues ---------- */
+  .issues{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .issue{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 18px 16px;box-shadow:var(--shadow);position:relative;
+  }
+  .issue .ihead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .issue .iid{font-size:12px;font-weight:700;color:var(--ink-3);letter-spacing:.04em}
+  .sev{font-size:11.5px;font-weight:700;color:#fff;border-radius:999px;padding:2px 10px}
+  .sev.high{background:var(--sev-high)}
+  .sev.mid{background:var(--sev-mid)}
+  .sev.low{background:var(--sev-low)}
+  .issue .ititle{font-size:15px;font-weight:650;line-height:1.4}
+  .issue .imeta{font-size:12.5px;color:var(--ink-3);margin-top:6px}
+  .issue .ievi{
+    font-size:13px;color:var(--ink-2);margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);
+  }
+  .issue .ievi::before{content:"证据 · ";color:var(--ink-3);font-weight:600}
+
+  /* ---------- Suggestions ---------- */
+  .sugg{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .sug{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow);display:flex;gap:14px;
+  }
+  .sug .ico{
+    width:38px;height:38px;flex:0 0 auto;border-radius:11px;
+    background:linear-gradient(135deg,#3b6ef6,#7aa2ff);color:#fff;font-weight:700;
+    display:flex;align-items:center;justify-content:center;font-size:14px;
+  }
+  .sug h3{margin:0;font-size:15.5px;font-weight:700}
+  .sug .detail{font-size:13.5px;color:var(--ink-2);margin-top:5px}
+  .basis{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font-size:11.5px;color:var(--brand-ink);background:#eef3ff;border:1px solid #dbe5ff;border-radius:999px;padding:2px 10px}
+
+  footer{margin-top:56px;text-align:center;font-size:12.5px;color:var(--ink-3)}
+
+  @media (max-width:900px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .products,.issues,.sugg{grid-template-columns:1fr}
+    .chain-head .pverdict{margin-left:0}
+  }
+  @media (max-width:560px){
+    h1.title{font-size:26px}
+    .kpis{grid-template-columns:1fr}
+    .step{grid-template-columns:80px 32px 1fr;gap:12px}
+    .shot{width:80px}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>交互流程挖掘报告</span>
+    <h1 class="title" id="r-title">—</h1>
+    <div class="hero-meta">
+      <span>任务：<b id="r-task">—</b></span>
+      <span>范围：<b id="r-scope">—</b></span>
+      <span>日期：<b id="r-date">—</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="summary">
+    <div class="bar"></div>
+    <p id="r-summary">—</p>
+  </div>
+
+  <section>
+    <div class="sec-head"><h2>关键指标</h2></div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>产品概览</h2><span class="hint">按完成分享所需的步数对比</span></div>
+    <div class="products" id="products"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>交互链路</h2><span class="hint">逐屏拆解从文件到发送的完整流程</span></div>
+    <div id="chains"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>问题清单</h2><span class="hint">共 3 个待改进点</span></div>
+    <div class="issues" id="issues"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>改进建议</h2><span class="hint">基于对比与问题推导</span></div>
+    <div class="sugg" id="sugg"></div>
+  </section>
+
+  <footer>数据来源：data.json · 交互流程挖掘 · 外链分享文件</footer>
+</div>
+
+<script type="application/json" id="report-data">
+{
+ "title": "交互流程挖掘 · 外链分享文件",
+ "task": "企业网盘生成外链并发给同事",
+ "scope": "3 款企业网盘,2026 年 9 月版本",
+ "date": "2026-09-16",
+ "summary": "三款网盘的分享都在 4 步左右完成。差别在权限设置:云盒把权限和有效期放在一屏,改有效期会重置权限;栈盘和方舟分开处理,默认值也更合理。",
+ "kpis": [
+  { "key": "products", "label": "对比产品", "value": 3, "unit": "个" },
+  { "key": "screens", "label": "分析截图", "value": 12, "unit": "张" },
+  { "key": "fewest", "label": "步骤最少(栈盘)", "value": 3, "unit": "步" },
+  { "key": "issues", "label": "发现问题", "value": 3, "unit": "个" }
+ ],
+ "products": [
+  { "name": "云盒", "steps": 4, "inputs": 0, "verdict": "权限与有效期互相影响" },
+  { "name": "栈盘", "steps": 3, "inputs": 0, "verdict": "默认值合理,一步到位" },
+  { "name": "方舟", "steps": 5, "inputs": 0, "verdict": "设置项多,但分组清楚" }
+ ],
+ "chains": [
+  { "product": "云盒", "version": "5.3", "verdict": "权限与有效期互相影响",
+    "steps": [
+      { "no": 1, "screen": "文件列表", "content": "文件、更多按钮", "action": "更多 → 分享", "inputs": 0, "note": "分享藏在更多菜单里", "image": "assets/p1-01.png" },
+      { "no": 2, "screen": "分享设置", "content": "权限、有效期、密码", "action": "生成链接", "inputs": 0, "note": "改有效期会把权限重置为可编辑", "image": "assets/p1-02.png" },
+      { "no": 3, "screen": "复制链接", "content": "链接和复制按钮", "action": "复制", "inputs": 0, "note": "复制后没有提示", "image": "assets/p1-03.png" },
+      { "no": 4, "screen": "选择联系人", "content": "最近联系人", "action": "发送", "inputs": 0, "note": "", "image": "assets/p1-04.png" }
+    ] },
+  { "product": "栈盘", "version": "3.8", "verdict": "默认值合理,一步到位",
+    "steps": [
+      { "no": 1, "screen": "文件列表", "content": "每行有分享按钮", "action": "分享", "inputs": 0, "note": "", "image": "assets/p2-01.png" },
+      { "no": 2, "screen": "分享面板", "content": "默认仅查看、7 天有效,下方可展开修改", "action": "复制链接", "inputs": 0, "note": "默认值覆盖大多数情况", "image": "assets/p2-02.png" },
+      { "no": 3, "screen": "选择联系人", "content": "最近联系人和群", "action": "发送", "inputs": 0, "note": "", "image": "assets/p2-03.png" }
+    ] },
+  { "product": "方舟", "version": "2.1", "verdict": "设置项多,但分组清楚",
+    "steps": [
+      { "no": 1, "screen": "文件列表", "content": "右键菜单", "action": "分享", "inputs": 0, "note": "", "image": "assets/p3-01.png" },
+      { "no": 2, "screen": "分享对象", "content": "公司内 / 外部 两个选项", "action": "选择外部", "inputs": 0, "note": "", "image": "assets/p3-02.png" },
+      { "no": 3, "screen": "链接设置", "content": "权限、有效期、密码、下载次数,分两组", "action": "生成", "inputs": 0, "note": "高级设置默认收起", "image": "assets/p3-03.png" },
+      { "no": 4, "screen": "复制链接", "content": "链接和已复制提示", "action": "复制", "inputs": 0, "note": "", "image": "assets/p3-04.png" },
+      { "no": 5, "screen": "选择联系人", "content": "通讯录搜索", "action": "发送", "inputs": 0, "note": "", "image": "assets/p3-05.png" }
+    ] }
+ ],
+ "issues": [
+  { "id": "P1", "product": "云盒", "step": 2, "title": "改有效期会重置权限", "severity": "高", "evidence": "用户以为是仅查看,实际变成可编辑" },
+  { "id": "P2", "product": "云盒", "step": 1, "title": "分享入口藏在更多菜单", "severity": "中", "evidence": "需要两次点击才能看到" },
+  { "id": "P3", "product": "云盒", "step": 3, "title": "复制成功没有提示", "severity": "低", "evidence": "用户会重复点击" }
+ ],
+ "suggestions": [
+  { "id": "A1", "title": "权限和有效期各自独立", "detail": "修改其中一项不影响另一项", "basis": ["栈盘第 2 步", "P1"] },
+  { "id": "A2", "title": "给出安全的默认值", "detail": "默认仅查看、7 天有效,高级设置收起", "basis": ["栈盘第 2 步", "方舟第 3 步"] }
+ ]
+}
+</script>
+
+<script>
+(function () {
+  const DATA = JSON.parse(document.getElementById('report-data').textContent);
+
+  const COLOR = { '云盒': '#3b6ef6', '栈盘': '#f5820b', '方舟': '#17a34a' };
+  const SEV = { '高': 'high', '中': 'mid', '低': 'low' };
+  const esc = (s) => String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Header
+  document.getElementById('r-title').textContent = DATA.title;
+  document.getElementById('r-task').textContent = DATA.task;
+  document.getElementById('r-scope').textContent = DATA.scope;
+  document.getElementById('r-date').textContent = DATA.date;
+  document.getElementById('r-summary').innerHTML = '<strong>摘要：</strong>' + esc(DATA.summary);
+
+  // KPI
+  document.getElementById('kpis').innerHTML = DATA.kpis.map(k => `
+    <div class="kpi">
+      <div class="num">${esc(k.value)}<span class="unit">${esc(k.unit)}</span></div>
+      <div class="label">${esc(k.label)}</div>
+    </div>`).join('');
+
+  // Products
+  const minSteps = Math.min.apply(null, DATA.products.map(p => p.steps));
+  document.getElementById('products').innerHTML = DATA.products.map(p => `
+    <div class="product" style="--pc:${COLOR[p.name] || '#3b6ef6'}">
+      <div class="top">
+        <div class="name">${esc(p.name)}</div>
+        <div class="ver">${p.steps === minSteps ? '★ 最少步骤' : '对比对象'}</div>
+      </div>
+      <div class="steps-big"><span class="n">${esc(p.steps)}</span><span class="u">步完成分享</span></div>
+      <div class="verdict">${esc(p.verdict)}</div>
+    </div>`).join('');
+
+  // Chains
+  const issueIndex = {};
+  DATA.issues.forEach(i => { issueIndex[i.product + '#' + i.step] = i; });
+
+  document.getElementById('chains').innerHTML = DATA.chains.map(ch => {
+    const pc = COLOR[ch.product] || '#3b6ef6';
+    const steps = ch.steps.map(s => {
+      const iss = issueIndex[ch.product + '#' + s.no];
+      const tag = iss
+        ? `<span class="tag-issue ${SEV[iss.severity] || ''}">${esc(iss.severity)} · ${esc(iss.id)}</span>`
+        : '';
+      const note = s.note
+        ? `<div class="note ${iss ? 'flag' : ''}">${iss ? '⚠ ' : ''}${esc(s.note)}</div>`
+        : '';
+      return `
+      <div class="step">
+        <a class="shot" href="${esc(s.image)}" target="_blank" rel="noopener" title="点击查看大图">
+          <img src="${esc(s.image)}" alt="${esc(ch.product)} 第 ${s.no} 步：${esc(s.screen)}" loading="lazy" />
+        </a>
+        <div class="rail"><div class="badge">${esc(s.no)}</div><div class="line"></div></div>
+        <div class="step-body">
+          <div class="screen">${esc(s.screen)} ${tag}</div>
+          <div class="content">${esc(s.content)}</div>
+          <div class="action">▸ ${esc(s.action)}</div>
+          ${note}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="chain" style="--pc:${pc}">
+      <div class="chain-head">
+        <div class="pname"><span class="swatch"></span>${esc(ch.product)}</div>
+        <span class="pver">v${esc(ch.version)} · ${ch.steps.length} 步</span>
+        <span class="pverdict">${esc(ch.verdict)}</span>
+      </div>
+      <div class="steps">${steps}</div>
+    </div>`;
+  }).join('');
+
+  // Issues
+  document.getElementById('issues').innerHTML = DATA.issues.map(i => `
+    <div class="issue">
+      <div class="ihead">
+        <span class="iid">${esc(i.id)}</span>
+        <span class="sev ${SEV[i.severity] || ''}">${esc(i.severity)}</span>
+      </div>
+      <div class="ititle">${esc(i.title)}</div>
+      <div class="imeta">${esc(i.product)} · 第 ${esc(i.step)} 步</div>
+      <div class="ievi">${esc(i.evidence)}</div>
+    </div>`).join('');
+
+  // Suggestions
+  document.getElementById('sugg').innerHTML = DATA.suggestions.map(s => `
+    <div class="sug">
+      <div class="ico">${esc(s.id)}</div>
+      <div>
+        <h3>${esc(s.title)}</h3>
+        <div class="detail">${esc(s.detail)}</div>
+        <div class="basis">${s.basis.map(b => `<span class="chip">${esc(b)}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+})();
+</script>
+</body>
+</html>

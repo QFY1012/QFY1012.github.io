@@ -1,0 +1,27 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 1039,
+ "usage": {
+  "input": 452474,
+  "output": 93624
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查(构建、组件库、统一刻度、数据忠实、元素越界)全部通过。\n\n**页面结构**(`Page.tsx`,8 节,节标题在左 3 列、内容在右 9 列):\n\n1. **结论** — 24px 细体结论句(verdict + summary);下方「色觉模拟」用 `FigureStrip` 横排原界面与红色盲/绿色盲/蓝色盲四张截图(可横向滚动)。\n2. **核心指标** — `Grid cols={9} fields={false}` 一行 4 个 `Stat`(主指标「问题总数」`size=\"lg\"`、其余普通大小,数字底部对齐)。\n3. **系列色** — 6 列 `Block`(8 个系列色的名称/色值/用途 `DataTable`)+ 3 列 `Block`(`ProgressList compact` 显示各色盲类型的问题数),C4 的 3+6 并排。\n4. **混淆色** — 全宽 `DataTable`,列 span 3/2/1/1/1/1 = 9,列出各颜色对在正常与三种色盲下的 CIEDE2000 ΔE;受影响类型(ΔE<12)的数值用 `tone` 标红,表下 `caption` 说明口径。\n5. **对比度** — 全宽 `DataTable`(位置/前景/背景/对比度/要求/结果),「不达标」用 `tone` 标红。\n6. **问题** — 全宽 `DataTable`(问题/位置·类型/严重/影响),「高」用 `tone` 标红。\n7. **下一步** — 两个 `Group`:颜色调整 `DataTable`(原色→改为,改前/改后)+ 按问题处理 `List columns={3} numbered`(6 条建议)。\n8. **背景信息** — `KV labelCols={2}`(分析对象、日期、判定标准、分析方法)。\n\n**组件库缺什么**:没有能显示颜色色块的组件。因此 `palette` 的 8 个系列色和 `confusions` 里成对的颜色只能以十六进制文本呈现(无法显示实际色块);`confusions` 的 `affected` 字段受列宽限制,改用受影响类型对应 ΔE 值的红色标注来表达。其余数据均按规范用现有组件呈现。",
+ "checks": []
+}

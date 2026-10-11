@@ -1,0 +1,27 @@
+{
+ "case": "c6",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 806,
+ "usage": {
+  "input": 265005,
+  "output": 48103
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查全部通过。\n\n**结构**：页头（产品+周期/标题）→ 结论（24px 判断句）→ 核心指标（4 个 `Stat`，主指标「对比度不达标 9 组」用 `size=\"lg\"` 并红字注明阈值）→ 模拟视图（`Block` + `FigureStrip` 原界面与三种色觉模拟）→ 类型分布（3 个分群 `Stat`）→ 对比度（`DataTable`，结果列 `tone` 标红「不达标」）→ 色对混淆（`DataTable`，ΔE 四列 + 受影响）→ 问题明细（`DataTable`，严重度「高」标红，含类型·位置、影响、建议）→ 背景信息（`KV`，产品/日期/标准/方法）。\n\n**需要说明的缺口**：组件库没有「色块/色板」组件，9 种课程类别颜色只能以十六进制文本呈现在「对比度」表的「底色」列（实际颜色由「模拟视图」的四张截图呈现）；另外 `FigureStrip` 按设计横向滚动，4 张 800×560 截图一行内不能同时看全，需横向滚动查看。",
+ "checks": []
+}

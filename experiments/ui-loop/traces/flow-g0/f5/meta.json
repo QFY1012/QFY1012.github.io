@@ -1,0 +1,27 @@
+{
+ "case": "f5",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 440,
+ "usage": {
+  "input": 55556,
+  "output": 19425
+ },
+ "stop": "stop",
+ "summary": "检查通过，页面也符合规范。已生成的页面结构如下：\n\n**页头**：meta（任务 / 范围 / 日期，左 3 列）+ 标题「交互流程挖掘 · 申请退货」（右 9 列）。\n\n**8 节**（节名在左 3 列，内容在右 9 列）：\n1. **结论** — summary 用 24px 细体结论句占满 9 列。\n2. **核心指标** — 4 个 `Stat`（一行 3 个，第 4 个换行），主指标「步骤最少 5 步」用 `size=\"lg\"`。\n3. **分群对比** — 三款 App 各一个普通 `Stat`（`span={2}`，步骤数 + 输入项/结论注释）。\n4. **共同模式** — 3 列 `Block` 放 `ProgressList`（compact，覆盖产品数 /3），6 列 `Block` 放 `List`（做法说明），两块同 `rows={2}`。\n5. **链路明细** — 每个产品一个 `Group`（产品 · 版本），`FigureStrip` 横向排 5–7 张步骤截图，`FigureLabel` 步号+屏名、`FigureText` 内容·操作·输入项·备注；节内组间距 48px。\n6. **发现问题** — `DataTable`（编号/产品/步骤/问题/证据/严重度，列 span 合计 9），严重度列 `tone={[\"高\"]}` 只把「高」标红。\n7. **下一步** — 三条建议 `List` `columns={3}` `numbered`，说明含依据。\n8. **背景信息** — `KV` `labelCols={2}`（任务/范围/日期/产品版本）。\n\n没有缺组件的部分：数据里的时间趋势、图表刻度类内容本来就不存在（无 `TrendChart`/`BarChart` 可用数据），`suggestions.id`（A1–A3）与 `issues.id` 中未被正文引用的编号作为内部标识未单独展示，其余字段全部落到页面上。",
+ "checks": []
+}
