@@ -1,0 +1,19 @@
+{
+ "case": "survey",
+ "design": {
+  "version": "v0b",
+  "file": "designs/v0.md",
+  "sha": "cbcfb0f5"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 648,
+ "usage": {
+  "input": 63890,
+  "output": 29901
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": ""
+}

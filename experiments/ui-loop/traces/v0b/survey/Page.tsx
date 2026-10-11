@@ -1,10 +1,25 @@
 import data from "./data.json"
 import { Page, Section, Grid, Block, Text, Stat, DataTable, ProgressList, List, KV } from "@/components/report"
 
-const painsColumns = [
-  { key: "name", label: "不满项", span: 4 },
-  { key: "share", label: "提及占比（%）", align: "right" as const, span: 2, bar: true },
+const painsMax = Math.max(...data.pains.map((p) => p.share))
+
+const satisfactionColumns = [
+  { key: "name", label: "维度", span: 3 },
+  { key: "score", label: "得分", align: "right" as const, span: 2 },
+  {
+    key: "change",
+    label: "环比",
+    align: "right" as const,
+    span: 1,
+    tone: data.satisfaction.filter((s) => s.change.startsWith("−")).map((s) => s.change),
+  },
 ]
+
+const satisfactionRows = data.satisfaction.map((s) => ({
+  name: s.name,
+  score: s.score.toFixed(1),
+  change: s.change,
+}))
 
 export default function Report() {
   return (
@@ -55,21 +70,21 @@ export default function Report() {
         </Grid>
       </Section>
 
-      <Section title="分维度" description="满意度为 5 分制、括号内为环比；不满占比为多选题。">
+      <Section title="分维度" description="满意度为 5 分制、环比上次调研；不满占比为多选题。">
         <Grid cols={9}>
-          <Block span={3} rows={2} title="满意度得分（5 分制）">
+          <Block span={6} rows={2} title="满意度得分（5 分制）">
+            <DataTable columns={satisfactionColumns} rows={satisfactionRows} />
+          </Block>
+          <Block span={3} rows={2} title="不满占比">
             <ProgressList
               compact
-              items={data.satisfaction.map((s) => ({
-                label: s.name,
-                value: s.score,
-                max: 5,
-                display: `${s.score.toFixed(1)}（${s.change}）`,
+              items={data.pains.map((p) => ({
+                label: p.name,
+                value: p.share,
+                max: painsMax,
+                display: `${p.share}%`,
               }))}
             />
-          </Block>
-          <Block span={6} rows={2} title="不满占比">
-            <DataTable columns={painsColumns} rows={data.pains} />
           </Block>
         </Grid>
       </Section>
