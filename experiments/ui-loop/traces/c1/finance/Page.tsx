@@ -86,7 +86,6 @@ export default function Report() {
               xKey="label"
               series={[{ key: "revenue", label: "营业收入" }]}
               height="fill"
-              yTicks={[8000, 10000, 12000, 14000, 16000]}
               pointLabels="last"
             />
           </Block>
@@ -97,7 +96,6 @@ export default function Report() {
               series={[{ key: "cash", label: "经营现金净流入" }]}
               height="fill"
               zero
-              yTicks={[-1000, 0, 1000, 2000, 3000, 4000]}
               pointLabels="last"
             />
           </Block>
@@ -107,10 +105,10 @@ export default function Report() {
       <Section title="事业部" description="各事业部收入与预算（万元）、预算完成率、毛利率及同比（%）">
         <DataTable
           columns={[
-            { key: "name", label: "事业部", span: 2 },
-            { key: "revenue", label: "收入", align: "right", span: 2 },
-            { key: "budget", label: "预算", align: "right", span: 2 },
-            { key: "attain", label: "完成率", align: "right", span: 1, bar: true },
+            { key: "name", label: "事业部", span: 3 },
+            { key: "revenue", label: "收入", align: "right", span: 1 },
+            { key: "budget", label: "预算", align: "right", span: 1 },
+            { key: "attain", label: "完成率", align: "right", span: 2, bar: true },
             { key: "margin", label: "毛利率", align: "right", span: 1 },
             { key: "yoy", label: "同比", align: "right", span: 1 },
           ]}
@@ -121,10 +119,10 @@ export default function Report() {
       <Section title="费用结构" description="期间费用合计 3,140 万元，金额与预算单位：万元，销售费用超预算 8.4%">
         <DataTable
           columns={[
-            { key: "name", label: "费用项目", span: 2 },
-            { key: "value", label: "金额", align: "right", span: 2 },
-            { key: "budget", label: "预算", align: "right", span: 2 },
-            { key: "share", label: "占比", align: "right", span: 1, bar: true },
+            { key: "name", label: "费用项目", span: 3 },
+            { key: "value", label: "金额", align: "right", span: 1 },
+            { key: "budget", label: "预算", align: "right", span: 1 },
+            { key: "share", label: "占比", align: "right", span: 2, bar: true },
             { key: "attain", label: "完成率", align: "right", span: 2, bar: true },
           ]}
           rows={expenseRows}

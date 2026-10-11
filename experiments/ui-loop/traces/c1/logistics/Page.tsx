@@ -117,7 +117,7 @@ export default function Report() {
             { key: "orders", label: "单量", align: "right", span: 2, bar: true },
             { key: "ontime", label: "准时率", align: "right", span: 1 },
             { key: "hours", label: "时效", align: "right", span: 1 },
-            { key: "exceptions", label: "异常件", align: "right", span: 1 },
+            { key: "exceptions", label: "异常件", align: "right", span: 1, bar: true },
             { key: "change", label: "环比", align: "right", span: 2 },
           ]}
           rows={data.routes.map((r) => ({

@@ -101,8 +101,8 @@ export default function Report() {
           columns={[
             { key: "name", label: "团队", span: 2 },
             { key: "agents", label: "坐席", align: "right", span: 1 },
-            { key: "sessions", label: "会话量", align: "right", span: 1 },
-            { key: "fcr", label: "首次解决率", align: "right", span: 2, tone: ["68.2", "74.8"] },
+            { key: "sessions", label: "会话量", align: "right", span: 2, bar: true },
+            { key: "fcr", label: "首次解决率", align: "right", span: 1, tone: ["68.2", "74.8"] },
             { key: "firstResponse", label: "首响", align: "right", span: 1, tone: ["71"] },
             { key: "csat", label: "满意度", align: "right", span: 1 },
             { key: "qa", label: "质检", align: "right", span: 1, tone: ["84.6", "83.8"] },
@@ -110,7 +110,7 @@ export default function Report() {
           rows={data.teams.map((t) => ({
             name: t.name,
             agents: t.agents,
-            sessions: t.sessions.toLocaleString("en-US"),
+            sessions: t.sessions,
             fcr: t.fcr,
             firstResponse: t.firstResponse,
             csat: t.csat,
@@ -119,7 +119,7 @@ export default function Report() {
         />
       </Section>
 
-      <Section title="咨询类别" description="占比为会话构成,环比为与 8 月对比(百分点)">
+      <Section title="咨询类别" description="占比为会话构成(%),环比为与 8 月对比(百分点)">
         <Grid cols={9} fields={false}>
           <Block span={3} title="类别占比">
             <ProgressList

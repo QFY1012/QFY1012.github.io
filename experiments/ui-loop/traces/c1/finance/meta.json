@@ -1,0 +1,19 @@
+{
+ "case": "finance",
+ "design": {
+  "version": "c1",
+  "file": "designs/c1.md",
+  "sha": "81c0782d"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 629,
+ "usage": {
+  "input": 242647,
+  "output": 48188
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": ""
+}

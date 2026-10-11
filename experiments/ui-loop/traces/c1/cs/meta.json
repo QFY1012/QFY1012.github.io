@@ -1,0 +1,19 @@
+{
+ "case": "cs",
+ "design": {
+  "version": "c1",
+  "file": "designs/c1.md",
+  "sha": "81c0782d"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 533,
+ "usage": {
+  "input": 466298,
+  "output": 90864
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "The page is complete and all program checks pass. Here's the final structure:\n\n**页面结构**（9 节，节标题挂左侧 3 列、内容在右侧 9 列）\n\n| 节 | 内容与组件 |\n|---|---|\n| 结论 | 整段判断，24px 细体 `Text` 占满 9 列 |\n| 核心指标 | 6 个 `Stat`（`captionBelow`，一行 3 个）：会话量/首次解决率（主指标 `size=\"lg\"`）/平均首响时长/客户满意度/质检平均分/抽检会话，环比写进 `note`，下降标红 |\n| 随时间变化 | 日会话量 `TrendChart` 单独一行（`h-48`）＋首次解决率（6 列）与平均首响时长（3 列）并排（`height=\"fill\"`、`rows={2}`），都只标最后一个点 |\n| 团队表现 | `DataTable` 7 列（团队/坐席/会话量带 `bar`/首次解决率/首响/满意度/质检），列 `span` 合计 9，短板值用 `tone` 标红 |\n| 咨询类别 | 3 列 `ProgressList compact`（占比）＋6 列 `List columns={3}`（环比变化） |\n| 主要发现 | `List numbered`，标题＋一句说明 |\n| 下一步 | `List columns={3} numbered`，责任人并入说明 |\n| 风险 | `List columns={3}`，`meta` 写风险等级、`metaTone=\"destructive\"` |\n| 背景信息 | 两组 `KV labelCols={2}`：报告口径（组织/周期/质检目标）与团队负责人 |\n\n每个数据字段只由一个组件渲染一次，颜色只用于下降/不达标，`node $SHOOT .` 的构建、组件库、刻度、数据忠实、越界五项检查全部通过。"
+}
