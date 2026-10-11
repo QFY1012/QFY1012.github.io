@@ -10,27 +10,18 @@ import {
   DataTable,
   List,
   Figure,
-  FigureRow,
   FigureImage,
   FigureLabel,
   FigureText,
 } from "@/components/report"
 
-// 色觉无障碍分析的一组四张:原界面和三种色盲模拟,1200×760,和手机截图比例不同。
-const cvdViews = [
-  { name: "原界面", image: "assets/cvd-c1/original.png" },
-  { name: "红色盲", image: "assets/cvd-c1/protanopia.png" },
-  { name: "绿色盲", image: "assets/cvd-c1/deuteranopia.png" },
-  { name: "蓝色盲", image: "assets/cvd-c1/tritanopia.png" },
-]
-
-// One product's screens, one Figure per screen, in step order. The FigureRow
-// scrolls sideways and FigureImage holds one height, so every screenshot lines
-// up and the step labels sit on the same line without the row widening the page.
+// One product's screens, one cell per screen, in step order. The grid fixes the
+// cell width and FigureImage holds the phone ratio, so every row of screenshots
+// lines up and the step labels sit on the same line.
 function Chain({ chain }: { chain: (typeof data.chains)[number] }) {
   return (
     <Group title={`${chain.product} · ${chain.version}`}>
-      <FigureRow>
+      <Grid cols={4} fields={false}>
         {chain.steps.map((step) => (
           <Figure key={step.no}>
             <FigureImage src={step.image} alt={`${chain.product} 第 ${step.no} 步:${step.screen}`} />
@@ -43,7 +34,7 @@ function Chain({ chain }: { chain: (typeof data.chains)[number] }) {
             </FigureText>
           </Figure>
         ))}
-      </FigureRow>
+      </Grid>
     </Group>
   )
 }
@@ -137,26 +128,16 @@ export default function Report() {
         </Group>
       </Section>
 
-      <Section title="视图对照" description="一组截图一行横向滚动,图同一高度、按原比例显示,不裁剪">
+      <Section title="视图对照" description="一组四张,每张带视图名称,可放进 Grid 或 Block">
         <Block title="逐屏视图" description="同一排法用于原界面与色觉模拟视图;说明文字放在同一块里">
-          <FigureRow>
+          <Grid cols={4} fields={false}>
             {data.chains[0].steps.slice(0, 4).map((step) => (
               <Figure key={step.no}>
                 <FigureImage src={step.image} alt={`${step.screen}视图`} />
                 <FigureLabel>{step.screen}</FigureLabel>
               </Figure>
             ))}
-          </FigureRow>
-        </Block>
-        <Block title="色觉模拟" description="原界面与红色盲、绿色盲、蓝色盲模拟对照(1200×760,和手机截图比例不同)">
-          <FigureRow>
-            {cvdViews.map((view) => (
-              <Figure key={view.name}>
-                <FigureImage src={view.image} alt={view.name} />
-                <FigureLabel>{view.name}</FigureLabel>
-              </Figure>
-            ))}
-          </FigureRow>
+          </Grid>
         </Block>
       </Section>
     </Page>

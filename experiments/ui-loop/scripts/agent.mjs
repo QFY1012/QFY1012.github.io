@@ -26,7 +26,7 @@ export const model = {
 }
 
 // Runs prompt, then each nudge while missing() is still true. Returns what meta.json records.
-export async function runAgent({ name, ws, priv, system, prompt, nudges = [], missing = () => false, maxShoots = 5 }) {
+export async function runAgent({ name, ws, priv, system, prompt, nudges = [], missing = () => false, maxShoots = 5, stream = false }) {
   const KEY = process.env.DEEPSEEK_API_KEY
   if (!KEY) throw new Error("set DEEPSEEK_API_KEY (source judge.env)")
   const loader = {
@@ -77,16 +77,36 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
     settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: true, maxRetries: 3, provider: { timeoutMs: 240_000 } } }),
   })
   const t0 = Date.now()
-  // live.md in <priv>: the reply being streamed (thinking and text), so a long step can be read
-  // before it ends; the session file only gets a reply once it is complete.
-  const live = path.join(priv, "live.md")
-  let lastLive = 0
+  // stream: print the reply to stdout as it arrives (thinking, text, tool calls), with the wait
+  // before it starts; for one agent at a time (parallel agents would interleave). Otherwise one
+  // line per tool call.
+  const hhmmss = () => new Date().toLocaleTimeString("zh-CN", { hour12: false, timeZone: "Asia/Shanghai" })
+  let asked = 0, kind = ""
+  const say = (k, text) => {
+    if (k !== kind) process.stdout.write(`\n[${k}] `)
+    kind = k
+    process.stdout.write(text)
+  }
   session.subscribe((e) => {
-    if (e.type === "tool_execution_start") console.log(`${name}: ${e.toolName} ${String(e.args?.path ?? e.args?.command ?? "").slice(0, 70)}`)
-    if (e.type === "message_update" && Date.now() - lastLive > 5000) {
-      lastLive = Date.now()
-      const parts = (e.message.content ?? []).map((c) => c.type === "thinking" ? `[thinking]\n${c.thinking}` : c.type === "text" ? c.text : c.type === "toolCall" ? `[tool ${c.name}] ${JSON.stringify(c.arguments ?? {}).slice(0, 2000)}` : "")
-      fs.writeFileSync(live, `${new Date().toISOString()}\n\n${parts.join("\n\n")}`)
+    if (!stream) {
+      if (e.type === "tool_execution_start") console.log(`${name}: ${e.toolName} ${String(e.args?.path ?? e.args?.command ?? "").slice(0, 70)}`)
+      return
+    }
+    if (e.type === "turn_start") {
+      asked = Date.now()
+      kind = ""
+      process.stdout.write(`\n\n── ${name} ${hhmmss()} 请求模型`)
+    } else if (e.type === "message_update") {
+      const a = e.assistantMessageEvent
+      if (a.type === "start") process.stdout.write(`,${((Date.now() - asked) / 1000).toFixed(0)} 秒后开始回复`)
+      else if (a.type === "thinking_delta") say("思考", a.delta)
+      else if (a.type === "text_delta") say("回复", a.delta)
+    } else if (e.type === "tool_execution_start") {
+      kind = ""
+      process.stdout.write(`\n[工具] ${e.toolName} ${String(e.args?.path ?? e.args?.command ?? "").slice(0, 200)}`)
+    } else if (e.type === "message_end" && e.message.role === "assistant") {
+      const u = e.message.usage ?? {}
+      process.stdout.write(`\n── ${hhmmss()} 本步 ${((Date.now() - asked) / 1000).toFixed(0)} 秒,输出 ${u.output ?? "?"} token${e.message.errorMessage ? `,出错:${e.message.errorMessage}` : ""}`)
     }
   })
   await session.prompt(prompt)
