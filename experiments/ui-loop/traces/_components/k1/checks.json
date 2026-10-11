@@ -1,1 +1,22 @@
-[]
+[
+ {
+  "check": "元素越界",
+  "msg": "div[test-cell] 超出页面左右边界 238px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "div[test-cell] 超出页面左右边界 518px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "div[test-cell] 超出页面左右边界 798px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "div[test-cell] 超出页面左右边界 1078px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "div[test-cell] 超出页面左右边界 1358px「」"
+ }
+]

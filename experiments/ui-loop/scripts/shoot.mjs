@@ -114,9 +114,15 @@ try {
     if (!main) return { height: document.body.scrollHeight, text: document.body.innerText, images, out: [], unknown: 0, raw }
     const mr = main.getBoundingClientRect()
     const out = []
+    // Inside a container that scrolls or hides horizontally (a strip of screenshots), what lies
+    // past the edge is clipped on purpose; the container itself is still checked.
+    const clipped = (el) => {
+      for (let p = el.parentElement; p && p !== main; p = p.parentElement) if (getComputedStyle(p).overflowX !== "visible") return true
+      return false
+    }
     for (const el of main.querySelectorAll("*")) {
       const r = el.getBoundingClientRect()
-      if (!r.width || !r.height) continue
+      if (!r.width || !r.height || clipped(el)) continue
       if (r.left < mr.left - 1 || r.right > mr.right + 1) {
         const t = (el.innerText || el.textContent || "").trim().slice(0, 30)
         out.push(`${el.tagName.toLowerCase()}[${el.getAttribute("data-slot") ?? ""}] 超出页面左右边界 ${Math.round(Math.max(mr.left - r.left, r.right - mr.right))}px「${t}」`)

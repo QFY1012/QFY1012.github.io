@@ -140,6 +140,14 @@ export default function Report() {
           </Grid>
         </Block>
       </Section>
+
+      <Section title="TEST" description="overflow test">
+        <div data-slot="test-scroll" className="overflow-x-auto">
+          <div data-slot="test-row" className="flex gap-6">
+            {[0,1,2,3,4,5,6,7].map(i => <div key={i} data-slot="test-cell" className="h-40 w-64 shrink-0" />)}
+          </div>
+        </div>
+      </Section>
     </Page>
   )
 }
