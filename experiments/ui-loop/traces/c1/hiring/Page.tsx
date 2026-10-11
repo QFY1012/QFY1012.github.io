@@ -26,23 +26,20 @@ export default function Report() {
     display: num(f.count),
   }))
 
-  const cycleItems = [...positions]
-    .sort((a, b) => b.cycle - a.cycle)
-    .map((p) => ({ label: p.name, value: p.cycle, max: 60, display: `${p.cycle} 天` }))
-
   const positionColumns = [
     { key: "name", label: "岗位", span: 2 },
-    { key: "dept", label: "部门", span: 2 },
+    { key: "dept", label: "部门", span: 1 },
     { key: "plan", label: "计划", span: 1, align: "right" as const },
-    { key: "hired", label: "入职", span: 1, align: "right" as const },
+    { key: "hired", label: "入职", span: 2, align: "right" as const, bar: true },
     { key: "pending", label: "待招", span: 1, align: "right" as const },
-    { key: "applications", label: "简历", span: 2, align: "right" as const, bar: true },
+    { key: "applications", label: "简历", span: 1, align: "right" as const },
+    { key: "cycle", label: "周期", span: 1, align: "right" as const },
   ]
 
   const channelColumns = [
     { key: "name", label: "渠道", span: 3 },
-    { key: "hires", label: "入职人数", span: 2, align: "right" as const },
-    { key: "share", label: "占比", span: 2, align: "right" as const, bar: true },
+    { key: "hires", label: "入职人数", span: 2, align: "right" as const, bar: true },
+    { key: "share", label: "占比", span: 2, align: "right" as const },
     { key: "cost", label: "单人成本", span: 2, align: "right" as const },
   ]
 
@@ -70,41 +67,36 @@ export default function Report() {
         </Grid>
       </Section>
 
-      <Section title="招聘节奏" description="每周投递与面试量,以及从投递到入职五个阶段的人数">
+      <Section title="招聘节奏" description="每周投递量与面试量,以及从投递到入职五个阶段的人数" className="gap-12">
         <Grid cols={9}>
-          <Block span={3} rows={2} title="招聘漏斗">
-            <ProgressList compact items={funnelItems} />
-          </Block>
-          <Block span={6} rows={2} title="每周投递与面试">
+          <Block span={6} rows={2} title="每周投递量">
             <TrendChart
               data={weekly}
               xKey="week"
-              series={[
-                { key: "applications", label: "投递" },
-                { key: "interviews", label: "面试" },
-              ]}
+              series={[{ key: "applications", label: "投递" }]}
               height="fill"
+              pointLabels="last"
+            />
+          </Block>
+          <Block span={3} rows={2} title="招聘漏斗">
+            <ProgressList compact items={funnelItems} />
+          </Block>
+        </Grid>
+        <Grid cols={9}>
+          <Block span={6} title="每周面试量">
+            <TrendChart
+              data={weekly}
+              xKey="week"
+              series={[{ key: "interviews", label: "面试" }]}
+              height="h-48"
               pointLabels="last"
             />
           </Block>
         </Grid>
       </Section>
 
-      <Section
-        title="岗位进展"
-        description="各在招岗位的 HC 计划、入职、待招人数与简历量,以及平均招聘周期(天)"
-        className="gap-12"
-      >
-        <Group>
-          <DataTable columns={positionColumns} rows={positions} />
-        </Group>
-        <Group>
-          <Grid cols={9} fields={false}>
-            <Block span={3} title="平均招聘周期(天)">
-              <ProgressList compact items={cycleItems} />
-            </Block>
-          </Grid>
-        </Group>
+      <Section title="岗位进展" description="各在招岗位的 HC 计划、入职、待招人数、简历量与平均招聘周期(天)">
+        <DataTable columns={positionColumns} rows={positions} />
       </Section>
 
       <Section title="渠道效果" description="各渠道入职人数、占比(%)与单人招聘成本(万元)">
