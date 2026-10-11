@@ -140,7 +140,6 @@ export default function Report() {
           </Grid>
         </Block>
       </Section>
-
     </Page>
   )
 }
