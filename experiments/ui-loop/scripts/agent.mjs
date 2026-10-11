@@ -26,7 +26,7 @@ export const model = {
 }
 
 // Runs prompt, then each nudge while missing() is still true. Returns what meta.json records.
-export async function runAgent({ name, ws, priv, system, prompt, nudges = [], missing = () => false, maxShoots = 5, stream = false, effort = EFFORT }) {
+export async function runAgent({ name, ws, priv, system, prompt, nudges = [], missing = () => false, maxShoots = 5, stream = false, effort = EFFORT, tight = false }) {
   const KEY = process.env.DEEPSEEK_API_KEY
   if (!KEY) throw new Error("set DEEPSEEK_API_KEY (source judge.env)")
   const loader = {
@@ -51,10 +51,17 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
   // bash: every command runs in the sandbox; checks past the limit are refused.
   let shoots = 0
   const q = (x) => `'${x.replace(/'/g, `'\\''`)}'`
+  // tight: the agent's own commands see only the workspace; the check runs on its own, in a
+  // sandbox with the build tools, and only its output comes back.
   const bash = createBashToolDefinition(ws, {
     spawnHook: ({ command }) => {
-      if (/node\s+("?\$SHOOT"?|\S*shoot\.mjs)/.test(command) && ++shoots > maxShoots) command = `echo "检查已运行 ${maxShoots} 次,不能再运行;请结束。"`
-      return { command: `${q(SANDBOX)} ${q(ws)} ${q(command)}`, cwd: ws, env: { PATH: process.env.PATH } }
+      const isShoot = /\$SHOOT|\$\{SHOOT\}|shoot\.mjs/.test(command)
+      if (isShoot && ++shoots > maxShoots) command = `echo "检查已运行 ${maxShoots} 次,不能再运行;请结束。"`
+      else if (isShoot && tight) {
+        const note = /^\s*node\s+"?\$\{?SHOOT\}?"?\s+\.\s*(2>&1)?\s*$/.test(command) ? "" : `; echo "(检查单独运行:只执行了 node $SHOOT .,命令里其余部分没有执行)"`
+        return { command: `${q(SANDBOX)} ${q(ws)} ${q('node "$SHOOT" . 2>&1 | tail -40' + note)}`, cwd: ws, env: { PATH: process.env.PATH } }
+      }
+      return { command: `${q(SANDBOX)} ${q(ws)} ${q(command)}${tight ? " tight" : ""}`, cwd: ws, env: { PATH: process.env.PATH } }
     },
   })
   fs.rmSync(priv, { recursive: true, force: true })
