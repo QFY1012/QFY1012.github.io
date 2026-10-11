@@ -1,0 +1,36 @@
+{
+ "case": "c6",
+ "design": {
+  "version": "c3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/c3.md",
+  "sha": "e7c6bcc5"
+ },
+ "base": "cvd-g0-k1",
+ "change": {
+  "rule": "G1",
+  "old": "",
+  "new": "- **G1 颜色与对比度四表**:`palette`、`confusions`、`contrast`、`fixes` 四个数组合并成一节「色板与检查」,紧跟 `screens` 的「模拟视图」一节、排在 `issues` 的问题清单一节之前,写成 `<Section className=\"gap-12\">`;每个数组一个 `Group`(表名写在 `Group` 的 `title`、显示在表格上方),组内只有一张 `DataTable`,顺序为配色 → 混淆色 → 对比度 → 色值修正,组间 48px;某个数组缺失或为空时对应的 `Group` 整块不渲染。单元格里出现颜色值一律写成「名称 色值」(如 `系列 2 #52C41A`),名称取 `palette` 里 `hex` 相同的 `name`,同一色值有多个名称时都写、用「/」相连,`palette` 里找不到的只写 `hex`;`palette` 表自己的色值列只写 `hex`、不重复名称。各表列与 span(每张表各列 span 之和为 9):`palette` 名称 2、色值 2、用途 5;`confusions` 位置 `where` 2、颜色对 2(`colors` 两个色值按上面的写法用「/」相连)、正常 `normal` 1(右对齐)、红色盲 1(右对齐)、绿色盲 1(右对齐)、蓝色盲 1(右对齐)、受影响 `affected` 1(用「、」相连,空数组写「—」),四个色差列里属于该行 `affected` 的数值用该列 `tone` 标红,并把 `method` 里的色差阈值写在该 `Group` 的 `title` 里(如「混淆色 · ΔE<12 标红」);`contrast` 问题编号 1、位置 `where` 2、文字色 `fg` 1、背景色 `bg` 1、对比度 `ratio` 1(右对齐)、要求 `required` 1(右对齐)、结果 2(`pass` 为 false 写「不达标」并用该列 `tone` 标红);`fixes` 问题编号 1、位置 `where` 2、背景色 `bg` 1、原色 `from` 1、修正色 `to` 1、修复前 `before` 1(右对齐)、修复后 `after` 2(右对齐),`from` 与 `to` 相同的行修正色列写「不变」,提示该行的改动在背景色列。`contrast` 与 `fixes` 两表的问题编号列都写 `issues` 里 `location` 与该行 `where` 相同或互相包含的条目的 `id`,多条用「、」相连,找不到写「—」,让对比度表、色值修正表与问题清单共用同一套编号。",
+  "basis": [
+   "P-05",
+   "P-06"
+  ],
+  "why": "布局问题里 P-05、P-06 并列最多(各 4 页),先改这两条:沿用已被验证有效的「四表合并 + 统一名称 色值」,并按修改记录补足前两次带出的新问题——表名移到表格上方并按数据有无整组渲染、色差标红就地写出 ΔE 阈值、把问题编号带进对比度与色值修正表,使问题条目、对比度数据、修复建议能按同一编号对上。"
+ },
+ "changedLines": 169,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 212,
+ "usage": {
+  "input": 86431,
+  "output": 16595
+ },
+ "stop": "stop",
+ "summary": "检查通过,页面符合新规则。\n\n修改内容:\n\n- 把原来的「对比度」和「混淆色」两节合并为新的一节「色板与检查」(`<Section className=\"gap-12\">`),放在「模拟视图」之后、「问题清单」之前,组间 48px,顺序为配色 → 混淆色 → 对比度 → 色值修正。\n- 每个数组一个 `Group`(表名在 `Group` 的 `title`):`palette` → 「配色」(名称 2 / 色值 2 / 用途 5,色值列只写 hex)、`confusions` → 「混淆色 · ΔE<12 标红」(位置 2 / 颜色对 2 / 正常·红色盲·绿色盲·蓝色盲各 1 右对齐 / 受影响 1),`contrast` → 「对比度」(问题编号 1 / 位置 2 / 文字色 1 / 背景色 1 / 对比度 1 右 / 要求 1 右 / 结果 2);各表 span 之和均为 9。\n- 颜色值统一写成「名称 色值」,名称按 hex 从 `palette` 反查,多个用「/」相连,查不到只写 hex;`confusions.colors` 两个色值同样写法后用「/」相连;受影响为空写「—」。\n- 四个色差列中属于该行 `affected` 的数值用该列 `tone` 标红(如 9.2、10.9、6.8、5.1、8.9);`contrast` 的「结果」列 `pass=false` 写「不达标」并标红。\n- `contrast` 与 `fixes` 的问题编号列由 `issues` 的 `location` 与 `where` 相同或互相包含的条目 `id` 生成(本数据里对比度行与问题位置无包含关系,故为「—」)。\n- `data.json` 没有 `fixes` 数组,色值修正这一 `Group` 整块不渲染。\n\n另外:原「混淆色」节里的 `byType` 统计(各色盲类型受影响的问题数)属于被替换掉的旧节内容,新规则的四表结构里没有对应位置,已随该节一并移除;若需要保留这类计数,当前组件库没有对应的规则位(需在指南里明确它归入哪一节)。",
+ "checks": []
+}

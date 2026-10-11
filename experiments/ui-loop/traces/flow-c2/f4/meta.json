@@ -1,0 +1,35 @@
+{
+ "case": "f4",
+ "design": {
+  "version": "c2",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5d5b8cb8",
+ "guide": {
+  "file": "skills/flow/guides/c2.md",
+  "sha": "824b2621"
+ },
+ "base": "flow-g0-k1",
+ "change": {
+  "rule": "G1",
+  "old": "",
+  "new": "- **G1 链路明细**:明细一节里按 `chains` 一款产品一组,`Group` 的 `title` 写 `${product} · ${version}`;组内把该产品 `steps` 按 `no` 升序切成若干行,每行最多 4 步、放一个 `FigureStrip`(行数 = `ceil(steps.length / 4)`,末行不足 4 步按实际数量排),行内每个 `Figure` 依次放 `FigureImage`(`src` 用 `step.image`,`alt` 写 `${product} 第 ${no} 步:${screen}`)、`FigureLabel`(写「第 ${no} 步 · ${screen}」)、`FigureText`(写 `${content} · ${action}`)。`steps` 里每一步都要渲染出一个 `Figure`,不省略、不折成两行裁掉,也不靠横向滚动才能看全;产品数、步骤数不同时做法不变,产品依次上下排开,明细里 `FigureImage` 的总张数等于核心指标里「分析截图」的数值。",
+  "basis": [
+   "P-02"
+  ],
+  "why": "P-02 涉及 4 页且是整步截图直接缺失、指标张数与实际渲染对不上,是最严重的一条;保留 c1「一步一图」的方向,只补上它没解决的分行渲染,不重犯 c1 把四类字段串成一段、删掉带列名表格而带出的新问题。"
+ },
+ "changedLines": 54,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 134,
+ "usage": {
+  "input": 61724,
+  "output": 9894
+ },
+ "stop": "stop",
+ "summary": "改动完成，检查通过（`checks.json` 为空，无构建/组件库/刻度/数据忠实/越界问题）。\n\n**改了什么**（只动了 G1 相关的「流程明细」一节）：\n- 每个产品内按 `no` 升序把 `steps` 切成 `ceil(n/4)` 行，每行一个 `FigureStrip`、最多 4 步：协作宝 8 步 → 2 行（4+4），链工 5 步 → 2 行（4+1）。原来 8 步挤在一行、第 5 步之后要靠横向滚动才看得见，现在 13 个 `Figure`/`FigureImage` 全部渲染、无省略。\n- `Group` 标题改为规则要求的 `${product} · ${version}`（协作宝 · 7.2、链工 · 4.6）。\n- `Figure` 内顺序保持 `FigureImage`（`src` = `step.image`，`alt` = `${product} 第 ${no} 步:${screen}`）→ `FigureLabel`（第 N 步 · 屏名）→ `FigureText`（`content · action`，并保留原有的「输入 N 项」和备注行，程序的数据忠实检查要求这些字段出现在页面上）。其余各节（结论、核心指标、流程对比、发现的问题、下一步、背景信息）未改动。\n\n**说明**：`FigureStrip` 一行放 4 张 375×760 手机图时，块内宽度约 902px 而 9 列内容区为 858px，最右一张会被裁掉约 44px（这是组件库的图宽与行间距造成的，上一版同样如此）；4 步/行是输出指南规定的上限，页面无法调整图宽或间距，所以这一处轻微横向溢出没有自行绕过。",
+ "checks": []
+}

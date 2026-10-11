@@ -2,8 +2,8 @@
  "current": "g0",
  "currentRun": "flow-g0-k1",
  "versions": 0,
- "round": 1,
- "rejected": 1,
+ "round": 2,
+ "rejected": 2,
  "sinceCheckpoint": 0,
  "history": [
   {
@@ -106,13 +106,61 @@
     "accept": false,
     "why": "需求 judge 算数的意见在 f6 上变多"
    }
+  },
+  {
+   "round": 2,
+   "stage": "function",
+   "candidate": "c2",
+   "base": "g0",
+   "baseRun": "flow-g0-k1",
+   "change": {
+    "rule": "G1",
+    "old": "",
+    "new": "- **G1 链路明细**:明细一节里按 `chains` 一款产品一组,`Group` 的 `title` 写 `${product} · ${version}`;组内把该产品 `steps` 按 `no` 升序切成若干行,每行最多 4 步、放一个 `FigureStrip`(行数 = `ceil(steps.length / 4)`,末行不足 4 步按实际数量排),行内每个 `Figure` 依次放 `FigureImage`(`src` 用 `step.image`,`alt` 写 `${product} 第 ${no} 步:${screen}`)、`FigureLabel`(写「第 ${no} 步 · ${screen}」)、`FigureText`(写 `${content} · ${action}`)。`steps` 里每一步都要渲染出一个 `Figure`,不省略、不折成两行裁掉,也不靠横向滚动才能看全;产品数、步骤数不同时做法不变,产品依次上下排开,明细里 `FigureImage` 的总张数等于核心指标里「分析截图」的数值。",
+    "basis": [
+     "P-02"
+    ],
+    "why": "P-02 涉及 4 页且是整步截图直接缺失、指标张数与实际渲染对不上,是最严重的一条;保留 c1「一步一图」的方向,只补上它没解决的分行渲染,不重犯 c1 把四类字段串成一段、删掉带列名表格而带出的新问题。"
+   },
+   "accept": false,
+   "why": "需求 judge 算数的意见在 f5 上变多",
+   "lines": {
+    "f1": 37,
+    "f2": 50,
+    "f3": 31,
+    "f4": 54,
+    "f5": 25,
+    "f6": 25
+   },
+   "gate": {
+    "program": {
+     "current": 0,
+     "candidate": 0
+    },
+    "function": {
+     "current": 14,
+     "candidate": 16,
+     "perCase": {
+      "f5": [
+       7,
+       9
+      ],
+      "f6": [
+       7,
+       7
+      ]
+     }
+    },
+    "accept": false,
+    "why": "需求 judge 算数的意见在 f5 上变多"
+   }
   }
  ],
  "components": [
   "k1"
  ],
  "stage": "function",
- "stageRounds": 1,
+ "stageRounds": 2,
  "maintained": {
   "run": "flow-g0-k1",
   "stage": "function"
