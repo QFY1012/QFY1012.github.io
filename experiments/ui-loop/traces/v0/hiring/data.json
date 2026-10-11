@@ -1,0 +1,65 @@
+{
+ "title": "第三季度招聘报告",
+ "org": "青禾科技 · 人才招聘中心",
+ "period": "2026 年 7 月至 9 月",
+ "summary": "三季度共收到简历 9,840 份，发出 offer 109 个，实际入职 86 人，同比增长 13.2%，全公司 HC 完成率 81.1%。销售与前端岗位基本按计划补齐，内推首次成为第一大入职渠道；但算法岗进展明显滞后，平均招聘周期拉长到 34 天，offer 接受率连续第二个季度下降，四季度需要在薪资竞争力和面试效率上同时发力。",
+ "kpis": [
+  { "key": "hires", "label": "入职人数", "value": 86, "unit": "人", "change": "+13.2%", "direction": "up" },
+  { "key": "hc", "label": "HC 完成率", "value": 81.1, "unit": "%", "change": "−2.6 个百分点", "direction": "down" },
+  { "key": "cycle", "label": "平均招聘周期", "value": 34, "unit": "天", "change": "+4 天", "direction": "down" },
+  { "key": "accept", "label": "offer 接受率", "value": 78.9, "unit": "%", "change": "−4.1 个百分点", "direction": "down" }
+ ],
+ "funnel": [
+  { "stage": "投递", "count": 9840 },
+  { "stage": "筛选通过", "count": 2310 },
+  { "stage": "面试", "count": 1026 },
+  { "stage": "发出 offer", "count": 109 },
+  { "stage": "入职", "count": 86 }
+ ],
+ "weekly": [
+  { "week": 1, "applications": 620, "interviews": 62 },
+  { "week": 2, "applications": 680, "interviews": 70 },
+  { "week": 3, "applications": 710, "interviews": 74 },
+  { "week": 4, "applications": 840, "interviews": 85 },
+  { "week": 5, "applications": 905, "interviews": 92 },
+  { "week": 6, "applications": 860, "interviews": 88 },
+  { "week": 7, "applications": 790, "interviews": 80 },
+  { "week": 8, "applications": 760, "interviews": 79 },
+  { "week": 9, "applications": 735, "interviews": 76 },
+  { "week": 10, "applications": 700, "interviews": 74 },
+  { "week": 11, "applications": 760, "interviews": 80 },
+  { "week": 12, "applications": 820, "interviews": 86 },
+  { "week": 13, "applications": 660, "interviews": 80 }
+ ],
+ "positions": [
+  { "name": "后端工程师", "dept": "研发中心", "plan": 24, "hired": 21, "pending": 2, "applications": 2460, "cycle": 41 },
+  { "name": "前端工程师", "dept": "研发中心", "plan": 12, "hired": 11, "pending": 1, "applications": 1320, "cycle": 35 },
+  { "name": "算法工程师", "dept": "智能平台部", "plan": 10, "hired": 4, "pending": 1, "applications": 860, "cycle": 57 },
+  { "name": "产品经理", "dept": "产品部", "plan": 8, "hired": 6, "pending": 1, "applications": 1180, "cycle": 39 },
+  { "name": "销售代表", "dept": "商业化部", "plan": 30, "hired": 27, "pending": 2, "applications": 2640, "cycle": 24 },
+  { "name": "客户成功经理", "dept": "客户服务部", "plan": 14, "hired": 12, "pending": 0, "applications": 920, "cycle": 29 },
+  { "name": "数据分析师", "dept": "数据部", "plan": 8, "hired": 5, "pending": 1, "applications": 460, "cycle": 46 }
+ ],
+ "channels": [
+  { "name": "员工内推", "hires": 27, "share": 31.4, "cost": 0.6 },
+  { "name": "招聘网站", "hires": 24, "share": 27.9, "cost": 0.9 },
+  { "name": "猎头", "hires": 13, "share": 15.1, "cost": 4.8 },
+  { "name": "社交媒体", "hires": 9, "share": 10.5, "cost": 1.1 },
+  { "name": "校园招聘", "hires": 8, "share": 9.3, "cost": 1.3 },
+  { "name": "其他", "hires": 5, "share": 5.8, "cost": 0.7 }
+ ],
+ "findings": [
+  { "title": "内推成为第一渠道", "detail": "内推入职 27 人，占 31.4%，单人成本仅 0.6 万元，从简历到入职的转化率约为招聘网站的 3 倍。" },
+  { "title": "算法岗严重滞后", "detail": "算法工程师 HC 完成率仅 40%，平均周期 57 天，有三名候选人在 offer 阶段被其他公司截走。" },
+  { "title": "面试到 offer 转化偏低", "detail": "1,026 场面试只发出 109 个 offer，转化率 10.6%，研发岗不同面试官的评分标准差异较大。" }
+ ],
+ "actions": [
+  { "title": "内推奖励加码", "detail": "四季度起技术岗内推奖金上调至 8,000 元，候选人入职满三个月后发放。" },
+  { "title": "算法岗专项招聘", "detail": "新增两家专注 AI 方向的猎头合作，同时将算法岗薪资带宽上浮 10%。" },
+  { "title": "面试官校准", "detail": "10 月底前完成研发面试官培训，统一结构化评分表，并抽查面评质量。" }
+ ],
+ "risks": [
+  "商业化部四季度计划新增 20 个销售 HC，按目前每月约 9 人的入职速度，年底前难以补齐。",
+  "offer 接受率已连续两个季度下降，若薪资竞争力不改善，四季度可能跌破 75%。"
+ ]
+}

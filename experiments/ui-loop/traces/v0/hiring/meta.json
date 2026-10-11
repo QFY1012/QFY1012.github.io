@@ -1,0 +1,19 @@
+{
+ "case": "hiring",
+ "design": {
+  "version": "v0",
+  "file": "designs/v0.md",
+  "sha": "cbcfb0f5"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 401,
+ "usage": {
+  "input": 137211,
+  "output": 42895
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": ""
+}
