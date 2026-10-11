@@ -1,17 +1,18 @@
-// The component branch. Problems that any of the three stages (program checks, the 需求 judge,
-// the 审美 judge) attribute to the component library go to the component agent. It adds what
+// The component branch. Problems that the Maintainer generalises from any of the three stages
+// (program checks, the 需求 judge, the 审美 judge) and attributes to the component library
+// (skills/<skill>/experience.json) go to the component agent. It adds what
 // is missing, built from shadcn/ui the way shadcn builds things (small composable parts, no
 // configuration props), in the style of the existing components, and draws a demo page. A person
 // reviews the demo: approves it, sends feedback for another round, or edits the code directly.
 // Nothing reaches the shared library before approval.
 //
-//   node scripts/component-loop.mjs propose --runs flow-g0,cvd-g0   the agent builds k<n> and its demo
+//   node scripts/component-loop.mjs propose                         the agent builds k<n> and its demo
 //   node scripts/component-loop.mjs revise k1 "意见"                 another round with the reviewer's feedback
 //   node scripts/component-loop.mjs approve k1                      merge; every Skill's pages are edited for it
 //   node scripts/component-loop.mjs reject k1 "原因"                 the next proposal reads it
 //
 // The work happens in a copy of the library, traces/_components/k<n>/: app/ (the library), shadcn/
-// (vendor/shadcn, read-only reference), components.md, and the sample data with the most requests.
+// (vendor/shadcn, read-only reference), components.md, and one sample the problems were seen on.
 // A reviewer who edits the code directly edits traces/_components/k<n>/app and then approves.
 // Program checks run on the demo page and on the component code before the review.
 // Review material: library/k<n>.md and library/k<n>-demo.png. Everything is in library/changelog.md.
@@ -27,21 +28,16 @@ const LOG = path.join(LIB, "changelog.md")
 const SHADCN = path.join(ROOT, "vendor", "shadcn", "new-york-v4")
 const read = (f) => fs.readFileSync(f, "utf8")
 const [cmd, k, note] = process.argv.slice(2)
-const arg = (key, d) => {
-  const i = process.argv.indexOf(`--${key}`)
-  return i > 0 ? process.argv[i + 1] : d
-}
 fs.mkdirSync(LIB, { recursive: true })
 const state = fs.existsSync(STATE) ? JSON.parse(read(STATE)) : { next: 1, proposals: {} }
 const save = () => fs.writeFileSync(STATE, JSON.stringify(state, null, 1))
 if (!fs.existsSync(LOG)) fs.writeFileSync(LOG, "# 组件库修改记录\n\n组件库是公共层,改动影响所有 Skill。每一项改动由组件 Agent 做出示例,人工审批后才合并;没采用的也记在这里。\n")
 const split = JSON.parse(read(path.join(ROOT, "skills", "split.json")))
-const skillOf = (run) => Object.keys(split).find((s) => run.startsWith(`${s}-`))
 const wsOf = (name) => path.join(ROOT, "traces", "_components", name)
 const privOf = (name, n) => path.join(ROOT, "traces", "_components", ".private", `${name}-${n}`)
 
 const designA = read(path.join(ROOT, "design.md")).match(/## A 基础[\s\S]*?(?=\n## B)/)?.[0] ?? ""
-export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库。生成 Agent 用组件库写报告页面;页面经过程序检查、需求 judge、审美 judge,下面这些问题被归因为「组件库」:组件库缺能力,改页面写法和输出指南都解决不了。你要补上这项能力。
+export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库。生成 Agent 用组件库写报告页面;页面经过程序检查、需求 judge、审美 judge,Maintainer 把检测意见归纳成问题,下面这些被归因为「组件库」:组件库缺能力,改页面写法和输出指南都解决不了。你要补上这项能力。
 
 工作目录:
 - app/src/components/report/:报告组件(index.tsx 导出,内容组件的绘制在 render.tsx)。生成 Agent 只从 @/components/report import。
@@ -66,7 +62,7 @@ ${designA}
 </规范 A 部分>
 
 <归因为组件库的问题>
-${requests.map((r) => `- [${r.run}/${r.case},${r.stage}] ${r.what}\n  需要:${r.fix}`).join("\n")}
+${requests.map((r) => `- [${r.skill},${r.stage},${r.pages.length} 页] ${r.problem}\n  场景:${r.scenes}`).join("\n")}
 </归因为组件库的问题>${rejected ? `
 
 <之前没被采用的组件改动>
@@ -80,17 +76,12 @@ export const PROMPT = `请补上上面的问题需要的组件能力:
 4. 用 bash 运行 \`node \$SHOOT .\` 构建、截图、检查,用 read 看 thumb.png 和切块,不对就改。检查最多运行 6 次。
 5. 结束时说明:新部件叫什么、各管什么、来自哪个 shadcn 部件或 Radix 原语、怎么组合;需求里哪些没做及原因。`
 
-function collect(runs) {
-  const out = []
-  for (const run of runs)
-    for (const c of fs.readdirSync(path.join(ROOT, "traces", run))) {
-      for (const stage of ["program", "function", "aesthetic"]) {
-        const f = path.join(ROOT, "traces", run, c, `attribution-${stage}.json`)
-        if (!fs.existsSync(f)) continue
-        for (const i of JSON.parse(read(f)).issues ?? []) if (i.cause === "组件库") out.push({ run, case: c, stage: { program: "程序检查", function: "需求 judge", aesthetic: "审美 judge" }[stage], what: i.what, fix: i.fix })
-      }
-    }
-  return out
+// The Maintainer's open 组件库 problems of every Skill.
+function collect() {
+  return Object.entries(split).flatMap(([sk, sp]) => {
+    const f = path.join(ROOT, "skills", sk, "experience.json")
+    return fs.existsSync(f) ? JSON.parse(read(f)).problems.filter((p) => p.cause === "组件库" && p.status !== "已解决").map((p) => ({ ...p, sk, skill: sp.name })) : []
+  })
 }
 
 const diff = (a, b) => spawnSync("git", ["diff", "--no-index", "--no-color", a, b], { encoding: "utf8" }).stdout.replaceAll(path.dirname(a), "").replaceAll(path.dirname(b), "")
@@ -180,9 +171,9 @@ async function build(name, prompt) {
 
 ${run.summary}
 
-## 需求(${p.requests} 条)
+## 需求(Maintainer 归纳的组件库问题,${p.requests} 条)
 
-${JSON.parse(read(path.join(ws, "requests.json"))).map((r) => `- **${r.run}/${r.case}**(${r.stage}):${r.what}`).join("\n")}
+${JSON.parse(read(path.join(ws, "requests.json"))).map((r) => `- **${r.skill} ${r.id}**(${r.stage},${r.pages.join("、")}):${r.problem}\n  - 场景:${r.scenes}`).join("\n")}
 
 ## 检查
 
@@ -204,8 +195,7 @@ ${patch}
 async function propose() {
   const pending = Object.entries(state.proposals).find(([, p]) => p.status === "待审")
   if (pending) return console.log(`${pending[0]} is waiting for review; one change at a time`)
-  const runs = arg("runs").split(",")
-  const requests = collect(runs)
+  const requests = collect()
   if (!requests.length) return console.log("no issues attributed to 组件库")
   const name = `k${state.next}`
   const ws = wsOf(name)
@@ -214,20 +204,18 @@ async function propose() {
   fs.cpSync(path.join(ROOT, "app"), path.join(ws, "app"), { recursive: true })
   fs.cpSync(SHADCN, path.join(ws, "shadcn"), { recursive: true })
   fs.copyFileSync(path.join(ROOT, "components.md"), path.join(ws, "components.md"))
-  // Demo data: the sample with the most requests.
-  const count = requests.reduce((m, r) => ({ ...m, [`${r.run}/${r.case}`]: (m[`${r.run}/${r.case}`] ?? 0) + 1 }), {})
-  const demo = Object.entries(count).sort((a, b) => b[1] - a[1])[0][0]
-  const [demoRun, demoCase] = demo.split("/")
-  const sk = skillOf(demoRun)
+  // Demo data: a sample of the problem seen on the most pages.
+  const top = [...requests].sort((a, b) => b.pages.length - a.pages.length)[0]
+  const sk = top.sk, demoCase = top.pages[0], demo = `${sk}/${demoCase}`
   fs.copyFileSync(path.join(ROOT, "skills", sk, "data", `${demoCase}.json`), path.join(ws, "data.json"))
   if (fs.existsSync(path.join(ROOT, "skills", sk, "data", demoCase))) fs.cpSync(path.join(ROOT, "skills", sk, "data", demoCase), path.join(ws, "assets"), { recursive: true })
   fs.writeFileSync(path.join(ws, "tsconfig.json"), JSON.stringify({ compilerOptions: { jsx: "react-jsx", resolveJsonModule: true } }))
   fs.writeFileSync(path.join(ws, "requests.json"), JSON.stringify(requests, null, 1))
   const rejected = Object.entries(state.proposals).filter(([, p]) => p.status === "未采用").map(([n, p]) => `${n}:${(p.rounds?.at(-1)?.summary ?? "").slice(0, 600)}\n  没采用的原因:${p.reason}`).join("\n")
-  state.proposals[name] = { status: "制作中", demo, requests: requests.length, runs, rejected }
+  state.proposals[name] = { status: "制作中", demo, requests: requests.length, rejected }
   state.next++
   save()
-  console.log(`${name}: ${requests.length} requests from ${Object.keys(count).length} pages; demo on ${demo}`)
+  console.log(`${name}: ${requests.length} problems; demo on ${demo}`)
   await build(name, PROMPT)
 }
 
@@ -265,7 +253,7 @@ function merge(name) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const p = state.proposals[k]
   if (cmd === "propose") await propose()
-  else if (!["revise", "approve", "reject"].includes(cmd)) throw new Error('usage: propose --runs a,b | revise k1 "意见" | approve k1 | reject k1 "原因"')
+  else if (!["revise", "approve", "reject"].includes(cmd)) throw new Error('usage: propose | revise k1 "意见" | approve k1 | reject k1 "原因"')
   else if (p?.status !== "待审") throw new Error(`${k} is not waiting for review`)
   else if (cmd === "revise") await build(k, `审批意见:${note}\n\n请按意见修改组件和演示页(只改意见涉及的地方),改完运行检查,结束时说明改了什么。`)
   else if (cmd === "approve") merge(k)

@@ -32,9 +32,11 @@
 
 前一步不过不跑下一步。需求通过 = 数据全部用完,且没有算数的「不方便」。审美阶段的候选也要先过前两步,退步直接拒绝。
 
-#### 归因:组件的问题,还是 Skill 的 UI 配置(输出指南)的问题
+#### Maintainer:归纳问题,并归因到组件或 UI 配置(输出指南)
 
-三步的问题都逐条归因(`scripts/attribute.mjs`),判断标准是「现有组件库能不能解决」:
+每一步检测完,Maintainer(`scripts/maintainer.mjs`)读这一步在训练样本每一页上的原始意见,**归纳**成问题清单,不是罗列:同一个问题出现在很多页、很多次检查里,合并成一条,带上出现的页和证据。需求 judge 每页跑 3 次,至少 2 次出现才算数。清单每一步更新:再次出现的补证据,不再出现的标「已解决」。清单在 `skills/<skill>/experience.json` 和 `experience.md`。
+
+每个问题归因,判断标准是「现有组件库能不能解决」:
 
 | 归因 | 细分 | 谁来改 | 影响 | 把关 |
 |---|---|---|---|---|
@@ -45,7 +47,7 @@
 
 #### 组件分支(`scripts/component-loop.mjs`)
 
-1. **做组件**(`propose --runs flow-g0,cvd-g0`):收集归因为「组件」的问题,交给组件 Agent。它在组件库的副本(`traces/_components/k<n>/`)里工作,规则:
+1. **做组件**(`propose`):读各 Skill 问题清单里归因为「组件库」的问题,交给组件 Agent。它在组件库的副本(`traces/_components/k<n>/`)里工作,规则:
    - 只改需要的地方,已有组件和它们的用法不改,tokens 不改;
    - 写法和 shadcn 一样:几个可以组合的小部件(data-slot、className、`cn()`),不加配置 props,怎么组合由页面决定;
    - 先找 shadcn 里能用的部件(`vendor/shadcn/`,离线副本),复制过来再按规范改样式;没有合适的,才用 Radix 原语写;
@@ -64,10 +66,10 @@
 
 #### 一轮(UI 配置的问题,改输出指南)
 
-1. **Reviser** 读当前指南、归因为「UI 配置」的意见、经验库、修改记录和训练样本数据,只改一条规则,得到候选 `guides/c<k>.md`。
+1. **Reviser** 读当前指南、问题清单里「指南」一栏、修改记录和训练样本数据,只改一条规则,得到候选 `guides/c<k>.md`。
 2. **改页面**:生成 Agent 拿当前版的页面和这一条改动,只改和这条规则有关的地方,不从头重写。两版页面的差别就来自这条改动。没改动的页面不送 judge。
 3. **把关**:需求阶段,留出样本上算数的需求意见比当前版少、且没有新的;审美阶段,先过需求,再看 rubric31:留出样本一份都不输、至少赢一半(3 轮)。
-4. **Maintainer** 用训练样本的意见更新经验库;和数据类型无关的经验标「公共」。
+4. **Maintainer** 把训练样本这一轮的检测意见归纳进问题清单。
 5. **记录**:`skills/<skill>/changelog.md`,不管采用没有都写。
 
 停止:连续 3 个候选没通过、到轮数上限、每采用 2 个版本的人工检查点。最后用最终指南从头生成留出样本,和 g0 比较,再由用户盲排。
@@ -81,7 +83,7 @@ node scripts/skill-loop.mjs --skill flow [--max-rounds 6] [--setup-only]
 | `skills/<skill>/data/` | 样本数据 |
 | `skills/<skill>/guides/` | 输出指南各版本和候选 |
 | `skills/<skill>/changes/` | 每个候选的那一条改动 |
-| `skills/<skill>/experience.md` | 这个 Skill 的经验库 |
+| `skills/<skill>/experience.md` | 这个 Skill 的问题清单(Maintainer 归纳,分组件库和指南) |
 | `skills/<skill>/changelog.md` | 修改记录 |
 | `skills/<skill>/state.json` | loop 进度 |
 | `traces/<skill>-<版本>/<样本>/` | 页面、截图、会话、meta.json(含相对上一版改动的行数) |
