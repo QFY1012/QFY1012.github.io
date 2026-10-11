@@ -7,6 +7,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Node, type SpecNode } from "./render"
 
 const SPAN = ["", "col-span-1", "col-span-2", "col-span-3", "col-span-4", "col-span-5", "col-span-6", "col-span-7", "col-span-8", "col-span-9", "col-span-10", "col-span-11", "col-span-12"]
@@ -91,11 +92,17 @@ export function Text({ children, className, span }: Placed & { children: string 
 }
 
 // Screenshots: one screen per Figure, laid out in a FigureStrip that scrolls
-// sideways. Every image is drawn at the same height and keeps its own width, so
-// phone screenshots and wider analysis screenshots line up in one row without
-// being cropped; anything past the right edge is clipped and reached by scrolling.
-export function FigureStrip({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="figure-strip" className={cn("flex w-full gap-3 overflow-x-auto", className)} {...props} />
+// sideways on a shadcn ScrollArea. Every image is drawn at the same height and
+// keeps its own width, so phone screenshots and wider analysis screenshots line
+// up in one row without being cropped; anything past the right edge is clipped
+// and reached with the scrollbar.
+export function FigureStrip({ className, children, ...props }: React.ComponentProps<typeof ScrollArea>) {
+  return (
+    <ScrollArea data-slot="figure-strip" type="always" className={cn("w-full min-w-0", className)} {...props}>
+      <div className="flex w-max gap-6 pb-4">{children}</div>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
+  )
 }
 
 export function Figure({ className, ...props }: React.ComponentProps<"figure">) {
