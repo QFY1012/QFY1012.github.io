@@ -1,0 +1,80 @@
+{
+  "title": "色觉无障碍分析 · 设计规范色板",
+  "target": "中后台设计规范 · 全部颜色 token",
+  "date": "2026-09-25",
+  "standard": "WCAG 2.2 AA",
+  "verdict": "不友好",
+  "method": "按 Machado 2009 模型模拟红色盲、绿色盲、蓝色盲;色差为 CIEDE2000 ΔE,小于 12 视为难以区分",
+  "summary": "对设计规范里 14 个颜色 token 做了全量检查,18 组常见文字与背景组合中 7 组不达标,主要是浅色状态色上的白字和灰阶文字。成功与错误两种状态色对红绿色盲用户难以区分。",
+  "screens": [
+    { "view": "原界面", "image": "assets/original.png" },
+    { "view": "红色盲", "image": "assets/protanopia.png" },
+    { "view": "绿色盲", "image": "assets/deuteranopia.png" },
+    { "view": "蓝色盲", "image": "assets/tritanopia.png" }
+  ],
+  "kpis": [
+    { "key": "pairs", "label": "检查的文字与背景组合", "value": 18, "unit": "组" },
+    { "key": "fail", "label": "对比度不达标", "value": 13, "unit": "组" },
+    { "key": "confuse", "label": "色盲用户难以区分的颜色", "value": 2, "unit": "对" },
+    { "key": "issues", "label": "问题总数", "value": 5, "unit": "个" }
+  ],
+  "palette": [
+    { "name": "primary", "hex": "#1890FF", "usage": "主按钮、链接" },
+    { "name": "primary-hover", "hex": "#40A9FF", "usage": "悬停" },
+    { "name": "success", "hex": "#52C41A", "usage": "成功" },
+    { "name": "warning", "hex": "#FAAD14", "usage": "警告" },
+    { "name": "error", "hex": "#FF4D4F", "usage": "错误" },
+    { "name": "info", "hex": "#1890FF", "usage": "提示" },
+    { "name": "text-1", "hex": "#262626", "usage": "标题" },
+    { "name": "text-2", "hex": "#595959", "usage": "正文" },
+    { "name": "text-3", "hex": "#8C8C8C", "usage": "辅助文字" },
+    { "name": "text-4", "hex": "#BFBFBF", "usage": "禁用文字" },
+    { "name": "border", "hex": "#D9D9D9", "usage": "边框" },
+    { "name": "bg-1", "hex": "#FFFFFF", "usage": "页面背景" },
+    { "name": "bg-2", "hex": "#FAFAFA", "usage": "区块背景" },
+    { "name": "bg-3", "hex": "#F0F0F0", "usage": "表头背景" }
+  ],
+  "contrast": [
+    { "where": "标题 / 页面背景", "fg": "#262626", "bg": "#FFFFFF", "ratio": 15.13, "required": 4.5, "pass": true },
+    { "where": "正文 / 页面背景", "fg": "#595959", "bg": "#FFFFFF", "ratio": 7.0, "required": 4.5, "pass": true },
+    { "where": "辅助文字 / 页面背景", "fg": "#8C8C8C", "bg": "#FFFFFF", "ratio": 3.36, "required": 4.5, "pass": false },
+    { "where": "禁用文字 / 页面背景", "fg": "#BFBFBF", "bg": "#FFFFFF", "ratio": 1.84, "required": 4.5, "pass": false },
+    { "where": "正文 / 区块背景", "fg": "#595959", "bg": "#FAFAFA", "ratio": 6.71, "required": 4.5, "pass": true },
+    { "where": "辅助文字 / 区块背景", "fg": "#8C8C8C", "bg": "#FAFAFA", "ratio": 3.22, "required": 4.5, "pass": false },
+    { "where": "表头文字 / 表头背景", "fg": "#262626", "bg": "#F0F0F0", "ratio": 13.28, "required": 4.5, "pass": true },
+    { "where": "表头辅助 / 表头背景", "fg": "#8C8C8C", "bg": "#F0F0F0", "ratio": 2.95, "required": 4.5, "pass": false },
+    { "where": "主按钮文字", "fg": "#FFFFFF", "bg": "#1890FF", "ratio": 3.24, "required": 4.5, "pass": false },
+    { "where": "主按钮悬停文字", "fg": "#FFFFFF", "bg": "#40A9FF", "ratio": 2.52, "required": 4.5, "pass": false },
+    { "where": "链接", "fg": "#1890FF", "bg": "#FFFFFF", "ratio": 3.24, "required": 4.5, "pass": false },
+    { "where": "成功按钮文字", "fg": "#FFFFFF", "bg": "#52C41A", "ratio": 2.27, "required": 4.5, "pass": false },
+    { "where": "警告按钮文字", "fg": "#FFFFFF", "bg": "#FAAD14", "ratio": 1.9, "required": 4.5, "pass": false },
+    { "where": "危险按钮文字", "fg": "#FFFFFF", "bg": "#FF4D4F", "ratio": 3.27, "required": 4.5, "pass": false },
+    { "where": "成功文字", "fg": "#52C41A", "bg": "#FFFFFF", "ratio": 2.27, "required": 4.5, "pass": false },
+    { "where": "警告文字", "fg": "#FAAD14", "bg": "#FFFFFF", "ratio": 1.9, "required": 4.5, "pass": false },
+    { "where": "错误文字", "fg": "#FF4D4F", "bg": "#FFFFFF", "ratio": 3.27, "required": 4.5, "pass": false },
+    { "where": "大标题", "fg": "#262626", "bg": "#FFFFFF", "ratio": 15.13, "required": 3.0, "pass": true }
+  ],
+  "confusions": [
+    { "where": "success 与 error", "colors": ["#52C41A", "#FF4D4F"], "normal": 75.2, "红色盲": 25.5, "绿色盲": 5.9, "蓝色盲": 70.3, "affected": ["绿色盲"] },
+    { "where": "warning 与 success", "colors": ["#FAAD14", "#52C41A"], "normal": 39.0, "红色盲": 0.3, "绿色盲": 8.2, "蓝色盲": 54.2, "affected": ["红色盲", "绿色盲"] }
+  ],
+  "byType": [
+    { "type": "红色盲", "issues": 1 },
+    { "type": "绿色盲", "issues": 1 },
+    { "type": "蓝色盲", "issues": 0 }
+  ],
+  "issues": [
+    { "id": "P1", "title": "success 与 error 红绿色盲难以区分", "type": "混淆色", "location": "状态色", "severity": "高", "affects": ["红色盲", "绿色盲"], "suggestion": "状态必须配图标;error 往洋红方向调" },
+    { "id": "P2", "title": "浅色状态色上用白字", "type": "对比度不足", "location": "成功、警告、危险按钮", "severity": "高", "affects": [], "suggestion": "加深状态色或改为深字" },
+    { "id": "P3", "title": "辅助文字 text-3 对比度 3.36", "type": "对比度不足", "location": "全局", "severity": "中", "affects": [], "suggestion": "text-3 改为 #737373" },
+    { "id": "P4", "title": "warning 色用作文字不达标", "type": "对比度不足", "location": "警告文字", "severity": "中", "affects": [], "suggestion": "文字用 warning 的深色版本" },
+    { "id": "P5", "title": "主按钮悬停文字对比度下降到 2.6", "type": "对比度不足", "location": "主按钮悬停", "severity": "低", "affects": [], "suggestion": "悬停改为加深而不是变浅" }
+  ],
+  "fixes": [
+    { "where": "辅助文字", "from": "#8C8C8C", "to": "#737373", "bg": "#FFFFFF", "before": 3.36, "after": 4.74 },
+    { "where": "主按钮悬停", "from": "#FFFFFF", "to": "#FFFFFF", "bg": "#096DD9", "before": 5.0, "after": 5.0 },
+    { "where": "警告文字", "from": "#FAAD14", "to": "#AD6800", "bg": "#FFFFFF", "before": 1.9, "after": 4.41 },
+    { "where": "成功文字", "from": "#52C41A", "to": "#237804", "bg": "#FFFFFF", "before": 2.27, "after": 5.59 },
+    { "where": "错误文字", "from": "#FF4D4F", "to": "#CF1322", "bg": "#FFFFFF", "before": 3.27, "after": 5.57 }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 307,
+ "usage": {
+  "input": 96594,
+  "output": 14838
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过，页面已完成。\n\n**页面结构**（`Page.tsx`，共 8 节，均按 C3 顺序、左 3 列节标题 + 右 9 列内容）：\n\n1. **结论** — `Text` 24px 细体，判定「不友好」+ 摘要一句话，占满 9 列。\n2. **核心指标** — 4 个 `Stat`（`captionBelow`，`Grid cols={9} fields={false}`，每个 `span={3}`），主指标「对比度不达标 13 组」用 `size=\"lg\"` 且 `direction=\"down\"` 标红。\n3. **色觉模拟** — `Block` 包 `FigureStrip`，原界面与红色盲/绿色盲/蓝色盲四张截图等高一排（超出宽度由 ScrollArea 横向滚动）。\n4. **分群** — 3 个 `Stat`（红色盲/绿色盲/蓝色盲，`span={2}`）＋「颜色混淆对照」`DataTable`（正常/红色盲/绿色盲/蓝色盲 ΔE 数值列右对齐，受影响列注明哪些类型）。\n5. **色板** — 14 个颜色 token 的 `DataTable`（token / 色值 / 用途）。\n6. **明细** — 「对比度检查」18 行 `DataTable`（结论列 `tone: [\"不达标\"]` 标红，caption 写 WCAG 口径）＋「问题清单」`DataTable`（严重度列 `tone: [\"高\"]` 标红）。\n7. **下一步** — `List` `numbered columns={3}`，5 条修复建议（改动前后色值与对比度）。\n8. **背景信息** — `KV` `labelCols={2}`：检查对象、色板规模、日期、判定标准、模拟方法。\n\n没有出现组件库无法表达的数据，无需降级呈现；唯一受组件约束的是截图行（`FigureStrip` 图高固定，四张宽图需横向滚动查看）。",
+ "checks": []
+}

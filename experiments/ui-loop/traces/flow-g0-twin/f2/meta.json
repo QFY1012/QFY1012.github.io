@@ -1,0 +1,27 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 256,
+ "usage": {
+  "input": 57314,
+  "output": 14420
+ },
+ "stop": "stop",
+ "summary": "程序检查通过（0 个问题）。\n\n页面结构：页头（左侧产品/版本与周期，右侧报告标题）之后按 C3 排了六节——**结论**（24px 细体结论句）→ **核心指标**（主指标「步骤最少 4 步」用 48px，其余 2 个 / 9 张 / 3 个用 30px）→ **产品对比**（快送 5 步、小橙 4 步两个 Stat，注里写各自差别）→ **链路明细**（快送 11.2、小橙 8.9 各一组 FigureStrip，逐屏截图＋步号屏名＋内容/操作/输入项与备注）→ **发现问题**（DataTable，严重度列只把「高」标红，下方带口径注释）→ **下一步**（两列编号 List，meta 写依据）→ **背景信息**（KV，labelCols=2）。没有组件缺失；数据里没有时间序列，因此跳过了「随时间变化」节。",
+ "checks": []
+}

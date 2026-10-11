@@ -1,0 +1,35 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "c1",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/c1.md",
+  "sha": "035debe1"
+ },
+ "base": "cvd-g0",
+ "change": {
+  "rule": "G1",
+  "old": "",
+  "new": "- **G1 问题清单与整改对照**: 明细节用 `DataTable` 排 `issues`,一行一条问题,列依次为编号(`id`,span 1)、位置(`location`,span 2)、类型(`type`,span 1)、严重度(`severity`,span 1,`tone: [\"高\"]`)、影响(`affects`,span 2,值用「、」连接、空数组写「—」)、建议(`suggestion`,span 2),各列 span 之和为 9;行按严重度「高 → 中 → 低」排,同级保持数据原顺序。`fixes` 非空时在同一节里紧跟这张表再放一个 `DataTable`:位置(`where`,span 3)、修改前(`from`,span 2)、修改后(`to`,span 2)、对比度(把 `before` 和 `after` 写成「3.36 → 5.33」,span 2);`fixes` 为空或没有这个字段时整张表省略。下一步节用 `List` 并与问题清单共用同一套编号:一条对应 `issues` 里的一条,`title` 写「`id` · `title`」,`description` 写 `suggestion`,顺序与问题清单一致,不合并、不遗漏;问题 3 条及以下时 `columns={3}`,4 条及以上时 `columns={2}`,都不加 `numbered`/`ordered`。",
+  "basis": [
+   "P-01"
+  ],
+  "why": "把每条问题的编号、位置、类型、严重度、影响和建议收进同一行,修复前后数值紧跟其后,下一步与明细共用同一套编号,解决跨节跨表对不上号的问题;并写明条目数不同时表格列和列表栏数的做法,对只有少量或没有 fixes 的报告同样适用。"
+ },
+ "changedLines": 54,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 127,
+ "usage": {
+  "input": 12420,
+  "output": 3992
+ },
+ "stop": "stop",
+ "summary": "检查通过,页面已符合新的 G1 规则。改动集中在「问题」与「下一步」两节:\n\n- **问题节**:明细表改为按 G1 的六列——编号(1)、位置(2)、类型(1)、严重(1,`tone: [\"高\"]`)、影响(2,`、`连接、空写「—」)、建议(2),合计 9 列;行按严重度「高→中→低」稳定排序(P1、P2、P4、P3、P5、P6)。同一节里紧跟其后放整改对照表——位置(3)、修改前(2)、修改后(2)、对比度(2),对比度写成「3.36 → 5.33」。\n- **下一步节**:改为与问题清单共用编号的 `List`,`title` 为「`id` · `title`」、`description` 为 `suggestion`,顺序与问题表一致、不合并不遗漏;6 条问题故用 `columns={2}`,去掉了 `numbered`。原「颜色调整」表已从该节移出。\n\n其余各节保持原样。程序检查(构建、组件库、统一刻度、数据忠实、越界)全部通过。",
+ "checks": []
+}

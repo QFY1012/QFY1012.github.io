@@ -1,0 +1,27 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 266,
+ "usage": {
+  "input": 35263,
+  "output": 20383
+ },
+ "stop": "stop",
+ "summary": "页面已通过全部程序检查(构建、组件库、统一刻度、数据忠实、越界)。\n\n结构:页头(产品/日期 + 标题)下按 C3 顺序排 8 节——**结论**(24px 结论句:判定\"不友好\"+ summary)→ **色觉模拟**(FigureStrip 四张原界面/红/绿/蓝色盲对照)→ **核心指标**(4 个 `Stat`,问题总数用 lg、不达标项 `direction=\"down\"`;下方按色觉类型的问题数横向 BarChart)→ **颜色配对**(系列色板表 + 4 对难区分色的 ΔE 对照表)→ **对比度**(10 组文字/底色与比值,结果列 `tone` 标红\"不达标\")→ **问题清单**(P1–P6,严重列标红\"高\")→ **下一步**(修复动作三列编号 List + 建议色值表)→ **背景信息**(KV)。\n\n一点说明:组件库没有色块/色板组件,`palette` 里 8 个系列色的十六进制色值只能用 `DataTable` 以文字形式呈现,看不到实际颜色;`issues` 的 `affects`(受影响人群)字段因表格列宽有限未单列展示,已由「按色觉类型」图和混淆色表的受影响列覆盖。",
+ "checks": []
+}

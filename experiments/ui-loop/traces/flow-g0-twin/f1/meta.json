@@ -1,0 +1,27 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 527,
+ "usage": {
+  "input": 109160,
+  "output": 28090
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过，页面已定稿。\n\n**页面结构**（`Page.tsx`，共 8 节，左侧 3 列节名 + 右侧 9 列内容）：\n\n1. **结论** — 一句 24px 细体结论句，占满 9 列。\n2. **核心指标** — 4 个 KPI `Stat`（`captionBelow`，一行 3 个，\"步骤最少 7 步\"为主指标用 `size=\"lg\"`）。\n3. **流程对比** — 两个 `Group`（组间 48px）：① 三个产品的步骤数 `Stat`；② 分阶段对比 `DataTable`（阶段 3 列 + 三个产品各 2 列 = 9）。\n4. **共性做法** — 三个模式的编号 `List`（标题 + 一句说明 + 涉及产品）。\n5. **链路明细** — 每款产品一个 `Group`（产品 · 版本），`FigureStrip` 横向排该产品的逐步截图，每张带步骤标签、操作/输入项和走查备注。\n6. **问题清单** — `DataTable`（编号/产品/步骤/问题/依据/严重度），严重度列 `tone: [\"高\"]` 把\"高\"标红，表下带口径注释。\n7. **下一步** — 四条建议的 `List`（编号 + 标题 + 说明 + 依据）。\n8. **背景信息** — `KV`（任务、对比范围、走查日期、产品版本、样本）。\n\n**两点需要说明：**\n- 分群 `Stat` 用了 `span={3}`：规范 B5 的 `span={2}` 是\"一行最多 4 个\"时的取值，这里只有 3 个分群，用 3 列正好铺满 9 列，避免右侧留空、说明文字被挤成两行。\n- 组件库的 `List` 在 `columns` 模式下不渲染 `numbered`/`ordered` 的序号（单列时才显示 01、02）。\"下一步\"要保持 4 条并排，就没有序号可用，于是把建议编号写进 `meta`（\"建议 A1 · 依据 远川银行第 2 步、P1\"）来保留顺序信息。缺的能力是：`List` 在并排（`columns`）时同时显示序号。",
+ "checks": []
+}

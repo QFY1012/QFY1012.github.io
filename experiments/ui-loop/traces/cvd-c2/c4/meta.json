@@ -1,0 +1,36 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "c2",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/c2.md",
+  "sha": "7fb7ed2e"
+ },
+ "base": "cvd-g0",
+ "change": {
+  "rule": "G1",
+  "old": "",
+  "new": "- **G1 问题清单与整改对照**: 「问题清单」一节用 `DataTable` 排 `issues`,一行一条问题,列依次为编号(`id`,span 1)、问题(`title`,span 2)、位置(`location`,span 1)、类型(`type`,span 1)、严重度(`severity`,span 1,`tone: [\"高\"]`)、影响(`affects`,span 1,值用「、」连接,空数组写「—」)、建议(`suggestion`,span 2),各列 span 之和为 9;行按严重度「高 → 中 → 低」排,同级保持 `issues` 原顺序,编号列照写数据里的 `id` 不重编,「问题」列照写 `title` 不省略,条数不限。`fixes` 非空时,紧接其后的「下一步」节用 `DataTable` 排 `fixes`,列依次为问题编号(span 1)、位置(`where`,span 2)、背景(`bg`,span 2)、调整前(把 `from` 和 `before` 写成「#8C8C8C 3.36」,span 2)、调整后(把 `to` 和 `after` 写成「#6B6B6B 5.33」,span 2);问题编号列写 `issues` 里 `title` 或 `location` 含该行 `where` 的那条 `id`,一条问题对应多行时逐行重复写同一个 `id`,对不上写「—」;「下一步」节必须紧跟在「问题清单」节之后,中间不插别的节,节里不再放复述 `suggestion` 的 `List`。`issues` 为空时「问题清单」节整节跳过;`fixes` 为空或没有这个字段时「下一步」节整节跳过。",
+  "basis": [
+   "P-01",
+   "P-03"
+  ],
+  "why": "P-01 涉及 4 页最多:把问题的位置、类型、影响、严重度和建议收进问题清单同一行并按严重度真实排序,修复前后数值带背景色、带问题编号地在紧邻的下一步节逐行对应,两节共用同一套 id;相对被否的 c1 补回了「问题」标题列与「背景」列、加了问题编号列,并让下一步不再复述建议,消掉多出来的一层对照。"
+ },
+ "changedLines": 90,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 113,
+ "usage": {
+  "input": 24522,
+  "output": 4808
+ },
+ "stop": "stop",
+ "summary": "修改完成,程序检查全部通过。\n\n改动只涉及 G1 相关的地方:\n\n- **问题清单**节:表格列改为 编号(span 1)、问题(span 2)、位置(span 1)、类型(span 1)、严重度(span 1,`tone: [\"高\"]`)、影响(span 1,`affects` 用「、」连接、空写「—」)、建议(span 2),合计 9 列;行按严重度「高 → 中 → 低」稳定排序,编号照写数据里的 `id`。\n- **下一步**节:改为紧跟在问题清单之后,用 `DataTable` 排 `fixes`,列为 问题编号(span 1)、位置(span 2)、背景(span 2)、调整前(span 2,「#8C8C8C 3.36」)、调整后(span 2,「#6B6B6B 5.33」);问题编号按 `title`/`location` 含 `where` 匹配(P3、P5、P4),对不上的「成功文字」「错误文字」写「—」。原先的「修复建议」节与复述建议的 `List` 已移除。\n\n其余节(结论、核心指标、色觉模拟、色差分析、对比度明细、调色板、背景信息)保持原样。\n\n页面结构:结论 → 核心指标 → 色觉模拟 → 色差分析 → 对比度明细 → 调色板 → 问题清单 → 下一步 → 背景信息;节标题挂左侧 3 列、内容在右侧 9 列,无卡片、靠留白与细线分组。",
+ "checks": []
+}

@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 129,
+ "usage": {
+  "input": 18604,
+  "output": 9254
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查一次通过（构建、组件库、统一刻度、数据忠实、越界检查均通过）。\n\n页面结构（自上而下）：\n- **页头**：左侧 meta「企业网盘 · 外链分享 / 2026 年 9 月」，右侧标题「交互流程挖掘 · 外链分享文件」。\n- **结论**：`Text` 结论句（24px 细体），占满 9 列。\n- **核心指标**：4 个 `Stat`（`size=\"lg\"`、`captionBelow`）按 B2 一行 3 个排布，第 4 个「发现问题」落到第二行。\n- **产品对比**：3 款产品各一个普通大小 `Stat`（步数 + 产品名 + 结论说明），按 B5 用 `span={2}` 排一行。\n- **交互链路**：每款产品一个 `Group`（产品 · 版本），内含 `FigureStrip`，每步一个 `Figure`（截图 + 「第 N 步 · 屏名」+ 内容/操作 + 备注），共 12 张截图。\n- **问题明细**：`DataTable`，编号/产品/步骤/问题/依据/严重度六列（span 合计 9），严重度「高」用该列 `tone` 标红。\n- **下一步**：`List`（`numbered`、`columns={3}`），两条建议各带说明与依据。\n- **背景信息**：`KV`（`labelCols={2}`），任务 / 范围 / 日期。\n\n未显示的数据：每步与每个产品的 `inputs` 全部为 0，作为无信息量的字段未渲染；此外 `chains[].steps[].note` 我以 `FigureText` 第二行呈现，其余数据（kpis、products、issues、suggestions、task/scope/date）均已完整呈现，没有组件库无法表达的缺项。",
+ "checks": []
+}

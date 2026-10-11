@@ -1,0 +1,27 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 300,
+ "usage": {
+  "input": 39454,
+  "output": 19053
+ },
+ "stop": "stop",
+ "summary": "页面已通过程序检查,视觉复核也符合规范。最终结构如下:\n\n**页头**(`Page`):`meta` 放检查对象「外卖 App · 订单状态页」、日期、标准 WCAG 2.2 AA;`title` 为报告标题。\n\n**七个节**(节名挂左侧 3 列,内容在右侧 9 列):\n\n1. **结论** — `verdict`「基本友好」与 `summary`,各一段 24px 细体 `Text`。\n2. **核心指标** — 4 个 `Stat`(`captionBelow`,`Grid fields={false}` 每行 3 个),不达标的「对比度不达标」「难以区分的颜色」用 `direction=\"down\"` 把注释标红。\n3. **色觉模拟** — `FigureStrip` 横向排开原界面 + 红/绿/蓝三种模拟视图,每张带 `FigureLabel` 视图名和 `FigureText` 说明。\n4. **分群** — 按色觉类型 3 个 `Stat`(`span={2}`,说明里写问题类型);`ProgressList compact` 放在 3 列宽的 `Block` 里展示四种视觉的 ΔE(阈值 12);全宽 `DataTable` 列混淆色对的位置、色对、受影响色型与最低 ΔE。\n5. **明细** — 四个 `Group`(节内 48px 间距):品牌色板、对比度检查(「不达标」列用 `tone` 标红)、问题清单、修复示例,均为 9 列全宽 `DataTable`,列 `span` 之和为 9。\n6. **下一步** — `List numbered columns={3}`,三条建议用数据里的原句,说明里附对应问题编号。\n7. **背景信息** — `KV labelCols={2}`,放检查对象、日期、标准、方法。\n\n**缺组件说明**:数据里的 `palette` 是一组色板(名称、十六进制色值、用途),组件库没有色块/色卡组件,只能用 `DataTable` 以文字呈现色值,页面上的颜色本身无法显示。",
+ "checks": []
+}
