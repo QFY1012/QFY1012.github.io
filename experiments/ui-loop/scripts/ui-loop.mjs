@@ -131,7 +131,7 @@ async function revise(name) {
   for (let n = 0; n < 3; n++) {
     // Streamed, like the Maintainer, so the terminal shows the Reviser at work.
     process.stdout.write(`\n── Reviser · ${NAME} · ${name}${n ? `(第 ${n + 1} 次)` : ""}\n`)
-    const r = (await call(sys, [{ type: "text", text: user }], { key: KEY, label: `Reviser ${name}`, onThink: () => process.stdout.write("[思考中…]\n"), onText: (t) => process.stdout.write(t) })).json
+    const r = (await call(sys, [{ type: "text", text: user }], { key: KEY, label: `Reviser ${name}`, onThink: (s) => process.stdout.write(`[思考中… ${s} 秒]\n`), onText: (t) => process.stdout.write(t) })).json
     process.stdout.write("\n")
     if (!/^- \*\*G\d+/.test(r.new?.trim() ?? "")) { log(`reviser ${name}: 回复里没有 - **G<编号>** 开头的新规则,重写`); continue }
     let next

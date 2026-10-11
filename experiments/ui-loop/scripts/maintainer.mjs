@@ -82,7 +82,7 @@ export async function maintain({ skill, run, stage, guide, pairs, current }) {
   const user = `<components.md>\n${read(path.join(ROOT, "components.md"))}\n</components.md>\n\n<公共规范 design.md>\n${read(path.join(ROOT, "design.md"))}\n</公共规范>\n\n<输出指南>\n${read(path.resolve(ROOT, guide))}\n</输出指南>\n\n<训练样本数据>\n${data}\n</训练样本数据>\n\n<已有的问题清单>\n${JSON.stringify(prev, null, 1)}\n</已有的问题清单>\n\n<这一步:${STAGE[stage]},页面版本 ${run}>\n${stageInput(stage, run, split.train, pairs, current)}\n</这一步>`
   // The reply is printed as it arrives, so the terminal shows the Maintainer at work.
   process.stdout.write(`\n── Maintainer · ${split.name} · ${STAGE[stage]} · ${run}\n`)
-  const r = await call(SYSTEM(split.name), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, onThink: () => process.stdout.write("[思考中…]\n"), onText: (t) => process.stdout.write(t) })
+  const r = await call(SYSTEM(split.name), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, label: `Maintainer ${split.name}`, onThink: (s) => process.stdout.write(`[思考中… ${s} 秒]\n`), onText: (t) => process.stdout.write(t) })
   process.stdout.write("\n")
   const problems = r.json.problems ?? []
   const prevExp = fs.existsSync(expJson) ? JSON.parse(read(expJson)) : {}
@@ -118,7 +118,7 @@ export async function attempt({ skill, stage, base, run, candidate, change, acce
     : `${judgeInput(stage, Object.fromEntries(cases.map((c) => [c, [base, run]])), `${base} 是改动前,${run} 是改动后`)}\n\n${cases.map((c) => `<Page.tsx 改动 ${c}>\n${diff(c)}\n</Page.tsx 改动 ${c}>`).join("\n\n")}`
   const user = `<改动 ${candidate}>\n${JSON.stringify(change, null, 1)}\n</改动>\n\n<结果>${accepted ? "采用" : `未采用:${why}`}</结果>\n\n<问题清单>\n${JSON.stringify(exp.problems.filter((p) => p.status !== "已解决"), null, 1)}\n</问题清单>\n\n<训练页,${STAGE[stage]}>\n${pages}\n</训练页>`
   process.stdout.write(`\n── Maintainer · ${split.name} · ${candidate} 的效果\n`)
-  const r = await call(ATTEMPT(split.name, STAGE[stage]), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, onThink: () => process.stdout.write("[思考中…]\n"), onText: (t) => process.stdout.write(t) })
+  const r = await call(ATTEMPT(split.name, STAGE[stage]), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, label: `Maintainer ${split.name}`, onThink: (s) => process.stdout.write(`[思考中… ${s} 秒]\n`), onText: (t) => process.stdout.write(t) })
   process.stdout.write("\n")
   const a = { candidate, stage: STAGE[stage], rule: change.rule, basis: change.basis ?? [], accepted, why: why ?? "", summary: r.json.summary ?? "", fixed: r.json.fixed ?? [], unfixed: r.json.unfixed ?? [], new: r.json.new ?? [], lesson: r.json.lesson ?? "" }
   exp.attempts = [...(exp.attempts ?? []).filter((x) => x.candidate !== candidate), a]
