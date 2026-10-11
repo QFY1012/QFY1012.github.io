@@ -1,0 +1,395 @@
+{
+ "title": "九月客服质检月报",
+ "org": "澜岸家居 · 客户服务中心",
+ "period": "2026 年 9 月 1 日至 30 日",
+ "summary": "九月共受理会话 51,810 通，环比增长 6.8%。9 月 14 日至 19 日华南仓切换仓储系统，物流类咨询集中涌入，首次解决率降至 78.2%，平均首响时长拉长到 44 秒，满意度回落 1.2 个百分点。质检平均分 86.4 分，较上月提高 1.4 分，话术规范性持续改善；夜班组响应偏慢、售后服务组一次解决偏低是本月主要短板。",
+ "kpis": [
+  {
+   "key": "sessions",
+   "label": "会话量",
+   "value": "51,810",
+   "unit": "通",
+   "change": "+6.8%",
+   "direction": "up"
+  },
+  {
+   "key": "fcr",
+   "label": "首次解决率",
+   "value": "78.2",
+   "unit": "%",
+   "change": "−1.9 个百分点",
+   "direction": "down"
+  },
+  {
+   "key": "response",
+   "label": "平均首响时长",
+   "value": "44",
+   "unit": "秒",
+   "change": "+6 秒",
+   "direction": "down"
+  },
+  {
+   "key": "csat",
+   "label": "客户满意度",
+   "value": "90.3",
+   "unit": "%",
+   "change": "−1.2 个百分点",
+   "direction": "down"
+  }
+ ],
+ "qa": {
+  "score": 86.4,
+  "change": "+1.4 分",
+  "sampled": 2480,
+  "sampleRate": "4.8%",
+  "violations": 9,
+  "target": 85
+ },
+ "daily": [
+  {
+   "date": "9/1",
+   "weekday": "二",
+   "sessions": 1550,
+   "firstResponse": 40,
+   "fcr": 80.2
+  },
+  {
+   "date": "9/2",
+   "weekday": "三",
+   "sessions": 1510,
+   "firstResponse": 40,
+   "fcr": 79.2
+  },
+  {
+   "date": "9/3",
+   "weekday": "四",
+   "sessions": 1490,
+   "firstResponse": 43,
+   "fcr": 79
+  },
+  {
+   "date": "9/4",
+   "weekday": "五",
+   "sessions": 1550,
+   "firstResponse": 38,
+   "fcr": 78.5
+  },
+  {
+   "date": "9/5",
+   "weekday": "六",
+   "sessions": 1780,
+   "firstResponse": 41,
+   "fcr": 79.3
+  },
+  {
+   "date": "9/6",
+   "weekday": "日",
+   "sessions": 1710,
+   "firstResponse": 45,
+   "fcr": 80.1
+  },
+  {
+   "date": "9/7",
+   "weekday": "一",
+   "sessions": 1580,
+   "firstResponse": 40,
+   "fcr": 80.1
+  },
+  {
+   "date": "9/8",
+   "weekday": "二",
+   "sessions": 1500,
+   "firstResponse": 44,
+   "fcr": 78.1
+  },
+  {
+   "date": "9/9",
+   "weekday": "三",
+   "sessions": 1520,
+   "firstResponse": 40,
+   "fcr": 78.1
+  },
+  {
+   "date": "9/10",
+   "weekday": "四",
+   "sessions": 1530,
+   "firstResponse": 39,
+   "fcr": 79.1
+  },
+  {
+   "date": "9/11",
+   "weekday": "五",
+   "sessions": 1620,
+   "firstResponse": 38,
+   "fcr": 80.1
+  },
+  {
+   "date": "9/12",
+   "weekday": "六",
+   "sessions": 1870,
+   "firstResponse": 44,
+   "fcr": 79.9
+  },
+  {
+   "date": "9/13",
+   "weekday": "日",
+   "sessions": 1800,
+   "firstResponse": 43,
+   "fcr": 80.1
+  },
+  {
+   "date": "9/14",
+   "weekday": "一",
+   "sessions": 2010,
+   "firstResponse": 53,
+   "fcr": 75.1
+  },
+  {
+   "date": "9/15",
+   "weekday": "二",
+   "sessions": 1870,
+   "firstResponse": 57,
+   "fcr": 75.4
+  },
+  {
+   "date": "9/16",
+   "weekday": "三",
+   "sessions": 2040,
+   "firstResponse": 54,
+   "fcr": 75.4
+  },
+  {
+   "date": "9/17",
+   "weekday": "四",
+   "sessions": 1990,
+   "firstResponse": 53,
+   "fcr": 74.1
+  },
+  {
+   "date": "9/18",
+   "weekday": "五",
+   "sessions": 2000,
+   "firstResponse": 51,
+   "fcr": 75.4
+  },
+  {
+   "date": "9/19",
+   "weekday": "六",
+   "sessions": 2200,
+   "firstResponse": 55,
+   "fcr": 75.9
+  },
+  {
+   "date": "9/20",
+   "weekday": "日",
+   "sessions": 1800,
+   "firstResponse": 45,
+   "fcr": 78.9
+  },
+  {
+   "date": "9/21",
+   "weekday": "一",
+   "sessions": 1700,
+   "firstResponse": 39,
+   "fcr": 79.4
+  },
+  {
+   "date": "9/22",
+   "weekday": "二",
+   "sessions": 1630,
+   "firstResponse": 40,
+   "fcr": 78.4
+  },
+  {
+   "date": "9/23",
+   "weekday": "三",
+   "sessions": 1630,
+   "firstResponse": 40,
+   "fcr": 79.8
+  },
+  {
+   "date": "9/24",
+   "weekday": "四",
+   "sessions": 1600,
+   "firstResponse": 42,
+   "fcr": 80.2
+  },
+  {
+   "date": "9/25",
+   "weekday": "五",
+   "sessions": 1610,
+   "firstResponse": 42,
+   "fcr": 78.4
+  },
+  {
+   "date": "9/26",
+   "weekday": "六",
+   "sessions": 1930,
+   "firstResponse": 47,
+   "fcr": 78.3
+  },
+  {
+   "date": "9/27",
+   "weekday": "日",
+   "sessions": 1900,
+   "firstResponse": 45,
+   "fcr": 79.1
+  },
+  {
+   "date": "9/28",
+   "weekday": "一",
+   "sessions": 1580,
+   "firstResponse": 39,
+   "fcr": 79.6
+  },
+  {
+   "date": "9/29",
+   "weekday": "二",
+   "sessions": 1610,
+   "firstResponse": 39,
+   "fcr": 78.8
+  },
+  {
+   "date": "9/30",
+   "weekday": "三",
+   "sessions": 1700,
+   "firstResponse": 38,
+   "fcr": 78.1
+  }
+ ],
+ "teams": [
+  {
+   "name": "售前咨询一组",
+   "lead": "周宁",
+   "agents": 18,
+   "sessions": 11240,
+   "fcr": 82.6,
+   "firstResponse": 36,
+   "csat": 93.1,
+   "qa": 87.9
+  },
+  {
+   "name": "售前咨询二组",
+   "lead": "何晓楠",
+   "agents": 16,
+   "sessions": 9870,
+   "fcr": 80.9,
+   "firstResponse": 39,
+   "csat": 92,
+   "qa": 85.4
+  },
+  {
+   "name": "售后服务组",
+   "lead": "林佳",
+   "agents": 22,
+   "sessions": 13650,
+   "fcr": 74.8,
+   "firstResponse": 47,
+   "csat": 88.7,
+   "qa": 84.6
+  },
+  {
+   "name": "安装预约组",
+   "lead": "陈思远",
+   "agents": 12,
+   "sessions": 7320,
+   "fcr": 79.5,
+   "firstResponse": 41,
+   "csat": 91.4,
+   "qa": 86.2
+  },
+  {
+   "name": "投诉处理组",
+   "lead": "许蔓",
+   "agents": 8,
+   "sessions": 3180,
+   "fcr": 68.2,
+   "firstResponse": 33,
+   "csat": 85.9,
+   "qa": 91.2
+  },
+  {
+   "name": "夜班组",
+   "lead": "赵川",
+   "agents": 10,
+   "sessions": 6550,
+   "fcr": 76.1,
+   "firstResponse": 71,
+   "csat": 87.3,
+   "qa": 83.8
+  }
+ ],
+ "issues": [
+  {
+   "name": "物流配送",
+   "share": 31.4,
+   "change": "+8.2"
+  },
+  {
+   "name": "安装预约",
+   "share": 21.6,
+   "change": "−1.5"
+  },
+  {
+   "name": "退换货",
+   "share": 18.9,
+   "change": "−2.4"
+  },
+  {
+   "name": "产品质量",
+   "share": 15.3,
+   "change": "−1.8"
+  },
+  {
+   "name": "账户与支付",
+   "share": 7.2,
+   "change": "−0.9"
+  },
+  {
+   "name": "其他",
+   "share": 5.6,
+   "change": "−1.6"
+  }
+ ],
+ "findings": [
+  {
+   "title": "仓储切换带来物流咨询高峰",
+   "detail": "9 月 14 日至 19 日日均会话超过 2,000 通，物流配送类占比升至 31.4%，较上月高出 8.2 个百分点。"
+  },
+  {
+   "title": "夜班组首响时长接近白班两倍",
+   "detail": "夜班组平均首响 71 秒，21 点至 24 点排队最长，满意度 87.3% 位列倒数第二。"
+  },
+  {
+   "title": "投诉处理组质检得分领先",
+   "detail": "投诉处理组质检得分 91.2 分，安抚话术和升级流程执行最完整，可作为全中心的范例。"
+  }
+ ],
+ "actions": [
+  {
+   "title": "上线物流异常标准答复",
+   "detail": "10 月 15 日前完成仓配异常知识库更新，并在订单页自动推送物流节点，减少重复咨询。",
+   "owner": "知识库小组"
+  },
+  {
+   "title": "夜班高峰增加弹性坐席",
+   "detail": "21 点至 24 点增设 4 名弹性坐席，由白班自愿延时补位，目标将夜班首响压到 50 秒以内。",
+   "owner": "排班组"
+  },
+  {
+   "title": "推广投诉组优秀会话",
+   "detail": "每周精选 2 段投诉组会话做复盘，纳入新人培训与售后服务组的周例会。",
+   "owner": "质检组"
+  }
+ ],
+ "risks": [
+  {
+   "title": "大促前人力缺口",
+   "detail": "预计双十一期间会话量较九月增长约 40%，按现有人效测算坐席缺口约 18 人。"
+  },
+  {
+   "title": "仓储系统尚未完全稳定",
+   "detail": "华南仓仍有零星同步延迟，物流类咨询可能在十月继续偏高。"
+  }
+ ]
+}
