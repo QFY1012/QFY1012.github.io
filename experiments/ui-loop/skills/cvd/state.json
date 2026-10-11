@@ -8,5 +8,7 @@
  "history": [],
  "components": [
   "k1"
- ]
+ ],
+ "stage": "function",
+ "stageRounds": 0
 }
