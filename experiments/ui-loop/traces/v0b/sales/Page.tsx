@@ -71,14 +71,15 @@ export default function Report() {
           xKey="week"
           series={[{ key: "revenue", label: "周收入" }]}
           height="h-48"
+          yTicks={[2100, 2200, 2300]}
           xInterval={1}
           pointLabels="last"
         />
       </Section>
 
       <Section title="区域表现" description="各区收入与目标（万元）、达成率与同比">
-        <Grid cols={9} fields={false} className="items-start">
-          <Block span={6} title="各区收入与目标">
+        <Grid cols={9} fields={false}>
+          <Block span={6} rows={2} title="各区收入与目标">
             <DataTable
               columns={[
                 { key: "name", label: "区域", span: 1 },
@@ -96,7 +97,7 @@ export default function Report() {
               rows={regions.map((r) => ({ ...r, attain: `${r.attain}%` }))}
             />
           </Block>
-          <Block span={3} title="达成率">
+          <Block span={3} rows={2} title="达成率">
             <ProgressList
               compact
               items={regions.map((r) => ({

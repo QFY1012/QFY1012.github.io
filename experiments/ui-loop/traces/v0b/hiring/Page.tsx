@@ -119,7 +119,7 @@ export default function Report() {
             { key: "name", label: "岗位", span: 2 },
             { key: "dept", label: "部门", span: 2 },
             { key: "plan", label: "计划", span: 1, align: "right" },
-            { key: "hired", label: "入职", span: 1, align: "right" },
+            { key: "hired", label: "入职", span: 1, align: "right", bar: true },
             { key: "pending", label: "待入职", span: 1, align: "right" },
             { key: "applications", label: "简历量", span: 1, align: "right" },
             { key: "cycle", label: "周期(天)", span: 1, align: "right" },

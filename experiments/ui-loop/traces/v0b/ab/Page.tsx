@@ -14,24 +14,34 @@ import {
 const pct = (n: number) => `${n > 0 ? "+" : ""}${n}%`
 
 export default function Report() {
+  // 不显著的行整行灰显
+  const mute = { key: "significant", equals: false }
   const metricColumns = [
-    { key: "name", label: "指标", span: 2 },
-    { key: "control", label: "对照组", align: "right" as const, span: 1 },
-    { key: "treatment", label: "实验组", align: "right" as const, span: 1 },
+    { key: "name", label: "指标", span: 2, muteWhen: mute },
+    { key: "control", label: "对照组", align: "right" as const, span: 1, muteWhen: mute },
+    { key: "treatment", label: "实验组", align: "right" as const, span: 1, muteWhen: mute },
     {
       key: "lift",
       label: "提升",
       align: "right" as const,
       span: 1,
       tone: ["-6.9%"],
+      muteWhen: mute,
     },
     {
-      key: "ci",
+      key: "liftValue",
       label: "95% 区间",
       span: 2,
       interval: { low: "low", high: "high", domain: [-10, 15] },
+      muteWhen: mute,
     },
-    { key: "ciText", label: "", align: "right" as const, span: 2 },
+    {
+      key: "ciText",
+      label: "",
+      align: "right" as const,
+      span: 2,
+      muteWhen: mute,
+    },
   ]
 
   const metricRows = data.metrics.map((m) => ({
@@ -39,6 +49,7 @@ export default function Report() {
     control: m.control,
     treatment: m.treatment,
     lift: pct(m.lift),
+    liftValue: m.lift,
     low: m.ciLow,
     high: m.ciHigh,
     ciText: `${m.ciLow}% ~ ${m.ciHigh}%`,

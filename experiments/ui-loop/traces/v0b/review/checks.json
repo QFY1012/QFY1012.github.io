@@ -1,0 +1,46 @@
+[
+ {
+  "check": "元素越界",
+  "msg": "table[table] 超出页面左右边界 294px「组件\t问题\t处数\nButton\t4 处使用了自定义圆角\t\n4」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "colgroup[] 超出页面左右边界 294px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "col[] 超出页面左右边界 122px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "col[] 超出页面左右边界 294px「」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "thead[table-header] 超出页面左右边界 294px「组件\t问题\t处数」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "tr[table-row] 超出页面左右边界 294px「组件\t问题\t处数」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "th[table-head] 超出页面左右边界 122px「问题」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "th[table-head] 超出页面左右边界 294px「处数」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "tbody[table-body] 超出页面左右边界 294px「Button\t4 处使用了自定义圆角\t\n4\n\nBadge\t状」"
+ },
+ {
+  "check": "元素越界",
+  "msg": "tr[table-row] 超出页面左右边界 294px「Button\t4 处使用了自定义圆角\t\n4」"
+ },
+ {
+  "check": "数据忠实",
+  "msg": "页面上找不到 5 项数据:/trend/0/issues「41」、/trend/1/issues「37」、/trend/2/issues「35」、/trend/3/issues「30」、/trend/4/issues「32」"
+ }
+]

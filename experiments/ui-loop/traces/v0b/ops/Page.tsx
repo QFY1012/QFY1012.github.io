@@ -54,14 +54,14 @@ export default function Report() {
               pointLabels="last"
             />
           </Block>
-          <Block span={3} rows={2} title="周日均日活">
+          <Block span={3} rows={2} title="周日均日活（万）">
             <ProgressList
               compact
               items={data.dauWeekly.map((w) => ({
                 label: w.week,
                 value: w.dau,
                 max: WEEK_MAX,
-                display: `${w.dau} 万`,
+                display: `${w.dau}`,
               }))}
             />
           </Block>

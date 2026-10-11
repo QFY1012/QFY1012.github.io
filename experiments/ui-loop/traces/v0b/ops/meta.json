@@ -1,0 +1,19 @@
+{
+ "case": "ops",
+ "design": {
+  "version": "v0b",
+  "file": "designs/v0.md",
+  "sha": "cbcfb0f5"
+ },
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 236,
+ "usage": {
+  "input": 54481,
+  "output": 23041
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已完成，程序检查全部通过。\n\n**结构**：页头（产品/周期 + 标题）→ 结论（24px 结论句）→ 核心指标（4 个 `Stat`，成交额为主指标 48px，转化率环比下降标红）→ 时间趋势（左侧 6 列日活折线图只标末点、右侧 3 列周日均 `ProgressList`）→ 拆分（渠道占比 `ProgressList` 占 3 列）→ 明细（品类 `DataTable`，成交额/环比/占比带细条，海鲜水产环比标红）→ 发现（编号 `List`）→ 风险（三列 `List`，等级红字）→ 背景信息（`KV`）。"
+}
