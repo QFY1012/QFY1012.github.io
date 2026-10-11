@@ -1,0 +1,35 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "c1",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5d5b8cb8",
+ "guide": {
+  "file": "skills/cvd/guides/c1.md",
+  "sha": "a2b62c01"
+ },
+ "base": "cvd-g0-k1",
+ "change": {
+  "rule": "G1",
+  "old": "",
+  "new": "- **G1 颜色表的列与位置**: `palette`、`confusions`、`contrast`、`fixes` 四张表放进同一节「色板与检查」,依次排成四张 `DataTable`(每张用 `caption` 写表名「配色」「混淆色」「对比度」「修复」),表与表之间 24px,中间不插别的块;这一节紧跟「模拟视图」一节之后,排在问题清单之前。凡单元格里出现颜色值的地方都写成「名称 色值」(如 `系列 2 #52C41A`),名称取 `palette` 里 `hex` 相同的 `name`,在 `palette` 里找不到的只写色值。`palette` 三列:名称(span 2)、色值(span 2)、用途(span 5)。`confusions` 七列:位置 `where`(span 2)、颜色对(span 2,`colors` 两个色值按上面的写法用「/」相连)、正常 `normal`(span 1,`align: \"right\"`)、红色盲(span 1,`align: \"right\"`)、绿色盲(span 1,`align: \"right\"`)、蓝色盲(span 1,`align: \"right\"`)、受影响 `affected`(span 1,用「、」拼),四个色差列里该行 `affected` 列出的类型的数值放进该列 `tone` 标红。`contrast` 六列:位置 `where`(span 3)、文字色 `fg`(span 1)、背景色 `bg`(span 1)、对比度 `ratio`(span 1,`align: \"right\"`)、要求 `required`(span 1,`align: \"right\"`)、结果(span 2,`pass` 为 false 的写「不达标」并放进该列 `tone`)。`fixes` 六列:位置 `where`(span 2)、原色 `from`(span 1)、建议色 `to`(span 1)、背景 `bg`(span 1)、修复前 `before`(span 2,`align: \"right\"`)、修复后 `after`(span 2,`align: \"right\"`)。",
+  "basis": [
+   "P-05"
+  ],
+  "why": "布局问题里 P-05 与 P-06 并列最多(各 4 页),先改 P-05:配色、混淆色、对比度、修复四张表分散在不同节,同一颜色又分别用名称、系列编号、色值三种写法,读者要跨节做字符串比对;合并成一节、统一写成「名称 色值」并给每张表定死列与 span,所有字段都有落点。"
+ },
+ "changedLines": 148,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 358,
+ "usage": {
+  "input": 85860,
+  "output": 21030
+ },
+ "stop": "stop",
+ "summary": "改完了,程序检查全部通过。\n\n**这次改动**(只动了 G1 相关的地方):\n- 把原来的「配色」「颜色混淆」「对比度」「修复建议」四节合并成一节 **「色板与检查」**,放在「模拟视图」之后、「问题清单」之前;四张 `DataTable` 依次排在同一个 `Group` 里(24px 间距),各带 `caption`:配色 / 混淆色 / 对比度 / 修复,中间不插别的块。\n- 列与 span 按规则重排:palette(名称 2 / 色值 2 / 用途 5)、confusions(位置 2 / 颜色对 2 / 正常、红色盲、绿色盲、蓝色盲各 1 右对齐 / 受影响 1)、contrast(位置 3 / 文字色 1 / 背景色 1 / 对比度 1 右对齐 / 要求 1 右对齐 / 结果 2,`pass:false` 写「不达标」并进 `tone`)、fixes(位置 2 / 原色 1 / 建议色 1 / 背景 1 / 修复前 2 右对齐 / 修复后 2 右对齐)。\n- 所有出现色值的单元格写成「名称 色值」(`cname()` 按 `palette.hex` 查名,查不到只写色值);confusions 四个色差列按该行 `affected` 把对应数值放进该列 `tone` 标红。\n- 原「颜色混淆」节里的「受影响问题数」`ProgressList` 挪出,单独成节 **「影响人群」**,排在「色板与检查」和「问题清单」之间(四张表之间因此没有别的块)。其余部分未动。\n\n没有缺少组件的情况;`palette` 表的「色值」列按规则字面也写成了「名称 色值」(与左侧「名称」列并列,略重复,但符合「凡单元格里出现颜色值的地方都写成『名称 色值』」)。",
+ "checks": []
+}

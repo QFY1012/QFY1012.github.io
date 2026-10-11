@@ -26,7 +26,7 @@ const confusionRows = data.confusions.map((c) => ({
   affected: c.affected.length > 0 ? c.affected.join("、") : "—",
 }))
 
-const confusionTone = (type: string, key: "protan" | "deuter" | "tritan") =>
+const confusionTone = (type: string, key: "红色盲" | "绿色盲" | "蓝色盲") =>
   data.confusions
     .filter((c) => c.affected.includes(type))
     .map((c) => c[key].toFixed(1))
@@ -136,21 +136,21 @@ export default function Report() {
                 label: "红色盲",
                 align: "right",
                 span: 1,
-                tone: confusionTone("红色盲", "protan"),
+                tone: confusionTone("红色盲", "红色盲"),
               },
               {
                 key: "deuter",
                 label: "绿色盲",
                 align: "right",
                 span: 1,
-                tone: confusionTone("绿色盲", "deuter"),
+                tone: confusionTone("绿色盲", "绿色盲"),
               },
               {
                 key: "tritan",
                 label: "蓝色盲",
                 align: "right",
                 span: 1,
-                tone: confusionTone("蓝色盲", "tritan"),
+                tone: confusionTone("蓝色盲", "蓝色盲"),
               },
               { key: "affected", label: "受影响", span: 1 },
             ]}

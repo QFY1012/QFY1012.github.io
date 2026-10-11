@@ -1,5 +1,5 @@
 import data from "./data.json"
-import { Page, Section, Grid, Text, Stat, DataTable, KV, FigureStrip, Figure, FigureImage, FigureLabel } from "@/components/report"
+import { Page, Section, Group, Grid, Text, Stat, DataTable, KV, FigureStrip, Figure, FigureImage, FigureLabel } from "@/components/report"
 
 const KPI_NOTES: Record<string, string> = {
   pairs: "覆盖 14 个颜色 token",
@@ -11,6 +11,17 @@ const KPI_NOTES: Record<string, string> = {
 export default function Report() {
   const kpi = (key: string) => data.kpis.find((k) => k.key === key)!
 
+  // A color value always reads as "name hex" when the name is in the palette.
+  const colorLabel = (hex: string) => {
+    const name = data.palette.find((p) => p.hex.toUpperCase() === hex.toUpperCase())?.name
+    return name ? `${name} ${hex}` : hex
+  }
+  // The ΔE cells the row's affected types call out, so they can be toned.
+  const confusionTone = (type: string) =>
+    data.confusions
+      .filter((c) => c.affected.includes(type))
+      .map((c) => String((c as Record<string, unknown>)[type]))
+
   const paletteRows = data.palette.map((p) => ({
     name: p.name,
     hex: p.hex,
@@ -19,6 +30,7 @@ export default function Report() {
 
   const confusionRows = data.confusions.map((c) => ({
     where: c.where,
+    pair: c.colors.map(colorLabel).join("/"),
     normal: c.normal,
     红色盲: c["红色盲"],
     绿色盲: c["绿色盲"],
@@ -28,6 +40,8 @@ export default function Report() {
 
   const contrastRows = data.contrast.map((c) => ({
     where: c.where,
+    fg: colorLabel(c.fg),
+    bg: colorLabel(c.bg),
     ratio: c.ratio,
     required: c.required,
     result: c.pass ? "达标" : "不达标",
@@ -43,9 +57,9 @@ export default function Report() {
 
   const fixRows = data.fixes.map((f) => ({
     where: f.where,
-    from: f.from,
-    to: f.to,
-    bg: f.bg,
+    from: colorLabel(f.from),
+    to: colorLabel(f.to),
+    bg: colorLabel(f.bg),
     before: f.before,
     after: f.after,
   }))
@@ -97,17 +111,6 @@ export default function Report() {
         </Grid>
       </Section>
 
-      <Section title="色板" description="被检查的 14 个颜色 token">
-        <DataTable
-          columns={[
-            { key: "name", label: "Token", span: 3 },
-            { key: "hex", label: "色值", span: 3 },
-            { key: "usage", label: "用途", span: 3 },
-          ]}
-          rows={paletteRows}
-        />
-      </Section>
-
       <Section title="模拟视图" description="原界面与三种色盲模拟下的色板">
         <FigureStrip>
           {data.screens.map((s) => (
@@ -119,7 +122,58 @@ export default function Report() {
         </FigureStrip>
       </Section>
 
-      <Section title="色盲影响" description="各类型色盲下的问题数与易混淆色对,ΔE 小于 12 视为难以区分" className="gap-12">
+      <Section title="色板与检查" description="配色、混淆色、对比度与修复四项检查">
+        <Group>
+          <DataTable
+            caption="配色"
+            columns={[
+              { key: "name", label: "名称", span: 2 },
+              { key: "hex", label: "色值", span: 2 },
+              { key: "usage", label: "用途", span: 5 },
+            ]}
+            rows={paletteRows}
+          />
+          <DataTable
+            caption="混淆色"
+            columns={[
+              { key: "where", label: "位置", span: 2 },
+              { key: "pair", label: "颜色对", span: 2 },
+              { key: "normal", label: "正常", span: 1, align: "right" },
+              { key: "红色盲", label: "红色盲", span: 1, align: "right", tone: confusionTone("红色盲") },
+              { key: "绿色盲", label: "绿色盲", span: 1, align: "right", tone: confusionTone("绿色盲") },
+              { key: "蓝色盲", label: "蓝色盲", span: 1, align: "right", tone: confusionTone("蓝色盲") },
+              { key: "affected", label: "受影响", span: 1 },
+            ]}
+            rows={confusionRows}
+          />
+          <DataTable
+            caption="对比度"
+            columns={[
+              { key: "where", label: "位置", span: 3 },
+              { key: "fg", label: "文字色", span: 1 },
+              { key: "bg", label: "背景色", span: 1 },
+              { key: "ratio", label: "对比度", span: 1, align: "right" },
+              { key: "required", label: "要求", span: 1, align: "right" },
+              { key: "result", label: "结果", span: 2, tone: ["不达标"] },
+            ]}
+            rows={contrastRows}
+          />
+          <DataTable
+            caption="修复"
+            columns={[
+              { key: "where", label: "位置", span: 2 },
+              { key: "from", label: "原色", span: 1 },
+              { key: "to", label: "建议色", span: 1 },
+              { key: "bg", label: "背景", span: 1 },
+              { key: "before", label: "修复前", span: 2, align: "right" },
+              { key: "after", label: "修复后", span: 2, align: "right" },
+            ]}
+            rows={fixRows}
+          />
+        </Group>
+      </Section>
+
+      <Section title="色盲影响" description="各类型色盲下发现的问题数">
         <Grid cols={9} fields={false} className="items-baseline">
           {data.byType.map((t) => (
             <Stat
@@ -132,29 +186,6 @@ export default function Report() {
             />
           ))}
         </Grid>
-        <DataTable
-          columns={[
-            { key: "where", label: "颜色对", span: 3 },
-            { key: "normal", label: "正常视觉", span: 1, align: "right" },
-            { key: "红色盲", label: "红色盲", span: 1, align: "right", tone: ["0.3"] },
-            { key: "绿色盲", label: "绿色盲", span: 1, align: "right", tone: ["5.9", "8.2"] },
-            { key: "蓝色盲", label: "蓝色盲", span: 1, align: "right" },
-            { key: "affected", label: "受影响类型", span: 2 },
-          ]}
-          rows={confusionRows}
-        />
-      </Section>
-
-      <Section title="对比度" description="18 组文字与背景组合,要求 4.5:1(大标题 3:1)">
-        <DataTable
-          columns={[
-            { key: "where", label: "文字 / 背景组合", span: 4 },
-            { key: "ratio", label: "对比度", span: 2, align: "right" },
-            { key: "required", label: "要求", span: 1, align: "right" },
-            { key: "result", label: "结果", span: 2, tone: ["不达标"] },
-          ]}
-          rows={contrastRows}
-        />
       </Section>
 
       <Section title="问题" description="5 个问题,含混淆色与对比度不足两类">
@@ -167,20 +198,6 @@ export default function Report() {
             { key: "suggestion", label: "建议", span: 2 },
           ]}
           rows={issueRows}
-        />
-      </Section>
-
-      <Section title="修正" description="5 项建议替换色值与修正后的对比度">
-        <DataTable
-          columns={[
-            { key: "where", label: "位置", span: 2 },
-            { key: "from", label: "原色值", span: 1 },
-            { key: "to", label: "建议色值", span: 1 },
-            { key: "bg", label: "背景", span: 1 },
-            { key: "before", label: "修正前", span: 2, align: "right" },
-            { key: "after", label: "修正后", span: 2, align: "right" },
-          ]}
-          rows={fixRows}
         />
       </Section>
 
