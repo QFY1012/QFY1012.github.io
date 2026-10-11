@@ -55,7 +55,10 @@ export async function maintain({ skill, run, stage, base, guide }) {
   const prev = fs.existsSync(expJson) ? JSON.parse(read(expJson)).problems : []
   const data = split.train.map((c) => `<${c}.json>\n${read(path.join(dir, "data", `${c}.json`))}</${c}.json>`).join("\n")
   const user = `<components.md>\n${read(path.join(ROOT, "components.md"))}\n</components.md>\n\n<公共规范 design.md>\n${read(path.join(ROOT, "design.md"))}\n</公共规范>\n\n<输出指南>\n${read(path.resolve(ROOT, guide))}\n</输出指南>\n\n<训练样本数据>\n${data}\n</训练样本数据>\n\n<已有的问题清单>\n${JSON.stringify(prev, null, 1)}\n</已有的问题清单>\n\n<这一步:${STAGE[stage]},页面版本 ${run}>\n${stageInput(stage, run, split.train, base)}\n</这一步>`
-  const r = await call(SYSTEM(split.name), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY })
+  // The reply is printed as it arrives, so the terminal shows the Maintainer at work.
+  process.stdout.write(`\n── Maintainer · ${split.name} · ${STAGE[stage]} · ${run}\n`)
+  const r = await call(SYSTEM(split.name), [{ type: "text", text: user }], { key: process.env.DEEPSEEK_API_KEY, onThink: () => process.stdout.write("[思考中…]\n"), onText: (t) => process.stdout.write(t) })
+  process.stdout.write("\n")
   const problems = r.json.problems ?? []
   fs.writeFileSync(expJson, JSON.stringify({ skill, updated: { run, stage: STAGE[stage] }, problems }, null, 1))
   const open = problems.filter((p) => p.status !== "已解决")

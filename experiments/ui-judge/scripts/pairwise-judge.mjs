@@ -522,7 +522,8 @@ export const JUDGE_EFFORT = process.env.JUDGE_EFFORT ?? "low"
 // the first bytes (reading a dozen screenshots takes the endpoint more than 10), then 10 seconds
 // between chunks once the reply has started. A long reply that keeps arriving is not cut.
 const FIRST_MS = 60_000, IDLE_MS = 10_000
-export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JUDGE_EFFORT }) {
+// onText: called with each piece of the reply as it arrives (thinking is not passed, only marked by onThink once).
+export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JUDGE_EFFORT, onText, onThink }) {
   const body = { model, messages: [{ role: "system", content: sys }, { role: "user", content }], response_format: { type: "json_object" }, reasoning_effort: effort, max_tokens: 32000, stream: true, stream_options: { include_usage: true } }
   for (let attempt = 0; ; attempt++) {
     const t0 = Date.now()
@@ -537,7 +538,7 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
         signal: ac.signal,
       })
       if (!r.ok) throw new Error(`${r.status} ${(await r.text()).slice(0, 300)}`)
-      let buf = "", text = "", usage
+      let buf = "", text = "", usage, thought = false
       const dec = new TextDecoder()
       for await (const chunk of r.body) {
         // Keep-alive lines (": ...") before the reply starts do not count as the reply.
@@ -551,7 +552,9 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
           const data = line.slice(5).trim()
           if (data === "[DONE]") continue
           const j = JSON.parse(data)
-          text += j.choices?.[0]?.delta?.content ?? ""
+          const d = j.choices?.[0]?.delta ?? {}
+          if (d.reasoning_content && !thought) { thought = true; onThink?.() }
+          if (d.content) { text += d.content; onText?.(d.content) }
           if (j.usage) usage = j.usage
         }
       }
