@@ -1,0 +1,10 @@
+[
+ {
+  "check": "数据忠实",
+  "msg": "页面上没有显示 12 张图:assets/p1-01.png、assets/p1-02.png、assets/p1-03.png、assets/p1-04.png、assets/p2-01.png、assets/p2-02.png 等"
+ },
+ {
+  "check": "数据忠实",
+  "msg": "页面上找不到 1 项数据:/issues/2/severity「低」"
+ }
+]
