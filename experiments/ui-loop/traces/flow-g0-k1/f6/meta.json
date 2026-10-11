@@ -1,0 +1,31 @@
+{
+ "case": "f6",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5d5b8cb8",
+ "guide": {
+  "file": "skills/flow/guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": "flow-g0",
+ "change": {
+  "kind": "component",
+  "name": "k1",
+  "summary": "组件库新增:FigureStrip、Figure、FigureImage、FigureLabel、FigureText。用法见 components.md。"
+ },
+ "changedLines": 21,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 104,
+ "usage": {
+  "input": 15773,
+  "output": 2345
+ },
+ "stop": "stop",
+ "summary": "The page renders correctly with the new components. The 步骤截图 section now uses `FigureStrip`/`Figure`/`FigureImage`/`FigureLabel`/`FigureText`: each product is a `Group`, and its steps form one horizontally-scrollable strip with the step label and content/action/inputs caption below each screenshot — replacing the previous `createElement(\"img\", …)` workaround. Program checks all pass.\n\nPage structure (unchanged except the screenshot section): 结论 → 核心指标 → 产品对比 → 环节差异 → 典型模式 → 流程明细 → 步骤截图（现用 FigureStrip）→ 问题明细 → 下一步 → 背景信息。",
+ "checks": []
+}
