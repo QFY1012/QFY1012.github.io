@@ -240,10 +240,14 @@ function merge(name) {
   p.status = "采用"
   save()
   const summary = p.rounds.at(-1).summary
+  // What the page generator is told: the parts the change adds (the last round's summary only
+  // describes its own tweak); how to use them is in components.md.
+  const added = [...patch.matchAll(/^\+export function (\w+)/gm)].map((m) => m[1])
+  const change_ = `组件库新增:${added.join("、")}。用法见 components.md。`
   fs.appendFileSync(LOG, `\n## ${name}  结果:采用(${p.rounds.length} 版)\n\n需求 ${p.requests} 条。示例和说明见 library/${name}.md,改动见 library/${name}.patch。${p.rounds.slice(1).map((r, i) => `\n- 第 ${i + 2} 版的审批意见:${r.feedback}`).join("")}\n\n${summary}\n`)
   // Every Skill's current pages, edited for the change; checks start again from the program checks.
   const change = path.join(LIB, `${name}.change.json`)
-  fs.writeFileSync(change, JSON.stringify({ kind: "component", name, summary }, null, 1))
+  fs.writeFileSync(change, JSON.stringify({ kind: "component", name, summary: change_ }, null, 1))
   for (const sk of Object.keys(split)) {
     const stFile = path.join(ROOT, "skills", sk, "state.json")
     const st = fs.existsSync(stFile) ? JSON.parse(read(stFile)) : { current: "g0", currentRun: `${sk}-g0`, versions: 0, round: 0, rejected: 0, sinceCheckpoint: 0, history: [] }

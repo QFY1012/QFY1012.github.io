@@ -47,24 +47,6 @@ index de79a21..9b29517 100644
 +export function FigureText({ className, ...props }: React.ComponentProps<"div">) {
 +  return <div data-slot="figure-text" className={cn("text-sm leading-6", className)} {...props} />
 +}
-diff --git a/src/components/ui/aspect-ratio.tsx b/src/components/ui/aspect-ratio.tsx
-new file mode 100644
-index 0000000..ecf43ba
---- /dev/null
-+++ b/src/components/ui/aspect-ratio.tsx
-@@ -0,0 +1,12 @@
-+"use client"
-+
-+import * as React from "react"
-+import { AspectRatio as AspectRatioPrimitive } from "radix-ui"
-+
-+function AspectRatio({
-+  ...props
-+}: React.ComponentProps<typeof AspectRatioPrimitive.Root>) {
-+  return <AspectRatioPrimitive.Root data-slot="aspect-ratio" {...props} />
-+}
-+
-+export { AspectRatio }
 diff --git a/src/components/ui/scroll-area.tsx b/src/components/ui/scroll-area.tsx
 new file mode 100644
 index 0000000..737d492

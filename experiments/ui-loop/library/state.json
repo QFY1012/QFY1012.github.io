@@ -2,7 +2,7 @@
  "next": 2,
  "proposals": {
   "k1": {
-   "status": "待审",
+   "status": "采用",
    "demo": "flow/f1",
    "requests": 2,
    "rejected": "",

@@ -1,0 +1,5 @@
+{
+ "kind": "component",
+ "name": "k1",
+ "summary": "组件库新增:FigureStrip、Figure、FigureImage、FigureLabel、FigureText。用法见 components.md。"
+}
