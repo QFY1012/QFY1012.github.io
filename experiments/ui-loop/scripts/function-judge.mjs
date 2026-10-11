@@ -36,9 +36,17 @@ export async function functionJudge(run, cases, repeat = 1) {
       const ws = path.join(ROOT, "traces", run, c)
       const imgs = pageImages(ws)
       try {
-        const r = await call(SYSTEM, [
-          { type: "text", text: `<data.json>\n${fs.readFileSync(path.join(ws, "data.json"), "utf8")}\n</data.json>\n\n页面截图共 ${imgs.length} 张:` }, ...imgs,
-        ], { key })
+        let r
+        // Now and then the model says the screenshots never arrived and returns empty lists with a
+        // note; that is no check at all, so ask again.
+        for (let n = 0; n < 3; n++) {
+          r = await call(SYSTEM, [
+            { type: "text", text: `<data.json>\n${fs.readFileSync(path.join(ws, "data.json"), "utf8")}\n</data.json>\n\n页面截图共 ${imgs.length} 张:` }, ...imgs,
+          ], { key })
+          if (!(r.json.note && !r.json.unused?.length && !r.json.inconvenient?.length)) break
+          console.error(`  需求 judge ${run}/${c}:没看到截图(${r.json.note.slice(0, 40)}…),重试`)
+          if (n === 2) throw new Error("3 次都没看到截图")
+        }
         fs.writeFileSync(file, JSON.stringify(r.json, null, 1))
         console.log(`  需求 judge ${run}/${c} ${path.basename(file, ".json")}:数据没用完 ${r.json.unused?.length ?? 0} 条,不方便 ${r.json.inconvenient?.length ?? 0} 条`)
       } catch (e) {
