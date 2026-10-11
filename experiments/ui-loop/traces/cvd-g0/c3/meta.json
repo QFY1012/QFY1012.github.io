@@ -1,0 +1,26 @@
+{
+ "case": "c3",
+ "design": {
+  "version": "g0",
+  "file": "design.md",
+  "sha": "cbcfb0f5"
+ },
+ "guide": {
+  "file": "skills/cvd/guides/g0.md",
+  "sha": "8821d4c4"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 498,
+ "usage": {
+  "input": 89073,
+  "output": 26750
+ },
+ "stop": "stop",
+ "checks": [],
+ "summary": "页面已完成，程序检查全部通过。\n\n结构（页头 + 7 节，左 3 列标题 / 右 9 列内容）：\n- **页头**：meta 为产品与日期，标题「色觉无障碍分析 · 路况图层」\n- **结论**：24px 细体结论句（判定 + summary）\n- **核心指标**：4 个 `Stat`（问题总数 4 个为 lg 主指标，其余对比度不达标 2 组、难以区分 2 对、检查组合 4 组），一行 3 个\n- **颜色**：色板表（颜色/色值/用途）+ 对比度表（场景/前景/背景/对比度/要求/结果），不达标结果标红\n- **模拟色差**：3 列宽 `Block` 里的 `ProgressList`（按色盲类型的问题数）+ ΔE 明细表，低于 12 的两个值（8.2、8.9）标红\n- **问题明细**：`DataTable`，严重度「高」标红，末列给修改建议\n- **下一步**：三列并排的编号 `List`，每条建议对应一个问题\n- **背景信息**：`KV`（检查对象、判定、标准、方法、日期）"
+}
