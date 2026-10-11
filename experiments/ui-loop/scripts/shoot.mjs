@@ -20,8 +20,9 @@ import { createRequire } from "node:module"
 
 const require = createRequire(import.meta.url)
 
-const APP = path.resolve(import.meta.dirname, "..", "app")
 const ws = path.resolve(process.argv[2] ?? ".")
+// The component library: the shared one, or a candidate the component agent is working on in <ws>/app.
+const APP = fs.existsSync(path.join(ws, "app", "index.html")) ? path.join(ws, "app") : path.resolve(import.meta.dirname, "..", "app")
 const OUT = path.join(ws, ".build")
 const VIEWPORT = { width: 1440, height: 900 }
 const CLIP_X = (VIEWPORT.width - 1152) / 2 - 48
@@ -76,6 +77,8 @@ try {
     },
     build: { outDir: OUT, emptyOutDir: true, chunkSizeWarningLimit: 8000 },
   })
+  // The data's images (assets/<file>), served next to the page so components can show them.
+  if (fs.existsSync(path.join(ws, "assets"))) fs.cpSync(path.join(ws, "assets"), path.join(OUT, "assets"), { recursive: true })
 } catch (e) {
   add("能渲染", `构建失败:${String(e.message ?? e).split("\n").slice(0, 6).join(" ")}`)
   finish()
@@ -83,7 +86,7 @@ try {
 }
 
 // ---------- render ----------
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".woff2": "font/woff2", ".woff": "font/woff" }
+const MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".woff2": "font/woff2", ".woff": "font/woff" }
 const server = http.createServer((req, res) => {
   const p = path.join(OUT, decodeURIComponent(new URL(req.url, "http://x").pathname))
   if (!p.startsWith(OUT) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) return res.writeHead(404).end()

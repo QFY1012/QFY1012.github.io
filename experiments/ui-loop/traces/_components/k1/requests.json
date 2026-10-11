@@ -1,0 +1,128 @@
+[
+ {
+  "run": "flow-g0",
+  "case": "f1",
+  "stage": "program",
+  "what": "数据里的 26 张截图(assets/p1-01.png 等)在页面上完全没有显示,「步骤明细」一节只呈现了表格文字",
+  "fix": "组件库:缺能渲染图片的能力——需要一个图片/截图组件(或 DataTable 列支持图片值),接收 assets 路径并按网格列宽显示;现有组件无法解决,故归因组件库。"
+ },
+ {
+  "run": "flow-g0",
+  "case": "f2",
+  "stage": "program",
+  "what": "链路明细里 9 张截图用原生 <img> 元素渲染,不是组件库画的",
+  "fix": "组件库:缺一个图片/截图组件——能接收图片路径(由构建器解析成可加载资源)、alt 文本,并让图片宽度随所在栏宽自适应缩放(如占 span 列、`w-full` 行为由组件给出)"
+ },
+ {
+  "run": "flow-g0",
+  "case": "f3",
+  "stage": "program",
+  "what": "Page.tsx 第 10 行用 React.createElement(\"img\") 直接画图片元素，而不是用组件库组件",
+  "fix": "组件库：缺一个展示图片的组件（例如 Image / Shot，接受 src、alt、高度等 props），现有组件无法呈现截图这类位图内容。"
+ },
+ {
+  "run": "flow-g0",
+  "case": "f3",
+  "stage": "program",
+  "what": "页面上有 12 个不是组件库画的 <img> 元素，属于组件库没有的能力被自己实现",
+  "fix": "组件库：缺图片组件这一项能力，应在组件库中补上（支持从 assets 取图、给定 alt 与高度），而不是在 Page.tsx 里手写 img；补齐前该节内容无法用现有组件表达。"
+ },
+ {
+  "run": "flow-g0",
+  "case": "f4",
+  "stage": "program",
+  "what": "页面上的 13 张截图不是组件库画的,而是在 Shot 里用 DOM API 新建 <img> 元素挂到 div 上",
+  "fix": "组件库:缺一个图片组件(例如 `Image` / `Shot`,接受 `src`、`alt`,并支持 `span`/`className` 在 Grid、Block 里占位),现在只能绕过组件库手写 <img>,需要把这个能力补进 components.md"
+ },
+ {
+  "run": "flow-g0",
+  "case": "f5",
+  "stage": "program",
+  "what": "第 12 行用 React.createElement 直接画 <img>,没走组件库",
+  "fix": "组件库:缺图片组件。需要新增一个能接收 src、alt 和裁切/比例(如 object-cover object-top)的图片组件,页面才能按规范显示截图"
+ },
+ {
+  "run": "flow-g0",
+  "case": "f5",
+  "stage": "program",
+  "what": "页面上有 18 个不是组件库画的 <img> 元素",
+  "fix": "组件库:缺图片组件。组件库没有的能力不该自己画,应新增图片组件(或明确截图不许上图、改用文字描述),并在说明里写出缺什么组件"
+ },
+ {
+  "run": "flow-g0",
+  "case": "f6",
+  "stage": "program",
+  "what": "第 99 行用 createElement 直接画 <img> 显示步骤截图,没用组件库组件",
+  "fix": "组件库:缺显示图片的能力,应补一个图片/截图组件(如 `Image`/`Shot`),支持 `src`、`alt`、宽度铺满和可选的 `title`/说明,否则只能用 createElement 画原生 img"
+ },
+ {
+  "run": "flow-g0",
+  "case": "f6",
+  "stage": "program",
+  "what": "整页 27 个 <img> 元素都不是组件库画的,缺图片组件这件事也没写进最后的说明",
+  "fix": "组件库:缺图片/截图组件这一能力,需在组件库中补上;在补齐前,应在页面末尾按要求写明「缺图片组件」,而不是静默地画 27 个原生 <img>"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c1",
+  "stage": "program",
+  "what": "第 88 行直接用原生 <img> 渲染模拟视图截图,没有走组件库组件",
+  "fix": "组件库:components.md 的组件表里没有任何能显示图片的组件(只有 Text/Stat/DataTable/TrendChart/BarChart/ProgressList/List/KV),缺一个图片组件(例如 Image/Figure,接受 src、alt,可带图注)。Page.tsx 里的注释也说明了这一点:「The report library has no image component, so the four screenshots are the one place a raw image element is needed」"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c1",
+  "stage": "program",
+  "what": "页面上有 4 个不是组件库绘制的元素(4 个 <img>),缺的能力没有只在说明里写出来而是自己画了",
+  "fix": "组件库:缺能展示截图的组件。需要新增一个图片组件(接受 src/alt,可选 caption),并在最终说明里写明「组件库缺少图片组件」,由组件库补上后页面改用该组件,而不是在 Page.tsx 里自己写 <img>"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c2",
+  "stage": "program",
+  "what": "页面没有显示 4 张色觉模拟图(assets/original.png、protanopia.png、deuteranopia.png、tritanopia.png),数据里的模拟视图素材完全没呈现",
+  "fix": "组件库:缺图片能力。需要新增一个能渲染 assets 图片的组件(如 Image/Figure,接受 src、alt/说明,可在 Grid 里占 span),页面才能把这 4 张模拟图放进对应一节;现有组件和 props 都做不到显示图片。"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c3",
+  "stage": "program",
+  "what": "页面上有 4 个 <img> 是页面自己写的原生标签,不是组件库画的元素",
+  "fix": "组件库:缺图片/截图组件的能力——需要一个能接收 src、alt、可选 span 的图片组件(或给 Block 增加 image props),让「原界面与三种色觉模拟」这类图像证据不用写原生标签就能呈现"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c4",
+  "stage": "program",
+  "what": "页面上 4 张色盲模拟截图用 <img> 手写元素显示,不是组件库画的。",
+  "fix": "组件库:缺一个图片组件(如 Image/Figure,props 含 src、alt,可选 caption 说明文字),能直接显示 assets 下的截图;有了它这一节的 4 张模拟视图就不必用 <img> 手写。"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c5",
+  "stage": "program",
+  "what": "页面用 createElement 直接画了 4 个 <img> 来放截图,不是组件库组件",
+  "fix": "组件库缺能力:缺一个图片/截图组件(如 Image/Figure,接受 src、alt,可选宽高或说明文字),页面无法用现有组件显示「原界面 + 三种色盲模拟」四张图"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c5",
+  "stage": "program",
+  "what": "页面上有 4 个不是组件库画的元素,且缺的能力没有按规范在说明里写出来",
+  "fix": "组件库缺能力:缺图片组件。除补组件外,还应在页面说明中写出「组件库缺图片组件」这一缺口,而不是用 createElement 自己画"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c6",
+  "stage": "program",
+  "what": "第 19 行用 React.createElement 直接画 <img>,截图没有用组件库组件渲染",
+  "fix": "组件库:缺图片组件——需要一个能接收 src、alt(和 className,以便在 Block 内按列宽铺满)的组件来显示模拟视图截图;补上后把 shot() 换成该组件"
+ },
+ {
+  "run": "cvd-g0",
+  "case": "c6",
+  "stage": "program",
+  "what": "页面上 4 个 <img> 都不是组件库画的,缺失的组件能力没有按规范写进最后的说明",
+  "fix": "组件库:缺图片组件这个能力;补一个 Image 组件承载 4 张模拟视图,并把「组件库缺图片组件」写进页面最后的说明,而不是只留代码注释"
+ }
+]
