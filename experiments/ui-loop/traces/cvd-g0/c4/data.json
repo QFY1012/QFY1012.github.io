@@ -6,6 +6,24 @@
  "verdict": "不友好",
  "method": "按 Machado 2009 模型模拟红色盲、绿色盲、蓝色盲;色差为 CIEDE2000 ΔE,小于 12 视为难以区分",
  "summary": "对设计规范里 14 个颜色 token 做了全量检查,18 组常见文字与背景组合中 7 组不达标,主要是浅色状态色上的白字和灰阶文字。成功与错误两种状态色对红绿色盲用户难以区分。",
+ "screens": [
+  {
+   "view": "原界面",
+   "image": "assets/original.png"
+  },
+  {
+   "view": "红色盲",
+   "image": "assets/protanopia.png"
+  },
+  {
+   "view": "绿色盲",
+   "image": "assets/deuteranopia.png"
+  },
+  {
+   "view": "蓝色盲",
+   "image": "assets/tritanopia.png"
+  }
+ ],
  "kpis": [
   {
    "key": "pairs",

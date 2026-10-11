@@ -6,6 +6,24 @@
  "verdict": "基本友好",
  "method": "按 Machado 2009 模型模拟红色盲、绿色盲、蓝色盲;色差为 CIEDE2000 ΔE,小于 12 视为难以区分",
  "summary": "订单状态页整体较好,6 组文字与背景中只有 1 组不达标。状态文字都写明了“准时”“已超时”;只有配送进度条本身用红、绿两色区分,绿色盲用户看进度条分不出来,好在旁边有文字。",
+ "screens": [
+  {
+   "view": "原界面",
+   "image": "assets/original.png"
+  },
+  {
+   "view": "红色盲",
+   "image": "assets/protanopia.png"
+  },
+  {
+   "view": "绿色盲",
+   "image": "assets/deuteranopia.png"
+  },
+  {
+   "view": "蓝色盲",
+   "image": "assets/tritanopia.png"
+  }
+ ],
  "kpis": [
   {
    "key": "pairs",

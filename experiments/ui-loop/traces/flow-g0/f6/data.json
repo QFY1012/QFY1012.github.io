@@ -68,7 +68,8 @@
      "content": "出发地、目的地、日期",
      "action": "搜索",
      "inputs": 3,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-01.png"
     },
     {
      "no": 2,
@@ -76,7 +77,8 @@
      "content": "按时间排序,带低价日历",
      "action": "选航班",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-02.png"
     },
     {
      "no": 3,
@@ -84,7 +86,8 @@
      "content": "经济舱多个价格档",
      "action": "选价格",
      "inputs": 0,
-     "note": "价格档差别说明不清"
+     "note": "价格档差别说明不清",
+     "image": "assets/p1-03.png"
     },
     {
      "no": 4,
@@ -92,7 +95,8 @@
      "content": "航意险、延误险默认勾选",
      "action": "下一步",
      "inputs": 0,
-     "note": "保险默认勾选"
+     "note": "保险默认勾选",
+     "image": "assets/p1-04.png"
     },
     {
      "no": 5,
@@ -100,7 +104,8 @@
      "content": "接送机优惠券",
      "action": "跳过",
      "inputs": 0,
-     "note": "单独一屏推销"
+     "note": "单独一屏推销",
+     "image": "assets/p1-05.png"
     },
     {
      "no": 6,
@@ -108,7 +113,8 @@
      "content": "姓名、证件号、手机号",
      "action": "下一步",
      "inputs": 3,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-06.png"
     },
     {
      "no": 7,
@@ -116,7 +122,8 @@
      "content": "付费优选座位",
      "action": "跳过",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-07.png"
     },
     {
      "no": 8,
@@ -124,7 +131,8 @@
      "content": "金额明细",
      "action": "去支付",
      "inputs": 0,
-     "note": "明细默认折叠"
+     "note": "明细默认折叠",
+     "image": "assets/p1-08.png"
     },
     {
      "no": 9,
@@ -132,7 +140,8 @@
      "content": "支付方式",
      "action": "支付",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-09.png"
     }
    ]
   },
@@ -147,7 +156,8 @@
      "content": "出发地、目的地、日期",
      "action": "搜索",
      "inputs": 3,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-01.png"
     },
     {
      "no": 2,
@@ -155,7 +165,8 @@
      "content": "航班和价格",
      "action": "选航班",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-02.png"
     },
     {
      "no": 3,
@@ -163,7 +174,8 @@
      "content": "价格档对比表",
      "action": "选价格",
      "inputs": 0,
-     "note": "价格档用表格对比,清楚"
+     "note": "价格档用表格对比,清楚",
+     "image": "assets/p2-03.png"
     },
     {
      "no": 4,
@@ -171,7 +183,8 @@
      "content": "常用乘机人一键选择",
      "action": "下一步",
      "inputs": 1,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-04.png"
     },
     {
      "no": 5,
@@ -179,7 +192,8 @@
      "content": "保险、贵宾厅、接送机,默认勾选保险",
      "action": "下一步",
      "inputs": 0,
-     "note": "保险默认勾选"
+     "note": "保险默认勾选",
+     "image": "assets/p2-05.png"
     },
     {
      "no": 6,
@@ -187,7 +201,8 @@
      "content": "金额明细",
      "action": "去支付",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-06.png"
     },
     {
      "no": 7,
@@ -195,7 +210,8 @@
      "content": "支付方式",
      "action": "支付",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-07.png"
     }
    ]
   },
@@ -210,7 +226,8 @@
      "content": "出发地、目的地、日期",
      "action": "搜索",
      "inputs": 3,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-01.png"
     },
     {
      "no": 2,
@@ -218,7 +235,8 @@
      "content": "航班、准点率",
      "action": "选航班",
      "inputs": 0,
-     "note": "显示准点率"
+     "note": "显示准点率",
+     "image": "assets/p3-02.png"
     },
     {
      "no": 3,
@@ -226,7 +244,8 @@
      "content": "价格档和退改规则",
      "action": "选价格",
      "inputs": 0,
-     "note": "退改规则在价格档下直接展示"
+     "note": "退改规则在价格档下直接展示",
+     "image": "assets/p3-03.png"
     },
     {
      "no": 4,
@@ -234,7 +253,8 @@
      "content": "常用乘机人",
      "action": "下一步",
      "inputs": 1,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-04.png"
     },
     {
      "no": 5,
@@ -242,7 +262,8 @@
      "content": "保险、选座,默认不选",
      "action": "下一步",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-05.png"
     },
     {
      "no": 6,
@@ -250,7 +271,8 @@
      "content": "金额明细、支付方式",
      "action": "支付",
      "inputs": 0,
-     "note": "确认和支付合为一屏"
+     "note": "确认和支付合为一屏",
+     "image": "assets/p3-06.png"
     }
    ]
   },
@@ -265,7 +287,8 @@
      "content": "出发地、目的地、日期",
      "action": "搜索",
      "inputs": 3,
-     "note": ""
+     "note": "",
+     "image": "assets/p4-01.png"
     },
     {
      "no": 2,
@@ -273,7 +296,8 @@
      "content": "航班和最低价",
      "action": "选航班",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p4-02.png"
     },
     {
      "no": 3,
@@ -281,7 +305,8 @@
      "content": "常用乘机人",
      "action": "下一步",
      "inputs": 1,
-     "note": "直接用最低价档,没有舱位选择"
+     "note": "直接用最低价档,没有舱位选择",
+     "image": "assets/p4-03.png"
     },
     {
      "no": 4,
@@ -289,7 +314,8 @@
      "content": "金额,退改规则在二级页面",
      "action": "去支付",
      "inputs": 0,
-     "note": "退改规则要点开才能看到"
+     "note": "退改规则要点开才能看到",
+     "image": "assets/p4-04.png"
     },
     {
      "no": 5,
@@ -297,7 +323,8 @@
      "content": "支付方式",
      "action": "支付",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p4-05.png"
     }
    ]
   }

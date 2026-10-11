@@ -6,6 +6,24 @@
  "verdict": "不友好",
  "method": "按 Machado 2009 模型模拟红色盲、绿色盲、蓝色盲;色差为 CIEDE2000 ΔE,小于 12 视为难以区分",
  "summary": "路况用绿、黄、红、深红四色表示畅通到严重拥堵。红绿色盲用户看到的畅通和拥堵几乎是同一种颜色,蓝色盲用户分不清畅通和缓行。图层上没有颜色以外的提示。",
+ "screens": [
+  {
+   "view": "原界面",
+   "image": "assets/original.png"
+  },
+  {
+   "view": "红色盲",
+   "image": "assets/protanopia.png"
+  },
+  {
+   "view": "绿色盲",
+   "image": "assets/deuteranopia.png"
+  },
+  {
+   "view": "蓝色盲",
+   "image": "assets/tritanopia.png"
+  }
+ ],
  "kpis": [
   {
    "key": "pairs",

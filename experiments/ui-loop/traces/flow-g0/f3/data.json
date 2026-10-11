@@ -62,7 +62,8 @@
      "content": "文件、更多按钮",
      "action": "更多 → 分享",
      "inputs": 0,
-     "note": "分享藏在更多菜单里"
+     "note": "分享藏在更多菜单里",
+     "image": "assets/p1-01.png"
     },
     {
      "no": 2,
@@ -70,7 +71,8 @@
      "content": "权限、有效期、密码",
      "action": "生成链接",
      "inputs": 0,
-     "note": "改有效期会把权限重置为可编辑"
+     "note": "改有效期会把权限重置为可编辑",
+     "image": "assets/p1-02.png"
     },
     {
      "no": 3,
@@ -78,7 +80,8 @@
      "content": "链接和复制按钮",
      "action": "复制",
      "inputs": 0,
-     "note": "复制后没有提示"
+     "note": "复制后没有提示",
+     "image": "assets/p1-03.png"
     },
     {
      "no": 4,
@@ -86,7 +89,8 @@
      "content": "最近联系人",
      "action": "发送",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-04.png"
     }
    ]
   },
@@ -101,7 +105,8 @@
      "content": "每行有分享按钮",
      "action": "分享",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-01.png"
     },
     {
      "no": 2,
@@ -109,7 +114,8 @@
      "content": "默认仅查看、7 天有效,下方可展开修改",
      "action": "复制链接",
      "inputs": 0,
-     "note": "默认值覆盖大多数情况"
+     "note": "默认值覆盖大多数情况",
+     "image": "assets/p2-02.png"
     },
     {
      "no": 3,
@@ -117,7 +123,8 @@
      "content": "最近联系人和群",
      "action": "发送",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-03.png"
     }
    ]
   },
@@ -132,7 +139,8 @@
      "content": "右键菜单",
      "action": "分享",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-01.png"
     },
     {
      "no": 2,
@@ -140,7 +148,8 @@
      "content": "公司内 / 外部 两个选项",
      "action": "选择外部",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-02.png"
     },
     {
      "no": 3,
@@ -148,7 +157,8 @@
      "content": "权限、有效期、密码、下载次数,分两组",
      "action": "生成",
      "inputs": 0,
-     "note": "高级设置默认收起"
+     "note": "高级设置默认收起",
+     "image": "assets/p3-03.png"
     },
     {
      "no": 4,
@@ -156,7 +166,8 @@
      "content": "链接和已复制提示",
      "action": "复制",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-04.png"
     },
     {
      "no": 5,
@@ -164,7 +175,8 @@
      "content": "通讯录搜索",
      "action": "发送",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-05.png"
     }
    ]
   }

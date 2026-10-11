@@ -62,7 +62,8 @@
      "content": "商品、物流,退货入口在底部",
      "action": "申请退货",
      "inputs": 0,
-     "note": "入口需要滚动才能看到"
+     "note": "入口需要滚动才能看到",
+     "image": "assets/p1-01.png"
     },
     {
      "no": 2,
@@ -70,7 +71,8 @@
      "content": "订单内商品勾选",
      "action": "下一步",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-02.png"
     },
     {
      "no": 3,
@@ -78,7 +80,8 @@
      "content": "14 个原因平铺",
      "action": "选择原因",
      "inputs": 0,
-     "note": "没有分组"
+     "note": "没有分组",
+     "image": "assets/p1-03.png"
     },
     {
      "no": 4,
@@ -86,7 +89,8 @@
      "content": "图片上传、描述",
      "action": "上传",
      "inputs": 1,
-     "note": "部分原因其实不需要凭证"
+     "note": "部分原因其实不需要凭证",
+     "image": "assets/p1-04.png"
     },
     {
      "no": 5,
@@ -94,7 +98,8 @@
      "content": "上门取件 / 自行寄回",
      "action": "选择",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-05.png"
     },
     {
      "no": 6,
@@ -102,7 +107,8 @@
      "content": "取件时间段",
      "action": "选择",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-06.png"
     },
     {
      "no": 7,
@@ -110,7 +116,8 @@
      "content": "退款预计时间",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-07.png"
     }
    ]
   },
@@ -125,7 +132,8 @@
      "content": "订单状态旁有退货入口",
      "action": "退货",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-01.png"
     },
     {
      "no": 2,
@@ -133,7 +141,8 @@
      "content": "两组:商品问题 / 不想要了",
      "action": "选择原因",
      "inputs": 0,
-     "note": "“不想要了”不需要凭证"
+     "note": "“不想要了”不需要凭证",
+     "image": "assets/p2-02.png"
     },
     {
      "no": 3,
@@ -141,7 +150,8 @@
      "content": "上门取件,默认最近时段",
      "action": "确认",
      "inputs": 0,
-     "note": "取件和时间合在一屏"
+     "note": "取件和时间合在一屏",
+     "image": "assets/p2-03.png"
     },
     {
      "no": 4,
@@ -149,7 +159,8 @@
      "content": "退款金额和方式",
      "action": "提交",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-04.png"
     },
     {
      "no": 5,
@@ -157,7 +168,8 @@
      "content": "退款进度入口",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-05.png"
     }
    ]
   },
@@ -172,7 +184,8 @@
      "content": "每单都有退换按钮",
      "action": "退换",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-01.png"
     },
     {
      "no": 2,
@@ -180,7 +193,8 @@
      "content": "仅退款 / 退货退款 / 换货",
      "action": "退货退款",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-02.png"
     },
     {
      "no": 3,
@@ -188,7 +202,8 @@
      "content": "分组原因,需要凭证的带标记",
      "action": "选择原因",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-03.png"
     },
     {
      "no": 4,
@@ -196,7 +211,8 @@
      "content": "图片上传",
      "action": "上传",
      "inputs": 1,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-04.png"
     },
     {
      "no": 5,
@@ -204,7 +220,8 @@
      "content": "退款金额,不含运费说明",
      "action": "提交",
      "inputs": 0,
-     "note": "运费是否退回没有说明"
+     "note": "运费是否退回没有说明",
+     "image": "assets/p3-05.png"
     },
     {
      "no": 6,
@@ -212,7 +229,8 @@
      "content": "退款进度",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p3-06.png"
     }
    ]
   }

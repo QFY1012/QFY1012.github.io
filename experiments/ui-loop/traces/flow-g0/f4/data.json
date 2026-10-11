@@ -56,7 +56,8 @@
      "content": "楼层列表",
      "action": "选择楼层",
      "inputs": 0,
-     "note": "默认不是所在楼层"
+     "note": "默认不是所在楼层",
+     "image": "assets/p1-01.png"
     },
     {
      "no": 2,
@@ -64,7 +65,8 @@
      "content": "会议室和容量",
      "action": "选择会议室",
      "inputs": 0,
-     "note": "看不出哪间有空"
+     "note": "看不出哪间有空",
+     "image": "assets/p1-02.png"
     },
     {
      "no": 3,
@@ -72,7 +74,8 @@
      "content": "日历",
      "action": "选日期",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-03.png"
     },
     {
      "no": 4,
@@ -80,7 +83,8 @@
      "content": "时间轴,一次显示 4 小时",
      "action": "拖选时段",
      "inputs": 0,
-     "note": "找空闲时段要左右滑动多次"
+     "note": "找空闲时段要左右滑动多次",
+     "image": "assets/p1-04.png"
     },
     {
      "no": 5,
@@ -88,7 +92,8 @@
      "content": "主题(必填)、备注",
      "action": "下一步",
      "inputs": 2,
-     "note": "主题必填,多为占位文字"
+     "note": "主题必填,多为占位文字",
+     "image": "assets/p1-05.png"
     },
     {
      "no": 6,
@@ -96,7 +101,8 @@
      "content": "搜索同事",
      "action": "添加",
      "inputs": 1,
-     "note": "人数超出容量时才提示"
+     "note": "人数超出容量时才提示",
+     "image": "assets/p1-06.png"
     },
     {
      "no": 7,
@@ -104,7 +110,8 @@
      "content": "汇总信息",
      "action": "确认",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-07.png"
     },
     {
      "no": 8,
@@ -112,7 +119,8 @@
      "content": "会议信息、加入日历",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p1-08.png"
     }
    ]
   },
@@ -127,7 +135,8 @@
      "content": "日期、开始时间、时长、人数",
      "action": "查找",
      "inputs": 4,
-     "note": "默认定位所在楼层"
+     "note": "默认定位所在楼层",
+     "image": "assets/p2-01.png"
     },
     {
      "no": 2,
@@ -135,7 +144,8 @@
      "content": "符合条件的会议室,按距离排序",
      "action": "选择",
      "inputs": 0,
-     "note": "只列出空闲的"
+     "note": "只列出空闲的",
+     "image": "assets/p2-02.png"
     },
     {
      "no": 3,
@@ -143,7 +153,8 @@
      "content": "主题(选填)、参会人",
      "action": "下一步",
      "inputs": 1,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-03.png"
     },
     {
      "no": 4,
@@ -151,7 +162,8 @@
      "content": "汇总信息",
      "action": "确认",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-04.png"
     },
     {
      "no": 5,
@@ -159,7 +171,8 @@
      "content": "会议信息、同步日历",
      "action": "完成",
      "inputs": 0,
-     "note": ""
+     "note": "",
+     "image": "assets/p2-05.png"
     }
    ]
   }
