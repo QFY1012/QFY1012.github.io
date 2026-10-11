@@ -51,7 +51,16 @@ table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;p
 @media (max-width:640px){.pair{grid-template-columns:1fr}}
 '''
 h = [f'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>输出层迭代报告</title><style>{css}</style></head><body><main>',
-     '<h1>输出层迭代报告</h1><p class="lead">生成 Agent 按 design.md 用组件库写报告页面;judge(rubric31)两两比较;loop 一次改一条规则。本页随 loop 进度更新。</p>']
+     '<h1>输出层迭代报告</h1><p class="lead">生成 Agent 按 design.md 用组件库写报告页面;judge(rubric31)两两比较;loop 一次改一条规则。本页随 loop 进度更新。</p>' + '''<h2>loop 流程</h2>
+<table><tr><th>步骤</th><th>谁</th><th>做什么</th></tr>
+<tr><td>0 准备</td><td>生成 Agent、judge、Maintainer</td><td>v0 生成全部报告;训练报告再生成一次(v0b)并两两比较,测出生成本身的波动,归纳第一版经验库</td></tr>
+<tr><td>1 改规则</td><td>Reviser</td><td>读当前规范、经验库、修改记录,只改 B 或 C 的一条规则 → 候选版</td></tr>
+<tr><td>2 生成</td><td>生成 Agent(pi,沙箱)</td><td>按候选版为 6 份训练报告、4 份验证报告写 Page.tsx,自己截图检查</td></tr>
+<tr><td>3 比较</td><td>judge(rubric31)</td><td>候选对当前,两种顺序都选同一版才算;训练报告 1 轮(找问题),验证报告 3 轮(把关)</td></tr>
+<tr><td>4 归纳</td><td>Maintainer</td><td>读训练报告的比较和程序检查 → 更新经验库</td></tr>
+<tr><td>5 把关</td><td>程序</td><td>验证报告一份不输、至少赢一半、程序检查问题不增加 → 采用为新版本;否则保留当前版</td></tr>
+<tr><td>6 记录</td><td>程序</td><td>写入修改记录,没采用的也保留</td></tr></table>
+<p class="muted">停止:连续 3 个候选未通过、到 10 轮、或每采用 2 个版本暂停请用户盲排。</p>''']
 
 # ---------- noise test ----------
 cases = [c for c in TRAIN if judgements("v0", "v0b", c)]
@@ -81,6 +90,18 @@ if st and st.get("history"):
         h.append(f'<tr><td>{x["round"]}</td><td>{x["candidate"]}(基于 {x["base"]})</td><td>{esc(x["change"]["rule"])}:{esc(x["change"]["new"])}</td><td>{g}</td><td>{"采用" if x["accept"] else "未采用"}</td></tr>')
     h.append('</table>')
     h.append(f'<p class="muted">当前版本:{st["current"]}{";已停止:" + st["stop"] if st.get("stop") else ""}</p>')
+if st and st.get("pending"):
+    pd = st["pending"]; ch = pd["change"]; cand = pd["name"]
+    h.append(f'<h2>进行中:第 {st["round"]+1} 轮,候选 {cand}(基于 {st["current"]})</h2>')
+    h.append(f'<p><b>改动:</b>{"新增" if not ch.get("old") else "改写"}规则 {esc(ch["rule"])}</p>')
+    if ch.get("old"): h.append(f'<p class="muted">原文:{esc(ch["old"])}</p>')
+    h.append(f'<p>{md(ch["new"])}</p><p class="muted">依据:{esc("、".join(ch.get("basis", [])))}。{esc(ch.get("why",""))}</p>')
+    done = [c for c in TRAIN + VALID if os.path.exists(T(cand, c, "meta.json"))]
+    h.append(f'<p>已生成 {len(done)} / 10 份。下面是已生成的报告,左边当前版 {st["current"]},右边候选 {cand}。</p>')
+    for c in done:
+        js = judgements(st["current"], cand, c)
+        res = f'<p class="reason">judge:{verdict(st["current"], cand, js)}</p>' + "".join(f'<p class="reason"><b>{o} 顺序选 {p}:</b>{esc(r)}</p>' for o, p, r in js) if js else '<p class="muted">还没比较</p>'
+        h.append(f'<div class="case"><h3>{NAMES[c]}{"(验证报告)" if c in VALID else ""}</h3>{res}<div class="pair"><figure><figcaption>{st["current"]}</figcaption><div class="shot">{thumb(st["current"], c)}</div></figure><figure><figcaption>{cand}</figcaption><div class="shot">{thumb(cand, c)}</div></figure></div></div>')
 h.append('</main></body></html>')
 open(sys.argv[1], "w").write("".join(h))
 print(os.path.getsize(sys.argv[1]))
