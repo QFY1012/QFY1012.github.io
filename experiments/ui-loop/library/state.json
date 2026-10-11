@@ -1,0 +1,11 @@
+{
+ "next": 2,
+ "proposals": {
+  "k1": {
+   "status": "制作中",
+   "demo": "flow/f1",
+   "requests": 2,
+   "rejected": ""
+  }
+ }
+}
