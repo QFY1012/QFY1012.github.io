@@ -5,20 +5,39 @@ const kpis: Record<string, { label: string; value: number; unit: string }> = Obj
   data.kpis.map((k) => [k.key, k]),
 )
 
-const contrastRows = data.contrast.map((c) => ({
-  where: c.where,
-  bg: c.bg,
-  ratio: c.ratio.toFixed(2),
-  verdict: c.pass ? "达标" : "不达标",
+const colorLabel = (hex: string) => {
+  const match = data.palette.find((p) => p.hex.toUpperCase() === hex.toUpperCase())
+  return match ? `${match.name} ${hex}` : hex
+}
+
+const paletteRows = data.palette.map((p) => ({
+  name: p.name,
+  hex: p.hex,
+  usage: p.usage,
 }))
 
 const confusionRows = data.confusions.map((c) => ({
   where: c.where,
-  normal: c.normal,
-  protan: c["红色盲"],
-  deuter: c["绿色盲"],
-  tritan: c["蓝色盲"],
+  colors: c.colors.map(colorLabel).join(" / "),
+  normal: c.normal.toFixed(1),
+  protan: c["红色盲"].toFixed(1),
+  deuter: c["绿色盲"].toFixed(1),
+  tritan: c["蓝色盲"].toFixed(1),
   affected: c.affected.length > 0 ? c.affected.join("、") : "—",
+}))
+
+const confusionTone = (type: string, key: "protan" | "deuter" | "tritan") =>
+  data.confusions
+    .filter((c) => c.affected.includes(type))
+    .map((c) => c[key].toFixed(1))
+
+const contrastRows = data.contrast.map((c) => ({
+  where: c.where,
+  fg: colorLabel(c.fg),
+  bg: colorLabel(c.bg),
+  ratio: c.ratio.toFixed(2),
+  required: c.required.toFixed(1),
+  verdict: c.pass ? "达标" : "不达标",
 }))
 
 const issueRows = data.issues.map((i) => ({
@@ -91,23 +110,65 @@ export default function Report() {
         </Block>
       </Section>
 
-      <Section title="对比度" description="文字均为白色 #FFFFFF,要求对比度 ≥ 4.5:1">
-        <DataTable
-          columns={[
-            { key: "where", label: "检查位置", span: 3 },
-            { key: "bg", label: "底色", span: 2 },
-            { key: "ratio", label: "对比度", align: "right", span: 2 },
-            { key: "verdict", label: "结论", span: 2, tone: ["不达标"] },
-          ]}
-          rows={contrastRows}
-        />
-      </Section>
-
       <Section
-        title="混淆色"
-        description="色差为 CIEDE2000 ΔE,小于 12 视为难以区分"
+        title="色板与检查"
+        description="配色、混淆色与对比度;色差为 CIEDE2000 ΔE,小于 12 视为难以区分,文字对比度要求 ≥ 4.5:1"
         className="gap-12"
       >
+        <Group>
+          <DataTable
+            caption="配色"
+            columns={[
+              { key: "name", label: "名称", span: 2 },
+              { key: "hex", label: "色值", span: 2 },
+              { key: "usage", label: "用途", span: 5 },
+            ]}
+            rows={paletteRows}
+          />
+          <DataTable
+            caption="混淆色"
+            columns={[
+              { key: "where", label: "位置", span: 2 },
+              { key: "colors", label: "颜色对", span: 2 },
+              { key: "normal", label: "正常", align: "right", span: 1 },
+              {
+                key: "protan",
+                label: "红色盲",
+                align: "right",
+                span: 1,
+                tone: confusionTone("红色盲", "protan"),
+              },
+              {
+                key: "deuter",
+                label: "绿色盲",
+                align: "right",
+                span: 1,
+                tone: confusionTone("绿色盲", "deuter"),
+              },
+              {
+                key: "tritan",
+                label: "蓝色盲",
+                align: "right",
+                span: 1,
+                tone: confusionTone("蓝色盲", "tritan"),
+              },
+              { key: "affected", label: "受影响", span: 1 },
+            ]}
+            rows={confusionRows}
+          />
+          <DataTable
+            caption="对比度"
+            columns={[
+              { key: "where", label: "位置", span: 3 },
+              { key: "fg", label: "文字色", span: 1 },
+              { key: "bg", label: "背景色", span: 1 },
+              { key: "ratio", label: "对比度", align: "right", span: 1 },
+              { key: "required", label: "要求", align: "right", span: 1 },
+              { key: "verdict", label: "结果", span: 2, tone: ["不达标"] },
+            ]}
+            rows={contrastRows}
+          />
+        </Group>
         <Group title="各色盲类型受影响的问题数">
           <Grid cols={9} fields={false} className="items-baseline">
             {data.byType.map((t) => (
@@ -122,20 +183,6 @@ export default function Report() {
               />
             ))}
           </Grid>
-        </Group>
-        <Group title="色差最小的颜色对">
-          <DataTable
-            columns={[
-              { key: "where", label: "颜色对", span: 3 },
-              { key: "normal", label: "正常", align: "right", span: 1 },
-              { key: "protan", label: "红色盲", align: "right", span: 1 },
-              { key: "deuter", label: "绿色盲", align: "right", span: 1 },
-              { key: "tritan", label: "蓝色盲", align: "right", span: 1 },
-              { key: "affected", label: "受影响", span: 2 },
-            ]}
-            rows={confusionRows}
-            caption="数值为 CIEDE2000 ΔE,小于 12 视为难以区分"
-          />
         </Group>
       </Section>
 
