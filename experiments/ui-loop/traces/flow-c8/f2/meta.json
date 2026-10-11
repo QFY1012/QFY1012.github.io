@@ -1,0 +1,41 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "c8",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/flow/guides/c8.md",
+  "sha": "9eb7e480"
+ },
+ "base": "flow-c2",
+ "change": {
+  "rule": "G3",
+  "old": "",
+  "new": "- **G3 背景信息并入结论节、页面以「下一步」收尾**:「结论」仍是第一节,`Section` 加 `className=\"gap-12\"`,节内先 `Text`(结论句,取 `summary`,结论句字号)后 `Group`(`title=\"背景信息\"`)包一个 `KV`(`labelCols={2}`,items 依次写「任务」= `task`、「范围」= `scope`、「日期」= `date`,数据里缺的项不写),两者同属这一节、间距 48px;背景信息不再单独成节、也不再放在页尾,其余各节按 C3 顺序接在后面,页面以「下一步」(`suggestions`)收尾,`suggestions` 为空时以问题明细节收尾。",
+  "basis": [
+   "P-05"
+  ],
+  "why": "P-05 涉及 3 页、页数最多,且 c7 证明「末屏不拿背景信息收尾」的方向在训练页两种顺序下都更好;这次按 c7 的教训把背景信息收进结论节(给它明确的从属层级、不与核心指标并成同级节),首屏同时有了结论句和任务/范围/日期三行、末屏交给有内容的「下一步」,不再只剩两三行。P-07 已试过 c3、c5、c6 三个方向均未过门禁,不再重试。",
+  "problems": [
+   {
+    "id": "P-05",
+    "problem": "页面开头(标题加结论)和结尾(背景信息)各有一屏只放两三行内容,其余大片留白,单屏信息密度过低,读者会觉得节奏松散。"
+   }
+  ]
+ },
+ "changedLines": 28,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 45,
+ "usage": {
+  "input": 11727,
+  "output": 1289
+ },
+ "stop": "stop",
+ "summary": "修改完成，程序检查全部通过。\n\n改动:按 G3,把「背景信息」并入第一节「结论」——`Section` 加 `className=\"gap-12\"`,节内先放结论句 `Text`,下面用 `Group title=\"背景信息\"` 包一个 `KV`(`labelCols={2}`,只列任务/范围/日期);删掉了原来页尾单独的「背景」节。其余各节顺序不变,页面以「下一步」收尾。",
+ "checks": []
+}

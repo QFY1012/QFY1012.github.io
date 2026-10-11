@@ -1,0 +1,41 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "c8",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/c8.md",
+  "sha": "00fcaebf"
+ },
+ "base": "cvd-c6",
+ "change": {
+  "rule": "G2",
+  "old": "",
+  "new": "- **G2 按色盲类型用细条列表、与明细表同栏**: `byType` 单独成一节「按色盲类型」，排在「明细」一节之前；整组用 `ProgressList` `compact` 占满正文 9 列（不套 3 列宽的 `Block`），左边缘和右边缘与紧随其后的明细表列线对齐；每行 `label` 取 `type`、`value` 取 `issues`，行内带数值，每项 `max` 取该组最大的 `issues`，条为细条；不用 `BarChart`、不用粗实心条或带底轨的条，也不把条放进表格的数值列；`issues` 为 0 的类型照常列出，值为 0 时条为空。",
+  "basis": [
+   "P-06"
+  ],
+  "why": "P-06 涉及 2 页，属布局问题里页数最多的一档；c7 已证把「按色盲类型」改成表格并把条塞进数值列会失败，按它的教训保留「独立成节、与同页明细表共用对齐线」，改用细条列表并逐行给出数值，条长有了基准，也不再是全页最重的实心色块。",
+  "problems": [
+   {
+    "id": "P-06",
+    "problem": "「按色盲类型」「受影响的问题数」这类小条形图组用与正文细线不搭的粗黑条，长度没有刻度基准、与相邻表格不共用对齐线，读者既看不出条长对应什么数值，视觉重量还被它抢走。"
+   }
+  ]
+ },
+ "changedLines": 19,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 107,
+ "usage": {
+  "input": 23980,
+  "output": 5281
+ },
+ "stop": "stop",
+ "summary": "页面已符合新规则,程序检查通过。\n\n修改内容(只动了与 G2 相关的部分):\n- 把原来嵌在「色差分析」节里的「问题分布 · 按色觉类型」组删掉,新建独立一节「按色盲类型」,放在「对比度明细」之前。\n- 该节直接用 `ProgressList compact` 占满正文 9 列(不再套 3 列宽的 `Block`),左、右边缘与紧随其后的明细表列线对齐。\n- 每行 `label` 取 `type`、`value` 取 `issues`,行内带数值;`max` 改为该组最大 `issues`(即 1),`蓝色盲` 值为 0 照常列出、条为空。\n\n页面结构:页头 → 结论 → 核心指标(4 个 `Stat` 一行)→ 色觉模拟(`FigureStrip`)→ 色差分析(混淆色对 `DataTable`)→ 按色盲类型(`ProgressList compact`)→ 对比度明细 → 调色板 → 问题清单 → 修复建议 → 下一步 → 背景信息。",
+ "checks": []
+}

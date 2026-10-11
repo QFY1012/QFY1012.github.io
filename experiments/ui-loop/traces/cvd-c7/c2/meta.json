@@ -1,0 +1,41 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "c7",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/cvd/guides/c7.md",
+  "sha": "138e13fa"
+ },
+ "base": "cvd-c6",
+ "change": {
+  "rule": "G2",
+  "old": "",
+  "new": "- **G2 按色盲类型用带细条的表格**:`byType` 整组放在「按色盲类型」一节,改用 `DataTable`,两列:`type`(标签写「色盲类型」,左对齐)和 `issues`(标签写「受影响的问题数」,`align: \"right\"`、`bar: true`,数字后接一根细条);三项按 `byType` 原顺序列出,`issues` 为 0 的类型也照常保留;列宽分配与同页明细表一致,两张表的左边缘和数值列对齐;这一组不再用 `ProgressList` 或 `BarChart` 画带底轨的粗条。",
+  "basis": [
+   "P-06"
+  ],
+  "why": "P-06 与 P-05、P-07 同属涉及页数最多(各 2 页)的问题,而 P-07 的层级问题按修改记录已证只能靠位置、不能再动字号字重,所以先修 P-06:把 byType 从带底轨的粗条改成细条表格,条不再压过正文视觉重量,数字自带基准并与明细表共用对齐线。",
+  "problems": [
+   {
+    "id": "P-06",
+    "problem": "「按色盲类型」「受影响的问题数」这类小条形图组用与正文细线不搭的粗黑条，长度没有刻度基准、与相邻表格不共用对齐线，读者既看不出条长对应什么数值，视觉重量还被它抢走。"
+   }
+  ]
+ },
+ "changedLines": 34,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 71,
+ "usage": {
+  "input": 26859,
+  "output": 4720
+ },
+ "stop": "stop",
+ "summary": "改好了:把「按色盲类型」一节里的 `ProgressList` 换成 `DataTable`——两列「色盲类型」(左对齐,`span: 7`)和「受影响的问题数」(`align: \"right\"`、`bar: true`,`span: 2`),三项按原顺序列出(蓝色盲 0 也保留),列宽与同页明细表一致(数值列右端落在网格第 9 列,与「色差对照」「问题清单」等表对齐);节名从「问题分布」改为「按色盲类型」,其余页面结构保持不变。`node $SHOOT .` 程序检查全部通过。",
+ "checks": []
+}

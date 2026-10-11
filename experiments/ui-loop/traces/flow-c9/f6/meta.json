@@ -1,0 +1,46 @@
+{
+ "case": "f6",
+ "design": {
+  "version": "c9",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "4046c185",
+ "guide": {
+  "file": "skills/flow/guides/c9.md",
+  "sha": "c2879e70"
+ },
+ "base": "flow-c2",
+ "change": {
+  "rule": "G3",
+  "old": "",
+  "new": "- **G3 步骤备注:紧接链路明细、一步一行、与问题表同栏线**:链路明细节紧后面放一节「步骤备注」,把 `chains[].steps[]` 里 `note` 非空的备注按 `chains` 顺序、组内按 `no` 升序排成一张 `DataTable`,一行一条、只列有备注的步骤;两列:第一列写「{product} · 第 {no} 步」(`span: 3`,步骤写法与截图下 `FigureLabel` 的「第 {no} 步」一致,让每条备注能直接对上某组某屏),第二列写 `note` 原文(`span: 6`),两列 `span` 取 3 和 6、左边缘与问题明细表落在同一条栏线上;产品名不另立一列、不逐行重复;备注不用 `columns` 多列网格,无论一两条还是十几条都一列向下排,末行自然收口、不留 L 形空白;整份报告没有任何备注时这一节不出现。",
+  "basis": [
+   "P-07",
+   "P-08"
+  ],
+  "why": "布局问题里 P-07(3 页)加同一区块的 P-08(1 页)涉及页数最多,且 c3/c5/c6 三条教训都指向同一改法:备注离开截图后要靠「产品·步骤」编号对上号、与问题表共用栏线、排成单列矩形;这次不再动截图组本身,避免再触发间距层级和组件混用的老问题。",
+  "problems": [
+   {
+    "id": "P-07",
+    "problem": "链路明细把每步备注从截图下方抽出来单独成节/表后,备注与对应截图之间没有编号或指向等视觉关联、间距又处理不当(有的隔很远、有的挤在同一屏),内容还与问题表重复,读者难以把备注和截图对上,要来回对照并读到重复信息。"
+   },
+   {
+    "id": "P-08",
+    "problem": "步骤备注这类条目少的区块排不满,末行(或下半屏)留下大块空白,模块底边不成矩形,留白明显多于其它区块,读者会觉得这一节没收口、节奏散。"
+   }
+  ]
+ },
+ "changedLines": 35,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 69,
+ "usage": {
+  "input": 14202,
+  "output": 1502
+ },
+ "stop": "stop",
+ "summary": "The change is complete and all program checks pass. \n\nThe 步骤备注 section is now its own `Section` placed immediately after the 交互链路 section, with a two-column `DataTable`: 「{product} · 第 {no} 步」(span 3) and the note text (span 6), one note per row, ordered by chain then step number, left-aligned to the same column line as the 问题明细 table below it.",
+ "checks": []
+}

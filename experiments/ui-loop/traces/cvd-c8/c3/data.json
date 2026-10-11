@@ -1,0 +1,212 @@
+{
+ "title": "色觉无障碍分析 · 路况图层",
+ "target": "地图导航 · 实时路况图层",
+ "date": "2026-08-30",
+ "standard": "WCAG 2.2 AA",
+ "verdict": "不友好",
+ "method": "按 Machado 2009 模型模拟红色盲、绿色盲、蓝色盲;色差为 CIEDE2000 ΔE,小于 12 视为难以区分",
+ "summary": "路况用绿、黄、红、深红四色表示畅通到严重拥堵。红绿色盲用户看到的畅通和拥堵几乎是同一种颜色,蓝色盲用户分不清畅通和缓行。图层上没有颜色以外的提示。",
+ "screens": [
+  {
+   "view": "原界面",
+   "image": "assets/original.png"
+  },
+  {
+   "view": "红色盲",
+   "image": "assets/protanopia.png"
+  },
+  {
+   "view": "绿色盲",
+   "image": "assets/deuteranopia.png"
+  },
+  {
+   "view": "蓝色盲",
+   "image": "assets/tritanopia.png"
+  }
+ ],
+ "kpis": [
+  {
+   "key": "pairs",
+   "label": "检查的文字与背景组合",
+   "value": 4,
+   "unit": "组"
+  },
+  {
+   "key": "fail",
+   "label": "对比度不达标",
+   "value": 2,
+   "unit": "组"
+  },
+  {
+   "key": "confuse",
+   "label": "色盲用户难以区分的颜色",
+   "value": 2,
+   "unit": "对"
+  },
+  {
+   "key": "issues",
+   "label": "问题总数",
+   "value": 4,
+   "unit": "个"
+  }
+ ],
+ "palette": [
+  {
+   "name": "畅通",
+   "hex": "#34C759",
+   "usage": "畅通路段"
+  },
+  {
+   "name": "缓行",
+   "hex": "#FFCC00",
+   "usage": "缓行路段"
+  },
+  {
+   "name": "拥堵",
+   "hex": "#FF3B30",
+   "usage": "拥堵路段"
+  },
+  {
+   "name": "严重拥堵",
+   "hex": "#A0001E",
+   "usage": "严重拥堵路段"
+  }
+ ],
+ "contrast": [
+  {
+   "where": "畅通路段上的路名",
+   "fg": "#FFFFFF",
+   "bg": "#34C759",
+   "ratio": 2.22,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "缓行路段上的路名",
+   "fg": "#1C1C1E",
+   "bg": "#FFCC00",
+   "ratio": 11.25,
+   "required": 4.5,
+   "pass": true
+  },
+  {
+   "where": "拥堵路段上的路名",
+   "fg": "#FFFFFF",
+   "bg": "#FF3B30",
+   "ratio": 3.55,
+   "required": 4.5,
+   "pass": false
+  },
+  {
+   "where": "严重拥堵路段上的路名",
+   "fg": "#FFFFFF",
+   "bg": "#A0001E",
+   "ratio": 8.36,
+   "required": 4.5,
+   "pass": true
+  }
+ ],
+ "confusions": [
+  {
+   "where": "畅通与拥堵",
+   "colors": [
+    "#34C759",
+    "#FF3B30"
+   ],
+   "normal": 76.0,
+   "红色盲": 25.2,
+   "绿色盲": 8.2,
+   "蓝色盲": 71.5,
+   "affected": [
+    "绿色盲"
+   ]
+  },
+  {
+   "where": "畅通与缓行",
+   "colors": [
+    "#34C759",
+    "#FFCC00"
+   ],
+   "normal": 35.7,
+   "红色盲": 8.9,
+   "绿色盲": 16.7,
+   "蓝色盲": 48.8,
+   "affected": [
+    "红色盲"
+   ]
+  },
+  {
+   "where": "拥堵与严重拥堵",
+   "colors": [
+    "#FF3B30",
+    "#A0001E"
+   ],
+   "normal": 23.4,
+   "红色盲": 19.6,
+   "绿色盲": 25.7,
+   "蓝色盲": 17.3,
+   "affected": []
+  }
+ ],
+ "byType": [
+  {
+   "type": "红色盲",
+   "issues": 2
+  },
+  {
+   "type": "绿色盲",
+   "issues": 2
+  },
+  {
+   "type": "蓝色盲",
+   "issues": 2
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "title": "畅通与拥堵对红绿色盲几乎同色",
+   "type": "混淆色",
+   "location": "路况线",
+   "severity": "高",
+   "affects": [
+    "红色盲",
+    "绿色盲"
+   ],
+   "suggestion": "拥堵路段加虚线或箭头纹理"
+  },
+  {
+   "id": "P2",
+   "title": "畅通与缓行蓝色盲难以区分",
+   "type": "混淆色",
+   "location": "路况线",
+   "severity": "中",
+   "affects": [
+    "蓝色盲"
+   ],
+   "suggestion": "缓行改为偏橙的黄"
+  },
+  {
+   "id": "P3",
+   "title": "路况只靠颜色",
+   "type": "仅靠颜色",
+   "location": "整个图层",
+   "severity": "高",
+   "affects": [
+    "红色盲",
+    "绿色盲",
+    "蓝色盲"
+   ],
+   "suggestion": "提供“色弱模式”,用线宽和纹理区分四级"
+  },
+  {
+   "id": "P4",
+   "title": "畅通路段上白字对比度不足",
+   "type": "对比度不足",
+   "location": "路名标注",
+   "severity": "中",
+   "affects": [],
+   "suggestion": "路名加描边"
+  }
+ ]
+}
