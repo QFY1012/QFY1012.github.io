@@ -75,8 +75,17 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
     settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: true, maxRetries: 3 } }),
   })
   const t0 = Date.now()
+  // live.md in <priv>: the reply being streamed (thinking and text), so a long step can be read
+  // before it ends; the session file only gets a reply once it is complete.
+  const live = path.join(priv, "live.md")
+  let lastLive = 0
   session.subscribe((e) => {
     if (e.type === "tool_execution_start") console.log(`${name}: ${e.toolName} ${String(e.args?.path ?? e.args?.command ?? "").slice(0, 70)}`)
+    if (e.type === "message_update" && Date.now() - lastLive > 5000) {
+      lastLive = Date.now()
+      const parts = (e.message.content ?? []).map((c) => c.type === "thinking" ? `[thinking]\n${c.thinking}` : c.type === "text" ? c.text : c.type === "toolCall" ? `[tool ${c.name}] ${JSON.stringify(c.arguments ?? {}).slice(0, 2000)}` : "")
+      fs.writeFileSync(live, `${new Date().toISOString()}\n\n${parts.join("\n\n")}`)
+    }
   })
   await session.prompt(prompt)
   // The model sometimes ends a turn after long thinking without writing anything.
