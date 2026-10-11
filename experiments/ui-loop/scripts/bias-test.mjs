@@ -3,8 +3,11 @@
 // with a variant of compare.mjs, then counts per variant how often both orders agree, and how
 // often both pick the second-shown (B) or the first-shown (A) version, whatever its content.
 //
-//   source judge.env && node scripts/bias-test.mjs --variant side|tasks     run, then score
-//   node scripts/bias-test.mjs --score                                      score what is there
+//   source judge.env && node scripts/bias-test.mjs --variant side|tasks|focus     run, then score
+//   node scripts/bias-test.mjs --score                                            score what is there
+//
+// focus needs the problems each candidate set out to fix: traces/_compare/function-focus/targets.json
+// ({"<a>__<b>": ["problem", ...]}); pairs without targets (the twin comparisons) are left out.
 import fs from "node:fs"
 import path from "node:path"
 import { compare } from "./compare.mjs"
@@ -30,11 +33,14 @@ const pairs = fs.readdirSync(BASE).map((d) => {
 const total = pairs.reduce((n, p) => n + Object.values(p.rounds).reduce((x, y) => x + y, 0), 0)
 
 const variant = arg("variant")
+const targets = variant === "focus" ? JSON.parse(fs.readFileSync(path.join(CMP, "function-focus", "targets.json"), "utf8")) : null
 if (variant) {
   console.log(`变体 ${variant}:重问 ${pairs.length} 对版本上的 ${total} 次比较(每次两种顺序)`)
   for (const [i, { a, b, rounds }] of pairs.entries()) {
+    const focus = targets?.[`${a}__${b}`]
+    if (targets && !focus) { console.log(`━━ ${i + 1}/${pairs.length} ${a} 对 ${b}:没有上一轮的问题,跳过`); continue }
     console.log(`━━ ${i + 1}/${pairs.length} ${a} 对 ${b}`)
-    for (const n of [...new Set(Object.values(rounds))]) await compare(a, b, Object.keys(rounds).filter((c) => rounds[c] === n), n, "function", { variant, next: false })
+    for (const n of [...new Set(Object.values(rounds))]) await compare(a, b, Object.keys(rounds).filter((c) => rounds[c] === n), n, "function", { variant, next: false, focus })
   }
 }
 

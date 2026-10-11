@@ -17,7 +17,8 @@ import { systemRubric31Next, call, img } from "../../ui-judge/scripts/pairwise-j
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 // variant (需求 judge only, for trying ways to show the pair): side = both versions in one image, A left
-// and B right; tasks = list what the reader does in each version before deciding.
+// and B right; tasks = list what the reader does in each version before deciding; focus = check the
+// problems found before (the ones the candidate set out to fix) in each version, then anything else.
 const dirOf = (a, b, kind, variant) => path.join(ROOT, "traces", "_compare", ...(kind === "function" ? [variant ? `function-${variant}` : "function"] : []), `${a}__${b}`)
 
 // rubric31 as calibrated, plus one question at the end: what the better page still gets wrong.
@@ -37,7 +38,10 @@ export const systemFunction = (variant) => variant === "side"
   : variant === "tasks"
     ? FUNCTION.replace("1. 判断哪版更方便", "1. 先列出读者拿这页要做的几件主要事情,逐件写 A、B 两版各自怎么做、要翻找和对照多少。\n2. 再判断哪版更方便")
       .replace("2. 列出更方便的那版", "3. 列出更方便的那版").replace('只输出 JSON:{"better"', '只输出 JSON:{"tasks":[{"task":"读者要做的事","A":"A 版怎么做","B":"B 版怎么做"}],"better"')
-    : FUNCTION
+    : variant === "focus"
+      ? FUNCTION.replace("1. 判断哪版更方便", "1. 先逐条看下面「上一轮找出的不方便」在 A、B 两版里各自解决没有。\n2. 再看清单以外,有没有一版比另一版更不方便的地方。\n3. 综合判断哪版更方便")
+        .replace("2. 列出更方便的那版", "4. 列出更方便的那版").replace('只输出 JSON:{"better"', '只输出 JSON:{"checks":[{"problem":"清单里的哪条","A":"解决 或 部分解决 或 没解决","B":"解决 或 部分解决 或 没解决"}],"worse":[{"version":"A 或 B","where":"哪一节","why":"比另一版更不方便在哪"}],"better"')
+      : FUNCTION
 
 const PAIR = `下面是对同一对页面的两次比较各自列出的「更好那版还剩的问题」。把两次里说的是同一件事的配对,只输出两次都提到的,每条写成一句话。
 
@@ -69,7 +73,7 @@ function sideBySide(wx, wy, from, out) {
   return [{ type: "text", text: `第 1 张为两版整页缩略图并排,后 ${files.length - 1} 张为${from ? `从第 ${from + 1} 段起` : "整页"}同一高度的切块并排;每张左半是 A 版、右半是 B 版。` }, ...files.map((f) => img(path.join(out, f)))]
 }
 
-export async function compare(a, b, cases, rounds = 3, kind = "aesthetic", { variant, next = true } = {}) {
+export async function compare(a, b, cases, rounds = 3, kind = "aesthetic", { variant, next = true, focus } = {}) {
   const KEY = process.env.DEEPSEEK_API_KEY
   const dir = dirOf(a, b, kind, variant)
   fs.mkdirSync(dir, { recursive: true })
@@ -91,7 +95,8 @@ export async function compare(a, b, cases, rounds = 3, kind = "aesthetic", { var
       const wx = path.join(ROOT, "traces", x, c), wy = path.join(ROOT, "traces", y, c)
       const from = kind === "function" ? firstChange(wx, wy) : 0
       const shots = variant === "side" ? sideBySide(wx, wy, from, path.join(dir, "img", `${c}__${order}`)) : [...version(wx, "A", from), ...version(wy, "B", from)]
-      const content = [...(kind === "function" ? [{ type: "text", text: `<data.json>\n${fs.readFileSync(path.join(wx, "data.json"), "utf8")}\n</data.json>` }] : []), ...shots]
+      const content = [...(kind === "function" ? [{ type: "text", text: `<data.json>\n${fs.readFileSync(path.join(wx, "data.json"), "utf8")}\n</data.json>` }] : []),
+        ...(focus ? [{ type: "text", text: `<上一轮找出的不方便>\n${focus.map((p) => `- ${p}`).join("\n")}\n</上一轮找出的不方便>` }] : []), ...shots]
       const label = `${name} ${c} 第 ${r} 轮 ${order}`
       const t0 = Date.now()
       console.log(`  ${label} 开始(${content.filter((p) => p.type === "image_url").length} 张图)`)
