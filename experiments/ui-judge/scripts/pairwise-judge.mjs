@@ -45,6 +45,7 @@ ${principles ? PRINCIPLE_TEXT : ""}
 //   rubric27      rubric9 with rubric25's criterion 2 only, criteria not ranked
 //   rubric28      rubric7 with criterion 1 a bar to clear, not "the emptier the better"
 //   rubric29      rubric9 reworded in design and CSS terms, same content
+//   rubric30      rubric29, criterion 1 compares whitespace (more is better; crowding worse than an almost empty screen)
 //   roomy         principle 2 also names crowding as a defect
 //   perprinciple  the same principles, compared one by one before the verdict
 //   crowd         principle 2 names both kinds of crowding as a serious defect
@@ -365,6 +366,15 @@ export const RUBRIC_29 = [
   { name: "网格对齐", rule: "模块之间的留白都是规整的矩形,模块边缘落在少数几条共同的对齐线(栏线、基线)上", bad: "几块内容高低不齐,之间留下 L 形或锯齿形的空白", see: "哪些模块边缘没落在对齐线上、哪些留白不成矩形" },
 ]
 export const systemRubric29 = () => systemRubricOf(RUBRIC_29)
+
+// rubric30: rubric29 with criterion 1 comparing whitespace instead of pass/fail
+export const RUBRIC_30 = RUBRIC_29.map((p, i) => i === 0 ? {
+  name: "留白充足",
+  rule: "比哪版 whitespace 更充足,模块之间的 section spacing、页面四周的 margin、模块内的 padding 越充足越好。不足指:每屏(每张切块)超过三种内容模块,一段正文、一组 KPI 数字、一张图表、一张表格、一个列表各算一种;或模块之间的 section spacing 不到两个正文 line-height。过多指:某一屏几乎没有内容,只有一两行字或一张小图。不足比过多更差",
+  bad: p.bad,
+  see: "最挤的一屏有几种内容模块、模块间距约几个 line-height、有没有几乎空白的一屏",
+} : p)
+export const systemRubric30 = () => systemRubricOf(RUBRIC_30)
 // Built from rubric7's own prompt so nothing else differs from it.
 export const systemRubric28 = () => systemRubric7()
   .replace(`1. 疏朗:${RUBRIC_7[0].rule}`, `1. 疏朗:${RUBRIC_28[0].rule}`)
@@ -479,6 +489,7 @@ ${DIMENSIONS.map(dimLine).join("\n")}
   if (cond === "rubric27") return systemRubric27()
   if (cond === "rubric28") return systemRubric28()
   if (cond === "rubric29") return systemRubric29()
+  if (cond === "rubric30") return systemRubric30()
   if (cond === "crowd" || cond === "crowd-anchor") return system(true).replace(/^2\. .*$/m, CROWD_2)
   if (cond === "roomy") return system(true).replace(/^2\. .*$/m, ROOMY_2)
   if (cond === "perprinciple")
