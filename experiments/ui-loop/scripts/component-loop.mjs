@@ -38,6 +38,12 @@ const split = JSON.parse(read(path.join(ROOT, "skills", "split.json")))
 const wsOf = (name) => path.join(ROOT, "traces", "_components", name)
 const privOf = (name, n) => path.join(ROOT, "traces", "_components", ".private", `${name}-${n}`)
 
+// The shadcn parts that can be used offline (nothing missing), by name; the agent reads only the ones it picks.
+const usable = JSON.parse(read(path.join(SHADCN, "index.json"))).filter((e) => !e.missing.length).map((e) => e.name).join("、")
+// The component agent thinks at medium effort: the work is small and high effort spends minutes on
+// one CSS question. GEN_EFFORT still overrides.
+const EFFORT = process.env.GEN_EFFORT ?? "medium"
+
 const designA = read(path.join(ROOT, "design.md")).match(/## A 基础[\s\S]*?(?=\n## B)/)?.[0] ?? ""
 export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库。生成 Agent 用组件库写报告页面;页面经过程序检查、需求 judge、审美 judge,Maintainer 把检测意见归纳成问题,下面这些被归为「组件不够」:组件库缺能力,怎么排都解决不了。你要补上这项能力。
 
@@ -46,17 +52,19 @@ export const SYSTEM = (requests, rejected) => `你维护报告页面的组件库
 - app/src/components/ui/:shadcn/ui 的基础组件。
 - app/src/index.css:tokens(颜色、字体、圆角),不能改。
 - components.md:组件库说明,生成 Agent 只读这份说明来用组件。
-- shadcn/:shadcn/ui new-york-v4 全部组件的源码(只读参考,不能联网);shadcn/index.json 列出每个组件的文件和依赖,missing 不为空的不能用。
-- data.json 和 assets/:一份真实的样本数据,用来做演示页。
+- shadcn/ui/:shadcn/ui new-york-v4 组件源码(只读参考)。能用的有:${usable}。只读你要用的那一两个。
+- data.json 和 assets/:一份真实的样本数据,演示页从里面取内容。
 
 规则:
 1. 只改需要的地方:补上缺的能力,已有的组件和它们的用法一律不改。
 2. 写法和 shadcn 一样:做成几个可以组合的小部件,每个部件是一个函数组件,带 data-slot,接受 className 和原生属性(...props),用 cn() 合并 className。不加用来切换样式或结构的配置 props,怎么组合由页面决定。
 3. 先找 shadcn/ 里有没有能用的部件:有就复制到 app/src/components/ui/,再按规范改样式,复制来的部件和你新写的代码一样必须全部符合规范(shadcn 原版带阴影、底色,有的字号不在规范里);没有合适的,才直接用 Radix 原语(import { X } from "radix-ui")写。
-4. 风格和现有组件一致:看 report/render.tsx 和 report/index.tsx 里现有组件的字号、文字灰度、线条、间距、对齐,照着用;颜色、字号只用 token 类名和规范 A 部分的几级;不加卡片、底色和阴影。
+4. 风格和现有组件一致(现有组件的写法:正文 text-sm leading-6;标签、说明这类次要文字 text-xs 或 text-sm 加 text-muted-foreground;强调用 font-medium;数字 tabular-nums;一组内的间距 gap-2、gap-3,组和组之间 gap-6;分隔只用细线 border-b;不必通读 render.tsx);颜色、字号只用 token 类名和规范 A 部分的几级;不加卡片、底色和阴影。
 5. 新部件从 app/src/components/report/index.tsx 导出。
 6. 在 components.md 里补上:有哪些部件、什么时候用、最小的组合示例。
 7. 程序检查和代码检查是为了发现问题,不是要绕过的关卡:不要为了让检查通过去改写法、藏元素,也不要在文件系统里找检查脚本或参考答案。觉得检查结果和需求冲突,照需求做,在结束时的说明里写清楚冲突在哪。
+
+演示页 Page.tsx 只放新部件:每个需求场景一组,用 assets/ 里的真实图片和 data.json 里对应的文字;再放一小段现有组件(比如一个 Section 里的一段 Text)对照风格就够,不要把整份报告排出来。
 
 检查:用 bash 运行 \`node \$SHOOT .\`,它会构建演示页、截图(thumb.png 是整页缩略图,tile-*.png 是从上到下的切块),并做程序检查,结果写在 checks.json。用 read 看截图,不对就改。
 
@@ -75,9 +83,9 @@ ${rejected}
 </之前没被采用的组件改动>` : ""}`
 
 export const PROMPT = `请补上上面的问题需要的组件能力:
-1. 读 components.md、现有报告组件的代码和 shadcn/index.json,决定用哪个 shadcn 部件(或 Radix 原语)、拆成哪几个部件。
+1. 读 components.md 和 report/index.tsx,从上面的 shadcn 列表里选部件(或 Radix 原语),定下拆成哪几个部件。
 2. 写组件,更新 components.md。
-3. 写演示页 Page.tsx:用 data.json 和 assets/ 的真实数据,把原来呈现不了的内容用新部件呈现出来,其余内容用现有组件排,让人能看出新部件和现有组件放在一起是否统一。
+3. 写演示页 Page.tsx。
 4. 运行检查,看截图,不对就改。检查最多运行 6 次。
 5. 结束时说明:新部件叫什么、各管什么、来自哪个 shadcn 部件或 Radix 原语、怎么组合;需求里哪些没做及原因。`
 
@@ -133,18 +141,20 @@ async function build(name, prompt) {
   const ws = wsOf(name)
   const sys = SYSTEM(JSON.parse(read(path.join(ws, "requests.json"))), p.rejected ?? "")
   const round = (p.rounds?.length ?? 0) + 1
-  let run = await runAgent({ stream: true,
+  let run = await runAgent({ stream: true, effort: EFFORT,
     name, ws, priv: privOf(name, round), system: sys, maxShoots: 6, prompt,
     nudges: ["你还没有写出演示页 Page.tsx。请写出并运行检查。"], missing: () => !fs.existsSync(path.join(ws, "Page.tsx")),
   })
   let checks, lint
   for (let back = 0; ; back++) {
-    fs.renameSync(path.join(ws, "session.jsonl"), path.join(ws, `session-${round}${back ? `-${back}` : ""}.jsonl`))
+    // The session log is kept with the round, outside the workspace (a later round must not read it).
+    fs.mkdirSync(path.join(LIB, name, `r${round}`), { recursive: true })
+    fs.renameSync(path.join(ws, "session.jsonl"), path.join(LIB, name, `r${round}`, `session${back ? `-${back}` : ""}.jsonl`))
     checks = shoot(ws)
     lint = lintComponents(ws)
     if ((!checks.length && !lint.length) || back === 2) break
     console.log(`${name}: back to the agent (${checks.length} demo checks, ${lint.length} component checks)`)
-    run = await runAgent({ stream: true,
+    run = await runAgent({ stream: true, effort: EFFORT,
       name, ws, priv: privOf(name, `${round}-${back + 1}`), system: sys, maxShoots: 4,
       prompt: `检查出下面的问题,请修改组件和演示页,改完运行检查。\n\n<演示页程序检查>\n${JSON.stringify(checks, null, 1)}\n</演示页程序检查>\n\n<组件代码检查>\n${JSON.stringify(lint, null, 1)}\n</组件代码检查>`,
     })
@@ -271,7 +281,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (cmd === "propose") await propose()
   else if (!["revise", "approve", "reject"].includes(cmd)) throw new Error('usage: propose | revise k1 "意见" | approve k1 | reject k1 "原因"')
   else if (p?.status !== "待审") throw new Error(`${k} is not waiting for review`)
-  else if (cmd === "revise") await build(k, `审批意见:${note}\n\n请按意见修改组件和演示页(只改意见涉及的地方),改完运行检查,结束时说明改了什么。`)
+  else if (cmd === "revise") await build(k, `审批意见:${note}\n\n请按意见修改组件(只改意见涉及的地方),演示页按上面的要求只放新部件。改完运行检查,结束时说明改了什么。`)
   else if (cmd === "approve") merge(k)
   else {
     p.status = "未采用"

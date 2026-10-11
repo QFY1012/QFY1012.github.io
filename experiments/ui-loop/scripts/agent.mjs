@@ -26,7 +26,7 @@ export const model = {
 }
 
 // Runs prompt, then each nudge while missing() is still true. Returns what meta.json records.
-export async function runAgent({ name, ws, priv, system, prompt, nudges = [], missing = () => false, maxShoots = 5, stream = false }) {
+export async function runAgent({ name, ws, priv, system, prompt, nudges = [], missing = () => false, maxShoots = 5, stream = false, effort = EFFORT }) {
   const KEY = process.env.DEEPSEEK_API_KEY
   if (!KEY) throw new Error("set DEEPSEEK_API_KEY (source judge.env)")
   const loader = {
@@ -65,7 +65,7 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
     cwd: ws,
     agentDir: path.join(priv, "pi"),
     model,
-    thinkingLevel: EFFORT,
+    thinkingLevel: effort,
     authStorage: auth,
     modelRegistry: ModelRegistry.inMemory(auth),
     resourceLoader: loader,
@@ -121,7 +121,7 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
   if (sessionFile && fs.existsSync(sessionFile)) fs.renameSync(sessionFile, path.join(ws, "session.jsonl"))
   fs.rmSync(priv, { recursive: true, force: true })
   const out = {
-    model: model.id, effort: EFFORT, shoots, seconds: Math.round((Date.now() - t0) / 1000), usage,
+    model: model.id, effort, shoots, seconds: Math.round((Date.now() - t0) / 1000), usage,
     stop: session.messages.at(-1)?.stopReason,
     summary: session.messages.filter((m) => m.role === "assistant").at(-1)?.content?.filter((c) => c.type === "text").map((c) => c.text).join("") ?? "",
   }
