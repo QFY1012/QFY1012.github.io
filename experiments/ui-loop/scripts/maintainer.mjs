@@ -22,7 +22,7 @@ const ROOT = path.resolve(import.meta.dirname, "..")
 const read = (f) => fs.readFileSync(f, "utf8")
 const STAGE = { program: "程序检查", function: "需求 judge", aesthetic: "审美 judge" }
 
-export const SYSTEM = (name) => `你是「${name}」这个 Skill 的 Maintainer。生成 Agent 按公共规范 design.md、这个 Skill 的输出指南和组件库 components.md 为报告写页面。页面依次经过三步检测:程序检查、需求 judge(数据有没有用完、方不方便操作)、审美 judge(两版页面两两比较)。会给你某一步在训练样本每一页上的原始意见,同一个问题往往在很多页、很多次检查里重复出现。
+export const SYSTEM = (name) => `你是「${name}」这个 Skill 的 Maintainer。生成 Agent 按公共规范 design.md、这个 Skill 的输出指南和组件库 components.md 为报告写页面。页面依次经过三步检测:程序检查、需求 judge(方不方便操作)、审美 judge(两版页面两两比较)。会给你某一步在训练样本每一页上的原始意见,同一个问题往往在很多页、很多次检查里重复出现。
 
 你的任务是归纳问题,不是罗列意见:
 1. 合并:说的是同一件事的意见合并成一个问题,不管它出现在哪一页、哪一次检查。问题用一句话写清楚:页面上什么地方不对、对看报告的人有什么影响。写成对这个 Skill 的所有报告都成立的说法,不写某一页的行号、变量名这类细节。

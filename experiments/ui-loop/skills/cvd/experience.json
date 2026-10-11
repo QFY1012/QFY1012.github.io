@@ -225,7 +225,7 @@
  "attempts": [
   {
    "candidate": "c1",
-   "stage": "需求 judge",
+   "stage": "需求 judge·旧标准",
    "rule": "G1",
    "basis": [
     "P-05"
@@ -246,7 +246,7 @@
   },
   {
    "candidate": "c2",
-   "stage": "需求 judge",
+   "stage": "需求 judge·旧标准",
    "rule": "G1",
    "basis": [
     "P-05"

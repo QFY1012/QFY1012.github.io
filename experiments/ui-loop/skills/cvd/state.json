@@ -3,7 +3,7 @@
  "currentRun": "cvd-g0-k1",
  "versions": 0,
  "round": 2,
- "rejected": 2,
+ "rejected": 0,
  "sinceCheckpoint": 0,
  "history": [
   {
@@ -101,7 +101,8 @@
     },
     "accept": false,
     "why": "需求 judge 算数的意见在 c5、c6 上变多"
-   }
+   },
+   "judge": "需求 judge 旧标准(含「数据没用完」):这个结果不和新标准比"
   },
   {
    "round": 2,
@@ -149,18 +150,15 @@
     },
     "accept": false,
     "why": "需求 judge 算数的意见在 c5 上变多"
-   }
+   },
+   "judge": "需求 judge 旧标准(含「数据没用完」):这个结果不和新标准比"
   }
  ],
  "components": [
   "k1"
  ],
  "stage": "function",
- "stageRounds": 2,
- "maintained": {
-  "run": "cvd-g0-k1",
-  "stage": "function"
- },
+ "stageRounds": 0,
  "pending": {
   "name": "c3",
   "change": {

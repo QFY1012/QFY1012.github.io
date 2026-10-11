@@ -114,7 +114,7 @@ const open = (cause) => {
 // ---------- Reviser ----------
 async function revise(name) {
   const cur = read(path.join(GUIDES, `${state.current}.md`))
-  const sys = `你负责修改「${NAME}」这个 Skill 的输出指南。生成 Agent 按公共规范 design.md、组件库 components.md 和这份指南为这个 Skill 的报告写页面。页面依次经过程序检查、需求 judge(数据有没有用完、方不方便操作)、审美 judge(新旧两版两两比较),现在在「${STAGE_NAME[state.stage]}」这一步。你每次只改一条规则,改动在留出的验证样本上通过把关才会被采用;验证样本你看不到。
+  const sys = `你负责修改「${NAME}」这个 Skill 的输出指南。生成 Agent 按公共规范 design.md、组件库 components.md 和这份指南为这个 Skill 的报告写页面。页面依次经过程序检查、需求 judge(方不方便操作)、审美 judge(新旧两版两两比较),现在在「${STAGE_NAME[state.stage]}」这一步。你每次只改一条规则,改动在留出的验证样本上通过把关才会被采用;验证样本你看不到。
 
 要求:
 - 只改输出指南;公共规范和组件库不归你改,不要在指南里重复公共规范已有的内容。

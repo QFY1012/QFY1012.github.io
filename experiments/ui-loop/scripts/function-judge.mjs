@@ -5,24 +5,20 @@
 //
 //   node scripts/function-judge.mjs --run flow-g0 --cases f1,f2 [--repeat 1]
 //
-// Writes traces/<run>/<case>/function[-<n>].json: {"unused":[...],"inconvenient":[...]}
+// Writes traces/<run>/<case>/function[-<n>].json: {"inconvenient":[...]}
 import fs from "node:fs"
 import path from "node:path"
 import { call, img } from "../../ui-judge/scripts/pairwise-judge.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 
-export const SYSTEM = `你检查一份报告页面的功能,不评价美观。会给你两样东西:上游 Skill 输出的数据 data.json,和按它生成的页面截图(第 1 张是整页缩略图,后面是从上到下的切块)。data.json 里以 assets/ 开头的是图片文件,页面应该把图片本身显示出来。
+export const SYSTEM = `你检查一份报告页面的功能,不评价美观。会给你两样东西:上游 Skill 输出的数据 data.json,和按它生成的页面截图(第 1 张是整页缩略图,后面是从上到下的切块)。
 
-只判断两件事:
-
-1. 数据有没有用完。data.json 里的每一部分(文字、数字、列表、图片、颜色)是否都在页面上呈现了。被省略的、只呈现了一部分的、原本是图片却只写了文件名或文字说明的、原本是颜色却只写了色值的,都算没用完。逐条列出,写明 data.json 里的位置和页面上的情况。
-
-2. 方不方便操作。读者拿着这页做该做的事:找到某一项,在几项之间对照,看图并对应到文字说明。逐条列出具体的不便:在哪一节、读者想做什么、为什么不方便(要对照的内容隔得很远、图和说明对不上、长列表没有分组、同一件事分散在几处等)。
+只判断方不方便操作。读者拿着这页做该做的事:找到某一项,在几项之间对照,看图并对应到文字说明。逐条列出具体的不便:在哪一节、读者想做什么、为什么不方便(要对照的内容隔得很远、图和说明对不上、长列表没有分组、同一件事分散在几处等)。
 
 不要提配色、留白、字号这类美观问题。没有问题就返回空列表。
 
-只输出 JSON:{"unused":[{"path":"data.json 里的位置,如 chains[*].steps[*].image","page":"页面上的情况"}],"inconvenient":[{"where":"页面上的哪一节","task":"读者想做什么","why":"为什么不方便"}]}`
+只输出 JSON:{"inconvenient":[{"where":"页面上的哪一节","task":"读者想做什么","why":"为什么不方便"}]}`
 
 const pageImages = (ws) => [img(path.join(ws, "thumb.png")), ...JSON.parse(fs.readFileSync(path.join(ws, "tiles.json"), "utf8")).map((t) => img(path.join(ws, t.file)))]
 
@@ -45,13 +41,13 @@ export async function functionJudge(run, cases, repeat = 1) {
           r = await call(SYSTEM, [
             { type: "text", text: `<data.json>\n${fs.readFileSync(path.join(ws, "data.json"), "utf8")}\n</data.json>\n\n页面截图共 ${imgs.length} 张:` }, ...imgs,
           ], { key, label: `需求 judge ${run}/${c} ${path.basename(file, ".json")}` })
-          if (!(r.json.note && !r.json.unused?.length && !r.json.inconvenient?.length)) break
+          if (!(r.json.note && !r.json.inconvenient?.length)) break
           console.error(`  需求 judge ${run}/${c}:没看到截图(${r.json.note.slice(0, 40)}…),重试`)
           if (n === 2) throw new Error("3 次都没看到截图")
         }
         fs.writeFileSync(file, JSON.stringify(r.json, null, 1))
         done++
-        console.log(`  需求 judge ${run}/${c} ${path.basename(file, ".json")}:数据没用完 ${r.json.unused?.length ?? 0} 条,不方便 ${r.json.inconvenient?.length ?? 0} 条(${Math.round((Date.now() - t0) / 1000)} 秒;本批 ${done}/${todo})`)
+        console.log(`  需求 judge ${run}/${c} ${path.basename(file, ".json")}:不方便 ${r.json.inconvenient?.length ?? 0} 条(${Math.round((Date.now() - t0) / 1000)} 秒;本批 ${done}/${todo})`)
       } catch (e) {
         console.log(`  ✗ 需求 judge ${run}/${c} ${path.basename(file, ".json")} 失败:${e.message.slice(0, 120)}(这一轮结束后补跑)`)
       }
@@ -79,15 +75,15 @@ export async function functionJudge(run, cases, repeat = 1) {
   return Object.fromEntries(cases.map((c) => {
     const f = path.join(ROOT, "traces", run, c, repeat > 1 ? "function-1.json" : "function.json")
     const j = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : null
-    return [c, j && { unused: j.unused?.length ?? 0, inconvenient: j.inconvenient?.length ?? 0 }]
+    return [c, j && { inconvenient: j.inconvenient?.length ?? 0 }]
   }))
 }
 
 // The opinions that count on one page: the repeated runs merged, an opinion counts when it is in
 // at least 2 of them. Writes traces/<run>/<case>/function-counted.json; the gate compares counts.
-const MERGE = `下面是同一个报告页面的几次功能检查结果(每次一份清单:unused 是数据没用完,inconvenient 是不方便操作)。把说的是同一件事的合并成一条,记下它出现在几次检查里。
+const MERGE = `下面是同一个报告页面的几次功能检查结果(每次一份不方便操作的清单)。把说的是同一件事的合并成一条,记下它出现在几次检查里。
 
-只输出 JSON:{"issues":[{"kind":"unused 或 inconvenient","what":"一句话","runs":出现次数}]}`
+只输出 JSON:{"issues":[{"what":"一句话","runs":出现次数}]}`
 export async function counted(run, cases) {
   const key = process.env.DEEPSEEK_API_KEY
   await Promise.all(cases.map(async (c) => {
