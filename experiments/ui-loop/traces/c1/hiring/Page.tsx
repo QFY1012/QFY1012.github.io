@@ -30,16 +30,16 @@ export default function Report() {
     { key: "name", label: "岗位", span: 2 },
     { key: "dept", label: "部门", span: 1 },
     { key: "plan", label: "计划", span: 1, align: "right" as const },
-    { key: "hired", label: "入职", span: 2, align: "right" as const, bar: true },
+    { key: "hired", label: "入职", span: 1, align: "right" as const },
     { key: "pending", label: "待招", span: 1, align: "right" as const },
-    { key: "applications", label: "简历", span: 1, align: "right" as const },
+    { key: "applications", label: "简历", span: 2, align: "right" as const, bar: true },
     { key: "cycle", label: "周期", span: 1, align: "right" as const },
   ]
 
   const channelColumns = [
     { key: "name", label: "渠道", span: 3 },
-    { key: "hires", label: "入职人数", span: 2, align: "right" as const, bar: true },
-    { key: "share", label: "占比", span: 2, align: "right" as const },
+    { key: "hires", label: "入职人数", span: 2, align: "right" as const },
+    { key: "share", label: "占比", span: 2, align: "right" as const, bar: true },
     { key: "cost", label: "单人成本", span: 2, align: "right" as const },
   ]
 
