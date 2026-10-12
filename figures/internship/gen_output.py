@@ -104,7 +104,8 @@ TY = YM + g + 22                                   # 中轴下方一排格的上
 for cx, kind, t, s_ in [(C1, 'data', '训练样本', '4/6'), (C2, 'rub', '检查规则', ''), (C3, 'rub', '审美 rubric', '')]:
     add(tag(cx, TY, kind, t, s_))
     add(f'<path class="supply" d="M{cx} {TY - HP} V{YM + g}" marker-end="url(#ms)"/>')
-add(f'<text class="core-s" x="{C3}" y="{TY + CH + HP + 16}" text-anchor="middle">与用户排序一致 93%</text>')
+add(f'<text class="core-s" x="{C3 + CW / 2 + HP + 10}" y="{TY + CH / 2 - 3}">与用户排序</text>')
+add(f'<text class="core-s" x="{C3 + CW / 2 + HP + 10}" y="{TY + CH / 2 + 12}">一致 93%</text>')
 VY = YT + g + 22                                   # 验证样本格的上缘
 add(tag(C2, VY, 'data', '验证样本', '2/6'))
 add(f'<path class="supply" d="M{C2} {VY - HP} V{YT + g}" marker-end="url(#ms)"/>')
@@ -177,18 +178,21 @@ add(station(C2, YB, 'gate', 'user', '人工审批', '06', '通过才合并'))
 add(station(C1, YB, 'it', 'component', '组件库'))
 
 # ── 上线后支路 ───────────────────────────────────────
-# 与 Skill 层同一骨架:badcase → 人工归类 → 新样本 + 样本 rubric → 补进样本。
+# 与 Skill 层同一骨架:badcase → 人工归类 → rubric + 新样本,补进 benchmark。
 # 审美 rubric 是所有 Skill 通用的,不为单个 case 改;人工把 badcase 归类后写成这个样本自己的 rubric,
-# 跟着样本走,审美 Judge 判它时看通用 rubric 加这一条。支路自右向左,与下轨同向。
+# 和审美 rubric 一起交给审美 Judge;case 本身作为新样本补进训练 / 验证样本。支路自右向左,与下轨同向。
 LN = 590
-XP, XA, XN = XS, C3, C1 + 56                       # badcase、人工归类、新样本
+XP, XA, XR, XN = XF, 780, C3 + 56, C1 + 56         # badcase、人工归类、样本 rubric、新样本
 add(f'<path class="on" d="M{XP - 8} {LN} H{XA + 12}" marker-end="url(#ma)"/>')
-add(f'<path class="on" d="M{XA - 8} {LN} H{XN + 12}" marker-end="url(#ma)"/>')
-add(f'<rect class="ko" x="{XN - 5}" y="{YB - 3}" width="10" height="6"/>')       # 跨过下轨处断开下轨
-add(f'<path class="on" d="M{XN} {LN - 8} V{TY + CH + HP + 4}" marker-end="url(#ma)"/>')
+add(f'<path class="on" d="M{XA - 8} {LN} H{XR + 12}" marker-end="url(#ma)"/>')
+add(f'<path class="on" d="M{XR - 8} {LN} H{XN + 12}" marker-end="url(#ma)"/>')
+for x in (XR, XN):
+    add(f'<rect class="ko" x="{x - 3.5}" y="{YB - 3}" width="7" height="6"/>')   # 跨过下轨处断开下轨
+    add(f'<path class="on" d="M{x} {LN - 8} V{TY + CH + HP + 4}" marker-end="url(#ma)"/>')
+add(f'<text class="on-l" x="{XR + 9}" y="{(TY + CH + YB) / 2 + 12}">交给审美 Judge</text>')
 add(f'<text class="on-l" x="{XN + 9}" y="{(TY + CH + YB) / 2 + 12}">补进训练 / 验证样本</text>')
 add(f'<text class="on-k" x="{XP + 22}" y="{LN + 4}">上线后</text>')
-for x, nm in [(XP, 'badcase'), (XA, '人工归类'), (XN, '新样本 + 样本 rubric')]:
+for x, nm in [(XP, 'badcase'), (XA, '人工归类'), (XR, '样本 rubric'), (XN, '新样本')]:
     add(f'<circle class="on-st" cx="{x}" cy="{LN}" r="5.5"/>')
     add(f'<text class="on-n" x="{x}" y="{LN + 26}">{nm}</text>')
 
@@ -206,8 +210,8 @@ ARIA = ('输出层一次迭代的信息流转,骨架与 Skill 层相同,但迭�
         '组件不够交给组件 Reviser,新增或修改组件,写入修改记录,人工审批通过才合并进组件库。'
         '两条轨道的修改记录都保留没采用的改动。'
         'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则与审美 rubric;审美 rubric 与用户排序一致 93%。'
-        '上线后:用户对着具体的 case 给出负反馈,人工把 badcase 归类后写成这个样本自己的 rubric,'
-        '与新样本一起分进训练和验证样本;审美 Judge 判它时看通用 rubric 加这一条。通用的审美 rubric 不为单个 case 改动。')
+        '上线后:用户对着具体的 case 给出负反馈,人工把 badcase 归类后写成这个样本自己的 rubric,交给审美 Judge,'
+        '判这个样本时看通用的审美 rubric 加这一条;case 本身作为新样本补进训练和验证样本。通用的审美 rubric 不为单个 case 改动。')
 
 
 # ── 窄屏:同一套线路语言,纵向排列 ─────────────────────
@@ -330,15 +334,19 @@ for cy, kind, ic, nm, step in [(MYS[0], 'ag', 'code', '生成 Agent', '01'), (MY
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MA[2] + 28}">更好才升级</text>')
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MO[2] + 28}">通过才合并</text>')
 
-# 上线后支路:组件库之下自上而下,与 Skill 层同一骨架
-MP = [1310, 1380, 1450]                          # badcase、人工归类、新样本 + 样本 rubric
+# 上线后支路:组件库之下自上而下;人工归类后分成两份,各写明交给谁
+MP = [1310, 1380, 1460]                          # badcase、人工归类、两份去向
 madd(f'<text class="on-k" x="{LX}" y="{MP[0] - 26}" text-anchor="middle">上线后</text>')
 for i in range(2):
     madd(f'<path class="on" d="M{LX} {MP[i] + 8} V{MP[i + 1] - 10}" marker-end="url(#mam)"/>')
-for y, nm in zip(MP, ['badcase', '人工归类', '新样本 + 样本 rubric']):
-    madd(f'<circle class="on-st" cx="{LX}" cy="{y}" r="5"/>')
-    madd(f'<text class="m-on-n" x="{LX + 14}" y="{y + 4.5}">{nm}</text>')
-madd(f'<text class="m-on-s" x="{LX + 14}" y="{MP[2] + 22}">补进训练 / 验证样本</text>')
+MPB = MP[1] + 26
+madd(f'<path class="on" d="M{LX} {MPB - 8} Q{LX} {MPB} {LX + 8} {MPB} H{MBR - 8} Q{MBR} {MPB} {MBR} {MPB + 8} V{MP[2] - 10}" marker-end="url(#mam)"/>')
+for x, y, nm, note in [(LX, MP[0], 'badcase', ''), (LX, MP[1], '人工归类', ''),
+                       (LX, MP[2], '新样本', '补进训练 / 验证样本'), (MBR, MP[2], '样本 rubric', '交给审美 Judge')]:
+    madd(f'<circle class="on-st" cx="{x}" cy="{y}" r="5"/>')
+    madd(f'<text class="m-on-n" x="{x + 14}" y="{y + 4.5}">{nm}</text>')
+    if note:
+        madd(f'<text class="m-on-s" x="{x + 14}" y="{y + 22}">{note}</text>')
 
 mdefs = '''<defs>
   <pattern id="hatchm" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
@@ -346,7 +354,7 @@ mdefs = '''<defs>
   <marker id="mam" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk ac"/></marker>
   <marker id="msm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M1 1.5 L9 5 L1 8.5 Z" class="mk soft"/></marker>
 </defs>'''
-MH = MP[2] + 40
+MH = MP[2] + 44
 mobile = f'<svg viewBox="0 30 {MW} {MH - 30}" role="img" aria-label="{ARIA}">{mdefs}{"".join(m)}</svg>'
 
 
