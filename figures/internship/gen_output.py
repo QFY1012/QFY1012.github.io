@@ -101,6 +101,10 @@ def tag(cx, y0, kind, t, s=''):
 
 
 TY = YM + g + 22                                   # 中轴下方一排格的上缘
+# 审美 Judge 读两份规则:通用的审美 rubric,和上线后人工为单个样本写的样本 rubric;两格叠在同一块冻结区里
+SY = TY + CH + 5                                   # 样本 rubric 格的上缘
+SB = SY + CH + HP                                  # 这一块冻结区的下缘
+add(tag(C3, SY, 'rub', '样本 rubric'))
 for cx, kind, t, s_ in [(C1, 'data', '训练样本', '4/6'), (C2, 'rub', '检查规则', ''), (C3, 'rub', '审美 rubric', '')]:
     add(tag(cx, TY, kind, t, s_))
     add(f'<path class="supply" d="M{cx} {TY - HP} V{YM + g}" marker-end="url(#ms)"/>')
@@ -188,8 +192,7 @@ add(f'<path class="on" d="M{XA - 8} {LN} H{XR + 12}" marker-end="url(#ma)"/>')
 add(f'<path class="on" d="M{XR - 8} {LN} H{XN + 12}" marker-end="url(#ma)"/>')
 for x in (XR, XN):
     add(f'<rect class="ko" x="{x - 3.5}" y="{YB - 3}" width="7" height="6"/>')   # 跨过下轨处断开下轨
-    add(f'<path class="on" d="M{x} {LN - 8} V{TY + CH + HP + 4}" marker-end="url(#ma)"/>')
-add(f'<text class="on-l" x="{XR + 9}" y="{(TY + CH + YB) / 2 + 12}">交给审美 Judge</text>')
+    add(f'<path class="on" d="M{x} {LN - 8} V{(SB if x == XR else TY + CH + HP) + 4}" marker-end="url(#ma)"/>')
 add(f'<text class="on-l" x="{XN + 9}" y="{(TY + CH + YB) / 2 + 12}">补进训练 / 验证样本</text>')
 add(f'<text class="on-k" x="{XP + 22}" y="{LN + 4}">上线后</text>')
 for x, nm in [(XP, 'badcase'), (XA, '人工归类'), (XR, '样本 rubric'), (XN, '新样本')]:
@@ -209,9 +212,9 @@ ARIA = ('输出层一次迭代的信息流转,骨架与 Skill 层相同,但迭�
         '布局问题交给 UI Spec Reviser,改 UI Spec 的一条规则,写入修改记录,在验证样本上更好才升级 UI Spec;'
         '组件不够交给组件 Reviser,新增或修改组件,写入修改记录,人工审批通过才合并进组件库。'
         '两条轨道的修改记录都保留没采用的改动。'
-        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则与审美 rubric;审美 rubric 与用户排序一致 93%。'
-        '上线后:用户对着具体的 case 给出负反馈,人工把 badcase 归类后写成这个样本自己的 rubric,交给审美 Judge,'
-        '判这个样本时看通用的审美 rubric 加这一条;case 本身作为新样本补进训练和验证样本。通用的审美 rubric 不为单个 case 改动。')
+        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则、审美 rubric 与样本 rubric;审美 rubric 所有 Skill 通用,与用户排序一致 93%。'
+        '上线后:用户对着具体的 case 给出负反馈,人工把 badcase 归类后写进这个样本自己的样本 rubric,交给审美 Judge,'
+        '判这个样本时看通用的审美 rubric 加样本 rubric;case 本身作为新样本补进训练和验证样本。通用的审美 rubric 不为单个 case 改动。')
 
 
 # ── 窄屏:同一套线路语言,纵向排列 ─────────────────────
@@ -253,9 +256,10 @@ def mcell(cy, kind, t, s=''):
 
 madd(mcell(MYS[0], 'data', '训练样本', '4/6'))
 madd(mcell(MYS[1], 'rub', '检查规则'))
+madd(mcell(MYS[2] + MCH + 5, 'rub', '样本 rubric'))
 madd(mcell(MYS[2], 'rub', '审美 rubric'))
-madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + 34}">与用户排序</text>')
-madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + 49}">一致 93%</text>')
+madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + MCH + 5 + 34}">审美 rubric 与用户</text>')
+madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + MCH + 5 + 49}">排序一致 93%</text>')
 madd(mcell(MA[2], 'data', '验证样本', '2/6'))
 
 # 供给:横向指向站名
