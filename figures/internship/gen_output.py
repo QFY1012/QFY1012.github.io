@@ -101,6 +101,10 @@ def tag(cx, y0, kind, t, s=''):
 
 
 TY = YM + g + 22                                   # 中轴下方一排格的上缘
+# 审美 Judge 读两份规则:通用的审美 rubric,和上线后从用户反馈总结出的反馈 rubric;两格叠在同一块冻结区里
+SY = TY + CH + 5                                   # 反馈 rubric 格的上缘
+SB = SY + CH + HP                                  # 这一块冻结区的下缘
+add(tag(C3, SY, 'rub', '反馈 rubric'))
 for cx, kind, t, s_ in [(C1, 'data', '训练样本', '4/6'), (C2, 'rub', '检查规则', ''), (C3, 'rub', '审美 rubric', '')]:
     add(tag(cx, TY, kind, t, s_))
     add(f'<path class="supply" d="M{cx} {TY - HP} V{YM + g}" marker-end="url(#ms)"/>')
@@ -178,21 +182,20 @@ add(station(C2, YB, 'gate', 'user', '人工审批', '06', '通过才合并'))
 add(station(C1, YB, 'it', 'component', '组件库'))
 
 # ── 上线后支路 ───────────────────────────────────────
-# 与 Skill 层同一骨架:badcase → 人工归类 → 新 rubric + 新样本,补进 benchmark。
-# 审美 rubric 是所有 Skill 通用的,单个 case 不能直接写进去;人工先把 badcase 归类,
-# 归纳出通用的条目再写进审美 rubric;case 本身作为新样本补进训练 / 验证样本。支路自右向左,与下轨同向。
+# 与 Skill 层同一骨架:badcase → 人工归类 → rubric + 新样本,补进 benchmark。
+# 审美 rubric 是所有 Skill 通用的,不为单个 case 改;人工把 badcase 归类后总结进单独的反馈 rubric,
+# 和审美 rubric 一起交给审美 Judge;case 本身作为新样本补进训练 / 验证样本。支路自右向左,与下轨同向。
 LN = 590
-XP, XA, XR, XN = XF, 780, C3 + 56, C1 + 56         # badcase、人工归类、新 rubric、新样本
+XP, XA, XR, XN = XF, 780, C3 + 56, C1 + 56         # badcase、人工归类、反馈 rubric、新样本
 add(f'<path class="on" d="M{XP - 8} {LN} H{XA + 12}" marker-end="url(#ma)"/>')
 add(f'<path class="on" d="M{XA - 8} {LN} H{XR + 12}" marker-end="url(#ma)"/>')
 add(f'<path class="on" d="M{XR - 8} {LN} H{XN + 12}" marker-end="url(#ma)"/>')
 for x in (XR, XN):
     add(f'<rect class="ko" x="{x - 3.5}" y="{YB - 3}" width="7" height="6"/>')   # 跨过下轨处断开下轨
-    add(f'<path class="on" d="M{x} {LN - 8} V{TY + CH + HP + 4}" marker-end="url(#ma)"/>')
-add(f'<text class="on-l" x="{XR + 9}" y="{(TY + CH + YB) / 2 + 12}">写进审美 rubric</text>')
+    add(f'<path class="on" d="M{x} {LN - 8} V{(SB if x == XR else TY + CH + HP) + 4}" marker-end="url(#ma)"/>')
 add(f'<text class="on-l" x="{XN + 9}" y="{(TY + CH + YB) / 2 + 12}">补进训练 / 验证样本</text>')
 add(f'<text class="on-k" x="{XP + 22}" y="{LN + 4}">上线后</text>')
-for x, nm in [(XP, 'badcase'), (XA, '人工归类'), (XR, '新 rubric'), (XN, '新样本')]:
+for x, nm in [(XP, 'badcase'), (XA, '人工归类'), (XR, '反馈 rubric'), (XN, '新样本')]:
     add(f'<circle class="on-st" cx="{x}" cy="{LN}" r="5.5"/>')
     add(f'<text class="on-n" x="{x}" y="{LN + 26}">{nm}</text>')
 
@@ -209,9 +212,9 @@ ARIA = ('输出层一次迭代的信息流转,骨架与 Skill 层相同,但迭�
         '布局问题交给 UI Spec Reviser,改 UI Spec 的一条规则,写入修改记录,在验证样本上更好才升级 UI Spec;'
         '组件不够交给组件 Reviser,新增或修改组件,写入修改记录,人工审批通过才合并进组件库。'
         '两条轨道的修改记录都保留没采用的改动。'
-        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则与审美 rubric;审美 rubric 所有 Skill 通用,与用户排序一致 93%。'
-        '上线后:用户对着具体的 case 给出负反馈。审美 rubric 所有 Skill 通用,单个 case 不能直接写进去;'
-        '人工先把 badcase 归类,归纳出通用的条目再写进审美 rubric;case 本身作为新样本补进训练和验证样本。')
+        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则、审美 rubric 与反馈 rubric;审美 rubric 所有 Skill 通用,与用户排序一致 93%。'
+        '上线后:用户对着具体的 case 给出负反馈,人工把 badcase 归类后总结进单独的反馈 rubric,交给审美 Judge,'
+        'Judge 同时看通用的审美 rubric 和反馈 rubric;case 本身作为新样本补进训练和验证样本。通用的审美 rubric 不为单个 case 改动。')
 
 
 # ── 窄屏:同一套线路语言,纵向排列 ─────────────────────
@@ -253,9 +256,10 @@ def mcell(cy, kind, t, s=''):
 
 madd(mcell(MYS[0], 'data', '训练样本', '4/6'))
 madd(mcell(MYS[1], 'rub', '检查规则'))
+madd(mcell(MYS[2] + MCH + 5, 'rub', '反馈 rubric'))
 madd(mcell(MYS[2], 'rub', '审美 rubric'))
-madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + 34}">与用户排序</text>')
-madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + 49}">一致 93%</text>')
+madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + MCH + 5 + 34}">审美 rubric 与用户</text>')
+madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + MCH + 5 + 49}">排序一致 93%</text>')
 madd(mcell(MA[2], 'data', '验证样本', '2/6'))
 
 # 供给:横向指向站名
@@ -342,7 +346,7 @@ for i in range(2):
 MPB = MP[1] + 26
 madd(f'<path class="on" d="M{LX} {MPB - 8} Q{LX} {MPB} {LX + 8} {MPB} H{MBR - 8} Q{MBR} {MPB} {MBR} {MPB + 8} V{MP[2] - 10}" marker-end="url(#mam)"/>')
 for x, y, nm, note in [(LX, MP[0], 'badcase', ''), (LX, MP[1], '人工归类', ''),
-                       (LX, MP[2], '新样本', '补进训练 / 验证样本'), (MBR, MP[2], '新 rubric', '写进审美 rubric')]:
+                       (LX, MP[2], '新样本', '补进训练 / 验证样本'), (MBR, MP[2], '反馈 rubric', '交给审美 Judge')]:
     madd(f'<circle class="on-st" cx="{x}" cy="{y}" r="5"/>')
     madd(f'<text class="m-on-n" x="{x + 14}" y="{y + 4.5}">{nm}</text>')
     if note:
