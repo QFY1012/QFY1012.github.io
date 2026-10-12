@@ -1,5 +1,5 @@
 {
- "next": 2,
+ "next": 3,
  "proposals": {
   "k1": {
    "status": "采用",
@@ -52,6 +52,12 @@
      "seconds": 125
     }
    ]
+  },
+  "k2": {
+   "status": "未采用",
+   "requests": 6,
+   "rejected": "",
+   "reason": "没做完就停了:需求写法改成「修还是加」两种之后重做"
   }
  }
 }
