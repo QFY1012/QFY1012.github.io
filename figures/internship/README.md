@@ -6,8 +6,9 @@
 |---|---|---|
 | 背景(原有 Skill)与关键决策(拆解与分层) | `gen_bg.py` | `bg-flow.html` |
 | Skill 层自迭代 | `gen_flow.py` | `skill-flow.html` |
+| 输出层自迭代与审美 Judge 校准 | `gen_output.py` | `output-flow.html` |
 
 ```sh
 python3 figures/internship/gen_bg.py      # 重新生成 HTML
-node figures/internship/shot.mjs bg-flow  # 截图检查(png 不提交)
+node figures/internship/shot.mjs bg-flow  # 截图检查(png 不提交);名字可换成 skill-flow、output-flow
 ```
