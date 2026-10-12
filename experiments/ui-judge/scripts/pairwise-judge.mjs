@@ -524,6 +524,8 @@ export const img = (file) => ({ type: "image_url", image_url: { url: `data:image
 export const JUDGE_URL = process.env.JUDGE_URL ?? "https://api.deepseek.com/chat/completions"
 export const JUDGE_MODEL = process.env.JUDGE_MODEL ?? "deepseek-flash"
 export const JUDGE_EFFORT = process.env.JUDGE_EFFORT ?? "low"
+// JUDGE_MAX_TOKENS caps one reply, thinking included (the endpoint accepts far more than 32000).
+export const JUDGE_MAX_TOKENS = Number(process.env.JUDGE_MAX_TOKENS ?? 131072)
 // The reply is streamed. A request is dropped and sent again when nothing arrives: 60 seconds for
 // the first bytes (reading a dozen screenshots takes the endpoint more than 10), then 10 seconds
 // between chunks once the reply has started. A long reply that keeps arriving is not cut.
@@ -531,7 +533,7 @@ const FIRST_MS = 60_000, IDLE_MS = 10_000
 // onText: called with each piece of the reply as it arrives. Thinking is not passed: onThink(seconds) is
 // called when it starts and every 30 seconds while it lasts, so a long think still shows progress.
 export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JUDGE_EFFORT, onText, onThink, label }) {
-  const body = { model, messages: [{ role: "system", content: sys }, { role: "user", content }], response_format: { type: "json_object" }, reasoning_effort: effort, max_tokens: 32000, stream: true, stream_options: { include_usage: true } }
+  const body = { model, messages: [{ role: "system", content: sys }, { role: "user", content }], response_format: { type: "json_object" }, reasoning_effort: effort, max_tokens: JUDGE_MAX_TOKENS, stream: true, stream_options: { include_usage: true } }
   for (let attempt = 0; ; attempt++) {
     const t0 = Date.now()
     const ac = new AbortController()
