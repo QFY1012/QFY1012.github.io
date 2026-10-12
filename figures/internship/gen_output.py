@@ -2,8 +2,8 @@
 # 骨架与 Skill 层相同:冻结的 benchmark → 生成 → 检测 → 归纳问题 → 修改 → 把关 → 升级或保留。
 # 不同之处:检测分两步(程序检查 → 审美 Judge);迭代对象有两个(UI Spec 与组件库),
 # Maintainer 写出问题清单后分成两条平级、结构相同的轨道:
-#   内轨 布局问题 → Reviser 改 UI Spec 的一条规则 → 修改记录 → 验证把关 → UI Spec(只影响这个 Skill)
-#   外轨 组件不够 → 组件 Agent 改组件库 → 修改记录 → 人工审批 → 组件库(影响所有 Skill)
+#   上轨 布局问题 → UI Spec Reviser 改 UI Spec 的一条规则 → 修改记录 → 验证把关 → UI Spec(只影响这个 Skill)
+#   下轨 组件不够 → 组件 Reviser 改组件库 → 修改记录 → 人工审批 → 组件库(影响所有 Skill)
 # UI Spec 与组件库是两个迭代对象,各在一条轨道的末端;两条回线汇合后一起进入生成 Agent。
 import os
 
@@ -78,14 +78,16 @@ XL = C1 - g * 0.7                      # 左端半圆落点
 svg = []
 add = svg.append
 
-# ── 冻结的 benchmark ───────────────────────────────────
-# 供给中轴的三项放在中轴下方,自下而上供给;只供给验证把关的验证样本放在中轴上方。
-CW, CH = 124, 36
-BX0, BX1, BY0, BY1 = C1 - CW / 2 - 12, C3 + CW / 2 + 12, 318, 408
-ROW = 330                                          # 下方一排格的上缘
+# ── 冻结的 benchmark(位于上轨与中轴之间,一排三格)──────
+# 训练样本 → 生成 Agent、审美 rubric → 审美 Judge 向下供给中轴;验证样本 → 验证把关向上供给上轨。
+CW, CH = 124, 46
+BX0, BX1, BY0, BY1 = C1 - CW / 2 - 14, C4 + 60, 132, 258
+ROW = 176                                          # 一排格的上缘
 add(f'<rect class="hatch" x="{BX0}" y="{BY0}" width="{BX1 - BX0}" height="{BY1 - BY0}"/>')
-VY = 158                                           # 验证样本格的上缘
-add(f'<rect class="hatch" x="{C2 - CW / 2 - 10}" y="{VY - 10}" width="{CW + 20}" height="{CH + 20}"/>')
+add(icon('lock', BX0 + 22, BY0 + 20, 13, 'ic dim'))
+add(f'<text class="core-t" x="{BX0 + 36}" y="{BY0 + 24.5}">Benchmark</text>')
+x = BX0 + 36 + tw('Benchmark', 13) + 10
+add(f'<text class="core-k" x="{x:.1f}" y="{BY0 + 24}">本轮冻结</text>')
 
 
 def cell(cx, y0, kind, t, s=''):
@@ -103,20 +105,14 @@ def cell(cx, y0, kind, t, s=''):
     return ''.join(o)
 
 
-add(cell(C2, VY, 'data', '验证样本', '2/6'))
 add(cell(C1, ROW, 'data', '训练样本', '4/6'))
-add(cell(C2, ROW, 'rub', '检查规则'))
+add(cell(C2, ROW, 'data', '验证样本', '2/6'))
 add(cell(C3, ROW, 'rub', '审美 rubric'))
-yh = BY1 - 18
-add(icon('lock', BX0 + 20, yh - 4, 12, 'ic dim'))
-add(f'<text class="core-t" x="{BX0 + 33}" y="{yh}">Benchmark</text>')
-add(f'<text class="core-k" x="{BX0 + 33 + tw("Benchmark", 13) + 10:.1f}" y="{yh - 0.5}">本轮冻结</text>')
-add(f'<text class="core-s" x="{C3}" y="{yh}" text-anchor="middle">与用户排序一致 93%</text>')
+add(f'<text class="core-s" x="{C3 + CW / 2 + 12}" y="{ROW + CH / 2 + 4}">与用户排序一致 93%</text>')
 
-# 供给:验证样本 → 验证把关(向上);训练样本、检查规则、rubric → 中轴(向上)
-add(f'<path class="supply" d="M{C2} {VY} V{YT + g}" marker-end="url(#ms)"/>')
-for cx in (C1, C2, C3):
-    add(f'<path class="supply" d="M{cx} {ROW} V{YM + g}" marker-end="url(#ms)"/>')
+add(f'<path class="supply" d="M{C1} {ROW + CH} V{YM - g}" marker-end="url(#ms)"/>')
+add(f'<path class="supply" d="M{C3} {ROW + CH} V{YM - g}" marker-end="url(#ms)"/>')
+add(f'<path class="supply" d="M{C2} {ROW} V{YT + g}" marker-end="url(#ms)"/>')
 
 # ── 轨道 ─────────────────────────────────────────────
 # 中轴:生成 → 程序检查 → 审美 Judge → Maintainer → 问题清单 → 分叉
@@ -174,14 +170,14 @@ def station(cx, cy, kind, ic, name, step='', note='', up=False):
     return ''.join(out)
 
 
-add(station(C1, YM, 'ag', 'code', '生成 Agent', '01', up=True))
-add(station(C2, YM, 'prog', 'ruler', '程序检查', '02', up=True))
-add(station(C3, YM, 'ag', 'scale', '审美 Judge', '03', up=True))
-add(station(C4, YM, 'ag', 'search', 'Maintainer', '04', up=True))
-add(station(C4, YT, 'ag', 'pen', 'Reviser', '05', up=True))
+add(station(C1, YM, 'ag', 'code', '生成 Agent', '01'))
+add(station(C2, YM, 'prog', 'ruler', '程序检查', '02'))
+add(station(C3, YM, 'ag', 'scale', '审美 Judge', '03'))
+add(station(C4, YM, 'ag', 'search', 'Maintainer', '04'))
+add(station(C4, YT, 'ag', 'pen', 'UI Spec Reviser', '05', up=True))
 add(station(C2, YT, 'gate', 'shield', '验证把关', '06', '更好才升级', up=True))
 add(station(C1, YT, 'it', 'file', 'UI Spec', up=True))
-add(station(C4, YB, 'ag', 'component', '组件 Agent', '05'))
+add(station(C4, YB, 'ag', 'pen', '组件 Reviser', '05'))
 add(station(C2, YB, 'gate', 'user', '人工审批', '06', '通过才合并'))
 add(station(C1, YB, 'it', 'component', '组件库'))
 
@@ -195,10 +191,10 @@ defs = '''<defs>
 ARIA = ('输出层一次迭代的信息流转,骨架与 Skill 层相同,但迭代对象有两个:UI Spec 和组件库。'
         '两者一起交给生成 Agent,为训练样本写出页面;程序检查全部通过后,审美 Judge 把新旧两版两两比较。'
         'Maintainer 把两步检测的结果归纳进问题清单,按现有组件够不够用分成两条平级的轨道:'
-        '布局问题交给 Reviser,改 UI Spec 的一条规则,写入修改记录,在验证样本上更好才升级 UI Spec;'
-        '组件不够交给组件 Agent,新增或修改组件,写入修改记录,人工审批通过才合并进组件库。'
+        '布局问题交给 UI Spec Reviser,改 UI Spec 的一条规则,写入修改记录,在验证样本上更好才升级 UI Spec;'
+        '组件不够交给组件 Reviser,新增或修改组件,写入修改记录,人工审批通过才合并进组件库。'
         '两条轨道的修改记录都保留没采用的改动。'
-        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则与审美 rubric;审美 rubric 与用户排序一致 93%。')
+        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份与审美 rubric;审美 rubric 与用户排序一致 93%。')
 
 
 # ── 窄屏:同一套线路语言,纵向排列 ─────────────────────
@@ -242,14 +238,13 @@ madd(icon('lock', MBX0 + 14, MBY0 + 18, 12, 'ic dim'))
 madd(f'<text class="core-t" x="{MBX0 + 26}" y="{MBY0 + 22.5}">Benchmark</text>')
 madd(f'<text class="core-k" x="{MBX0 + 9}" y="{MBY0 + 40}">本轮冻结</text>')
 madd(mcell(MYS[0], 'data', '训练样本', '4/6'))
-madd(mcell(MYS[1], 'rub', '检查规则'))
 madd(mcell(MYS[2], 'rub', '审美 rubric'))
 madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + 34}">与用户排序</text>')
 madd(f'<text class="m-info sm" x="{MCX0 + 4}" y="{MYS[2] + 49}">一致 93%</text>')
 madd(mcell(MA[2], 'data', '验证样本', '2/6'))
 
 # 供给:横向指向站名
-for cy, nm in [(MYS[0], '生成 Agent'), (MYS[1], '程序检查'), (MYS[2], '审美 Judge'), (MA[2], '验证把关')]:
+for cy, nm in [(MYS[0], '生成 Agent'), (MYS[2], '审美 Judge'), (MA[2], '验证把关')]:
     madd(f'<path class="supply" d="M{MCX0} {cy + 4} H{name_end(nm) + 10:.1f}" marker-end="url(#msm)"/>')
 # 外段支路跨过「验证样本」供给线处断开供给线(桥)
 madd(f'<rect class="ko" x="{MBR - 3}" y="{MA[2] - 1}" width="6" height="10"/>')
@@ -316,9 +311,9 @@ def mstation(cy, kind, ic, nm, step=''):
 
 for cy, kind, ic, nm, step in [(MYS[0], 'ag', 'code', '生成 Agent', '01'), (MYS[1], 'prog', 'ruler', '程序检查', '02'),
                                (MYS[2], 'ag', 'scale', '审美 Judge', '03'), (MYS[3], 'ag', 'search', 'Maintainer', '04'),
-                               (MA[0], 'ag', 'pen', 'Reviser', '05'), (MA[2], 'gate', 'shield', '验证把关', '06'),
+                               (MA[0], 'ag', 'pen', 'UI Spec Reviser', '05'), (MA[2], 'gate', 'shield', '验证把关', '06'),
                                (MA[3], 'it', 'file', 'UI Spec', ''),
-                               (MO[0], 'ag', 'component', '组件 Agent', '05'), (MO[2], 'gate', 'user', '人工审批', '06'),
+                               (MO[0], 'ag', 'pen', '组件 Reviser', '05'), (MO[2], 'gate', 'user', '人工审批', '06'),
                                (MO[3], 'it', 'component', '组件库', '')]:
     madd(mstation(cy, kind, ic, nm, step))
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MA[2] + 28}">更好才升级</text>')
