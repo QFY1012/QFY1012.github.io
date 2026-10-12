@@ -127,4 +127,7 @@ ${CHANGE.old ? `原文:${CHANGE.old.trim()}\n改为:${CHANGE.new.trim()}` : `新
   console.log(`${name}: done, ${run.shoots} shoots, ${final.length} check findings`)
 }
 
-await Promise.all(CASES.map((c) => generate(c).catch((e) => console.error(`${c}: FAIL ${e.stack ?? e}`))))
+// A page that failed stops the caller (the loop would otherwise judge pages that were never written).
+const failed = []
+await Promise.all(CASES.map((c) => generate(c).catch((e) => { failed.push(c); console.error(`${c}: FAIL ${e.stack ?? e}`) })))
+if (failed.length) { console.error(`没写完的页面:${failed.join(",")},停止`); process.exit(1) }
