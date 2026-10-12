@@ -1,0 +1,6 @@
+[
+ {
+  "check": "数据忠实",
+  "msg": "页面上找不到 5 项数据:/chains/0/steps/0/note「满减差额只在进度条末端用小字显示」、/chains/0/steps/2/note「默认券不是最优券」、/chains/0/steps/3/note「支付页还能改券,打断支付」、/chains/1/steps/0/note「差额提示在结算按钮上方」、/chains/1/steps/1/note「最优券默认选中,可点开更换」"
+ }
+]

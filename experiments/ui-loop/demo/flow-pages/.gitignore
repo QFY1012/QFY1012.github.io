@@ -1,0 +1,10 @@
+# Rebuilt by make-flow-pages.mjs
+_app-before-k3/
+*/app
+*/.build/
+*/tile-*.png
+*/tiles.json
+*/thumb.png
+*/data.json
+*/assets/
+*/tsconfig.json

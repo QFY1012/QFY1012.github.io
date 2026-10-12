@@ -1,0 +1,341 @@
+<title>交互流程挖掘迭代演示</title>
+<style>
+/* Layout: a round picker and problem-count track on top; the selected round below as before/after page screenshots, then change, judge, gate, recorder, problem list and guide panels. */
+:root {
+  --bg: #f5f6f8; --surface: #ffffff; --ink: #1b2027; --muted: #5c6570; --line: #dde1e7; --chip: #eceff3;
+  --accent: #2f56c8; --ok: #1e7f55; --ok-bg: #e3f2ea; --bad: #b9402b; --bad-bg: #f9e7e3; --meh: #9a6a12; --meh-bg: #f8eed7;
+  --rp-mark: #2f56c8;
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111418; --surface: #181c22; --ink: #e5e8ed; --muted: #9aa2ad; --line: #2b313a; --chip: #232932;
+  --accent: #8ea6f2; --ok: #5cc795; --ok-bg: #16301f; --bad: #f08a74; --bad-bg: #3a1e18; --meh: #e2b259; --meh-bg: #33280f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111418; --surface: #181c22; --ink: #e5e8ed; --muted: #9aa2ad; --line: #2b313a; --chip: #232932;
+  --accent: #8ea6f2; --ok: #5cc795; --ok-bg: #16301f; --bad: #f08a74; --bad-bg: #3a1e18; --meh: #e2b259; --meh-bg: #33280f; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.6 }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; display: grid; gap: 22px }
+h1, h2, h3 { text-wrap: balance; margin: 0 }
+.top { display: grid; gap: 6px }
+.top h1 { font-size: 24px; font-weight: 650; letter-spacing: .2px }
+.top p { margin: 0; color: var(--muted); max-width: 70ch }
+.tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); vertical-align: 2px; margin-left: 8px; font-weight: 500 }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0 }
+.label { font-size: 12px; color: var(--muted); letter-spacing: .4px }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px }
+.flow span.step { padding: 3px 10px; border-radius: 6px; background: var(--chip); color: var(--muted); white-space: nowrap }
+.flow span.step.on { background: var(--accent); color: var(--surface) }
+.flow .arr { color: var(--muted) }
+.flow .fork { display: inline-flex; flex-direction: column; gap: 4px }
+.track { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.chip { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 5px 10px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center }
+.chip:hover { border-color: var(--accent) }
+.chip:focus-visible, .nav button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.chip.sel { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent) }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none }
+.d-ok { background: var(--ok) } .d-bad { background: var(--bad) } .d-meh { background: var(--meh) } .d-base { background: var(--muted) }
+.chart svg { width: 100%; height: auto; display: block }
+.chart text { fill: var(--muted); font-size: 11px; font-family: var(--sans) }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted) }
+.legend span { display: inline-flex; gap: 6px; align-items: center }
+.head { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline; justify-content: space-between }
+.head h2 { font-size: 19px; font-weight: 650 }
+.head .sub { color: var(--muted); font-size: 13px }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; white-space: nowrap }
+.p-ok { background: var(--ok-bg); color: var(--ok) } .p-bad { background: var(--bad-bg); color: var(--bad) } .p-meh { background: var(--meh-bg); color: var(--meh) } .p-base { background: var(--chip); color: var(--muted) }
+.nav { display: flex; gap: 6px }
+.nav button { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer }
+.nav button:disabled { opacity: .4; cursor: default }
+.frames { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px }
+@media (max-width: 860px) { .frames { grid-template-columns: minmax(0, 1fr) } }
+.frame { display: grid; gap: 6px; min-width: 0 }
+.frame .cap { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted) }
+.frame .cap b { color: var(--ink); font-weight: 600 }
+.viewport { height: 620px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: #ffffff }
+@media (max-width: 860px) { .viewport { height: 460px } }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; align-items: start }
+.panel h3 { font-size: 14px; font-weight: 650; margin-bottom: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap }
+.panel p { margin: 0 }
+.kv { display: grid; grid-template-columns: 4.5em minmax(0, 1fr); gap: 6px 10px; font-size: 13px }
+.kv dt { color: var(--muted) } .kv dd { margin: 0 }
+.rule { font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--chip) }
+.rule.new { background: var(--ok-bg) }
+.rule.rej { text-decoration: line-through; text-decoration-color: var(--bad); color: var(--muted) }
+table.jt { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums }
+.jt th, .jt td { padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: left }
+.jt th { font-weight: 500; color: var(--muted); font-size: 12px }
+.jt td.c { text-align: center }
+.v-h { color: var(--ok); font-weight: 600 } .v-q { color: var(--bad); font-weight: 600 } .v-e { color: var(--muted) }
+.quote { font-size: 13px; color: var(--muted); border-left: 2px solid var(--line); padding-left: 10px; margin-top: 8px }
+.quote b { color: var(--ink); font-weight: 600 }
+.marks { display: inline-flex; gap: 3px }
+.mk { width: 22px; text-align: center; border-radius: 4px; font-size: 12px; font-weight: 600 }
+.mk.w { background: var(--ok-bg); color: var(--ok) } .mk.l { background: var(--bad-bg); color: var(--bad) } .mk.t { background: var(--chip); color: var(--muted) }
+ul.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px }
+.prob { display: grid; grid-template-columns: 3.4em minmax(0, 1fr); gap: 2px 8px; font-size: 13px }
+.prob .id { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 1px }
+.prob.tgt .id { color: var(--accent); font-weight: 600 }
+.prob .meta { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--muted) }
+.small { font-size: 12px; color: var(--muted) }
+.log { width: 100%; border-collapse: collapse; font-size: 13px }
+.log th, .log td { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top }
+.log th { color: var(--muted); font-weight: 500; font-size: 12px; white-space: nowrap }
+.log tr { cursor: pointer } .log tr:hover td { background: var(--chip) }
+.scroll { overflow-x: auto }
+.stats { display: flex; flex-wrap: wrap; gap: 10px 28px; font-size: 13px }
+.stats b { font-size: 20px; font-weight: 650; margin-right: 4px; font-variant-numeric: tabular-nums }
+
+
+.shot { position: relative; background: #ffffff }
+.shot img { display: block; width: 100%; height: auto; max-width: 100% }
+.shot .mark { position: absolute; border: 2px dashed var(--accent); border-radius: 6px; pointer-events: none }
+.shot .mark span { position: absolute; top: -11px; right: 6px; font-size: 11px; line-height: 18px; padding: 0 6px; border-radius: 3px; background: var(--accent); color: var(--surface) }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>交互流程挖掘 Skill 的输出层迭代<span class="tag">模拟迭代演示</span></h1>
+    <p>同一个训练页「下单支付」从初版 g0 改到最终版的 10 轮。每一版页面都是用组件库写的 Page.tsx，经程序检查脚本真实渲染截图；judge 意见、门禁结果和修改记录是模拟的。第 1 轮的组件改动用的是已采用的 k3。</p>
+  </header>
+
+  <section class="panel track" aria-label="迭代轨迹">
+    <div class="flow" id="flow"></div>
+    <div class="chips" id="chips" role="tablist"></div>
+    <div class="chart" id="chart"></div>
+    <div class="legend">
+      <span><i class="dot d-ok"></i>成功，采用</span>
+      <span><i class="dot d-bad"></i>失败，未采用</span>
+      <span><i class="dot d-meh"></i>没效果，未采用</span>
+      <span>纵轴：训练页上还没解决的审美问题数</span>
+    </div>
+  </section>
+
+  <section id="detail" style="display:grid;gap:14px"></section>
+
+  <section class="panel">
+    <h3>修改记录（记录员）<span class="small">点一行查看那一轮</span></h3>
+    <div class="scroll"><table class="log" id="log"></table></div>
+  </section>
+</div>
+
+<script>
+const BOXES = {"g0": {"width": 1248, "height": 3681, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 72}, "核心指标": {"x": 48, "y": 672, "w": 1152, "h": 192}, "产品对比": {"x": 48, "y": 1056, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1365, "w": 1152, "h": 1320}, "问题": {"x": 48, "y": 2877, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3225, "w": 1152, "h": 96}, "背景": {"x": 48, "y": 3513, "w": 1152, "h": 96}}}, "g1": {"width": 1248, "height": 3587, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 72}, "核心指标": {"x": 48, "y": 672, "w": 1152, "h": 192}, "产品对比": {"x": 48, "y": 1056, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1365, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2783, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3131, "w": 1152, "h": 96}, "背景": {"x": 48, "y": 3419, "w": 1152, "h": 96}}}, "g2": {"width": 1248, "height": 3479, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 72}, "核心指标": {"x": 48, "y": 672, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 948, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1257, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2675, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3023, "w": 1152, "h": 96}, "背景": {"x": 48, "y": 3311, "w": 1152, "h": 96}}}, "c3": {"width": 1248, "height": 3500, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 72}, "核心指标": {"x": 48, "y": 672, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 948, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1257, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2675, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3023, "w": 1152, "h": 117}, "背景": {"x": 48, "y": 3332, "w": 1152, "h": 96}}}, "g3": {"width": 1248, "height": 3455, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 72}, "核心指标": {"x": 48, "y": 672, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 948, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1257, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2675, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3023, "w": 1152, "h": 72}, "背景": {"x": 48, "y": 3287, "w": 1152, "h": 96}}}, "c5": {"width": 1248, "height": 3367, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 72}, "核心指标": {"x": 48, "y": 672, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 948, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1257, "w": 1152, "h": 1138}, "问题": {"x": 48, "y": 2587, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 2935, "w": 1152, "h": 72}, "背景": {"x": 48, "y": 3199, "w": 1152, "h": 96}}}, "g4": {"width": 1248, "height": 3455, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 72}, "核心指标": {"x": 48, "y": 672, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 948, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1257, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2675, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3023, "w": 1152, "h": 72}, "背景": {"x": 48, "y": 3287, "w": 1152, "h": 96}}}, "c7": {"width": 1248, "height": 3467, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 84}, "核心指标": {"x": 48, "y": 684, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 960, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1269, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2687, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3035, "w": 1152, "h": 72}, "背景": {"x": 48, "y": 3299, "w": 1152, "h": 96}}}, "g5": {"width": 1248, "height": 3467, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 84}, "核心指标": {"x": 48, "y": 684, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 960, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1269, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2687, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3035, "w": 1152, "h": 72}, "背景": {"x": 48, "y": 3299, "w": 1152, "h": 96}}}, "c9": {"width": 1248, "height": 3578, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 84}, "核心指标": {"x": 48, "y": 684, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 960, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1269, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2687, "w": 1152, "h": 267}, "下一步": {"x": 48, "y": 3146, "w": 1152, "h": 72}, "背景": {"x": 48, "y": 3410, "w": 1152, "h": 96}}}, "g6": {"width": 1248, "height": 3467, "sections": {"结论": {"x": 48, "y": 408, "w": 1152, "h": 84}, "核心指标": {"x": 48, "y": 684, "w": 1152, "h": 84}, "产品对比": {"x": 48, "y": 960, "w": 1152, "h": 117}, "链路明细": {"x": 48, "y": 1269, "w": 1152, "h": 1226}, "问题": {"x": 48, "y": 2687, "w": 1152, "h": 156}, "下一步": {"x": 48, "y": 3035, "w": 1152, "h": 72}, "背景": {"x": 48, "y": 3299, "w": 1152, "h": 96}}}}
+const PROB = {
+  "P-01": { crit: "同类一致", cause: "布局问题", text: "核心指标 4 个数字按一行 3 个排，第 4 个「发现问题」单独掉到第二行。" },
+  "P-02": { crit: "留白", cause: "布局问题", text: "下一步只有 2 条建议却按 3 列排，右边空出一整列。" },
+  "P-03": { crit: "同类一致", cause: "布局问题", text: "链路截图下的备注有的有、有的没有，同一排截图下方的文字高低不齐。" },
+  "P-04": { crit: "字体层级", cause: "布局问题", text: "结论一整段都用 24px 结论句字号，三行长，像放大的正文，读不出哪句是判断。" },
+  "P-05": { crit: "分组", cause: "组件不够", text: "组件库缺少分组标记，链路明细里两条链路之间只能靠 192px 空白分开，和节间距一样，看起来像两节。" },
+  "P-06": { crit: "容器", cause: "组件不够", text: "Progress 的条是 8px 粗条，使产品对比表的步骤数条比正文还重。" },
+  "P-07": { crit: "留白", cause: "组件不够", text: "FigureStrip 的滚动条一直显示，使每排截图下方多出一条灰色横条。" },
+  "P-08": { crit: "对齐", cause: "布局问题", text: "问题表把编号、产品、步骤拆成三列窄列，读一条问题要横跨六列。" },
+}
+const SOLVED = { "P-05": 1, "P-06": 1, "P-07": 1, "P-01": 2, "P-02": 4, "P-03": 6, "P-04": 8, "P-08": 10 }
+const GUIDE = [
+  { id: "B2.1", at: 2, text: "核心指标有 4 个数字时一行 4 个（每个 span 2），3 个时一行 3 个（span 3）；不让一个数字单独占一行。" },
+  { id: "B9.1", at: 4, text: "下一步按条数分列：List 的 columns 等于建议条数，最多 3 列。" },
+  { id: "B13", at: 6, text: "链路截图下固定三行：屏名、内容 · 操作、问题（没有问题写「问题:无」），同一排高度一致。" },
+  { id: "B1.1", at: 8, text: "结论超过一句时，第一句判断用结论句字号，后面的解释换行用正文字号。" },
+  { id: "B7.1", at: 10, text: "问题表四列：问题（编号 · 标题）、位置（产品 · 第 N 步）、严重度、证据，列宽 3/2/1/3。" },
+]
+const CRIT = ["留白", "分组", "容器", "字体层级", "色彩", "同类一致", "对齐"]
+const TRAIN = ["f1 线上开户", "f2 下单支付（上图）", "f3 外链分享文件", "f4 预订会议室"]
+
+const R = [
+  { n: 1, id: "k1", kind: "组件", tg: ["P-05", "P-06", "P-07"], base: "g0", cand: "g1", bl: "g0", cl: "g0 + 组件 k1", ver: "g1", focus: ["产品对比", "链路明细"],
+    comp: "修 Progress：条改成 1px 细线，与表格行线同重。修 FigureStrip：滚动条只在鼠标悬停时出现。新增 Rule：带标签的 1px 分组线，分开链路明细里的两条链路。（同一批还修了表注左对齐、加了 FigureGrid，这一页用不到。）",
+    j: { o1: "hhh----", o2: "hh----h", r1: "改动后两条链路用带标签的细线分开，组间距收到 48px，一眼看出是同一节里的两组；步骤数条变细，不再比文字重；截图下的灰色横条没了。", r2: "链路明细分组清楚了，产品对比表的条和行线一样细，整页更安静。", train: "后后后后" },
+    approval: { note: "看过组件 Agent 的示例页和 patch：3 处修现有组件，1 处新增分组线。采用后两个 Skill 当前版的页面按新组件重新生成，链路明细改用 Rule 分组；程序检查 0 → 0。" }, accept: true,
+    rec: { result: "成功", practice: "在组件里把进度条改成细线、滚动条改成悬停才显示，并新增带标签的分组线。", solved: ["链路明细两组分开了，像同一节里的两组（分组两种顺序都判改后更好）", "步骤数条和截图下的灰条不再抢眼（容器、留白两种顺序都判改后更好）"], broke: [], lesson: "组件自己的样式问题在组件里修一次，所有页面一起好；缺的分组标记做成组件，页面不要各自拿空白凑。" } },
+  { n: 2, id: "c2", kind: "布局", tg: ["P-01"], base: "g1", cand: "g2", bl: "g1", cl: "候选 c2", ver: "g2", focus: ["核心指标"], rule: "B2.1",
+    j: { o1: "h----hh", o2: "-----hh", r1: "改动后 4 个数字排成一行，底部对齐，没有一个数字掉到第二行。", r2: "核心指标一行读完；改动前「发现问题」孤零零在第二行，像漏排。", train: "后后平后" },
+    gate: { h1: "赢赢赢", h2: "赢平赢", prog: "0 → 0" }, accept: true,
+    rec: { result: "成功", practice: "核心指标按数字个数决定一行放几个，4 个就一行 4 个。", solved: ["4 个数字一行排齐（同类一致、对齐两种顺序都判改后更好）"], broke: [], lesson: "一行放几个由数字个数决定，排满一行，不留单个。" } },
+  { n: 3, id: "c3", kind: "布局", tg: ["P-02"], base: "g2", cand: "c3", bl: "g2", cl: "候选 c3", ver: null, focus: ["下一步"],
+    ruleText: "下一步改用表格（建议、做法、依据三列），不再用三列列表。",
+    j: { o1: "-h-----", o2: "-q-----", r1: "改动后建议成了表格，做法和依据上下对齐，方便比较。", r2: "改动后建议没了 01、02 编号和标题层级，像又一张明细表，和上面的问题表分不开。", train: "平后前平" },
+    gate: { h1: "平赢平", h2: "平平输", prog: "0 → 0", why: "h2 输了一轮，两页都没赢够一半。" }, accept: false,
+    rec: { result: "没效果", practice: "下一步从三列列表换成三列表格。", solved: [], broke: [], note: "两种顺序说法相反：一种说表格好比较，另一种说像又一张明细表。", lesson: "空出一列是列数的问题，改列数就够，不用换组件。" } },
+  { n: 4, id: "c4", kind: "布局", tg: ["P-02"], base: "g2", cand: "g3", bl: "g2", cl: "候选 c4", ver: "g3", focus: ["下一步"], rule: "B9.1",
+    j: { o1: "h-----h", o2: "h------", r1: "改动后两条建议各占半行，右边不再空出一列。", r2: "下一步铺满了内容宽度，两条建议并排，留白均匀。", train: "后后后平" },
+    gate: { h1: "赢平赢", h2: "赢赢赢", prog: "0 → 0" }, accept: true,
+    rec: { result: "成功", practice: "下一步的列数等于建议条数，最多 3 列。", solved: ["右边不再空出一列（留白两种顺序都判改后更好）"], broke: [], lesson: "列数跟着条数走。" } },
+  { n: 5, id: "c5", kind: "布局", tg: ["P-03"], base: "g3", cand: "c5", bl: "g3", cl: "候选 c5", ver: null, focus: ["链路明细"],
+    ruleText: "链路截图下只保留屏名和「内容 · 操作」两行，去掉备注。",
+    j: { o1: "-----h-", o2: "-----h-", r1: "改动后每张截图下面都是两行，一排对齐了。", r2: "截图下方整齐了。", train: "后后后平" },
+    gate: { h1: "赢赢赢", h2: "赢平赢", prog: "0 → 1", why: "程序检查变差：备注是数据里的问题记录，删掉后页面上找不到 5 项数据（每一步的备注）。" }, accept: false,
+    rec: { result: "失败", practice: "截图下删掉备注，只留两行。", solved: ["一排截图下方对齐了（同类一致两种顺序都判改后更好）"], broke: ["删掉了每一步的问题备注，页面缺 5 项数据（程序检查）"], lesson: "整齐不能靠删数据；备注要留，统一成固定的一行。" } },
+  { n: 6, id: "c6", kind: "布局", tg: ["P-03"], base: "g3", cand: "g4", bl: "g3", cl: "候选 c6", ver: "g4", focus: ["链路明细"], rule: "B13",
+    j: { o1: "-----hh", o2: "-----h-", r1: "改动后每张截图下固定三行，没有问题的写「问题:无」，一排高度一致，备注还在。", r2: "截图说明整齐了，每一步有没有问题一眼能看出来。", train: "后后后后" },
+    gate: { h1: "赢赢赢", h2: "赢赢平", prog: "0 → 0" }, accept: true,
+    rec: { result: "成功", practice: "截图下固定屏名、内容 · 操作、问题三行，没有问题写「问题:无」。", solved: ["一排截图下方对齐，备注也保留（同类一致两种顺序都判改后更好）"], broke: [], lesson: "同类元素的字段固定，缺的值写占位，不要省略。" } },
+  { n: 7, id: "c7", kind: "布局", tg: ["P-04"], base: "g4", cand: "c7", bl: "g4", cl: "候选 c7", ver: null, focus: ["结论"],
+    ruleText: "结论用一个大数字（如「少 1 屏」）配一段正文说明。",
+    j: { o1: "---q---", o2: "---q--q", r1: "改动后「少 1 屏」的大数字和下面核心指标的数字抢眼，结论节像又一组指标。", r2: "大数字只说了一半结论，优惠券的差别被挤到旁边的小字里。", train: "前前平前" },
+    gate: { h1: "输输平", h2: "输平平", prog: "0 → 0", why: "h1、h2 都输：结论像又一组指标。" }, accept: false,
+    rec: { result: "失败", practice: "结论改成一个大数字加一段正文。", solved: [], broke: ["结论节像又一组指标，和核心指标抢（字体层级两种顺序都判改动前更好）"], lesson: "结论是判断不是数字；不要用 Stat 写结论。" } },
+  { n: 8, id: "c8", kind: "布局", tg: ["P-04"], base: "g4", cand: "g5", bl: "g4", cl: "候选 c8", ver: "g5", focus: ["结论"], rule: "B1.1",
+    j: { o1: "---h---", o2: "---h---", r1: "改动后第一句判断用大字，解释换行用正文，先读到结论再读原因。", r2: "结论节有了主次，大字只有一句。", train: "后后后平" },
+    gate: { h1: "赢赢平", h2: "赢赢赢", prog: "0 → 0" }, accept: true,
+    rec: { result: "成功", practice: "结论第一句用结论句字号，解释换行用正文。", solved: ["结论有了主次（字体层级两种顺序都判改后更好）"], broke: [], lesson: "大字只给一句判断，解释用正文。" } },
+  { n: 9, id: "c9", kind: "布局", tg: ["P-08"], base: "g5", cand: "c9", bl: "g5", cl: "候选 c9", ver: null, focus: ["问题"],
+    ruleText: "问题改成编号列表：标题写编号和问题，说明里写位置、严重度和证据。",
+    j: { o1: "-h-----", o2: "-q----q", r1: "改成列表后每条问题一行标题一行说明，好读。", r2: "列表里严重度埋在说明文字中，不能竖着比，「高」也不再标红。", train: "平后前平" },
+    gate: { h1: "平平平", h2: "赢平输", prog: "0 → 0", why: "h2 输了一轮，两页都没赢够一半。" }, accept: false,
+    rec: { result: "没效果", practice: "问题表换成编号列表。", solved: [], broke: [], note: "两种顺序说法相反：一种说列表好读，另一种说严重度不能竖着比了。", lesson: "要按列比较的内容（严重度）就留在表格里，合并列，不换组件。" } },
+  { n: 10, id: "c10", kind: "布局", tg: ["P-08"], base: "g5", cand: "g6", bl: "g5", cl: "候选 c10", ver: "g6", focus: ["问题"], rule: "B7.1",
+    j: { o1: "-h----h", o2: "-h----h", r1: "改动后编号并进问题标题、产品和步骤并成「位置」一列，一条问题四列读完，严重度仍能竖着比。", r2: "问题表列少了，每列更宽，读起来不用横跨整页。", train: "后后后后" },
+    gate: { h1: "赢赢赢", h2: "赢平赢", prog: "0 → 0" }, accept: true,
+    rec: { result: "成功", practice: "问题表合成四列：问题、位置、严重度、证据。", solved: ["一条问题四列读完，严重度还能竖着比（分组、对齐两种顺序都判改后更好）"], broke: [], lesson: "窄列合并成一列，比换组件好。" },
+    after: "Maintainer 重新整理问题清单：训练页上没有两种顺序都认可的审美问题了，loop 停止。" },
+]
+const OPEN = [8, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0]
+const resCls = (r) => (r.accept ? "ok" : r.rec.result === "没效果" ? "meh" : "bad")
+const $ = (s) => document.querySelector(s)
+
+function flow(r) {
+  const on = (k) => !r || ({ rev: r.kind === "布局", gate: r.kind === "布局", comp: r.kind === "组件", human: r.kind === "组件" }[k] ?? true)
+  const st = (k, t) => `<span class="step ${r && on(k) ? "on" : ""}">${t}</span>`
+  $("#flow").innerHTML = `${[["a", "生成页面"], ["b", "程序检查"], ["c", "审美 judge（两种顺序）"], ["d", "Maintainer 归类"]].map(([k, t]) => st(k, t)).join('<span class="arr">→</span>')}<span class="arr">→</span><span class="fork">${st("comp", "组件不够 → 组件 Agent（优先）")}${st("rev", "布局问题 → Reviser 改输出指南")}</span><span class="arr">→</span><span class="fork">${st("human", "人工审批")}${st("gate", "门禁：留出页 3 轮")}</span><span class="arr">→</span>${st("e", "记录员")}`
+}
+
+function chart(sel) {
+  const W = 680, H = 150, x0 = 34, x1 = 660, y0 = 118, y1 = 14
+  const X = (i) => x0 + (i * (x1 - x0)) / 10, Y = (v) => y0 - (v / 8) * (y0 - y1)
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="每轮之后还没解决的问题数">`
+  for (const g of [0, 4, 8]) s += `<line x1="${x0}" x2="${x1}" y1="${Y(g)}" y2="${Y(g)}" stroke="var(--line)" stroke-width="1"/><text x="${x0 - 8}" y="${Y(g) + 4}" text-anchor="end">${g}</text>`
+  s += `<polyline points="${OPEN.map((v, i) => `${X(i)},${Y(v)}`).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`
+  s += `<text x="${X(1) + 10}" y="${Y(5) - 8}" text-anchor="start">组件问题先处理：−3</text>`
+  OPEN.forEach((v, i) => {
+    const r = R[i - 1], col = i === 0 ? "var(--muted)" : `var(--${resCls(r)})`, id = i === 0 ? "g0" : r.id
+    s += `<g style="cursor:pointer" data-go="${id}">${id === sel ? `<circle cx="${X(i)}" cy="${Y(v)}" r="9" fill="none" stroke="${col}" stroke-width="1.5"/>` : ""}<circle cx="${X(i)}" cy="${Y(v)}" r="5" fill="${col}"/><text x="${X(i)}" y="${H - 8}" text-anchor="middle">${id}</text></g>`
+  })
+  $("#chart").innerHTML = s + "</svg>"
+  $("#chart").querySelectorAll("[data-go]").forEach((g) => g.addEventListener("click", () => go(g.dataset.go)))
+}
+
+function chips(sel) {
+  const list = [{ id: "g0", t: "g0 初版", c: "base" }, ...R.map((r) => ({ id: r.id, t: `${r.n} · ${r.id}`, c: resCls(r) })), { id: "final", t: "最终对比", c: "base" }]
+  $("#chips").innerHTML = list.map((x) => `<button class="chip ${x.id === sel ? "sel" : ""}" role="tab" aria-selected="${x.id === sel}" data-go="${x.id}"><i class="dot d-${x.c}"></i>${x.t}</button>`).join("")
+  $("#chips").querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => go(b.dataset.go)))
+}
+
+const vcell = (c) => `<td class="c ${c === "h" ? "v-h" : c === "q" ? "v-q" : "v-e"}">${c === "h" ? "后" : c === "q" ? "前" : "平"}</td>`
+function judgePanel(r) {
+  const rows = CRIT.map((k, i) => {
+    const a = r.j.o1[i], b = r.j.o2[i]
+    const v = a === b && a !== "-" ? (a === "h" ? '<span class="v-h">改后更好</span>' : '<span class="v-q">改前更好</span>') : a !== b ? '<span class="v-e">不一致</span>' : ""
+    return `<tr><td>${k}</td>${vcell(a)}${vcell(b)}<td class="c">${v}</td></tr>`
+  }).join("")
+  const tr = [...r.j.train].map((x, i) => `<span><span class="mk ${x === "后" ? "w" : x === "前" ? "l" : "t"}">${x}</span> ${TRAIN[i]}</span>`).join("")
+  return `<div class="panel"><h3>审美 judge · 训练页</h3><div class="scroll"><table class="jt"><thead><tr><th>标准</th><th class="c">改动前先给</th><th class="c">改动后先给</th><th class="c">算数</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="quote"><b>改动前先给：</b>${r.j.r1}</p><p class="quote"><b>改动后先给：</b>${r.j.r2}</p>
+  <p class="label" style="margin-top:12px">4 个训练页（两种顺序一致才算）</p><div style="display:grid;gap:4px;font-size:13px;margin-top:4px">${tr}</div></div>`
+}
+function gatePanel(r) {
+  if (r.approval) return `<div class="panel"><h3>人工审批<span class="pill p-ok">采用</span></h3><p style="font-size:13px">${r.approval.note}</p><p class="small" style="margin-top:8px">组件改动不过门禁，由人看示例页后决定。</p></div>`
+  const m = (s) => `<span class="marks">${[...s].map((x) => `<span class="mk ${x === "赢" ? "w" : x === "输" ? "l" : "t"}">${x}</span>`).join("")}</span>`
+  return `<div class="panel"><h3>门禁 · 留出页<span class="pill ${r.accept ? "p-ok" : "p-bad"}">${r.accept ? "采用" : "未采用"}</span></h3>
+  <div style="display:grid;gap:6px;font-size:13px"><div>${m(r.gate.h1)}　f5 申请退货</div><div>${m(r.gate.h2)}　f6 预订机票</div><div>程序检查问题：${r.gate.prog}</div></div>
+  <p class="small" style="margin-top:10px">候选版对当前版，每页比 3 轮。采用条件：没有一页输、至少赢一半、程序检查不变差。</p>${r.gate.why ? `<p style="margin-top:8px;font-size:13px;color:var(--bad)">${r.gate.why}</p>` : ""}</div>`
+}
+function recPanel(r) {
+  const c = r.rec, cls = c.result === "成功" ? "p-ok" : c.result === "失败" ? "p-bad" : "p-meh", li = (a) => (a.length ? a.join("；") : "无")
+  return `<div class="panel"><h3>记录员<span class="pill ${cls}">${c.result}</span></h3><dl class="kv"><dt>做法</dt><dd>${c.practice}</dd><dt>解决了</dt><dd>${li(c.solved)}</dd><dt>带出的问题</dt><dd>${li(c.broke)}</dd>${c.note ? `<dt>说明</dt><dd>${c.note}</dd>` : ""}<dt>教训</dt><dd>${c.lesson}</dd></dl></div>`
+}
+function problemPanel(n, r) {
+  const ids = Object.keys(PROB).filter((p) => SOLVED[p] >= n).sort((a, b) => (PROB[b].cause === "组件不够") - (PROB[a].cause === "组件不够"))
+  const done = Object.keys(PROB).filter((p) => SOLVED[p] < n)
+  const status = (p) => (r.g0 ? `<span class="pill p-base">待解决</span>` : SOLVED[p] === n ? `<span class="pill p-ok">本轮解决</span>` : r.tg.includes(p) ? `<span class="pill p-bad">本轮没解决</span>` : `<span class="pill p-base">待解决</span>`)
+  return `<div class="panel"><h3>问题清单 · 本轮开始时<span class="small">${ids.length} 个未解决</span></h3><ul class="plain">${ids.map((p) => `<li class="prob ${r.tg.includes(p) ? "tgt" : ""}"><span class="id">${p}</span><span>${PROB[p].text}</span><span class="meta"><span>${PROB[p].crit}</span>·<span>${PROB[p].cause}</span>${status(p)}</span></li>`).join("")}</ul>${done.length ? `<p class="small" style="margin-top:10px">已解决：${done.map((p) => `${p}（${R[SOLVED[p] - 1].id}）`).join("、")}</p>` : ""}</div>`
+}
+function changePanel(r) {
+  if (r.kind === "组件") return `<div class="panel"><h3>组件 Agent · 提案 k1<span class="small">针对 ${r.tg.join("、")}</span></h3><p class="rule new">${r.comp}</p><p class="small" style="margin-top:8px">问题清单里有组件不够的问题，先路由到组件 Agent，布局问题等组件采用后再改。</p></div>`
+  const g = GUIDE.find((x) => x.id === r.rule), prev = R.slice(0, r.n - 1)
+  const tried = prev.filter((x) => !x.accept && x.tg.some((t) => r.tg.includes(t)))
+  return `<div class="panel"><h3>Reviser · 改输出指南<span class="small">针对 ${r.tg.join("、")}</span></h3><p class="label">${r.accept ? `新增规则 ${g.id}` : "候选规则（未采用）"}</p><p class="rule ${r.accept ? "new" : "rej"}" style="margin-top:4px">${r.accept ? g.text : r.ruleText}</p>${tried.length ? `<p class="small" style="margin-top:8px">先读了修改记录：${tried.map((x) => `${x.id} ${x.rec.result}（${x.rec.lesson}）`).join("；")}这次换了做法。</p>` : ""}</div>`
+}
+function guidePanel(n) {
+  const rules = GUIDE.filter((g) => g.at <= n)
+  return `<div class="panel"><h3>本轮之后的输出指南<span class="small">新增 ${rules.length} 条${n >= 1 ? " · 组件库含 k1" : ""}</span></h3>${rules.length ? `<ul class="plain">${rules.map((g) => `<li class="prob ${g.at === n ? "tgt" : ""}"><span class="id">${g.id}</span><span>${g.text}</span></li>`).join("")}</ul>` : `<p class="small">输出指南还没有新增规则，用的是 design.md 原有的 A、B、C 三部分。</p>`}</div>`
+}
+
+function shot(ver, focus) {
+  const b = BOXES[ver], marks = (focus || []).map((t) => {
+    const s = b.sections[t]
+    if (!s) return ""
+    const pad = 16
+    return `<div class="mark" style="left:${((s.x - pad) / b.width) * 100}%;top:${((s.y - pad) / b.height) * 100}%;width:${((s.w + 2 * pad) / b.width) * 100}%;height:${((s.h + 2 * pad) / b.height) * 100}%"><span>改动处</span></div>`
+  }).join("")
+  return `<div class="shot" data-ver="${ver}"><img src="pages/${ver}.png" alt="页面 ${ver} 的截图" width="1248" height="${b.height}" loading="lazy">${marks}</div>`
+}
+function frames(lv, lt, rv, rt, focus) {
+  return `<div class="frames"><div class="frame"><div class="cap"><span>改动前 · <b>${lt}</b></span></div><div class="viewport" data-sync>${shot(lv, [])}</div></div><div class="frame"><div class="cap"><span>改动后 · <b>${rt}</b></span><span>虚线框为改动处</span></div><div class="viewport" data-sync>${shot(rv, focus)}</div></div></div>`
+}
+let lock = false
+function sync() {
+  const vs = [...document.querySelectorAll("[data-sync]")]
+  vs.forEach((v) => v.addEventListener("scroll", () => {
+    if (lock) return
+    lock = true
+    const f = v.scrollTop / Math.max(1, v.scrollHeight - v.clientHeight)
+    vs.forEach((o) => { if (o !== v) o.scrollTop = f * (o.scrollHeight - o.clientHeight) })
+    requestAnimationFrame(() => (lock = false))
+  }))
+}
+function scrollToFocus(r) {
+  if (!r) return
+  const vs = [...document.querySelectorAll("[data-sync]")]
+  lock = true
+  setTimeout(() => (lock = false), 100)
+  vs.forEach((v, i) => {
+    const ver = i === 0 ? r.base : r.cand, s = BOXES[ver].sections[r.focus[0]], img = v.querySelector("img")
+    if (s && img) v.scrollTop = Math.max(0, (s.y / BOXES[ver].height) * img.clientHeight - 40)
+  })
+}
+
+function go(id) {
+  const order = ["g0", ...R.map((x) => x.id), "final"], idx = order.indexOf(id), r = R.find((x) => x.id === id)
+  const nav = `<div class="nav"><button data-step="-1" ${idx === 0 ? "disabled" : ""}>上一轮</button><button data-step="1" ${idx === order.length - 1 ? "disabled" : ""}>下一轮</button></div>`
+  let html
+  if (id === "g0") {
+    flow(null)
+    html = `<div class="head"><div><h2>g0 · 初版</h2><p class="sub">生成 Agent 按 design.md 写的页面（k3 之前的组件库）。审美 judge 拿它和同一指南再生成的一版比，Maintainer 列出 8 个问题，其中 3 个是组件不够。</p></div>${nav}</div>
+    ${frames("g0", "g0", "g0", "g0", [])}<div class="grid">${problemPanel(1, { tg: [], g0: true })}${guidePanel(0)}</div>`
+  } else if (id === "final") {
+    flow(null)
+    const n = (k) => R.filter((x) => x.rec.result === k).length
+    html = `<div class="head"><div><h2>最终对比 · g0 和 g6</h2><p class="sub">问题清单清空后 loop 停止。</p></div>${nav}</div>
+    <div class="panel stats"><span><b>10</b>轮迭代</span><span><b style="color:var(--ok)">${n("成功")}</b>次成功并采用</span><span><b style="color:var(--bad)">${n("失败")}</b>次失败</span><span><b style="color:var(--meh)">${n("没效果")}</b>次没效果</span><span><b>5</b>条新规则</span><span><b>1</b>次组件修改（人工审批）</span><span><b>8</b>个问题全部解决</span></div>
+    ${frames("g0", "g0 初版", "g6", "g6 最终版", [])}<div class="grid">${guidePanel(10)}</div>`
+  } else {
+    flow(r)
+    html = `<div class="head"><div><h2>第 ${r.n} 轮 · ${r.id} <span class="pill p-${resCls(r)}">${r.rec.result} · ${r.accept ? "采用" : "未采用"}</span></h2><p class="sub">${r.kind === "组件" ? "组件不够 → 组件 Agent" : "布局问题 → Reviser"} · 针对 ${r.tg.map((t) => `${t} ${PROB[t].crit}`).join("、")} · 基于 ${r.bl}${r.ver ? ` · 采用后成为 ${r.ver}` : ""}</p></div>${nav}</div>
+    ${frames(r.base, r.bl, r.cand, `${r.cl}${r.accept ? "" : "（未采用）"}`, r.focus)}
+    <div class="grid">${changePanel(r)}${judgePanel(r)}${gatePanel(r)}${recPanel(r)}${problemPanel(r.n, r)}${guidePanel(r.accept ? r.n : r.n - 1)}</div>
+    ${r.after ? `<div class="panel" style="font-size:13px"><span class="label">本轮之后</span><p style="margin-top:4px">${r.after}</p></div>` : ""}`
+  }
+  $("#detail").innerHTML = html
+  $("#detail").querySelectorAll("[data-step]").forEach((b) => b.addEventListener("click", () => go(order[idx + Number(b.dataset.step)])))
+  chips(id)
+  chart(id)
+  sync()
+  if (r) {
+    const imgs = [...document.querySelectorAll("[data-sync] img")]
+    Promise.all(imgs.map((i) => (i.complete ? 0 : new Promise((ok) => { i.onload = ok; i.onerror = ok })))).then(() => scrollToFocus(r))
+  }
+  try { history.replaceState(null, "", `#${id}`) } catch (e) {}
+}
+
+$("#log").innerHTML = `<thead><tr><th>轮</th><th>改动</th><th>针对</th><th>结论</th><th>门禁 / 审批</th><th>教训</th></tr></thead><tbody>${R.map((r) => `<tr data-go="${r.id}"><td style="white-space:nowrap">${r.n} · ${r.id}</td><td>${r.rec.practice}</td><td style="white-space:nowrap">${r.tg.join("、")}</td><td><span class="pill p-${resCls(r)}">${r.rec.result}</span></td><td style="white-space:nowrap">${r.approval ? "人工审批采用" : r.accept ? "采用" : "未采用"}</td><td>${r.rec.lesson}</td></tr>`).join("")}</tbody>`
+$("#log").querySelectorAll("[data-go]").forEach((t) => t.addEventListener("click", () => { go(t.dataset.go); $("#detail").scrollIntoView({ block: "start" }) }))
+document.addEventListener("keydown", (e) => {
+  const order = ["g0", ...R.map((x) => x.id), "final"], i = order.indexOf(document.querySelector(".chip.sel")?.dataset.go)
+  if (e.key === "ArrowRight" && i < order.length - 1) go(order[i + 1])
+  if (e.key === "ArrowLeft" && i > 0) go(order[i - 1])
+})
+const start = location.hash.slice(1)
+go(["g0", "final", ...R.map((x) => x.id)].includes(start) ? start : "k1")
+</script>
