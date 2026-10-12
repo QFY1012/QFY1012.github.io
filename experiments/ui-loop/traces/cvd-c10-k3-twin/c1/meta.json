@@ -1,0 +1,27 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 712,
+ "usage": {
+  "input": 299920,
+  "output": 67661
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查(构建、组件库、统一刻度、数据忠实、元素越界)全部通过。\n\n**页面结构**(页头一次:左侧 3 列是产品与日期,右侧 9 列是标题):\n\n1. **结论** — `verdict`「不友好」与 `summary` 各一段 24px 细体,占满 9 列;节说明写标准 WCAG 2.2 AA。\n2. **核心指标** — 按 G1 把 `issues`(问题总数)排到第一位,其余按原顺序;4 个 `Stat`(`size=\"lg\"`、`captionBelow`)在同一 `Grid cols={9} fields={false} className=\"items-baseline\"` 里各占 2 列,靠左成一簇、共用基线,不折行。\n3. **色觉模拟** — `screens` 四张放在一个 `Group` 里,按 G2 每两张一条 `FigureStrip`,共上下两行,每张 `FigureImage` + `FigureLabel`(视图名在下)。\n4. **颜色混淆** — 上半 `Block span={3}` 放 `ProgressList compact`(按障碍类型的问题数 3/3/2);下半混淆色对 `DataTable`(色对位置、正常视觉、三种色盲的 ΔE、受影响人群),低于阈值 12 的实测值用列 `tone` 标红,`caption` 写 Machado 2009 与 ΔE 口径。\n5. **明细** — 三组(48px 间隔):图表用色(系列/色值/用途)、问题清单(P1–P6,严重「高」标红)、对比度实测(位置/前景/背景/实测/要求/结果,不达标标红)。\n6. **下一步** — 修改方案表(位置/原色/改为/背景/修复前后对比)加修改建议 `List numbered`(六条问题对应的建议)。\n7. **背景信息** — `KV labelCols={2}`:分析对象、日期、标准、方法。\n\n**两点需要说明的缺失/限制**:\n\n- **缺色板/色块组件**:`palette` 的 8 个系列色本应以色块呈现,组件库没有能显示色值的色块(也不能写颜色类名),只能用 `DataTable` 把 `#1677FF` 这类色值当文本列出,读者无法直观看到颜色本身。\n- **`FigureStrip` 的固定图高**:`FigureImage` 在 `FigureStrip` 里按固定高度、原比例显示,这四张看板截图是 1200×760,单张渲染约 606px 宽,一行两张(1212px)超出正文 9 列(858px),所以每行第二张在右缘被裁掉(条带可横向滚动)。规范 G2 要求「一行一个 FigureStrip、每两张排一行」,我照此实现;组件库没有能调小条带内图高的 prop,要四张都完整可见只能改用 `FigureGrid`(组件库把它标注为「原界面 + 色觉模拟」对照用),但那与 G2 指定的 `FigureStrip` 写法冲突,故未采用。",
+ "checks": []
+}

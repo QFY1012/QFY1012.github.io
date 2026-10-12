@@ -1,0 +1,27 @@
+{
+ "case": "f4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 131,
+ "usage": {
+  "input": 31087,
+  "output": 11473
+ },
+ "stop": "stop",
+ "summary": "程序检查通过,页面与规范一致。\n\n**页面结构**(`Page.tsx`,按 G3/C3 排布):\n\n1. **页头** — meta 写产品与周期(协作宝 7.2 / 链工 4.6、2026 年第三季度版本),标题为报告名。\n2. **背景信息**(G3 前移)— `KV`(`labelCols={2}`),任务 / 范围 / 日期三项。\n3. **结论** — 24px 细体结论句,占满 9 列。\n4. **核心指标** — 4 个 `Stat`(G1:`Grid cols={12} fields={false}`,每项 `span={3}`,一行排满、数字底部对齐)。\n5. **链路明细** — 一个产品一个 `Group`(`{product} · {version}`)+ 一个 `FigureStrip`,每步 `FigureImage → FigureLabel(第 N 步 · 屏名)→ FigureText(内容 · 操作[· 输入 N 项])`;`Section className=\"gap-12\"`,组间 48px、组内 24px。\n6. **流程对比** — 两个 `DataTable`(产品总览:产品/步骤/输入项/思路;分阶段对比:阶段/协作宝/链工),列 `span` 合计 9。\n7. **明细** — `DataTable` 步骤备注(产品/步骤/屏/备注),`caption` 说明口径。\n8. **发现** — `List numbered`,每条问题 + 证据一句。\n9. **下一步** — `List columns={3} numbered`,三条建议,`meta` 写依据。\n\n两处对组件能力的说明:\n\n- **链路步骤的 `note` 未写进图里**(遵守 G2「note 不写进图里」),改为在「明细」节用 `DataTable` 呈现,所以没有丢数据。\n- **`List` 的 `meta` 在单列 `numbered` 形态下不渲染**(并排 `columns` 形态正常渲染),所以「发现」的严重度写进了 `description` 文本(如「严重度 高 · 协作宝 第 4 步 · …」);若要单独成列并标红,需要组件库提供一个在列表里显示 `meta` 的能力。",
+ "checks": []
+}

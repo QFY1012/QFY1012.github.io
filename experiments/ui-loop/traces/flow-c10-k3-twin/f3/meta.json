@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 155,
+ "usage": {
+  "input": 49275,
+  "output": 15837
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过,页面已完成。\n\n**页面结构**(自上而下,节标题挂左 3 列、内容在右 9 列):\n\n1. **页头** — 左:3 款企业网盘 / 2026 年 9 月;右:报告标题\n2. **背景信息** — 按 G3 前移的 `KV`(`labelCols={2}`),任务 / 范围 / 日期\n3. **结论** — 24px 细体的整段判断\n4. **核心指标** — 4 个 `kpis` 用 `Grid cols={12}` 一行排满,每项 `span={3}`,数字在下标签(`captionBelow`)\n5. **产品对比** — `DataTable`(产品 / 步骤右对齐 / 结论),对比三款产品的步数与结论\n6. **链路明细** — 一个产品一个 `Group`(`云盒 · 5.3`、`栈盘 · 3.8`、`方舟 · 2.1`),组内 `FigureStrip` 按步骤横向排 `FigureImage → FigureLabel → FigureText`,图高一致、栏底齐平;步骤 `note` 按 G2 不写进图里,统一放到组末「步骤备注」表中(产品 / 步骤 / 备注),这样各组截图下方的文字行数保持一致\n7. **问题** — `DataTable`(编号 / 位置 / 问题 / 严重度 / 证据),严重度列的「高」按 `tone` 标红\n8. **下一步** — 两条建议的 `List`(`numbered`,两列),说明里附依据\n\n一点说明:`FigureText` 在长文案(如栈盘第 2 步「默认仅查看、7 天有效,下方可展开修改 · 复制链接」)会折成两行——组件没有单行截断的能力,而压缩文案会破坏数据忠实,因此保留原文;其余各步均为一行。",
+ "checks": []
+}

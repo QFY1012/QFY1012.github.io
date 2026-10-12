@@ -1,0 +1,27 @@
+{
+ "case": "c3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 242,
+ "usage": {
+  "input": 49222,
+  "output": 20111
+ },
+ "stop": "stop",
+ "summary": "程序检查两次全部通过,页面已完成。\n\n**页面结构**:页头(产品/日期·标准 + 标题)后按 C3 排了 8 节 —— 结论(24px 细体结论句)→ 核心指标(4 个 `Stat`,`issues` 排首位,各占 2 列靠左成一簇)→ 色觉模拟(原界面 + 三种色盲模拟,按 G2 每两张一条 `FigureStrip`,共两行)→ 颜色混淆(配色表 + 颜色对色差表 + 按色盲类型问题数的 `ProgressList`)→ 对比度(达标行 `muteWhen` 灰显、\"不达标\"标红)→ 问题明细(严重度\"高\"标红)→ 下一步(4 条改法三列并排)→ 背景信息(`KV`)。\n\n**缺组件说明**:组件库没有颜色色块/色卡组件,所以「路况配色」只能用 `DataTable` 以文字列出色名、色值(#34C759 等)和用途,无法显示实际颜色——要展示的是四个路况颜色本身的色样;`confusions` 的阈值线也没有可视化组件,改用表下 `caption` 说明 ΔE 12 的口径。",
+ "checks": []
+}

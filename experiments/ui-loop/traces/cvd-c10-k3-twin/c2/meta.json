@@ -1,0 +1,27 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 172,
+ "usage": {
+  "input": 47423,
+  "output": 15208
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查（构建、组件库、统一刻度、数据忠实、元素越界）全部通过。\n\n**页面结构**（页头：左侧产品与日期、右侧报告标题）：\n\n1. **结论** — 一句 24px 细体判断，给出「基本友好」与整体口径。\n2. **核心指标** — 4 个 `Stat`（`captionBelow`、`size=\"lg\"`）一行排满 9 列中靠左的 8 列，按 G1 把「问题总数」排第一，其余保持原顺序。\n3. **色觉模拟** — 原界面 + 三种色盲模拟，按 G2 每两张一条 `FigureStrip`（共两行），每行都在 9 列内、右端对齐。\n4. **对比度** — 6 组文字/背景的 `DataTable`，位置、前景、背景、对比度、要求、结果六列合计 9 列，不达标值标红，口径写在 caption。\n5. **颜色混淆** — ΔE 表（场景 + 正常/红/绿/蓝四种视觉 + 受影响人群），低于阈值的受影响人群标红。\n6. **配色** — 名称、色值、用途三列表。\n7. **问题明细** — 先一个 3 列宽的 `ProgressList`（按色盲类型统计问题数，`compact`），再是 3 条问题的 `DataTable`。\n8. **下一步** — 三列并排的 `List`（编号 + 建议 + 对应问题），下接「修复前后对比度」`DataTable`。\n9. **背景信息** — `KV`（`labelCols={2}`）写检查对象、日期、标准、方法。\n\n**缺组件说明**：`palette` 是一组颜色定义（名称 + 十六进制色值 + 用途），组件库里没有色块/色卡组件，无法把颜色本身画出来，只能用 `DataTable` 把色值以文本呈现；另外 `confusions` 里的 ΔE 也缺少能画色差标尺（阈值 12 参考线）的组件，同样用表格数值加 caption 表达。",
+ "checks": []
+}

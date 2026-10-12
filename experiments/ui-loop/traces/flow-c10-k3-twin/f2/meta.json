@@ -1,0 +1,27 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 194,
+ "usage": {
+  "input": 66864,
+  "output": 15540
+ },
+ "stop": "stop",
+ "summary": "页面已通过程序检查。结构如下:\n\n- **页头**:标题「交互流程挖掘 · 下单支付」,左侧 meta 写产品(快送 / 小橙)与周期(2026 年 9 月版本)。\n- **背景信息**(G3 前移到页头之后):`KV`(`labelCols={2}`)列任务、范围、日期。\n- **结论**:`summary` 用 24px 细体结论句,占满 9 列。\n- **核心指标**:4 个 `kpis` 按 G1 用 `Grid cols={12}` 一行排满(各 `span={3}`),数字 48px 细体、说明在下。\n- **产品对比**(拆分):`DataTable`,产品 · 版本、步骤数(右对齐)、结论,三列 span 2+2+5。\n- **链路明细**(G2):每款产品一个 `Group`(`{product} · {version}`)+ 一个 `FigureStrip`,每步 `FigureImage → FigureLabel(第 N 步 · 屏名) → FigureText(content · action)`,Section 用 `gap-12`,两组左对齐线一致、图高一致、不加分隔线;每组的步骤 `note` 以一行「备注」文字排在截图组下方,保证检查的数据忠实且不挤进图内文字行。\n- **发现问题**:`DataTable`,编号、问题、位置、证据、严重度(仅「高」标红,符合 A4)。\n- **下一步**:两条建议用 `List`(`columns={2}`、`numbered`),`meta` 写依据(小橙第 N 步、P 编号)。\n\n组件库不足:没有能承载\"每步备注\"的组件——`FigureStrip` 的 `Figure` 只支持图、标签、说明三件,`note` 无法作为注释挂在单步截图上(且 G2 要求不写进图内),只能用一行 `Text` 放在该产品组下方近似呈现。",
+ "checks": []
+}

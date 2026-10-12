@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="600" viewBox="0 0 860 600">
+  <rect width="860" height="600" fill="#ffffff"/>
+  <line x1="40" y1="96" x2="820" y2="96" stroke="#e2e2e2"/>
+  <text x="40" y="60" font-size="26" font-weight="600" fill="#111">无障碍对比度检查</text>
+  <text x="40" y="86" font-size="15" fill="#777">状态色 · 问题分布 · 绿色盲模拟</text>
+  <rect x="40" y="150" width="18" height="18" rx="9" fill="#b09b4a"/>
+    <text x="68" y="164" font-size="15" fill="#1a1a1a">红色标签</text>
+<rect x="200" y="150" width="18" height="18" rx="9" fill="#c9c06a"/>
+    <text x="228" y="164" font-size="15" fill="#1a1a1a">绿色标签</text>
+<rect x="360" y="150" width="18" height="18" rx="9" fill="#3f6fbf"/>
+    <text x="388" y="164" font-size="15" fill="#1a1a1a">蓝色标签</text>
+<rect x="520" y="150" width="18" height="18" rx="9" fill="#cbb04a"/>
+    <text x="548" y="164" font-size="15" fill="#1a1a1a">橙色标签</text>
+<rect x="680" y="150" width="18" height="18" rx="9" fill="#8a7fc0"/>
+    <text x="708" y="164" font-size="15" fill="#1a1a1a">紫色标签</text>
+  <text x="40" y="222" font-size="18" font-weight="600" fill="#111">问题分布</text>
+  <text x="40" y="268" font-size="16" fill="#333">首页</text>
+    <rect x="120" y="254" width="640" height="18" rx="2" fill="#ececec"/>
+    <rect x="120" y="254" width="525" height="18" rx="2" fill="#b09b4a"/>
+    <text x="790" y="269" font-size="15" fill="#555">0.82</text>
+<text x="40" y="320" font-size="16" fill="#333">详情</text>
+    <rect x="120" y="306" width="640" height="18" rx="2" fill="#ececec"/>
+    <rect x="120" y="306" width="390" height="18" rx="2" fill="#c9c06a"/>
+    <text x="790" y="321" font-size="15" fill="#555">0.61</text>
+<text x="40" y="372" font-size="16" fill="#333">图表</text>
+    <rect x="120" y="358" width="640" height="18" rx="2" fill="#ececec"/>
+    <rect x="120" y="358" width="282" height="18" rx="2" fill="#3f6fbf"/>
+    <text x="790" y="373" font-size="15" fill="#555">0.44</text>
+<text x="40" y="424" font-size="16" fill="#333">设置</text>
+    <rect x="120" y="410" width="640" height="18" rx="2" fill="#ececec"/>
+    <rect x="120" y="410" width="173" height="18" rx="2" fill="#cbb04a"/>
+    <text x="790" y="425" font-size="15" fill="#555">0.27</text>
+<text x="40" y="476" font-size="16" fill="#333">帮助</text>
+    <rect x="120" y="462" width="640" height="18" rx="2" fill="#ececec"/>
+    <rect x="120" y="462" width="83" height="18" rx="2" fill="#8a7fc0"/>
+    <text x="790" y="477" font-size="15" fill="#555">0.13</text>
+  <line x1="40" y1="560" x2="820" y2="560" stroke="#e2e2e2"/>
+  <text x="40" y="584" font-size="14" fill="#888">示意界面 · 绿色盲模拟</text>
+</svg>
