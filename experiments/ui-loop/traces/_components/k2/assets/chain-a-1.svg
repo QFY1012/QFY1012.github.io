@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="375" height="760" viewBox="0 0 375 760">
+  <rect width="375" height="760" fill="#ffffff"/>
+  <rect x="0" y="0" width="375" height="104" fill="#fafafa"/>
+  <line x1="0" y1="104" x2="375" y2="104" stroke="#e4e4e7" stroke-width="2"/>
+  <text x="24" y="50" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="24" fill="#71717a">第 1 步</text>
+  <text x="24" y="88" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="600" fill="#18181b">选择出行方式</text>
+  
+    <rect x="24" y="150" width="327" height="76" rx="10" fill="#f4f4f5"/>
+    <circle cx="58" cy="188" r="16" fill="#d4d4d8"/>
+    <text x="90" y="183" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="30" font-weight="600" fill="#18181b">地铁 + 步行</text>
+    <text x="90" y="213" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="26" fill="#71717a">约 32 分钟</text>
+    <rect x="24" y="242" width="327" height="76" rx="10" fill="#f4f4f5"/>
+    <circle cx="58" cy="280" r="16" fill="#d4d4d8"/>
+    <text x="90" y="275" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="30" font-weight="600" fill="#18181b">公交 302 路</text>
+    <text x="90" y="305" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="26" fill="#71717a">约 41 分钟</text>
+    <rect x="24" y="334" width="327" height="76" rx="10" fill="#f4f4f5"/>
+    <circle cx="58" cy="372" r="16" fill="#d4d4d8"/>
+    <text x="90" y="367" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="30" font-weight="600" fill="#18181b">骑行</text>
+    <text x="90" y="397" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="26" fill="#71717a">约 25 分钟</text>
+  <rect x="24" y="648" width="327" height="72" rx="10" fill="#18181b"/>
+  <text x="187" y="693" text-anchor="middle" font-family="'Noto Sans SC','Helvetica Neue',Arial,sans-serif" font-size="30" font-weight="500" fill="#ffffff">开始导航</text>
+</svg>

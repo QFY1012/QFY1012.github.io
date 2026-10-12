@@ -130,7 +130,7 @@ export default function Report() {
             <FigureStrip key={index}>
               {row.map((s) => (
                 <Figure key={s.view}>
-                  <FigureImage src={s.image} alt={s.view} />
+                  <FigureImage className="h-64" src={s.image} alt={s.view} />
                   <FigureLabel>{s.view}</FigureLabel>
                 </Figure>
               ))}
