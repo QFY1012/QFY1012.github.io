@@ -93,16 +93,25 @@ export function Text({ children, className, span }: Placed & { children: string 
 }
 
 // Screenshots: one screen per Figure, laid out in a FigureStrip that scrolls
-// sideways on a shadcn ScrollArea. Every image is drawn at the same height and
-// keeps its own width, so phone screenshots and wider analysis screenshots line
-// up in one row without being cropped; anything past the right edge is clipped
-// and reached with the scrollbar. The scrollbar only appears while the strip is
-// hovered: an always-visible bar reads as a rule under the row of screens, which
-// is not a line the design gives.
+// sideways on a shadcn ScrollArea. The strip is what pins the row height: every
+// image is drawn at that one height and keeps its own width, so phone
+// screenshots and wider analysis screenshots line up in one row without being
+// cropped; anything past the right edge is clipped and reached with the
+// scrollbar. The scrollbar only appears while the strip is hovered: an
+// always-visible bar reads as a rule under the row of screens, which is not a
+// line the design gives.
 export function FigureStrip({ className, children, ...props }: React.ComponentProps<typeof ScrollArea>) {
   return (
     <ScrollArea data-slot="figure-strip" type="hover" className={cn("w-full min-w-0", className)} {...props}>
-      <div className="flex w-max gap-12 pb-4">{children}</div>
+      <div
+        data-slot="figure-strip-row"
+        className={cn(
+          "flex w-max gap-12 pb-4",
+          "[&_[data-slot=figure-image]]:h-96 [&_[data-slot=figure-image]]:w-auto",
+        )}
+      >
+        {children}
+      </div>
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   )
@@ -119,7 +128,6 @@ export function FigureGrid({ className, children, ...props }: React.ComponentPro
       className={cn(
         "grid w-full grid-cols-2 gap-x-6 gap-y-6",
         "[&>[data-slot=figure]]:w-full [&>[data-slot=figure]]:min-w-0",
-        "[&_[data-slot=figure-image]]:h-auto [&_[data-slot=figure-image]]:w-full",
         className
       )}
       {...props}
@@ -147,9 +155,13 @@ export function Figure({ className, ...props }: React.ComponentProps<"figure">) 
   return <figure data-slot="figure" className={cn("flex w-min shrink-0 flex-col gap-2", className)} {...props} />
 }
 
-// The image keeps its own ratio at the strip's height, so nothing is cropped.
+// The image takes the width its cell gives it and keeps its own ratio: nothing
+// is cropped and no height is fixed here. A strip pins the row height (all its
+// images share one height, widths differ); a comparison grid lets the column
+// width decide, so a view read for its detail is never squeezed down to a strip
+// thumbnail.
 export function FigureImage({ className, ...props }: React.ComponentProps<"img">) {
-  return <img data-slot="figure-image" className={cn("h-96 w-auto max-w-none", className)} {...props} />
+  return <img data-slot="figure-image" className={cn("block w-full max-w-none", className)} {...props} />
 }
 
 // The screen or view name, on the line the design gives 12px notes.

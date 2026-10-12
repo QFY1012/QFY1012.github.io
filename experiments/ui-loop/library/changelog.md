@@ -61,3 +61,78 @@ $ node $SHOOT .
 ```
 
 `checks.json` 为 `[]`,截图 `thumb.png` / `tile-*.png` 已重新生成;「问题分布」一栏的进度条在截图里显示为细线轨道 + 细线进度,与表格行线同重。
+
+## k5  结果:未采用
+
+和 k4 同时提出:两个 loop 同时提案,k5 的记录被覆盖,需求也和 k4 重叠。k4 采用后,没解决的问题由下一次提案重新提出。示例和说明仍在 library/k5.md。
+
+## k4  结果:采用(1 版)
+
+需求 5 条。示例和说明见 library/k4.md,改动见 library/k4.patch。
+
+全部完成,检查通过(`checks.json` 为 `[]`)。下面是说明。
+
+## 交付物
+
+| 文件 | 内容 |
+|---|---|
+| `Page.tsx` | 演示页,五节对应五条需求 + 一节现有部件对照 |
+| `assets/*.svg`(11 张) | 手机屏 375×760 ×4、分析屏 1200×760 ×3、色觉模拟 640×400 ×4 |
+| `tools/gen-assets.mjs` | 生成上面这些图的脚本(尺寸、色觉模拟的配色都在里面) |
+| `components.md` | 补上了 `tone` 的第二通道、`FigureStrip` 行高归属、`FigureImage` 的定尺规则 |
+| `app/src/components/report/{index.tsx,render.tsx}` | 本轮改动的两个文件(见下) |
+
+## 新部件叫什么、各管什么、来自哪里
+
+本轮**没有新增部件**——五条需求都是已有部件的行为问题,按「能改就不新增」处理。改的是两个已有文件里的五处:
+
+| 部件 | 管什么 | 来源 | 改了什么 |
+|---|---|---|---|
+| `DataTable` 的 `tone` | 状态值(如「严重」) | shadcn `Table` | 标红 + `font-medium` → **标红 + `font-semibold`(400→600)** |
+| `ProgressList`(`compact`) | 一行:名称、细条、数值 | shadcn `Progress`(Radix Progress) | 标签列 `4.5rem/gap-3` → **`74px/gap-6`**,条从网格列线起 |
+| `FigureStrip` | 一行截图,横向滚动 | shadcn `ScrollArea`(Radix ScrollArea) | 行高**由条自己定**:行容器加 `[&_[data-slot=figure-image]]:h-96 …w-auto`;`type="hover"` 保留 |
+| `FigureGrid` | 一组对照图,两列铺满列宽 | 组合部件(无原语) | 删掉对图片的覆盖,只留 `[&>[data-slot=figure]]:w-full min-w-0` |
+| `FigureImage` | 截图本体 | 组合部件(`<img>`) | 去掉固定高度 `h-96`,改成 `block w-full max-w-none` |
+| `Rule` / `FigureLabel` / `FigureText` / `Figure` | 分组线、视图名、说明、外框 | `Rule` 来自 shadcn `Separator`(Radix Separator) | 未动 |
+
+关键一处:原来 `FigureImage` 自带 384px 固定高度,`FigureGrid` 只能用后代选择器把它**覆盖**掉。现在把「行高」还给真正拥有它的 `FigureStrip`——条负责统一行高,网格负责列宽,叶子部件不再定尺,`FigureGrid` 的覆盖也就删掉了。
+
+## 怎么组合(最小示例)
+
+```tsx
+<Group>
+  <DataTable columns={[{ key: "severity", label: "严重度", span: 1, tone: ["严重"] }, …]}
+             rows={rows} caption="口径:CIEDE2000,ΔE 低于 10 记为不可辨。" />
+</Group>
+<ProgressList compact items={[{ label: "红色盲", value: 128, max: 128 }]} />
+<Rule label="色觉自测 · iOS 3.2" />
+<FigureStrip>
+  <Figure><FigureImage src="assets/phone-home.svg" alt="首页" />
+    <FigureLabel>第 1 步 · 首页</FigureLabel><FigureText>…</FigureText></Figure>
+</FigureStrip>
+<FigureGrid>{views.map((v) => <Figure key={v.name}><FigureImage src={v.image} alt={v.name} /><FigureLabel>{v.name}</FigureLabel></Figure>)}</FigureGrid>
+```
+
+## 需求逐条
+
+| 需求 | 结果 |
+|---|---|
+| tone 只有颜色一个通道 | **做了**。`font-semibold`,与正文 400 差两档。灰度核对过:`font-medium` 时「严重」比「中等」还浅、粗细几乎一样;改 600 后笔画明显更重 |
+| ProgressList 黑粗条 | **做了**。条是 `Progress` 的 1px 细线(与表格行线同重),颜色比轨道深一档;实测 `height: 1px` |
+| caption 居中 | **做了**。`TableCaption` 左对齐;实测 caption 与表格左边缘同为 x=438 |
+| FigureStrip 滚动条常显 | **做了**。`ScrollArea type="hover"`;实测静止时页面上 `[data-slot=scroll-area-scrollbar]` 数量为 **0**(Radix 悬停才挂载),截图行静止时图下没有横条 |
+| FigureImage 固定高度 | **做了**。定尺移出叶子部件;实测截图行所有图 **h=384**,宽 189(手机)/606(宽屏)并排;对照网格两列各 417px,图 417×261 铺满列宽 |
+
+## 没做的,及原因
+
+- **P-06 的「刻度或数值基准」**:没加刻度轴。每行的数值已经写在行尾(数值基准有了),再加一套坐标会在 858px 内容列里多一层尺子,与全页「细线只做分组」的写法冲突;这一栏是计数不是比例尺。条与相邻表格共用对齐线这一条做了(条起点 x=536,正好是表格「界面」列线)。
+- **P-16 的「标记」那一路**:没加图形标记(▲/● 之类)。规范里装饰只有细线、不加底色和标签;字重已经构成第二通道,再加标记会和「严重」这两个字本身重复。
+- **没新增部件**:五条需求都能落在已有部件上,没有出现「缺一个部件」的情况。
+
+## 验证
+
+- `node $SHOOT .` 程序检查全部通过(0 findings)。
+- 除截图外还量了 DOM:表格/内容列 858px、caption 对齐、条 1px、截图行 `scrollWidth` 1319 与 1498(>858,所以悬停才有条)、网格 417px 两列、tone 600 对普通 400。
+- 灰度核对是把截图裁切放大后加 `grayscale(1)` 比的;这一步的临时脚本用完已删,只留 `tools/gen-assets.mjs`。
+
+一处提醒:演示页里截图行是有意**裁切**的(超出内容列的图被切掉,靠悬停滚动条去够),这是 `FigureStrip` 的设计;如果希望静止时也看得出「还有内容」,需要另加一个组件能力,本轮没做。

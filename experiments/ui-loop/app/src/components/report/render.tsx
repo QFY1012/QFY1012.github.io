@@ -307,7 +307,10 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
 
     case "table": {
       // span: the column's width in grid columns, so cell text starts on a column line.
-      // tone: values listed here are drawn in the destructive colour (a state, e.g. 严重).
+      // tone: values listed here are drawn in the destructive colour (a state, e.g. 严重)
+      // and two weights heavier than the body. Red on its own is a lighter grey than
+      // black in greyscale printing and is invisible to a colour-blind reader, so the
+      // state has to carry a second, non-colour channel: the weight.
       // interval: the cell draws the row's estimate (key) with its range (low..high) on an axis shared by the column.
       // muteWhen: the cell is greyed when the row's field equals the value (e.g. not significant).
       type Col = {
@@ -376,7 +379,9 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                         // 39px + the 1px row rule = a 40px row
                         onGrid && "h-[39px] py-0 pl-0 pr-6 whitespace-normal",
                         onGrid && i === cols.length - 1 && "pr-0",
-                        c.tone?.includes(String(r[c.key])) && "font-medium text-destructive",
+                        // the state carries weight as well as colour: bolder than the body
+                        // text, so it survives greyscale and colour blindness
+                        c.tone?.includes(String(r[c.key])) && "font-semibold text-destructive",
                         c.muteWhen && r[c.muteWhen.key] === c.muteWhen.equals && "text-muted-foreground/70",
                       )}
                     >
@@ -518,12 +523,14 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
     }
 
     case "progress-list":
-      // compact: one line per item (label, bar, value)
+      // compact: one line per item (label, bar, value). The label column is one grid
+      // column (74px) plus the gutter (24px), so the bar starts on the same column
+      // line as the table next to it instead of on a line of its own.
       if (p.compact)
         return (
           <div {...mark(node)} data-slot="custom-progress-list" className={outer(node, ctx, "flex flex-col gap-2")}>
             {(p.items as { label: string; value: number; max?: number; display?: string }[]).map((it, i) => (
-              <div key={i} className="grid h-6 grid-cols-[4.5rem_1fr_2rem] items-center gap-3 text-sm">
+              <div key={i} className="grid h-6 grid-cols-[74px_1fr_2rem] items-center gap-6 text-sm">
                 <span>{it.label}</span>
                 <Progress value={(it.value / (it.max ?? 100)) * 100} />
                 <span className="text-right tabular-nums">{it.display ?? it.value}</span>

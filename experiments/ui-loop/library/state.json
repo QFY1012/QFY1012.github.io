@@ -1,5 +1,5 @@
 {
- "next": 5,
+ "next": 6,
  "proposals": {
   "k1": {
    "status": "采用",
@@ -78,7 +78,7 @@
    ]
   },
   "k4": {
-   "status": "待审",
+   "status": "采用",
    "requests": 5,
    "rejected": "k2:\n  没采用的原因:没做完就停了:需求写法改成「修还是加」两种之后重做",
    "rounds": [
@@ -94,6 +94,16 @@
      "seconds": 1235
     }
    ]
+  },
+  "k5": {
+   "status": "未采用",
+   "requests": 4,
+   "rounds": [
+    {
+     "summary": "新增 FigureCompare(四张对照图同一固定高度排成 2×2,一屏内看完);Progress 加了 max、ticks、threshold,画出轨道、刻度、阈值线和 2px 条身。"
+    }
+   ],
+   "reason": "和 k4 同时提出(两个 loop 同时提案,记录被覆盖),需求和 k4 重叠;k4 采用后,没解决的问题由下一次提案重新提出"
   }
  }
 }
