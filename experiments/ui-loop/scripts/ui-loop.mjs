@@ -77,6 +77,59 @@ state.stage ??= "program"
 state.stageRounds ??= 0
 const save = () => fs.writeFileSync(STATE, JSON.stringify(state, null, 1))
 
+// --auto-components: a component proposal is merged as soon as the component agent finishes it,
+// without waiting for a person. Component work changes every Skill's pages, so one loop at a time
+// does it, holding library/component.lock; the other loops wait between rounds (skills/<skill>/paused)
+// and then read their state again, since the merge re-made their pages and changed their state.json.
+const AUTO = process.argv.includes("--auto-components")
+const LOCK = path.join(ROOT, "library", "component.lock")
+const PAUSED = path.join(DIR, "paused"), RUNNING = path.join(DIR, "running.pid")
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+const alive = (f) => { try { process.kill(Number(read(f)), 0); return true } catch { return false } }
+const owner = () => { try { return read(path.join(LOCK, "owner")) } catch { return "" } }
+if (fs.existsSync(LOCK) && !alive(path.join(ROOT, "skills", owner() || "-", "running.pid"))) fs.rmSync(LOCK, { recursive: true, force: true })
+fs.writeFileSync(RUNNING, String(process.pid))
+process.on("exit", () => {
+  fs.rmSync(PAUSED, { force: true })
+  fs.rmSync(RUNNING, { force: true })
+  if (owner() === SK) fs.rmSync(LOCK, { recursive: true, force: true })
+})
+for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => process.exit(1))
+function reload() {
+  const s = JSON.parse(read(STATE))
+  for (const key of Object.keys(state)) delete state[key]
+  Object.assign(state, s)
+}
+const voidPending = (why) => {
+  if (!state.pending) return
+  log(`没做完的候选 ${state.pending.name} 作废`)
+  state.history.push({ round: state.round + 1, stage: state.stage, candidate: state.pending.name, base: state.current, baseRun: state.currentRun, change: state.pending.change, accept: false, void: true, why })
+  state.round++
+  delete state.pending
+  save()
+}
+async function waitTurn() {
+  if (!fs.existsSync(LOCK) || owner() === SK) return
+  log("另一个 loop 正在改组件库,等它合并完")
+  fs.writeFileSync(PAUSED, "")
+  while (fs.existsSync(LOCK)) await sleep(10000)
+  fs.rmSync(PAUSED, { force: true })
+  const before = state.currentRun
+  reload()
+  log(`组件库合并完,重新读取状态:当前版 ${state.currentRun}`)
+  if (state.currentRun !== before) voidPending("组件库合并后当前版变了,作废")
+}
+async function takeLock() {
+  try { fs.mkdirSync(LOCK) } catch { return false }
+  fs.writeFileSync(path.join(LOCK, "owner"), SK)
+  for (const sk of Object.keys(JSON.parse(read(path.join(ROOT, "skills", "split.json")))).filter((x) => x !== SK)) {
+    const pid = path.join(ROOT, "skills", sk, "running.pid"), paused = path.join(ROOT, "skills", sk, "paused")
+    if (fs.existsSync(pid) && alive(pid) && !fs.existsSync(paused)) log(`等 ${sk} 的 loop 跑完这一轮再改组件库`)
+    while (fs.existsSync(pid) && alive(pid) && !fs.existsSync(paused)) await sleep(10000)
+  }
+  return true
+}
+
 function generate(r, cases, guide, base, changeFile) {
   const pending = cases.filter((c) => !fs.existsSync(path.join(ws(r, c), "meta.json")))
   if (!pending.length) return
@@ -207,6 +260,7 @@ const nextStage = (why, passed = false) => {
 }
 
 while (true) {
+  await waitTurn()
   if (MAX_ROUNDS && state.round >= MAX_ROUNDS) { state.stop = `达到轮数上限 ${MAX_ROUNDS}`; break }
   if (CHECKPOINT && state.sinceCheckpoint >= CHECKPOINT) { state.stop = "人工检查点:请盲排当前版和 g0"; break }
   // A stage ends when every page passes it, or when it has run out of rounds.
@@ -238,20 +292,37 @@ while (true) {
     nextStage("训练页上没有算数的需求问题", true)
     continue
   }
-  const layout = open((p) => p.cause === "布局问题"), parts = open((p) => p.cause === "组件不够")
+  const layout = open((p) => p.cause === "布局问题")
+  // Three component merges in a row without a layout round: the remaining 组件不够 problems are not
+  // being solved by the component agent, so this loop goes on with the layout problems.
+  const parts = (state.componentStreak ?? 0) >= 3 ? [] : open((p) => p.cause === "组件不够")
+  if ((state.componentStreak ?? 0) >= 3 && open((p) => p.cause === "组件不够").length) log(`连续 3 次组件合并后仍有「组件不够」的问题,先改布局问题`)
   if (parts.length) {
     log(`有「组件不够」的问题(${parts.map((p) => p.id).join("、")}),先交给组件 Agent`)
     // An unfinished candidate is dropped; its number stays used, so a later candidate never reuses its pages.
-    if (state.pending) {
-      log(`没做完的候选 ${state.pending.name} 作废`)
-      state.history.push({ round: state.round + 1, stage: state.stage, candidate: state.pending.name, base: state.current, baseRun: state.currentRun, change: state.pending.change, accept: false, void: true, why: "先解决组件问题,作废" })
-      state.round++
-      delete state.pending
-      save()
+    voidPending("先解决组件问题,作废")
+    if (!AUTO) {
+      execFileSync("node", [path.join(ROOT, "scripts", "component-loop.mjs"), "propose"], { stdio: "inherit", cwd: ROOT })
+      state.stop = `等组件审批:看 library/ 下的示例,再 node scripts/component-loop.mjs approve|revise|reject k<n>`
+      break
     }
-    execFileSync("node", [path.join(ROOT, "scripts", "component-loop.mjs"), "propose"], { stdio: "inherit", cwd: ROOT })
-    state.stop = `等组件审批:看 library/ 下的示例,再 node scripts/component-loop.mjs approve|revise|reject k<n>`
-    break
+    if (!(await takeLock())) continue
+    try {
+      execFileSync("node", [path.join(ROOT, "scripts", "component-loop.mjs"), "propose"], { stdio: "inherit", cwd: ROOT })
+      const lib = JSON.parse(read(path.join(ROOT, "library", "state.json")))
+      const k = Object.keys(lib.proposals).filter((x) => lib.proposals[x].status === "待审").at(-1)
+      if (!k) throw new Error("组件 Agent 没有做出待审的提案")
+      log(`自动采用组件提案 ${k},按新组件重做每个 Skill 的当前版页面`)
+      execFileSync("node", [path.join(ROOT, "scripts", "component-loop.mjs"), "approve", k], { stdio: "inherit", cwd: ROOT })
+      const streak = (state.componentStreak ?? 0) + 1
+      reload()
+      state.componentStreak = streak
+      save()
+      log(`${k} 已合并,当前版 ${state.currentRun}`)
+    } finally {
+      fs.rmSync(LOCK, { recursive: true, force: true })
+    }
+    continue
   }
   if (!layout.length) {
     if (state.stage === "aesthetic") { state.stop = "审美阶段没有可改的问题"; break }
@@ -297,6 +368,7 @@ while (true) {
   }
   state.history.push({ round: k, stage, candidate: cand, base, baseRun, change, accept: g.accept, why: g.why, lines, gate: g })
   state.round = k
+  state.componentStreak = 0
   delete state.pending
   save()
   log(`round ${k} (${stage}): ${cand} ${g.accept ? "accepted as " + state.current : "rejected (" + g.why + ")"}`)
