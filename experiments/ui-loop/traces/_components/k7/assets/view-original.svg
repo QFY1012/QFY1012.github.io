@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" font-family="Noto Sans SC, sans-serif">
+  <rect width="1200" height="900" fill="#ffffff"/>
+  <rect x="0" y="0" width="1200" height="56" fill="#f4f4f5"/>
+  <circle cx="32" cy="28" r="8" fill="#d4d4d8"/><circle cx="60" cy="28" r="8" fill="#d4d4d8"/><circle cx="88" cy="28" r="8" fill="#d4d4d8"/>
+  <text x="80" y="130" font-size="38" font-weight="600" fill="#18181b">结算漏斗 · 按渠道</text>
+  <text x="80" y="176" font-size="26" fill="#71717a">2026-09-01 至 2026-09-30 · 单位:万次</text>
+  <line x1="80" y1="206" x2="1120" y2="206" stroke="#e4e4e7" stroke-width="1"/>
+  <rect x="80" y="240" width="20" height="20" fill="#d1495b"/><text x="110" y="258" font-size="24" fill="#3f3f46">直连</text>
+  <rect x="210" y="240" width="20" height="20" fill="#4c9f70"/><text x="240" y="258" font-size="24" fill="#3f3f46">代理</text>
+  <rect x="340" y="240" width="20" height="20" fill="#3a6ea5"/><text x="370" y="258" font-size="24" fill="#3f3f46">门店</text>
+  <rect x="470" y="240" width="20" height="20" fill="#e8a33d"/><text x="500" y="258" font-size="24" fill="#3f3f46">海外</text>
+  <rect x="80" y="400" width="96" height="300" fill="#d1495b"/><text x="80" y="384" font-size="26" fill="#3f3f46">128</text>
+  <rect x="200" y="460" width="96" height="240" fill="#4c9f70"/><text x="200" y="444" font-size="26" fill="#3f3f46">96</text>
+  <rect x="320" y="360" width="96" height="340" fill="#3a6ea5"/><text x="320" y="344" font-size="26" fill="#3f3f46">142</text>
+  <rect x="440" y="520" width="96" height="180" fill="#e8a33d"/><text x="440" y="504" font-size="26" fill="#3f3f46">74</text>
+  <line x1="80" y1="740" x2="560" y2="740" stroke="#a1a1aa" stroke-width="1"/>
+  <text x="80" y="800" font-size="26" fill="#71717a">四渠道完成量</text>
+  <polyline points="660,700 760,650 860,680 960,580 1060,540" fill="none" stroke="#d1495b" stroke-width="4"/>
+  <polyline points="660,750 760,730 860,740 960,680 1060,650" fill="none" stroke="#3a6ea5" stroke-width="4"/>
+  <line x1="640" y1="770" x2="1120" y2="770" stroke="#e4e4e7" stroke-width="1"/>
+  <text x="640" y="830" font-size="26" fill="#71717a">近 12 周转化率</text>
+  <text x="80" y="866" font-size="24" fill="#71717a">数据更新于 2026-10-01</text>
+</svg>

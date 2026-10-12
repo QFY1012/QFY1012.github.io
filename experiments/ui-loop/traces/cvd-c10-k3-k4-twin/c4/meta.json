@@ -1,0 +1,32 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 616,
+ "usage": {
+  "input": 30932,
+  "output": 13626
+ },
+ "stop": "error",
+ "summary": "",
+ "checks": [
+  {
+   "check": "数据忠实",
+   "msg": "页面上找不到 2 项数据:/issues/0/severity「高」、/issues/1/severity「高」"
+  }
+ ]
+}

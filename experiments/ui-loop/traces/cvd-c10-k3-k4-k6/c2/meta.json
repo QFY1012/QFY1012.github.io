@@ -1,0 +1,31 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "0b5c1166",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3-k4",
+ "change": {
+  "kind": "component",
+  "name": "k6",
+  "summary": "组件库新增:FigureCompare。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 6,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 216,
+ "usage": {
+  "input": 49601,
+  "output": 3439
+ },
+ "stop": "stop",
+ "summary": "程序检查已通过,页面在新组件下正常。\n\n改动只有一处:`色觉模拟` 一节里的四张图(原界面 + 红色盲/绿色盲/蓝色盲模拟)原来用 `FigureGrid` 呈现——每张按列宽显示,手机截图很高,一组要横跨好几屏;现改用新增的 `FigureCompare`,四张图按 2×2 铺满 9 列内容宽,每张定高、宽随原比例,整组固定两行,一行两张、右端落在同一条栏线上,一屏内读完。图注(`FigureLabel`)仍在图下,顺序与 `screens` 一致。其余节(结论、核心指标、问题分布、明细、下一步、背景信息)和导入的组件都保持原样,只把不再使用的 `FigureGrid` 从 import 里换成了 `FigureCompare`。\n\n页面结构:页头(对象/日期/标准 + 标题)→ 结论(24px 结论句 + summary)→ 核心指标(4 个 `Stat` 一行,`issues` 排第一)→ 色觉模拟(`FigureCompare` 2×2)→ 问题分布(各类型问题数 + 色差对照表)→ 明细(对比度检查、问题清单、界面用色三张表)→ 下一步(三列编号建议 + 建议改动表)→ 背景信息(`KV`)。",
+ "checks": []
+}

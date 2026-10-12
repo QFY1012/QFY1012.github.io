@@ -314,13 +314,24 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       // interval: the cell draws the row's estimate (key) with its range (low..high) on an axis shared by the column.
       // muteWhen: the cell is greyed when the row's field equals the value (e.g. not significant).
       type Col = {
-        key: string; label: string; align?: "left" | "right"; bar?: boolean; span?: number; tone?: string[]
+        key: string; label: string; align?: "left" | "right"; bar?: boolean; span?: number; tone?: string[]; levels?: string[]
         interval?: { low: string; high: string; domain: [number, number] }
         muteWhen?: { key: string; equals: unknown }
       }
       const cols = p.columns as Col[]
       const onGrid = cols.some((c) => c.span)
       const rows = p.rows as Record<string, React.ReactNode>[]
+      // levels: a column whose values are one ordered scale (low to high). The
+      // top of the scale carries the destructive colour; the step below it is
+      // bold; the steps under that fall back to the note grey. Colour alone
+      // would only mark one state, so the weight and the grey carry the rest of
+      // the order and the reader can rank the values.
+      const step = (c: Col, v: React.ReactNode) => {
+        const i = c.levels ? c.levels.indexOf(String(v)) : -1
+        if (i < 0) return undefined
+        const fromTop = c.levels!.length - 1 - i
+        return fromTop === 0 ? "font-semibold text-destructive" : fromTop === 1 ? "font-semibold" : "text-muted-foreground"
+      }
       // A numeric column can carry an inline bar, scaled to the column's max.
       const max = Object.fromEntries(cols.filter((c) => c.bar).map((c) => [c.key, Math.max(...rows.map((r) => Number(r[c.key]) || 0))]))
       const interval = (c: Col, r: Record<string, React.ReactNode>, muted: boolean) => {
@@ -341,7 +352,9 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         ) : c.bar ? (
           <div className="flex items-center gap-3">
             <span className="w-8 tabular-nums">{v}</span>
-            {/* the bar is a hairline on a lighter rule, not a filled block */}
+            {/* the count is drawn as a two-pixel bar on a hairline baseline, so
+                the length against that baseline is the difference the eye reads
+                (a hairline on a hairline made every row look the same) */}
             <Progress value={((Number(v) || 0) / max[c.key]) * 100} className="flex-1" />
           </div>
         ) : (
@@ -382,6 +395,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                         // the state carries weight as well as colour: bolder than the body
                         // text, so it survives greyscale and colour blindness
                         c.tone?.includes(String(r[c.key])) && "font-semibold text-destructive",
+                        step(c, r[c.key]),
                         c.muteWhen && r[c.muteWhen.key] === c.muteWhen.equals && "text-muted-foreground/70",
                       )}
                     >
@@ -522,17 +536,26 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
       )
     }
 
-    case "progress-list":
+    case "progress-list": {
+      // Every bar in the list is read against one scale, so the lengths are
+      // comparable inside the list: the scale runs from zero to the largest
+      // count in the list unless an item names its own max. (Falling back to a
+      // fixed 0..100 left every count a sliver of the same length, which reads
+      // as a dashed rule rather than as a value.)
+      const items = p.items as { label: string; value: number; max?: number; display?: string }[]
+      const scale = Math.max(1, ...items.map((it) => Number(it.value) || 0))
+      const bar = (it: { value: number; max?: number }) => ((Number(it.value) || 0) / (it.max ?? scale)) * 100
       // compact: one line per item (label, bar, value). The label column is one grid
       // column (74px) plus the gutter (24px), so the bar starts on the same column
-      // line as the table next to it instead of on a line of its own.
+      // line as the table next to it instead of on a line of its own. The bar is
+      // read against its baseline, and the value is tabular so the counts line up.
       if (p.compact)
         return (
           <div {...mark(node)} data-slot="custom-progress-list" className={outer(node, ctx, "flex flex-col gap-2")}>
-            {(p.items as { label: string; value: number; max?: number; display?: string }[]).map((it, i) => (
+            {items.map((it, i) => (
               <div key={i} className="grid h-6 grid-cols-[74px_1fr_2rem] items-center gap-6 text-sm">
                 <span>{it.label}</span>
-                <Progress value={(it.value / (it.max ?? 100)) * 100} />
+                <Progress value={bar(it)} />
                 <span className="text-right tabular-nums">{it.display ?? it.value}</span>
               </div>
             ))}
@@ -540,17 +563,21 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         )
       return (
         <div {...mark(node)} data-slot="custom-progress-list" className={outer(node, ctx, "flex flex-col gap-4")}>
-          {(p.items as { label: string; value: number; max?: number; display?: string }[]).map((it, i) => (
+          {items.map((it, i) => (
             <div key={i} className="flex flex-col gap-2">
               <div className="flex items-center justify-between text-sm">
                 <span>{it.label}</span>
-                <span className="tabular-nums text-muted-foreground">{it.display ?? it.value}</span>
+                {/* the count is the row's data, so it is set like every other
+                    number on the page (same colour, tabular figures) instead of
+                    dropping to the note grey */}
+                <span className="tabular-nums">{it.display ?? it.value}</span>
               </div>
-              <Progress value={(it.value / (it.max ?? 100)) * 100} />
+              <Progress value={bar(it)} />
             </div>
           ))}
         </div>
       )
+    }
 
     case "badges":
       return (

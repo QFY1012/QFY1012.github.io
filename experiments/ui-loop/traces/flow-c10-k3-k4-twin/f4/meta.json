@@ -1,0 +1,27 @@
+{
+ "case": "f4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 652,
+ "usage": {
+  "input": 209872,
+  "output": 39133
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查全部通过（构建、组件库、统一刻度、数据忠实、元素越界均为 0 问题）。\n\n**页面结构**（页头 meta 写「协作宝 · 链工 / 2026 年第三季度版本」，标题为报告名）：\n\n1. **背景信息**（G3 前移到页头之后）— `KV labelCols={2}`：任务 / 范围 / 日期\n2. **结论** — 24px 细体结论句，占满 9 列\n3. **核心指标** — 4 个 KPI 按 G1 用 `Grid cols={12} fields={false}`，各 `span={3}` 一行排满，数字用 `size=\"lg\"`、说明在下（`captionBelow`）\n4. **流程对比** — 两个产品各一个 `Stat`（B5，`span={2}`，说明写产品名 + 输入项 + 整体判断）；下接分阶段对比 `DataTable`（阶段 / 协作宝 7.2 / 链工 4.6，各 `span={3}`）\n5. **链路明细** — 按 G2：每产品一个 `Group`（标题 `产品 · 版本`）+ 一个 `FigureStrip`，`FigureImage → FigureLabel「第 N 步 · 屏名」→ FigureText「内容 · 操作（+ 输入 N 项）」`，`Section className=\"gap-12\"`，组间不加分隔线\n6. **步骤明细** — 13 步的 `DataTable`（产品 / 步骤 / 屏名 / 输入项（B8 带细条）/ 备注），G2 要求不写进图里的 `note` 放在这里\n7. **发现问题** — `DataTable`（编号 / 问题 / 位置 / 严重度 / 证据），严重度列 `tone={[\"高\"]}` 标红加粗，其余为黑\n8. **下一步** — `List columns={3} numbered`，每条一句建议，说明末尾带依据（如「依据 链工第 1、2 步、P1、P2」）\n\n一处库能力限制：G2 要求图下说明「压成一行」，但 `Figure` 的宽度随截图比例（`w-min`，不许为排满而加宽），所以最长的那几条说明（如「日期、开始时间、时长、人数 · 查找 · 输入 4 项」）在截图宽度内折成两行；截图本身高度一致、底边对齐，其余说明仍是一行。",
+ "checks": []
+}

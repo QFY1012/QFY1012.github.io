@@ -1,0 +1,31 @@
+{
+ "case": "c3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "0b5c1166",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3-k4",
+ "change": {
+  "kind": "component",
+  "name": "k6",
+  "summary": "组件库新增:FigureCompare。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 6,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 105,
+ "usage": {
+  "input": 29275,
+  "output": 5307
+ },
+ "stop": "stop",
+ "summary": "改动已完成并通过检查。\n\n**改了什么**:「色觉模拟」一节原来是 `FigureGrid` 四张 375×760 竖版手机截图按列宽铺开(每张约 1143px 高,整组跨了好几屏);这次换成新的 `FigureCompare`——它正是 components.md 里「模拟视图:原界面 + 三种色觉模拟、2×2、定高、一屏读完」的用法。四张图仍按 `screens` 原顺序每行两张(原界面/红色盲、绿色盲/蓝色盲),同高同宽、右端对齐,`FigureLabel` 贴在图下,整组固定两行。其余部分(结论、核心指标、色板与对比度、颜色混淆、问题清单)未动。\n\n检查结果:构建、组件库、统一刻度、数据忠实、元素越界全部通过;缩略图与切块确认页面在新组件下正常,没有需要补的其他呈现。",
+ "checks": []
+}

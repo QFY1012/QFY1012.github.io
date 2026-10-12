@@ -1,0 +1,31 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "0b5c1166",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3-k4",
+ "change": {
+  "kind": "component",
+  "name": "k6",
+  "summary": "组件库新增:FigureCompare。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 6,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 280,
+ "usage": {
+  "input": 42936,
+  "output": 5281
+ },
+ "stop": "stop",
+ "summary": "改好了,程序检查全部通过。\n\n改动只有一处:「色觉模拟」一节原来用 `FigureGrid` 放四张 1100×700 的对照图,按列宽铺满后每行约 360px 高,一组要跨一屏多才能看完;这正是新组件 `FigureCompare` 说明里「原界面 + 三种色觉模拟,四张要在一屏内读完」的场景。改用 `FigureCompare` 后四张图 2×2 定高、宽随原比例,每行两张、右端对齐,整组在一屏内读完,其余部分(页头、核心指标、色差分析、对比度明细、调色板、问题清单、修复建议、下一步、背景信息)完全保持原样。",
+ "checks": []
+}

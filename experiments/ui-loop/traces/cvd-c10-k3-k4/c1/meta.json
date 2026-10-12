@@ -1,0 +1,31 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3",
+ "change": {
+  "kind": "component",
+  "name": "k4",
+  "summary": "组件库只修改了现有组件的样式,没有新增部件:DataTable 的 tone 标红后再加粗;ProgressList(compact)标签列改成 74px,条从网格列线起;FigureStrip 统一截图行高,FigureImage 不再自带固定高度;FigureGrid 让图铺满列宽。页面写法一般不用变。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 249,
+ "usage": {
+  "input": 64122,
+  "output": 16057
+ },
+ "stop": "stop",
+ "summary": "我看完了 data.json、Page.tsx 和新版组件库实现,并已经在新组件库下跑了一次截图与程序检查。\n\n**结论:这个页面不需要改动。**\n\n理由:\n\n1. **色觉模拟**节用的是 `FigureGrid`(4 张模拟图两列铺满 9 列,右端对齐),这正是新版 `FigureGrid`「图铺满列宽」的用法;4 张图都是 1200×760 同一比例,宽度一致、高度随比例一致,行内和行间都对齐。它没有用 `FigureStrip`,也不存在把整组塞进一条 strip 的越界问题。\n2. 页面上没有 `FigureImage` 脱离 `FigureStrip`/`FigureGrid` 单独使用的地方,所以「不再自带固定高度」不会让它被拉伸。\n3. `DataTable` 的 `tone` 用在对比度结果列(不达标)、混淆色的受影响数值列、问题严重度列(高),加粗后正是「颜色之外的第二通道」,渲染正常;`ProgressList compact` 的 74px 标签列在 3 列宽的块里也没有截断(标签是「红色盲/绿色盲/蓝色盲」)。\n4. 页面里没有任何绕过组件库自己画的元素(无原生标签、无 inline style、无颜色/字号类名)。\n\n`node $SHOOT .` 输出「程序检查全部通过」,thumb 与各 tile 逐块看下来也没有异常(表格红色值/「不达标」「高」为红色加粗、进度条从网格列线起、模拟图两列对齐)。\n\n页面结构(未改动):页头(产品/周期 + 标题)→ 结论 → 色觉模拟(`FigureGrid` 2×2)→ 核心指标(4 个 `Stat`,问题总数排第一)→ 系列色(`DataTable` + `ProgressList` 并排)→ 混淆色 → 对比度 → 问题 → 下一步(颜色调整表 + 按问题处理三列列表)→ 背景信息。没有遇到组件库表达不了的数据。",
+ "checks": []
+}

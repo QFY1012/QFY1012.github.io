@@ -1,0 +1,31 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3-k4-k6",
+ "change": {
+  "kind": "component",
+  "name": "k7",
+  "summary": "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 2,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 85,
+ "usage": {
+  "input": 31155,
+  "output": 1903
+ },
+ "stop": "stop",
+ "summary": "页面已按组件库改动更新,程序检查通过。\n\n改动只有一处:`问题明细`表的「严重度」列。严重度是有序等级(高/中),原写法用 `tone: [\"高\"]`,只有「高」有颜色,「中」和正文没区别;新组件库用 `levels` 表达有序等级,所以改为 `levels: [\"低\", \"中\", \"高\"]` —— 现在「高」红加粗、「中」加粗,读者能排出严重度顺序。其他部分(页头、背景信息 → 结论 → 核心指标 → 产品对比 → 阶段对比 → 共性规律 → 流程明细(三组 FigureStrip + 步骤备注)→ 问题明细 → 下一步)保持原样,新样式下渲染正常。",
+ "checks": []
+}

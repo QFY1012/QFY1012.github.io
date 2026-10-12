@@ -1,0 +1,27 @@
+{
+ "case": "c3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 626,
+ "usage": {
+  "input": 42672,
+  "output": 12562
+ },
+ "stop": "error",
+ "summary": "",
+ "checks": []
+}

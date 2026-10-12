@@ -42,10 +42,15 @@ export function Section({ title, description, className, children }: { title: st
   )
 }
 
+// A group of content, 8px from the title to its content and 24px between the
+// content pieces. The group's title is a sub-head: it is set at body size and
+// bold, one size step below the section title (14px against the section's
+// 20px), so a run of groups reads as separate blocks under their section
+// instead of repeating the section heading at its own size.
 export function Group({ title, className, children }: { title?: string; className?: string; children: React.ReactNode }) {
   return (
     <div data-slot="group" className="flex flex-col gap-2">
-      {title && <h3 className="text-sm leading-6 font-semibold">{title}</h3>}
+      {title && <h3 data-slot="group-title" className="text-sm leading-6 font-semibold">{title}</h3>}
       <div data-slot="group-body" className={cn("flex flex-col gap-6", className)}>{children}</div>
     </div>
   )
@@ -128,6 +133,31 @@ export function FigureGrid({ className, children, ...props }: React.ComponentPro
       className={cn(
         "grid w-full grid-cols-2 gap-x-6 gap-y-6",
         "[&>[data-slot=figure]]:w-full [&>[data-slot=figure]]:min-w-0",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
+
+// The comparison set for colour vision (the interface plus its simulations) has
+// to be read as one group: all four views together, at a size where what is
+// inside them still reads, and the whole group inside one screen. Two columns
+// give the width (a quarter of the content column would be a thumbnail); the
+// images keep their own ratio and are capped at one height, so the group is
+// always two bounded rows whatever the screenshots' proportions are, and a tall
+// screenshot is not stretched into a second screen. The caption runs the width
+// of its cell, so a narrow view does not wrap its label into a column of lines.
+export function FigureCompare({ className, children, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="figure-compare"
+      className={cn(
+        "grid w-full grid-cols-2 gap-x-6 gap-y-6",
+        "[&>[data-slot=figure]]:w-full [&>[data-slot=figure]]:min-w-0",
+        "[&_[data-slot=figure-image]]:max-h-64 [&_[data-slot=figure-image]]:w-auto [&_[data-slot=figure-image]]:max-w-full",
         className
       )}
       {...props}

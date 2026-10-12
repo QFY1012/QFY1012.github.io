@@ -1,0 +1,27 @@
+{
+ "case": "c3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "0b5c1166",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 317,
+ "usage": {
+  "input": 73390,
+  "output": 13087
+ },
+ "stop": "stop",
+ "summary": "页面已通过程序检查,视觉核对也符合规范。\n\n**页面结构**(10 节,左 3 列节标题 / 右 9 列内容):\n\n1. **结论** — 24px 细体结论句(`不友好` + summary),说明栏写分析方法与 ΔE 口径\n2. **核心指标** — 4 个 `Stat`(`size=\"lg\"`、`captionBelow`、`span={2}`)同基线一行,按 G1 把 `issues` 提到首位,其余保持原顺序\n3. **色觉模拟** — 一个 `Group` 内两条 `FigureStrip`,按 G2 每行两张(原界面+红色盲 / 绿色盲+蓝色盲),同高对齐、右端不越界\n4. **分群** — 按色盲类型 3 个 `Stat`(普通大小、`span={2}`),note 写对照的问题总数\n5. **混淆色对** — `DataTable`,ΔE 数值右对齐,受影响色觉类型单列,无受影响行 `muteWhen` 灰显\n6. **对比度** — `DataTable`,实测/要求右对齐,\"不达标\"用列 `tone` 标红加粗\n7. **色板** — 四级路况的名称、色值、用途表\n8. **明细** — 4 个问题的 `DataTable`,严重度列 `tone={[\"高\"]}` 标红,含编号、类型、位置、影响人群、建议\n9. **下一步** — `List columns={3} numbered`,每条一句修复动作\n10. **背景信息** — `KV labelCols={2}`(对象、日期、标准、方法、结论)\n\n**缺组件说明**:组件库没有色块/色样组件,`palette` 的四级路况颜色无法以色块呈现,只能用 `DataTable` 显示名称、HEX 色值和用途;若要直观对照颜色,需要新增一个能渲染色样的组件。",
+ "checks": []
+}

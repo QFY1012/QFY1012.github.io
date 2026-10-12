@@ -1,0 +1,31 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "0b5c1166",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3-k4",
+ "change": {
+  "kind": "component",
+  "name": "k6",
+  "summary": "组件库新增:FigureCompare。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 110,
+ "usage": {
+  "input": 37198,
+  "output": 1084
+ },
+ "stop": "stop",
+ "summary": "页面在新组件库下渲染正常,程序检查全部通过,**无需修改 Page.tsx**。\n\n原因:新增的 `FigureCompare` 用于「一组四张(原界面 + 三种色觉模拟)」的对照图,而 data.json 里只有 `chains[].steps[]` 的逐步截图(共 9 张,`assets/p1-*.png`、`p2-*.png`),没有任何色觉模拟视图数据。链路明细按 G2 本就该用 `FigureStrip`(一组一栏、横向排开、图高统一),所以这项改动在本页用不上,页面保持原样。\n\n结构说明:页头(产品/周期 + 标题)→ 背景信息(KV)→ 结论 → 核心指标(4 个 Stat,`span={3}` 排满一行)→ 产品对比表 → 链路明细(快送、小橙各一组 `FigureStrip` + 步骤备注表)→ 问题表 → 下一步(List,3 列)。",
+ "checks": []
+}

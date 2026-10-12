@@ -1,0 +1,31 @@
+{
+ "case": "c5",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3",
+ "change": {
+  "kind": "component",
+  "name": "k4",
+  "summary": "组件库只修改了现有组件的样式,没有新增部件:DataTable 的 tone 标红后再加粗;ProgressList(compact)标签列改成 74px,条从网格列线起;FigureStrip 统一截图行高,FigureImage 不再自带固定高度;FigureGrid 让图铺满列宽。页面写法一般不用变。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 93,
+ "usage": {
+  "input": 31006,
+  "output": 3897
+ },
+ "stop": "stop",
+ "summary": "页面在新组件库下已经检查完毕,无需修改。\n\n- 程序检查:`node $SHOOT .` → 「程序检查全部通过」,截图正常。\n- 逐项对照本次组件改动:\n  - `DataTable` 的 `tone` 加粗:页面里用于「严重 = 高」「结论 = 不达标」以及色差表中受影响的 ΔE / 色觉类型,截图显示已是红色加粗,字重通道到位,无需改代码。\n  - `FigureStrip` 行高统一、`FigureImage` 去掉固定高度:页面没有用 `FigureStrip`。\n  - `ProgressList(compact)` 标签列宽:页面没有用 `ProgressList`。\n  - `FigureGrid` 图铺满列宽:页面的「色觉模拟」一节用的正是 `FigureGrid`,四张(原界面 + 红/绿/蓝色盲模拟)现在铺满各自列宽、右端对齐同一栏线,图内文字清晰,比改前更好,写法不用变。\n\n页面结构:页头(产品/周期 + 标题)→ 结论(一句判断)→ 核心指标(问题总数排首、四项一行)→ 色觉模拟(FigureGrid 两列两行)→ 分群(各类型受影响问题数 + 色差对照表)→ 配色表 → 对比度表(不达标标红加粗)→ 明细表(严重为高标红加粗)→ 下一步(三条建议并排)→ 背景信息(KV)。没有组件库表达不了的数据,无缺失组件。",
+ "checks": []
+}

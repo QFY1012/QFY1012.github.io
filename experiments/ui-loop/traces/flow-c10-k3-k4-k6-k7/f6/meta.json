@@ -1,0 +1,31 @@
+{
+ "case": "f6",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3-k4-k6",
+ "change": {
+  "kind": "component",
+  "name": "k7",
+  "summary": "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 2,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 275,
+ "usage": {
+  "input": 76509,
+  "output": 11543
+ },
+ "stop": "stop",
+ "summary": "页面已按组件库改动更新并通过检查。\n\n改动只有一处:「问题明细」表的严重度列,原来用 `tone: [\"高\"]` 只能把「高」标红、中/低与正文无差别;组件库这次给 `DataTable` 的等级列改了样式(最高一级红加粗、次一级加粗、再往下注释灰),所以改为 `levels: [\"低\", \"中\", \"高\"]`,现在高/中/低三级能排出顺序。其余部分(背景信息、结论、核心指标、流程对比、关键环节、共性模式、交互链路、下一步)保持原样,程序检查全部通过。\n\n页面结构:页头(产品/周期 + 标题)→ 背景信息(KV)→ 结论(结论句)→ 核心指标(4 个 Stat)→ 流程对比(分群 Stat)→ 关键环节(DataTable)→ 共性模式(List)→ 交互链路(每款 App 一组 FigureStrip)→ 问题明细(DataTable,严重度用 levels)→ 下一步(List)。",
+ "checks": []
+}

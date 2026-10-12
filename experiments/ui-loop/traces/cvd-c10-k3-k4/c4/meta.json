@@ -1,0 +1,31 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3",
+ "change": {
+  "kind": "component",
+  "name": "k4",
+  "summary": "组件库只修改了现有组件的样式,没有新增部件:DataTable 的 tone 标红后再加粗;ProgressList(compact)标签列改成 74px,条从网格列线起;FigureStrip 统一截图行高,FigureImage 不再自带固定高度;FigureGrid 让图铺满列宽。页面写法一般不用变。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 142,
+ "usage": {
+  "input": 46584,
+  "output": 5180
+ },
+ "stop": "stop",
+ "summary": "页面在新组件库下渲染正常,程序检查全部通过,没有需要改的地方。\n\n检查结果对照这次改动:\n\n- **DataTable `tone` 加粗**:页面里三处 tone 列(色差分析表的 `5.9`/`0.3`/`8.2`、对比度表的「不达标」、问题清单的「高」)都按新样式渲染成红色加粗,状态不再只靠颜色区分,符合改动意图。\n- **ProgressList(compact)**:色差分析里「问题分布 · 按色觉类型」三条的名称列与细条起点已按 74px 标签列对齐,条从网格列线起,无需调整。\n- **FigureStrip / FigureGrid**:色觉模拟一节用的是 `FigureGrid`(components.md 中该场景的示例写法),四张模拟图两列铺满内容列宽、同尺寸右端对齐、`FigureLabel` 在图下,新的「铺满列宽、`FigureImage` 不固定高度」行为已自动生效,没有越界或裁切,所以不需要改用 `FigureStrip`。\n- 页面里没有任何绕过组件库自绘的内容。\n\n页面结构(未改动):页头(产品/周期 + 标题)→ 结论(判定句 + 摘要)→ 核心指标(4 个 `size=\"lg\"` 的 `Stat`,问题总数排首位,一行占 2 列)→ 色觉模拟(原界面与三种色觉模拟对照图)→ 色差分析(混淆色对 ΔE 表 + 按色觉类型的问题分布)→ 对比度明细(18 组,带细条与「不达标」标红)→ 调色板(14 个 token)→ 问题清单(5 个问题,严重度标红)→ 修复建议(调整前后对比度)→ 下一步(三列编号列表)→ 背景信息(`KV`)。",
+ "checks": []
+}

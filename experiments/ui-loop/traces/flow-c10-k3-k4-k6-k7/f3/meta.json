@@ -1,0 +1,31 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3-k4-k6",
+ "change": {
+  "kind": "component",
+  "name": "k7",
+  "summary": "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 2,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 112,
+ "usage": {
+  "input": 30299,
+  "output": 2150
+ },
+ "stop": "stop",
+ "summary": "页面在新组件下渲染正常,只有一处需要改:「问题」表的严重度列原来用 `tone: [\"高\"]`(只标红一级),现改用该列的 `levels: [\"低\", \"中\", \"高\"]`,三级都有区分(高红加粗、中加粗、低注释灰),顺序一眼可读。改动后程序检查全部通过。\n\n页面结构:页头(产品/周期 + 报告标题)→ 背景信息(KV)→ 结论(结论句)→ 核心指标(4 个 Stat 一行)→ 产品对比(DataTable)→ 交互链路(每个产品一个 Group + FigureStrip,逐屏截图与步骤说明)→ 步骤备注(两列编号 List)→ 问题(DataTable,严重度用 levels)→ 下一步(三列编号 List)。",
+ "checks": []
+}

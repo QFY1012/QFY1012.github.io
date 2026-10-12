@@ -1,0 +1,31 @@
+{
+ "case": "f5",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3-k4-k6",
+ "change": {
+  "kind": "component",
+  "name": "k7",
+  "summary": "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 2,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 213,
+ "usage": {
+  "input": 79423,
+  "output": 7448
+ },
+ "stop": "stop",
+ "summary": "页面在新组件库下渲染正常,只有一处与本次改动有关的地方做了修改,程序检查全部通过。\n\n改动:「发现问题」表的 `严重度` 列从 `tone: [\"高\"]` 改为 `levels: [\"低\", \"中\", \"高\"]`。这一列是有序等级(高/中),按新组件库的说明,`tone` 只用于「是/不是」这类单一状态,有序等级要用 `levels`,让最高一级标红加粗、次一级加粗,读者能把严重度排出顺序——原写法只有「高」有颜色之外的第二通道,「中」和正文没有区别,排序读不出来。其余部分(FigureStrip 的链路截图、ProgressList 的 1px 墨线条、Stat/List/KV)在新样式下无需改动。\n\n页面结构:页头(产品/周期 + 标题)→ 背景信息(KV)→ 结论(结论句)→ 核心指标(4 个 Stat 一行排满)→ 分群对比(3 个产品 Stat)→ 共同模式(3 列 ProgressList + 6 列 List 并排)→ 链路明细(3 个产品各一组 FigureStrip,组末步骤备注)→ 发现问题(DataTable,严重度用 levels)→ 下一步(三列编号 List)。",
+ "checks": []
+}

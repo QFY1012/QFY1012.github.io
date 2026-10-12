@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 152,
+ "usage": {
+  "input": 87337,
+  "output": 11818
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查(构建、组件库、刻度、数据忠实、越界)全部通过。\n\n结构:页头(产品/周期 + 标题)→「背景信息」(`KV`,按 G3 前移)→「结论」(24px 细体一句话)→「核心指标」(4 个 `Stat` 用 `Grid cols={12}` 一行排满)→「产品对比」(三款产品各一个 `Stat`,说明写各自判断)→「链路明细」(每个产品一个 `Group`,组内 `FigureStrip` 按步骤排开图、标签、说明,步骤备注另起一条 `List`,不压进图里以保持栏底齐平)→「问题明细」(`DataTable`,严重度列 `tone` 标红加粗,表下注口径)→「下一步」(两条建议的编号 `List`)。\n\n一处说明:组件库的 `FigureText` 没有控制换行的能力,云盒第 2 步、栈盘第 2 步的文字因数据串较长折成两行,未能做到 G2 要求的\"压成一行\";数据本身已完整呈现,无缺失组件。",
+ "checks": []
+}

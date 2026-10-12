@@ -1,0 +1,31 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3",
+ "change": {
+  "kind": "component",
+  "name": "k4",
+  "summary": "组件库只修改了现有组件的样式,没有新增部件:DataTable 的 tone 标红后再加粗;ProgressList(compact)标签列改成 74px,条从网格列线起;FigureStrip 统一截图行高,FigureImage 不再自带固定高度;FigureGrid 让图铺满列宽。页面写法一般不用变。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 163,
+ "usage": {
+  "input": 35744,
+  "output": 1558
+ },
+ "stop": "stop",
+ "summary": "检查通过，页面在新组件库下渲染正常，不需要改动。\n\n我核对了三处受影响的组件用法：`FigureGrid`（色觉模拟四张图，两列铺满列宽、右端对齐）、`DataTable` 的 `tone`（对比度表的「不达标」已按新样式标红加粗）、`ProgressList compact`（各类型问题数的标签列与细条起点）。三者都按组件库的写法使用，没有绕过组件库自己画的内容，也没有依赖 `FigureImage` 旧的固定高度，因此 `Page.tsx` 保持原样。\n\n页面结构：页头 → 结论（一句话判断 + 摘要）→ 核心指标（4 个 `Stat`，`issues` 排第一，一行 4 个各占 2 列）→ 色觉模拟（4 张对照图）→ 问题分布（`ProgressList` + 色差对照表）→ 明细（对比度、问题清单、界面用色三张表）→ 下一步（三条建议 + 建议改动表）→ 背景信息（`KV`）。",
+ "checks": []
+}

@@ -1,5 +1,5 @@
 {
- "next": 6,
+ "next": 8,
  "proposals": {
   "k1": {
    "status": "采用",
@@ -104,6 +104,42 @@
     }
    ],
    "reason": "和 k4 同时提出(两个 loop 同时提案,记录被覆盖),需求和 k4 重叠;k4 采用后,没解决的问题由下一次提案重新提出"
+  },
+  "k6": {
+   "status": "采用",
+   "requests": 4,
+   "rejected": "k2:\n  没采用的原因:没做完就停了:需求写法改成「修还是加」两种之后重做\nk5:新增 FigureCompare(四张对照图同一固定高度排成 2×2,一屏内看完);Progress 加了 max、ticks、threshold,画出轨道、刻度、阈值线和 2px 条身。\n  没采用的原因:和 k4 同时提出(两个 loop 同时提案,记录被覆盖),需求和 k4 重叠;k4 采用后,没解决的问题由下一次提案重新提出",
+   "rounds": [
+    {
+     "feedback": null,
+     "summary": "所有检查通过。下面是这次交付的说明。\n\n## 新部件\n\n**`FigureCompare`**(新增,从 `report/index.tsx` 导出)\n- 管什么:色觉模拟那种「原界面 + 三种模拟」的四张一组对照图。2×2 铺满内容列宽,每张图**定高 240px、宽随原比例**,所以不管截图什么比例,整组永远是两行,一屏内读完;每格的图注贴着图宽、不横跨整格。\n- 来自哪:`FigureStrip`/`FigureGrid` 的同一套 `Figure*` 部件(没有现成 shadcn 组件可抄,是布局容器,用 `div` + 既有部件组合)。\n- 和 `FigureGrid` 的分工:`FigureGrid` 让图铺满列宽、行高随比例,图片很高时一组会超出一屏;`FigureCompare` 把高度定在图上,保证四张一屏。\n- 组合:\n\n```tsx\n<Group title=\"四张对照图\">\n  <FigureCompare>\n    {views.map((v) => (\n      <Figure key={v.name}>\n        <FigureImage src={v.image} alt={v.name} />\n        <FigureLabel>{v.name}</FigureLabel>\n      </Figure>\n    ))}\n  </FigureCompare>\n</Group>\n```\n\n## 改过的已有组件(以及为什么)\n\n1. **`ui/progress.tsx`(改)** —— 来自 shadcn `progress`(Radix `Progress` 原语)。原来是「圆角填充块 + 20% 底色的轨道」被裁成发丝线,和表格行线同重同色。改成:一条 1px 的 `border-border` **基线**(与量程等宽),上面压一条 **2px 的 `border-foreground` 条身**,条长 = 值/最大值。这样长度差就是读数差,不再是一条说不出作用的线。这一处同时修好了 DataTable 的 `bar` 列和 ProgressList。\n2. **`report/index.tsx` 的 `Group`(改)** —— 标题从 `text-sm font-semibold`(和正文同字号)改成 `text-xl font-medium`,即比正文 14px 大一级的 20px,让「明细」里的几张表一眼看出是几块;标题与正文间距保持贴紧(8→12px),标题归属自己的内容。之所以用 20px 而不是别的:字号表里 14 和 20 之间没有级别,只有 20px 是正文的上一级。\n3. **`report/render.tsx`(改)** —— DataTable 的 `bar` 单元注释更新;ProgressList 非 compact 布局的数值从 `text-muted-foreground` 改为正文色 + `tabular-nums`,和页面其它数字同一套呈现(原来同一组件的两种布局数字颜色不一致)。\n\n## 演示页与测试数据\n\n`Page.tsx` 只放新部件:色觉模拟(`FigureCompare`)、问题分布(`ProgressList` + 带 `bar` 的 `DataTable`)、再加一小段现有组件(`Text`/`Stat`/`List`/`Rule`)对照风格。图片是自造的 4 张 1200×510 SVG(`assets/cvd-*.svg`),同一块界面只有状态色不同。\n\n## 需求里没做的部分及原因\n\n- **刻度(ticks)/阈值线/`max` 等新 props 没加**:规范第 2 条禁止加切换样式或结构的配置 props;而且需求原文是「基线**或**刻度」,基线已经给出量程(0→max)与对齐线,所以只做了基线。k5 里给 Progress 加 `max`/`ticks`/`threshold` 的写法这次没有沿用。\n- **`Block` 的标题没动**:需求点名的是 `Group`;`Block` 的「14px 粗体紧贴内容」是已写进 `components.md` 的行为,改了会影响网格里的行高,不在本次范围。\n- **没给 `FigureCompare` 加裁剪/`object-fit`**:规范要求不裁剪,所以图只按比例缩放、不定宽裁剪;比例与格宽不同时右侧留白,而不是裁掉内容。\n\n截图:thumb.png 与 tile-1…5.png,`checks.json` 为空(程序检查全部通过)。",
+     "checks": [],
+     "lint": [],
+     "usage": {
+      "input": 579754,
+      "output": 88638
+     },
+     "seconds": 857
+    }
+   ]
+  },
+  "k7": {
+   "status": "采用",
+   "requests": 6,
+   "rejected": "k2:\n  没采用的原因:没做完就停了:需求写法改成「修还是加」两种之后重做\nk5:新增 FigureCompare(四张对照图同一固定高度排成 2×2,一屏内看完);Progress 加了 max、ticks、threshold,画出轨道、刻度、阈值线和 2px 条身。\n  没采用的原因:和 k4 同时提出(两个 loop 同时提案,记录被覆盖),需求和 k4 重叠;k4 采用后,没解决的问题由下一次提案重新提出",
+   "rounds": [
+    {
+     "feedback": null,
+     "summary": "一切就绪,程序检查全过(`checks.json` 为空),页面 8 块截图逐块看过。下面是这次的改动与说明。\n\n## 结论:没有新增部件名,需求里 6 条都是已有部件缺的能力\n\n需求全部落在 `DataTable` / `ProgressList` / `FigureCompare` / `Group` 这 4 个部件上,所以我没有另起部件名,而是把这 4 个部件缺的能力补进去(顺带改了它们共用的那条计数条)。改的文件:`app/src/components/ui/progress.tsx`、`app/src/components/report/render.tsx`、`app/src/components/report/index.tsx`、`components.md`,加演示页 `Page.tsx`、测试图 `assets/*.svg`(生成脚本 `make-assets.mjs`)。\n\n## 各部件改了什么、管什么、来自哪里\n\n**1. 计数条(`ui/progress.tsx`,来自 shadcn `progress` + Radix `Progress`)——对应「DataTable 的 bar」和「ProgressList 的条」**\n\n一条 1px 墨线画在一条 1px 基线上:基线与量程(0 到 max)等宽、和表格行线同宽同色(浅灰),条用墨色,长度就是计数与满值之比。两处共用这一条条、同一套等宽数字,不再各画一种形式。\n\n- 对 R1:条用墨色、行线用浅灰,条的末端一眼可辨,不会被读成一条说不出作用的装饰线;条长按同列最大值归一,数量差别由长度给出。\n- 对 R3:原来条是 2px 墨线,是全页唯一比细线粗的线;现在和页面其它细线同宽(1px),视觉重量落回细线这一级。\n- 组合:`<DataTable columns={[{ key:\"steps\", label:\"步骤数\", align:\"right\", span:3, bar:true }]} rows={rows} />`,或 `<ProgressList items={byType} compact />`。\n\n**2. `DataTable` 列的 `levels`(来自 shadcn `table`)——对应「严重度只有「高」有颜色」**\n\n`columns` 新增 `levels?: string[]`(从低到高排)。最高一级标红并加粗,次一级加粗,再往下用注释灰;三级都和正文有区别,读者能把严重度排出顺序。`tone` 保留给「是/不是」一个状态,等级用 `levels`。\n\n- 组合:`{ key:\"severity\", label:\"严重度\", span:2, levels:[\"低\",\"中\",\"高\"] }`。\n\n**3. `ProgressList` 的量程(`render.tsx`)——对应「看不出数值差异、说不出这条线的作用」**\n\n`max` 不给时取列表里的最大值(原来固定按 0..100 算,6/9/2 这种小计数全缩成等长的发丝线,像等长虚线);现在 6、9、2 画成 67%、100%、22%,差异一眼可辨。数值用与页面其它数字一致的等宽数字。\n\n- 组合:`<ProgressList items={[{ label:\"红色盲\", value:6 }, { label:\"绿色盲\", value:9 }]} compact />`。\n\n**4. `FigureCompare`(纯 `div` + `img`)——对应「四张对照图被拉成上下两屏」**\n\n每格图按原比例、高度封在同一个上限(`max-h-64`),图注占满整格宽。整组固定两行(实测约 600px,一屏内),截图比例偏长也不会撑到第二屏;图注也不再折成多行把格撑高。\n\n- 组合:`<FigureCompare>{views.map(v => <Figure key={v.name}><FigureImage src={v.image} alt={v.name} /><FigureLabel>{v.name}</FigureLabel></Figure>)}</FigureCompare>`。\n\n**5. `Group` 的子块标题(纯 `div`/`h3`)——对应「子块标题与节标题同为 20px」**\n\n子块标题从 20px 降到 14px 粗体(节标题仍是 20px),标题与内容之间收到 8px;一节里「颜色调整」「按问题处理」这类子块一眼看出是分开的几块,不再和节标题同字号。\n\n## 需求里没做/没照字面做的部分\n\n- **R1 的「粗细与表格行线相同」没照字面改**:条仍是 1px(与行线同宽),靠颜色区分(墨色对浅灰)。因为 R3/R5 明确要求条「与页面细线一致的细条」「不与正文争夺视觉重量」,两条要求方向相反;取的是中间——同宽不同色,再加一条与量程等宽的基线让长度有基准。\n- **R5 的「条目标签带多种颜色」没有对应改动**:`ProgressList` 的标签本来就是正文色,那条记录来自页面自己给标签上色,组件里没有可改的地方。\n- **R5 的「刻度」只做到基线**:基线与量程等宽,长度本身就是基准;没再加刻度线/刻度值,否则会和紧凑模式右侧的数值列重复。",
+     "checks": [],
+     "lint": [],
+     "usage": {
+      "input": 463271,
+      "output": 98959
+     },
+     "seconds": 1249
+    }
+   ]
   }
  }
 }

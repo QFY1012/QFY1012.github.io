@@ -1,0 +1,27 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 569,
+ "usage": {
+  "input": 104162,
+  "output": 56162
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过（`checks.json` 为空），页面已按规范完成。\n\n**页面结构**（`Page` 页头：左栏产品与检查日期，右栏标题；每节标题挂左 3 列、内容右 9 列）：\n\n1. **结论** — 判断句 + summary，两条 24px 细体结论句。\n2. **核心指标** — `kpis` 四项各一个 `Stat`（`captionBelow`、`size=\"lg\"`），按 G1 把 `issues` 排到首位，`span={2}` 靠左成一簇、共用一条基线。\n3. **系列色板** — 8 个系列色的 `DataTable`（系列 / 色值 / 用途）。\n4. **色觉模拟** — 按 G2 四张 `screens` 每两张一条 `FigureStrip`，两条上下排在同一个 `Group` 里，图名在下。\n5. **色觉影响** — 两个组（48px 间距）：按色觉类型的问题数（3 个 `Stat`，B5 分群）＋ 难以区分的颜色对 `DataTable`（低于 12 的 ΔE 用列 `tone` 标红）。\n6. **对比度** — 10 组文字/背景的 `DataTable`，`结论` 列用 `tone` 标「不达标」，表下注明口径。\n7. **问题明细** — 6 个问题的 `DataTable`，`严重度` 列 `tone: [\"高\"]` 标红。\n8. **整改建议** — 6 条修改方向的 `List`（`columns={3}`、`numbered`）＋ 色值调整 `DataTable`（改前 → 改后 → 对比度）。\n9. **背景信息** — `KV`（`labelCols={2}`）：分析对象、检查日期、遵循标准、分析方法。\n\n**两处组件库表达不了的地方**：\n\n- **没有色块/色卡组件**：`palette` 的 8 个系列色只能以色值文本（`#1677FF` 等）在表格里列出，无法显示实际颜色，读者看不到「红色盲分不清的系列 2 和 3」到底长什么样。\n- **`FigureStrip` 的固定行高与这组截图不匹配**：四张模拟图是 1200×760，条把图高钉在 384px 后每张宽约 606px，一行两张（1206px）超过正文 9 列（858px），右端一张被条裁掉、只能悬停横向滚动查看。按 G2 仍是每行两张一条 `FigureStrip`；若要让四张完整并排，需要 `FigureGrid` 那种按列宽缩放的排法。",
+ "checks": []
+}
