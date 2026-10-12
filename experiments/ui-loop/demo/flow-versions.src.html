@@ -1,0 +1,150 @@
+<title>下单支付页的版本演进</title>
+<style>
+/* Layout: one column of versions down a version rail; the mainline sits on the rail, rejected candidates branch off to the right of the version they started from. A small version tree on top jumps to each version. */
+:root {
+  --bg: #f6f6f3; --surface: #ffffff; --ink: #1d2024; --muted: #5f6670; --line: #dcdfe3; --chip: #edeef0;
+  --main: #2b55c6; --ok: #1d7a52; --ok-bg: #e2f1e9; --bad: #b53f2a; --bad-bg: #f8e6e1; --meh: #94660f; --meh-bg: #f6ecd4;
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121417; --surface: #1a1d22; --ink: #e6e8eb; --muted: #9ba2ab; --line: #2c3138; --chip: #252a31;
+  --main: #8fa8f3; --ok: #5cc795; --ok-bg: #16301f; --bad: #f08a74; --bad-bg: #3a1e18; --meh: #e2b259; --meh-bg: #33280f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121417; --surface: #1a1d22; --ink: #e6e8eb; --muted: #9ba2ab; --line: #2c3138; --chip: #252a31;
+  --main: #8fa8f3; --ok: #5cc795; --ok-bg: #16301f; --bad: #f08a74; --bad-bg: #3a1e18; --meh: #e2b259; --meh-bg: #33280f; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.6 }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 72px; display: grid; gap: 24px }
+h1, h2, h3 { margin: 0; text-wrap: balance }
+.top { display: grid; gap: 8px }
+.top h1 { font-size: 26px; font-weight: 650 }
+.top p { margin: 0; color: var(--muted); max-width: 72ch }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted) }
+.legend span { display: inline-flex; gap: 6px; align-items: center }
+.k { width: 10px; height: 10px; border-radius: 50%; display: inline-block }
+.k.main { background: var(--main) } .k.branch { border: 2px solid var(--bad); background: var(--surface) }
+.tree { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto }
+.tree svg { display: block; min-width: 720px; width: 100%; height: auto }
+.tree text { font-family: var(--sans); font-size: 11px; fill: var(--muted) }
+.tree .lab { fill: var(--ink); font-size: 12px; font-weight: 600 }
+.tree g[data-to] { cursor: pointer }
+.tree g[data-to]:hover circle { stroke-width: 3 }
+
+/* the rail: every row has a 56px gutter carrying the mainline */
+.rail { display: grid }
+.row { display: grid; grid-template-columns: 56px minmax(0, 1fr); position: relative; scroll-margin-top: 16px }
+.row::before { content: ""; position: absolute; left: 27px; top: 0; bottom: 0; width: 2px; background: var(--main) }
+.row:first-child::before { top: 28px } .row:last-child::before { bottom: auto; height: 28px }
+.node { grid-column: 1; justify-self: center; margin-top: 20px; width: 16px; height: 16px; border-radius: 50%; background: var(--main); box-shadow: 0 0 0 4px var(--bg); position: relative; z-index: 1 }
+.body { grid-column: 2; padding-bottom: 28px; min-width: 0 }
+.row.branch .body { padding-left: 56px; position: relative }
+.row.branch .body::before { content: ""; position: absolute; left: -29px; top: 0; width: 56px; height: 28px; border-left: 2px dashed var(--bad); border-bottom: 2px dashed var(--bad); border-bottom-left-radius: 14px }
+.row.branch.meh .body::before { border-color: var(--meh) }
+.row.branch .bnode { position: absolute; left: 26px; top: 20px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--bad); background: var(--surface) }
+.row.branch.meh .bnode { border-color: var(--meh) }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); overflow: hidden }
+@media (max-width: 820px) { .card { grid-template-columns: minmax(0, 1fr) } }
+.row.branch .card { border-style: dashed }
+.info { padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-width: 0 }
+.vh { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline }
+.vh .no { font-family: var(--mono); font-size: 12px; color: var(--muted) }
+.vh h2 { font-size: 17px; font-weight: 650 }
+.tag { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); white-space: nowrap }
+.pill { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap }
+.p-ok { background: var(--ok-bg); color: var(--ok) } .p-bad { background: var(--bad-bg); color: var(--bad) } .p-meh { background: var(--meh-bg); color: var(--meh) }
+.info p { margin: 0; font-size: 13.5px }
+.why { font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--ink) }
+.row.meh .why { background: var(--meh-bg) }
+.why b { font-weight: 600 }
+.facts { font-size: 12.5px; color: var(--muted) }
+.who { font-size: 12px; color: var(--muted) }
+.view { border-left: 1px solid var(--line); background: #ffffff; position: relative; min-width: 0 }
+@media (max-width: 820px) { .view { border-left: 0; border-top: 1px solid var(--line) } }
+.vp { height: 420px; overflow: auto }
+.vp.open { height: auto }
+.shot { position: relative }
+.shot img { display: block; width: 100%; height: auto; max-width: 100% }
+.mark { position: absolute; border: 2px dashed var(--main); border-radius: 6px; pointer-events: none }
+.mark span { position: absolute; top: -11px; right: 6px; font-size: 11px; line-height: 18px; padding: 0 6px; border-radius: 3px; background: var(--main); color: #ffffff }
+.toggle { position: absolute; right: 10px; bottom: 10px; font: inherit; font-size: 12px; border: 1px solid #d5d9de; background: #ffffff; color: #1d2024; border-radius: 6px; padding: 3px 10px; cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, .08) }
+.toggle:focus-visible { outline: 2px solid var(--main); outline-offset: 2px }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>「下单支付」报告页的版本演进</h1>
+    <p>交互流程挖掘 Skill 的同一份数据（外卖下单支付，快送对比小橙），从不用组件库，到用组件库、新增组件，再到审美迭代。通过的版本连成主线；没通过的候选从它出发的版本分出去，单独成一条分支。每张截图都是 Page.tsx 经程序检查脚本真实渲染的结果，虚线框是这一版改动的地方。</p>
+    <div class="legend"><span><i class="k main"></i>主线：通过的版本</span><span><i class="k branch"></i>分支：没通过的候选</span><span>截图框内可滚动，点「看整页」展开</span></div>
+  </header>
+
+  <div class="tree" id="tree"></div>
+  <div class="rail" id="rail"></div>
+</div>
+
+<script>
+const BOXES = { ...(/*BOXES*/), free: { width: 1248, height: 2743, sections: {} }, noimg: { width: 1248, height: 2866, sections: {} } }
+// Mainline in order; each rejected candidate follows the version it branched from.
+const V = [
+  { id: "v1", no: "版本 1", img: "free", stage: "无组件库", title: "不用组件库", change: "模型只用 Tailwind 自己写：版式、颜色、卡片、字号都当场决定。看着也像样，但换一次生成就换一种风格，设计规范管不住。", facts: "程序检查 142 个问题 · 9 种字号 · 34 个颜色类名 · 19 处圆角卡片" },
+  { id: "v2", no: "版本 2", img: "noimg", stage: "组件库", title: "用组件库写", change: "生成 Agent 按 design.md 只用组件库写：字号、颜色、间距、表格线都由组件给出，页面只决定用哪个组件、放在哪。组件库还没有放图片的组件，链路明细只有文字，看不到截图。", facts: "程序检查 0 个问题 · 只有 1 个字号类名 · 没有颜色类名和卡片" },
+  { id: "v3", no: "版本 3", img: "g0", stage: "新增组件", title: "新增截图组件（k1）", focus: ["链路明细"], change: "Maintainer 发现「缺少能放截图的组件」，交给组件 Agent。它新增 FigureStrip、Figure、FigureImage 等截图部件，人工提了 3 次意见（改横向滚动、换 shadcn 滚动条、加宽间距），第 4 版采用。链路明细按步骤横排截图。", who: "组件 Agent · 人工审批" },
+  { id: "v4", no: "版本 4", img: "g1", stage: "修组件", title: "修现有组件（k3）", focus: ["产品对比", "链路明细"], change: "组件 Agent 修组件自带的毛病：进度条改成 1px 细线，截图下的滚动条只在悬停时出现；新增带标签的分组线 Rule，两条链路成了同一节里的两组。", who: "组件 Agent · 人工审批" },
+  { id: "v5", no: "版本 5", img: "g2", stage: "审美迭代", title: "核心指标排成一行", focus: ["核心指标"], change: "4 个数字一行排完，「发现问题」不再单独掉到第二行。", who: "Reviser 改输出指南 · 门禁通过" },
+  { id: "c3", branch: "v5", img: "c3", stage: "审美迭代", title: "下一步改成表格", focus: ["下一步"], result: "没效果", why: "两种顺序的判断相反：一种说表格好比较，另一种说像又一张明细表，和问题表分不开。" },
+  { id: "v6", no: "版本 6", img: "g3", stage: "审美迭代", title: "下一步按条数分列", focus: ["下一步"], change: "列数等于建议条数，两条建议各占半行，右边不再空出一列。", who: "Reviser 改输出指南 · 门禁通过" },
+  { id: "c5", branch: "v6", img: "c5", stage: "审美迭代", title: "截图下删掉备注", focus: ["链路明细"], result: "失败", why: "截图下方是整齐了，但程序检查变差：页面上缺了 5 项数据（每一步的问题备注）。" },
+  { id: "v7", no: "版本 7", img: "g4", stage: "审美迭代", title: "截图说明固定三行", focus: ["链路明细"], change: "每张截图下固定三行：屏名、内容 · 操作、问题；没有问题写「问题:无」。一排高度一致，备注也保留。", who: "Reviser 改输出指南 · 门禁通过" },
+  { id: "c7", branch: "v7", img: "c7", stage: "审美迭代", title: "结论改成大数字", focus: ["结论"], result: "失败", why: "留出页上输了：「少 1 屏」的大数字让结论节像又一组指标，和核心指标抢；优惠券的差别被挤到小字里。" },
+  { id: "v8", no: "版本 8", img: "g5", stage: "审美迭代", title: "结论分主次", focus: ["结论"], change: "结论第一句判断用大字，解释换行用正文，先读到结论再读原因。", who: "Reviser 改输出指南 · 门禁通过" },
+  { id: "c9", branch: "v8", img: "c9", stage: "审美迭代", title: "问题表改成列表", focus: ["问题"], result: "没效果", why: "一种顺序说列表好读，另一种说严重度埋在说明里不能竖着比，「高」也不再标红。" },
+  { id: "v9", no: "版本 9", img: "g6", stage: "审美迭代", title: "问题表合成四列", focus: ["问题"], change: "编号并进问题标题，产品和步骤并成「位置」一列：问题、位置、严重度、证据四列。审美 judge 不再提出两种顺序都认可的问题，迭代结束。", who: "Reviser 改输出指南 · 门禁通过" },
+]
+
+function shot(v) {
+  const b = BOXES[v.img]
+  const marks = b ? (v.focus || []).map((t) => {
+    const s = b.sections[t], pad = 16
+    return s ? `<div class="mark" style="left:${((s.x - pad) / b.width) * 100}%;top:${((s.y - pad) / b.height) * 100}%;width:${((s.w + 2 * pad) / b.width) * 100}%;height:${((s.h + 2 * pad) / b.height) * 100}%"><span>改动处</span></div>` : ""
+  }).join("") : ""
+  return `<div class="shot"><img src="pages/${v.img}.png" alt="${v.no ?? v.id} ${v.title} 的页面截图" width="${b.width}" height="${b.height}">${marks}</div>`
+}
+
+function row(v) {
+  const from = v.branch && V.find((x) => x.id === v.branch)
+  const pill = v.branch ? `<span class="pill ${v.result === "失败" ? "p-bad" : "p-meh"}">${v.result} · 未采用</span>` : `<span class="pill p-ok">采用</span>`
+  const info = v.branch
+    ? `<div class="vh"><span class="no">候选 ${v.id} · 从${from.no}分出</span></div><div class="vh"><h2>${v.title}</h2><span class="tag">${v.stage}</span>${pill}</div><p class="why"><b>没通过：</b>${v.why}</p>`
+    : `<div class="vh"><span class="no">${v.no}</span><span class="tag">${v.stage}</span>${v.id === "v1" ? "" : pill}</div><h2>${v.title}</h2><p>${v.change}</p>${v.facts ? `<p class="facts">${v.facts}</p>` : ""}${v.who ? `<p class="who">${v.who}</p>` : ""}`
+  return `<section class="row ${v.branch ? `branch ${v.result === "没效果" ? "meh" : ""}` : ""}" id="${v.id}">${v.branch ? "" : '<i class="node"></i>'}<div class="body">${v.branch ? '<i class="bnode"></i>' : ""}<div class="card"><div class="info">${info}</div><div class="view"><div class="vp" data-img="${v.img}" data-focus="${(v.focus || [])[0] ?? ""}">${shot(v)}</div><button class="toggle" type="button">看整页</button></div></div></div></section>`
+}
+
+function tree() {
+  const main = V.filter((v) => !v.branch), W = 960, H = 146, x0 = 40, x1 = 920, y = 92
+  const X = (i) => x0 + (i * (x1 - x0)) / (main.length - 1)
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="版本树：主线 9 个版本，4 个分支"><line x1="${x0}" x2="${x1}" y1="${y}" y2="${y}" stroke="var(--main)" stroke-width="2"/>`
+  main.forEach((v, i) => {
+    s += `<g data-to="${v.id}"><circle cx="${X(i)}" cy="${y}" r="7" fill="var(--main)" stroke="var(--main)" stroke-width="2"/><text class="lab" x="${X(i)}" y="${y + 24}" text-anchor="middle">${i + 1}</text><text x="${X(i)}" y="${y + 38}" text-anchor="middle">${v.stage}</text></g>`
+  })
+  V.filter((v) => v.branch).forEach((v) => {
+    const i = main.findIndex((m) => m.id === v.branch), bx = X(i) + (X(i + 1) - X(i)) * 0.55, col = v.result === "失败" ? "var(--bad)" : "var(--meh)"
+    s += `<path d="M${X(i)} ${y} C ${X(i) + 20} ${y}, ${bx - 24} ${y - 52}, ${bx} ${y - 52}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/><g data-to="${v.id}"><circle cx="${bx}" cy="${y - 52}" r="7" fill="var(--surface)" stroke="${col}" stroke-width="2"/><text class="lab" x="${bx}" y="${y - 66}" text-anchor="middle">${v.id}</text><text x="${bx}" y="${y - 30}" text-anchor="middle">${v.result}</text></g>`
+  })
+  document.getElementById("tree").innerHTML = s + "</svg>"
+  document.querySelectorAll("#tree [data-to]").forEach((g) => g.addEventListener("click", () => document.getElementById(g.dataset.to).scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" })))
+}
+
+document.getElementById("rail").innerHTML = V.map(row).join("")
+tree()
+// Each viewport opens on the part of the page this version changed.
+document.querySelectorAll(".vp").forEach((vp) => {
+  const img = vp.querySelector("img"), b = BOXES[vp.dataset.img], s = b && b.sections[vp.dataset.focus]
+  const go = () => { if (s) vp.scrollTop = Math.max(0, (s.y / b.height) * img.clientHeight - 48) }
+  go()
+  img.addEventListener("load", go)
+  vp.nextElementSibling.addEventListener("click", (e) => {
+    const open = vp.classList.toggle("open")
+    e.currentTarget.textContent = open ? "收起" : "看整页"
+    if (!open) go()
+  })
+})
+</script>
