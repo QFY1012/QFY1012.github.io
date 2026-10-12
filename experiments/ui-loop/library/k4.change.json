@@ -1,5 +1,5 @@
 {
  "kind": "component",
  "name": "k4",
- "summary": "组件库新增:。用法见 components.md。"
+ "summary": "组件库只修改了现有组件的样式,没有新增部件:DataTable 的 tone 标红后再加粗;ProgressList(compact)标签列改成 74px,条从网格列线起;FigureStrip 统一截图行高,FigureImage 不再自带固定高度;FigureGrid 让图铺满列宽。页面写法一般不用变。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
 }

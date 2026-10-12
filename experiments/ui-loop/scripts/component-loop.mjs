@@ -242,7 +242,8 @@ function merge(name) {
   // What the page generator is told: the parts the change adds (the last round's summary only
   // describes its own tweak); how to use them is in components.md.
   const added = [...patch.matchAll(/^\+export function (\w+)/gm)].map((m) => m[1])
-  const change_ = `组件库新增:${added.join("、")}。用法见 components.md。`
+  // Only existing parts changed: the page needs no new code, just a look in the new library.
+  const change_ = `${added.length ? `组件库新增:${added.join("、")}。` : "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。"}用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。`
   fs.appendFileSync(LOG, `\n## ${name}  结果:采用(${p.rounds.length} 版)\n\n需求 ${p.requests} 条。示例和说明见 library/${name}.md,改动见 library/${name}.patch。${p.rounds.slice(1).map((r, i) => `\n- 第 ${i + 2} 版的审批意见:${r.feedback}`).join("")}\n\n${summary}\n`)
   // Every Skill's current pages, edited for the change; checks start again from the program checks.
   const change = path.join(LIB, `${name}.change.json`)
