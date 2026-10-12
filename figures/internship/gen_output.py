@@ -115,7 +115,7 @@ add(f'<path class="flow ac" d="M{XB3 - g * 0.7} {YB} A{R} {R} 0 0 1 {X0 - g * 0.
 
 # 线上的信息
 add(knock((X0 + X1) / 2, YT, 'UI Spec', 11.5, 'info'))
-add(store((X1 + X2) / 2, YT, '轨迹库'))
+add(knock((X1 + X2) / 2, YT, '页面', 11.5, 'info'))
 add(knock((X2 + X3) / 2, YT, '全部通过', 11.5, 'info'))
 mb1, mb2 = (XB1 + XB2) / 2, (XB2 + XB3) / 2
 add(store(mb1, YB, '问题清单'))
@@ -270,7 +270,7 @@ def mstore(cy, name, note):
 
 # 线上的信息(写在主线右侧)
 madd(f'<text class="m-info" x="{LX + 24}" y="{mid(0) + 4}">UI Spec</text>')
-madd(mstore(mid(1), '轨迹库', ''))
+madd(f'<text class="m-info" x="{LX + 24}" y="{mid(1) + 4}">页面</text>')
 madd(f'<text class="m-info" x="{LX + 24}" y="{mid(2) + 4}">全部通过</text>')
 madd(f'<text class="m-info" x="{LX + 24}" y="{mid(3) - 4}">两步检测的结果</text>')
 madd(f'<text class="m-info sm" x="{LX + 24}" y="{mid(3) + 12}">报错 · 两种顺序都提到的问题</text>')
