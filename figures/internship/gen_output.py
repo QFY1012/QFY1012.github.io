@@ -176,6 +176,22 @@ add(station(C4, YB, 'ag', 'pen', '组件 Reviser', '05'))
 add(station(C2, YB, 'gate', 'user', '人工审批', '06', '通过才合并'))
 add(station(C1, YB, 'it', 'component', '组件库'))
 
+# ── 上线后支路 ───────────────────────────────────────
+# 与 Skill 层同一骨架:badcase → 人工归类 → 新样本 + 样本 rubric → 补进样本。
+# 审美 rubric 是所有 Skill 通用的,不为单个 case 改;人工把 badcase 归类后写成这个样本自己的 rubric,
+# 跟着样本走,审美 Judge 判它时看通用 rubric 加这一条。支路自右向左,与下轨同向。
+LN = 590
+XP, XA, XN = XS, C3, C1 + 56                       # badcase、人工归类、新样本
+add(f'<path class="on" d="M{XP - 8} {LN} H{XA + 12}" marker-end="url(#ma)"/>')
+add(f'<path class="on" d="M{XA - 8} {LN} H{XN + 12}" marker-end="url(#ma)"/>')
+add(f'<rect class="ko" x="{XN - 5}" y="{YB - 3}" width="10" height="6"/>')       # 跨过下轨处断开下轨
+add(f'<path class="on" d="M{XN} {LN - 8} V{TY + CH + HP + 4}" marker-end="url(#ma)"/>')
+add(f'<text class="on-l" x="{XN + 9}" y="{(TY + CH + YB) / 2 + 12}">补进训练 / 验证样本</text>')
+add(f'<text class="on-k" x="{XP + 22}" y="{LN + 4}">上线后</text>')
+for x, nm in [(XP, 'badcase'), (XA, '人工归类'), (XN, '新样本 + 样本 rubric')]:
+    add(f'<circle class="on-st" cx="{x}" cy="{LN}" r="5.5"/>')
+    add(f'<text class="on-n" x="{x}" y="{LN + 26}">{nm}</text>')
+
 defs = '''<defs>
   <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
   <marker id="mf" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk"/></marker>
@@ -189,7 +205,9 @@ ARIA = ('输出层一次迭代的信息流转,骨架与 Skill 层相同,但迭�
         '布局问题交给 UI Spec Reviser,改 UI Spec 的一条规则,写入修改记录,在验证样本上更好才升级 UI Spec;'
         '组件不够交给组件 Reviser,新增或修改组件,写入修改记录,人工审批通过才合并进组件库。'
         '两条轨道的修改记录都保留没采用的改动。'
-        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则与审美 rubric;审美 rubric 与用户排序一致 93%。')
+        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则与审美 rubric;审美 rubric 与用户排序一致 93%。'
+        '上线后:用户对着具体的 case 给出负反馈,人工把 badcase 归类后写成这个样本自己的 rubric,'
+        '与新样本一起分进训练和验证样本;审美 Judge 判它时看通用 rubric 加这一条。通用的审美 rubric 不为单个 case 改动。')
 
 
 # ── 窄屏:同一套线路语言,纵向排列 ─────────────────────
@@ -312,13 +330,23 @@ for cy, kind, ic, nm, step in [(MYS[0], 'ag', 'code', '生成 Agent', '01'), (MY
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MA[2] + 28}">更好才升级</text>')
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MO[2] + 28}">通过才合并</text>')
 
+# 上线后支路:组件库之下自上而下,与 Skill 层同一骨架
+MP = [1310, 1380, 1450]                          # badcase、人工归类、新样本 + 样本 rubric
+madd(f'<text class="on-k" x="{LX}" y="{MP[0] - 26}" text-anchor="middle">上线后</text>')
+for i in range(2):
+    madd(f'<path class="on" d="M{LX} {MP[i] + 8} V{MP[i + 1] - 10}" marker-end="url(#mam)"/>')
+for y, nm in zip(MP, ['badcase', '人工归类', '新样本 + 样本 rubric']):
+    madd(f'<circle class="on-st" cx="{LX}" cy="{y}" r="5"/>')
+    madd(f'<text class="m-on-n" x="{LX + 14}" y="{y + 4.5}">{nm}</text>')
+madd(f'<text class="m-on-s" x="{LX + 14}" y="{MP[2] + 22}">补进训练 / 验证样本</text>')
+
 mdefs = '''<defs>
   <pattern id="hatchm" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
   <marker id="mfm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk"/></marker>
   <marker id="mam" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk ac"/></marker>
   <marker id="msm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M1 1.5 L9 5 L1 8.5 Z" class="mk soft"/></marker>
 </defs>'''
-MH = MO[3] + 40
+MH = MP[2] + 40
 mobile = f'<svg viewBox="0 30 {MW} {MH - 30}" role="img" aria-label="{ARIA}">{mdefs}{"".join(m)}</svg>'
 
 
@@ -372,6 +400,12 @@ html = f'''<!doctype html>
   .ic.store {{ color: var(--text-dim); }}
   .data-s {{ fill: var(--data-ink); }}
   .ic.data {{ color: var(--data-ink); }}
+  .on {{ fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 4 3; }}
+  .on-st {{ fill: var(--accent); }}
+  .on-n {{ font-size: 12.5px; font-weight: 500; fill: var(--ink); text-anchor: middle; }}
+  .on-s {{ font-size: 11px; fill: var(--text-dim); text-anchor: middle; }}
+  .on-l {{ font-size: 11px; fill: var(--accent); }}
+  .on-k {{ font-size: 11.5px; font-weight: 600; letter-spacing: .06em; fill: var(--accent); }}
   .supply {{ fill: none; stroke: var(--supply); stroke-width: 1.2; stroke-dasharray: 2 3; }}
 
   .st {{ stroke: none; }}
@@ -386,18 +420,6 @@ html = f'''<!doctype html>
   .st-n.ac, .st-k.ac {{ fill: var(--accent); }}
   .st-note {{ font-size: 11px; fill: var(--accent); text-anchor: middle; }}
 
-  /* 图例 */
-  .legend {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; margin-top: 30px; font-size: 12px; color: var(--text-dim); }}
-  .legend span {{ display: inline-flex; align-items: center; gap: 8px; }}
-  .legend i {{ display: inline-block; flex: none; }}
-  .lg-it {{ width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(194,65,12,.12); }}
-  .lg-ag {{ width: 12px; height: 12px; border-radius: 50%; background: var(--ink); }}
-  .lg-prog {{ width: 11px; height: 11px; border-radius: 3px; background: var(--ink); }}
-  .lg-flow {{ width: 22px; height: 1.6px; background: var(--track); }}
-  .lg-store {{ width: 20px; height: 12px; background: #e4e7ec; }}
-  .lg-frozen {{ width: 20px; height: 12px; background: repeating-linear-gradient(45deg, #f1f2f5 0 3px, #e3e5ea 3px 5px); }}
-  .lg-rub {{ width: 20px; height: 12px; background: #fff; box-shadow: inset 2.5px 0 0 var(--accent); }}
-  .lg-data {{ width: 20px; height: 12px; background: #fff; box-shadow: inset 0 0 0 1px #e3e5ea; }}
 
   /* 窄屏:纵向线路 */
   .m {{ display: none; }}
@@ -414,29 +436,20 @@ html = f'''<!doctype html>
   .m-info {{ font-size: 11.5px; fill: var(--text-dim); }}
   .m-info.sm {{ font-size: 10.5px; }}
   .m-info.ac {{ fill: var(--accent); font-size: 11px; }}
+  .m-on-n {{ font-size: 12.5px; font-weight: 500; fill: var(--ink); }}
+  .m-on-s {{ font-size: 10.5px; fill: var(--text-dim); }}
   .m-fork {{ font-size: 11.5px; font-weight: 500; fill: var(--ink); }}
 </style>
 </head>
 <body>
 <figure>
   <div class="d">
-    <svg viewBox="70 14 1010 528" role="img" aria-label="{ARIA}">
+    <svg viewBox="70 14 1010 640" role="img" aria-label="{ARIA}">
       {defs}
       {''.join(svg)}
     </svg>
   </div>
   <div class="m">{mobile}</div>
-
-  <div class="legend">
-    <span><i class="lg-it"></i>迭代对象</span>
-    <span><i class="lg-ag"></i>Agent</span>
-    <span><i class="lg-prog"></i>程序</span>
-    <span><i class="lg-flow"></i>流转的信息</span>
-    <span><i class="lg-store"></i>持续积累</span>
-    <span><i class="lg-frozen"></i>本轮冻结</span>
-    <span><i class="lg-rub"></i>规则</span>
-    <span><i class="lg-data"></i>测试数据</span>
-  </div>
 </figure>
 </body>
 </html>

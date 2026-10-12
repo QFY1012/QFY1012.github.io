@@ -153,7 +153,7 @@ add(f'<rect class="ko" x="{O3 - 5}" y="{YB - 3}" width="10" height="6"/>')
 add(f'<path class="on" d="M{O3} {YON - 8} V{BY1 + 6}" marker-end="url(#ma)"/>')
 add(f'<text class="on-l" x="{O3 - 10}" y="{BY1 + 36}" style="text-anchor:end">补进 benchmark</text>')
 add(f'<text class="on-k" x="{O1 - 26}" y="{YON + 4}" text-anchor="end">上线后</text>')
-for ox, name in [(O1, 'badcase'), (O2, '人工归因'), (O3, '新 rubric + 新用例')]:
+for ox, name in [(O1, 'badcase'), (O2, '人工归类'), (O3, '新 rubric + 新用例')]:
     add(f'<circle class="on-st" cx="{ox}" cy="{YON}" r="5.5"/>')
     add(f'<text class="on-n" x="{ox}" y="{YON + 26}">{name}</text>')
 
@@ -168,7 +168,7 @@ ARIA = ('Skill 层一次迭代的信息流转:从 Skill vN 出发,执行 Agent �
         'Judge 从轨迹库读取轨迹,按 rubric 判定并给出得分、失败说明与行号;Maintainer 据行号读取成功与失败的轨迹,归纳根因写入经验库;'
         'Reviser 读取经验库修改出候选 vN+1,每次修改写入修改记录,被拒绝的也保留;验证把关在验证用例上比较,更好则升级,否则保留 vN。'
         '轨迹库、经验库、修改记录持续积累,不随回滚撤销;Benchmark 在本轮内冻结,分别供给训练用例、rubric 与验证用例。'
-        '上线后每周:用户反馈的 badcase 经人工归因确认属于 Skill 层后,写出新 rubric,并提取典型 badcase 作为新用例,在迭代开始前按 3:1 补进 benchmark,验证用例中一定含有新用例;之后照常进入同一个循环。')
+        '上线后每周:用户反馈的 badcase 经人工归类后写进 rubric,并提取典型 badcase 作为新用例,在迭代开始前按 3:1 补进 benchmark,验证用例中一定含有新用例;之后照常进入同一个循环。')
 
 
 # ── 窄屏:同一套线路语言,纵向排列 ─────────────────────
@@ -266,7 +266,7 @@ madd(f'<path class="on" d="M{LN} {LY["fb"] - 8} V{LY["attr"] + 10}" marker-end="
 madd(f'<path class="on" d="M{LN} {LY["attr"] - 8} V{LY["new"] + 10}" marker-end="url(#mam)"/>')
 madd(f'<path class="on" d="M{LN + 8} {LY["new"]} H{(MBX0 + MBX1) / 2 - 6} Q{(MBX0 + MBX1) / 2} {LY["new"]} {(MBX0 + MBX1) / 2} {LY["new"] - 6} V{MBY1 + 9}" marker-end="url(#mam)"/>')
 madd(f'<text class="m-on-l" x="{(MBX0 + MBX1) / 2 - 8}" y="{LY["new"] - 30}" text-anchor="end">补进 benchmark</text>')
-for key, nm in [('new', '新 rubric + 新用例'), ('attr', '人工归因'), ('fb', 'badcase')]:
+for key, nm in [('new', '新 rubric + 新用例'), ('attr', '人工归类'), ('fb', 'badcase')]:
     y = LY[key]
     madd(f'<circle class="on-st" cx="{LN}" cy="{y}" r="5"/>')
     madd(f'<text class="m-on-n" x="{LN - 14}" y="{y + 4}" text-anchor="end">{nm}</text>')
@@ -356,18 +356,6 @@ html = f'''<!doctype html>
   .on-l {{ font-size: 11px; fill: var(--accent); }}
   .on-k {{ font-size: 11.5px; font-weight: 600; letter-spacing: .06em; fill: var(--accent); }}
 
-  /* 图例 */
-  .legend {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; margin-top: 30px; font-size: 12px; color: var(--text-dim); }}
-  .legend span {{ display: inline-flex; align-items: center; gap: 8px; }}
-  .legend i {{ display: inline-block; flex: none; }}
-  .lg-it {{ width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(194,65,12,.12); }}
-  .lg-ag {{ width: 12px; height: 12px; border-radius: 50%; background: var(--ink); }}
-  .lg-flow {{ width: 22px; height: 1.6px; background: var(--track); }}
-  .lg-frozen {{ width: 20px; height: 12px; background: repeating-linear-gradient(45deg, #f1f2f5 0 3px, #e3e5ea 3px 5px); }}
-  .lg-rub {{ width: 20px; height: 12px; background: #fff; box-shadow: inset 2.5px 0 0 var(--accent); }}
-  .lg-data {{ width: 20px; height: 12px; background: var(--data); box-shadow: inset 0 0 0 1px #e3e5ea; }}
-  .lg-store {{ width: 20px; height: 12px; background: #e4e7ec; }}
-  .lg-on {{ width: 22px; height: 0; border-top: 1.3px dashed var(--accent); }}
   figcaption {{ margin-top: 12px; text-align: center; font-size: 12.5px; line-height: 1.7; color: var(--text-dim); }}
 
   /* 窄屏:纵向线路 */
@@ -400,17 +388,6 @@ html = f'''<!doctype html>
     </svg>
   </div>
   <div class="m">{mobile}</div>
-
-  <div class="legend">
-    <span><i class="lg-it"></i>迭代对象</span>
-    <span><i class="lg-ag"></i>Agent</span>
-    <span><i class="lg-flow"></i>流转的信息</span>
-    <span><i class="lg-store"></i>持续积累</span>
-    <span><i class="lg-frozen"></i>本轮冻结</span>
-    <span><i class="lg-rub"></i>Rubric</span>
-    <span><i class="lg-data"></i>测试数据</span>
-    <span><i class="lg-on"></i>上线后</span>
-  </div>
 </figure>
 </body>
 </html>
