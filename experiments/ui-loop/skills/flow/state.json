@@ -783,5 +783,6 @@
  "maintained": {
   "run": "flow-c10",
   "stage": "aesthetic"
- }
+ },
+ "stop": "等组件审批:看 library/ 下的示例,再 node scripts/component-loop.mjs approve|revise|reject k<n>"
 }
