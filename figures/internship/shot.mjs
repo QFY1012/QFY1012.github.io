@@ -1,4 +1,4 @@
-// 截图检查:node figures/internship/shot.mjs <name>   (name = skill-flow 或 bg-flow)
+// 截图检查:node figures/internship/shot.mjs <name>   (name = skill-flow、bg-flow 或 output-flow)
 // 输出 <name>-desktop.png(1100 宽)与 <name>-mobile.png(390 宽),均不提交。
 import { chromium } from 'playwright-core';
 import { dirname, join } from 'node:path';
