@@ -124,6 +124,8 @@ ${CHANGE.old ? `原文:${CHANGE.old.trim()}\n改为:${CHANGE.new.trim()}` : `新
     changedLines: baseWs ? lineDiff(path.join(baseWs, "Page.tsx"), path.join(ws, "Page.tsx")) : null,
     ...run, checks: final,
   }, null, 1))
+  // A model call that errored (no quota, endpoint down) or never wrote a page is a failure, not a page.
+  if (run.stop === "error" || !fs.existsSync(path.join(ws, "Page.tsx"))) throw new Error(`${name}: 模型调用出错或没写出 Page.tsx(stop=${run.stop}),看 ${path.relative(ROOT, ws)}/session.jsonl`)
   console.log(`${name}: done, ${run.shoots} shoots, ${final.length} check findings`)
 }
 

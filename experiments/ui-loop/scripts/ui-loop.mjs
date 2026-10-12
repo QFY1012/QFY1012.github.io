@@ -277,7 +277,8 @@ while (true) {
     if (state.stage !== "program") {
       // The first look in a judge stage: the current pages against a second generation of the same guide.
       const twin = `${state.currentRun}-twin`
-      if (!fs.existsSync(path.join(ROOT, "traces", twin))) {
+      // A twin left half-written (a failed run) is written again.
+      if (!TRAIN.every((c) => fs.existsSync(path.join(ROOT, "traces", twin, c, "tiles.json")))) {
         log(`生成 ${twin}:按当前指南 ${state.current} 再写一遍训练页,用来和当前版比较`)
         execFileSync("node", [path.join(ROOT, "scripts", "generate.mjs"), "--run", twin, "--cases", TRAIN.join(","), "--data", path.join("skills", SK, "data"), "--guide", path.relative(ROOT, path.join(GUIDES, `${state.current}.md`)), "--version", state.current], { stdio: "inherit", cwd: ROOT })
       }

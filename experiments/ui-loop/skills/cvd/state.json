@@ -1,6 +1,6 @@
 {
  "current": "g3",
- "currentRun": "cvd-c10-k3-k4-k6-k7",
+ "currentRun": "cvd-c10-k3-k4-k6-k7-k8",
  "versions": 3,
  "round": 12,
  "rejected": 1,
@@ -698,7 +698,8 @@
   "k3",
   "k4",
   "k6",
-  "k7"
+  "k7",
+  "k8"
  ],
  "componentStreak": 1
 }
