@@ -64,89 +64,95 @@ def vbend(x0, y0, x1, y1):
     return f'C{x0:.1f} {y0 + d:.1f} {x1:.1f} {y1 - d:.1f} {x1:.1f} {y1:.1f}'
 
 
-# ── 网格 ──────────────────────────────────────────────
-X1, X2, X3 = 540, 682, 825             # 上排:生成、程序检查、审美 Judge
-XM, XS, XF = 825, 745, 688             # Maintainer、问题清单、分叉点
-XA, XR, XG, XO = 590, 482, 375, 270    # 两条轨道共用的列:Agent、修改记录、把关、迭代对象
-YT, YB, YO = 112, 332, 460             # 上排、内轨、外轨
-R = (YB - YT) / 2                      # 内轨回线半径
-RO = (YO - YT) / 2                     # 外轨回线半径
-YM = (YT + YB) / 2
+# ── 网格:以中轴上下镜像 ──────────────────────────────
+# 中轴(检测)自左向右;右端分叉成上下两个半圆;上下两条轨道自右向左,与中轴共用四列;
+# 左端两个半圆汇入生成 Agent。上轨的文字写在轨道上方,下轨写在下方。
+C1, C2, C3, C4 = 300, 440, 580, 720    # 四列
+XS, XF = 810, 900                      # 问题清单、分叉点
+YT, YM, YB = 110, 280, 450             # 上轨、中轴、下轨
+R = (YM - YT) / 2                      # 两端半圆半径
 SR = 17                                # 站点半径
 g = SR + 5
-XJ = XO - g * 0.7                      # 两条回线的汇合点
+XL = C1 - g * 0.7                      # 左端半圆落点
 
 svg = []
 add = svg.append
 
-# ── 冻结的 benchmark(先画,位于轨道内侧)──────────────
-BX0, BX1, BY0, BY1 = 213, 917, 156, 282
-CW, CY0, CH = 124, 200, 46
+# ── 冻结的 benchmark ───────────────────────────────────
+# 供给中轴的三项放在中轴下方,自下而上供给;只供给验证把关的验证样本放在中轴上方。
+CW, CH = 124, 36
+BX0, BX1, BY0, BY1 = C1 - CW / 2 - 12, C3 + CW / 2 + 12, 318, 408
+ROW = 330                                          # 下方一排格的上缘
 add(f'<rect class="hatch" x="{BX0}" y="{BY0}" width="{BX1 - BX0}" height="{BY1 - BY0}"/>')
-add(icon('lock', BX0 + 22, BY0 + 20, 13, 'ic dim'))
-add(f'<text class="core-t" x="{BX0 + 36}" y="{BY0 + 24.5}">Benchmark</text>')
-x = BX0 + 36 + tw('Benchmark', 13) + 10
-add(f'<text class="core-k" x="{x:.1f}" y="{BY0 + 24}">本轮冻结</text>')
-add(f'<text class="core-s" x="{x + 62:.1f}" y="{BY0 + 24.5}">样本与评测标准</text>')
+VY = 158                                           # 验证样本格的上缘
+add(f'<rect class="hatch" x="{C2 - CW / 2 - 10}" y="{VY - 10}" width="{CW + 20}" height="{CH + 20}"/>')
 
-cells = [(XG, 'data', '验证样本', '2/6'), (X1, 'data', '训练样本', '4/6'),
-         (X2, 'rub', '检查规则', ''), (X3, 'rub', '审美 rubric', '')]
-for cx, kind, t, s in cells:
+
+def cell(cx, y0, kind, t, s=''):
     x0 = cx - CW / 2
-    add(f'<rect class="cell" x="{x0}" y="{CY0}" width="{CW}" height="{CH}"/>')
+    cy = y0 + CH / 2
+    o = [f'<rect class="cell" x="{x0}" y="{y0}" width="{CW}" height="{CH}"/>']
     if kind == 'rub':
-        add(f'<rect class="bar" x="{x0}" y="{CY0}" width="2.5" height="{CH}"/>')
-        add(icon('checks', x0 + 19, CY0 + CH / 2, 13, 'ic acc'))
-        tx = x0 + 33
+        o.append(f'<rect class="bar" x="{x0}" y="{y0}" width="2.5" height="{CH}"/>')
+        o.append(icon('checks', x0 + 19, cy, 13, 'ic acc'))
     else:
-        add(icon('db', x0 + 18, CY0 + CH / 2, 13, 'ic data'))
-        tx = x0 + 32
-    add(f'<text class="cell-t" x="{tx}" y="{CY0 + CH / 2 + 4.5}">{t}</text>')
+        o.append(icon('db', x0 + 18, cy, 13, 'ic data'))
+    o.append(f'<text class="cell-t" x="{x0 + 32}" y="{cy + 4.5}">{t}</text>')
     if s:
-        add(f'<text class="cell-s data-s" x="{x0 + CW - 10}" y="{CY0 + CH / 2 + 4}" text-anchor="end">{s}</text>')
-add(f'<text class="core-s" x="{X3}" y="{CY0 + CH + 18}" text-anchor="middle">与用户排序一致 93%</text>')
+        o.append(f'<text class="cell-s data-s" x="{x0 + CW - 10}" y="{cy + 4}" text-anchor="end">{s}</text>')
+    return ''.join(o)
 
-# 供给:训练样本 → 生成 Agent,检查规则 → 程序检查,rubric → 审美 Judge,验证样本 → 验证把关
-for cx in (X1, X2, X3):
-    add(f'<path class="supply" d="M{cx} {CY0} V{YT + g}" marker-end="url(#ms)"/>')
-add(f'<path class="supply" d="M{XG} {CY0 + CH} V{YB - g}" marker-end="url(#ms)"/>')
+
+add(cell(C2, VY, 'data', '验证样本', '2/6'))
+add(cell(C1, ROW, 'data', '训练样本', '4/6'))
+add(cell(C2, ROW, 'rub', '检查规则'))
+add(cell(C3, ROW, 'rub', '审美 rubric'))
+yh = BY1 - 18
+add(icon('lock', BX0 + 20, yh - 4, 12, 'ic dim'))
+add(f'<text class="core-t" x="{BX0 + 33}" y="{yh}">Benchmark</text>')
+add(f'<text class="core-k" x="{BX0 + 33 + tw("Benchmark", 13) + 10:.1f}" y="{yh - 0.5}">本轮冻结</text>')
+add(f'<text class="core-s" x="{C3}" y="{yh}" text-anchor="middle">与用户排序一致 93%</text>')
+
+# 供给:验证样本 → 验证把关(向上);训练样本、检查规则、rubric → 中轴(向上)
+add(f'<path class="supply" d="M{C2} {VY} V{YT + g}" marker-end="url(#ms)"/>')
+for cx in (C1, C2, C3):
+    add(f'<path class="supply" d="M{cx} {ROW} V{YM + g}" marker-end="url(#ms)"/>')
 
 # ── 轨道 ─────────────────────────────────────────────
-# 两个迭代对象各自的回线(流转的信息)在左上汇合,一起进入生成 Agent
-for y, rr in [(YB, R), (YO, RO)]:
-    add(f'<path class="flow" d="M{XJ} {y} A{rr} {rr} 0 0 1 {XJ} {YT}"/>')
-add(f'<path class="flow" d="M{XJ} {YT} H{X1 - g}" marker-end="url(#mf)"/>')
-for xa, xb in [(X1, X2), (X2, X3)]:
-    add(f'<path class="flow" d="M{xa + g} {YT} H{xb - g}" marker-end="url(#mf)"/>')
-add(f'<path class="flow" d="M{X3 + g * 0.7} {YT} A{R} {R} 0 0 1 {XM + g * 0.7} {YB}" marker-end="url(#mf)"/>')
-# Maintainer → 问题清单 → 分叉:内轨直行,外轨经 S 弯下到外轨
-add(f'<path class="flow" d="M{XM - g} {YB} H{XA + g}" marker-end="url(#mf)"/>')
-add(f'<path class="flow" d="M{XF} {YB} {sbend(XF, YB, XF - 50, YO)} H{XA + g}" marker-end="url(#mf)"/>')
-# 改出候选之后:两条轨道同样用强调色,经把关升级各自的对象
-for y in (YB, YO):
-    add(f'<path class="flow ac" d="M{XA - g} {y} H{XG + g}" marker-end="url(#ma)"/>')
-    add(f'<path class="flow ac" d="M{XG - g} {y} H{XO + g}" marker-end="url(#ma)"/>')
+# 中轴:生成 → 程序检查 → 审美 Judge → Maintainer → 问题清单 → 分叉
+for xa, xb in [(C1, C2), (C2, C3), (C3, C4)]:
+    add(f'<path class="flow" d="M{xa + g} {YM} H{xb - g}" marker-end="url(#mf)"/>')
+add(f'<path class="flow" d="M{C4 + g} {YM} H{XF}"/>')
+# 右端分叉:上下两个半圆,再自右向左到各自的 Agent
+add(f'<path class="flow" d="M{XF} {YM} A{R} {R} 0 0 0 {XF} {YT} H{C4 + g}" marker-end="url(#mf)"/>')
+add(f'<path class="flow" d="M{XF} {YM} A{R} {R} 0 0 1 {XF} {YB} H{C4 + g}" marker-end="url(#mf)"/>')
+# 改出候选之后用强调色:Agent → 修改记录 → 把关 → 对象
+for y in (YT, YB):
+    add(f'<path class="flow ac" d="M{C4 - g} {y} H{C2 + g}" marker-end="url(#ma)"/>')
+    add(f'<path class="flow ac" d="M{C2 - g} {y} H{C1 + g}" marker-end="url(#ma)"/>')
+# 左端汇合:两个对象各自的半圆汇入生成 Agent
+add(f'<path class="flow" d="M{XL} {YT} A{R} {R} 0 0 0 {XL} {YM}" marker-end="url(#mf)"/>')
+add(f'<path class="flow" d="M{XL} {YB} A{R} {R} 0 0 1 {XL} {YM}" marker-end="url(#mf)"/>')
 
 # 线上的信息
-add(knock((XJ + X1 - g) / 2, YT, 'UI Spec · 组件库', 11.5, 'info'))
-add(knock((X1 + X2) / 2, YT, '页面', 11.5, 'info'))
-add(knock((X2 + X3) / 2, YT, '全部通过', 11.5, 'info'))
-add(store(XS, YB, '问题清单'))
-add(f'<text class="fork-l" x="{(XA + g + XF) / 2}" y="{YB - 13}">布局问题</text>')
-add(f'<text class="fork-l" x="{XF - 18}" y="{YO - 34}" style="text-anchor:start">组件不够</text>')
-for y, note in [(YB, '每个候选都记'), (YO, '每个组件改动都记')]:
-    add(store(XR, y, '修改记录'))
-    add(f'<text class="store-s" x="{XR}" y="{y + 30}">{note}</text>')
-    add(f'<text class="store-s" x="{XR}" y="{y + 45}">没采用的也保留</text>')
-# 右侧弧线旁的说明
-xr = X3 + g * 0.7 + R + 14
-add(f'<text class="side-t" x="{xr}" y="{YM - 12}">两步检测的结果</text>')
-add(f'<text class="side-s" x="{xr}" y="{YM + 5}">程序检查报错</text>')
-add(f'<text class="side-s" x="{xr}" y="{YM + 21}">两种顺序都提到的问题</text>')
+add(knock((C1 + C2) / 2, YM, '页面', 11.5, 'info'))
+add(knock((C2 + C3) / 2, YM, '全部通过', 11.5, 'info'))
+add(knock((C3 + C4) / 2, YM, '两步检测结果', 11.5, 'info'))
+add(store(XS, YM, '问题清单'))
+xr = XF + R + 14
+add(f'<text class="fork-l" x="{xr}" y="{(YT + YM) / 2 + 4}" style="text-anchor:start">布局问题</text>')
+add(f'<text class="fork-l" x="{xr}" y="{(YM + YB) / 2 + 4}" style="text-anchor:start">组件不够</text>')
+add(store(C3, YT, '修改记录'))
+add(store(C3, YB, '修改记录'))
+add(f'<text class="store-s" x="{C3}" y="{YT - 37}">每个候选都记</text>')
+add(f'<text class="store-s" x="{C3}" y="{YT - 22}">没采用的也保留</text>')
+add(f'<text class="store-s" x="{C3}" y="{YB + 30}">每个组件改动都记</text>')
+add(f'<text class="store-s" x="{C3}" y="{YB + 45}">没采用的也保留</text>')
 
 
 # ── 站点 ─────────────────────────────────────────────
-def station(cx, cy, kind, ic, name, step='', note=''):
+def station(cx, cy, kind, ic, name, step='', note='', up=False):
+    """up=True:文字写在站点上方(上轨),否则写在下方。"""
     out = []
     if kind == 'it':
         out.append(f'<circle class="halo" cx="{cx}" cy="{cy}" r="{SR + 7}"/>')
@@ -156,28 +162,28 @@ def station(cx, cy, kind, ic, name, step='', note=''):
     else:
         out.append(f'<circle class="st {kind}" cx="{cx}" cy="{cy}" r="{SR}"/>')
     out.append(icon(ic, cx, cy, 15, 'ic ' + ('ink' if kind == 'gate' else 'wh')))
-    top = cy < YM
-    ny = cy - SR - 18 if top else cy + SR + 26
-    sy = ny - 17 if top else ny + 16
+    k = -1 if up else 1
+    ny = cy - SR - 18 if up else cy + SR + 26
+    lines = [(name, 'st-n')] + ([(step, 'st-k')] if step else []) + ([(note, 'st-note')] if note else [])
     cls = ' ac' if kind == 'it' else ''
-    out.append(f'<text class="st-n{cls}" x="{cx}" y="{ny}">{name}</text>')
-    if step:
-        out.append(f'<text class="st-k{cls}" x="{cx}" y="{sy}">{step}</text>')
-    if note:
-        out.append(f'<text class="st-note" x="{cx}" y="{sy + 18}">{note}</text>')
+    y = ny
+    for i, (t, c) in enumerate(lines):
+        if i:
+            y += k * (17 if c == 'st-k' else 18)
+        out.append(f'<text class="{c}{cls if c != "st-note" else ""}" x="{cx}" y="{y}">{t}</text>')
     return ''.join(out)
 
 
-add(station(X1, YT, 'ag', 'code', '生成 Agent', '01'))
-add(station(X2, YT, 'prog', 'ruler', '程序检查', '02'))
-add(station(X3, YT, 'ag', 'scale', '审美 Judge', '03'))
-add(station(XM, YB, 'ag', 'search', 'Maintainer', '04'))
-add(station(XA, YB, 'ag', 'pen', 'Reviser', '05'))
-add(station(XG, YB, 'gate', 'shield', '验证把关', '06', '更好才升级'))
-add(station(XO, YB, 'it', 'file', 'UI Spec'))
-add(station(XA, YO, 'ag', 'component', '组件 Agent', '05'))
-add(station(XG, YO, 'gate', 'user', '人工审批', '06', '通过才合并'))
-add(station(XO, YO, 'it', 'component', '组件库'))
+add(station(C1, YM, 'ag', 'code', '生成 Agent', '01', up=True))
+add(station(C2, YM, 'prog', 'ruler', '程序检查', '02', up=True))
+add(station(C3, YM, 'ag', 'scale', '审美 Judge', '03', up=True))
+add(station(C4, YM, 'ag', 'search', 'Maintainer', '04', up=True))
+add(station(C4, YT, 'ag', 'pen', 'Reviser', '05', up=True))
+add(station(C2, YT, 'gate', 'shield', '验证把关', '06', '更好才升级', up=True))
+add(station(C1, YT, 'it', 'file', 'UI Spec', up=True))
+add(station(C4, YB, 'ag', 'component', '组件 Agent', '05'))
+add(station(C2, YB, 'gate', 'user', '人工审批', '06', '通过才合并'))
+add(station(C1, YB, 'it', 'component', '组件库'))
 
 defs = '''<defs>
   <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
@@ -426,7 +432,7 @@ html = f'''<!doctype html>
 <body>
 <figure>
   <div class="d">
-    <svg viewBox="70 44 1010 512" role="img" aria-label="{ARIA}">
+    <svg viewBox="70 14 1010 528" role="img" aria-label="{ARIA}">
       {defs}
       {''.join(svg)}
     </svg>
