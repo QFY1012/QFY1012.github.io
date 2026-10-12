@@ -174,10 +174,10 @@ add(station(X3, YT, 'ag', 'scale', '审美 Judge', '03'))
 add(station(XM, YB, 'ag', 'search', 'Maintainer', '04'))
 add(station(XA, YB, 'ag', 'pen', 'Reviser', '05'))
 add(station(XG, YB, 'gate', 'shield', '验证把关', '06', '更好才升级'))
-add(station(XO, YB, 'it', 'file', 'UI Spec gN'))
+add(station(XO, YB, 'it', 'file', 'UI Spec'))
 add(station(XA, YO, 'ag', 'component', '组件 Agent', '05'))
 add(station(XG, YO, 'gate', 'user', '人工审批', '06', '通过才合并'))
-add(station(XO, YO, 'it', 'component', '组件库 kN'))
+add(station(XO, YO, 'it', 'component', '组件库'))
 
 defs = '''<defs>
   <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
@@ -311,9 +311,9 @@ def mstation(cy, kind, ic, nm, step=''):
 for cy, kind, ic, nm, step in [(MYS[0], 'ag', 'code', '生成 Agent', '01'), (MYS[1], 'prog', 'ruler', '程序检查', '02'),
                                (MYS[2], 'ag', 'scale', '审美 Judge', '03'), (MYS[3], 'ag', 'search', 'Maintainer', '04'),
                                (MA[0], 'ag', 'pen', 'Reviser', '05'), (MA[2], 'gate', 'shield', '验证把关', '06'),
-                               (MA[3], 'it', 'file', 'UI Spec gN', ''),
+                               (MA[3], 'it', 'file', 'UI Spec', ''),
                                (MO[0], 'ag', 'component', '组件 Agent', '05'), (MO[2], 'gate', 'user', '人工审批', '06'),
-                               (MO[3], 'it', 'component', '组件库 kN', '')]:
+                               (MO[3], 'it', 'component', '组件库', '')]:
     madd(mstation(cy, kind, ic, nm, step))
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MA[2] + 28}">更好才升级</text>')
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MO[2] + 28}">通过才合并</text>')
