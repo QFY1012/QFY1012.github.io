@@ -9,6 +9,7 @@ import {
   DataTable,
   List,
   KV,
+  Rule,
   FigureStrip,
   Figure,
   FigureImage,
@@ -94,7 +95,8 @@ export default function Report() {
         className="gap-12"
       >
         {data.chains.map((chain) => (
-          <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
+          <Group key={chain.product}>
+            <Rule label={`${chain.product} · ${chain.version}`} />
             <FigureStrip>
               {chain.steps.map((step) => (
                 <Figure key={step.no}>

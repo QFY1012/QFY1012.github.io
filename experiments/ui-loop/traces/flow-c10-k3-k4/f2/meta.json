@@ -1,0 +1,31 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3",
+ "change": {
+  "kind": "component",
+  "name": "k4",
+  "summary": "组件库新增:。用法见 components.md。"
+ },
+ "changedLines": 4,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 4427,
+ "usage": {
+  "input": 382297,
+  "output": 49524
+ },
+ "stop": "stop",
+ "summary": "页面结构与改动说明:\n\n- 页面按 C3/G3 排成:背景信息(KV)→ 结论(24px 结论句)→ 核心指标(4 个 Stat,`Grid cols={12}`,各 `span={3}`,G1)→ 产品对比(DataTable)→ 链路明细 → 问题(DataTable,严重度用 `tone` 标红)→ 下一步(List `columns={3}`);页头 `meta` 写产品与周期、`title` 写报告标题。\n- 这次只改了「链路明细」节:每个产品一组,原来用 `Group` 的 `title` 写「{product} · {version}」做分组,现在按 components.md 里 `Rule` 的用法(「链路明细里一个产品一组」),把产品分组标记改用新增的 `Rule`——`<Rule label=\"{product} · {version}\" />` 放在该组 `FigureStrip` 之上,组内仍是 `FigureImage → FigureLabel → FigureText`,组间 48px、组内 24px 不变。其余部分保持原样,程序检查全部通过。",
+ "checks": []
+}

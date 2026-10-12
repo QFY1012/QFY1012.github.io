@@ -1,0 +1,31 @@
+{
+ "case": "f6",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3",
+ "change": {
+  "kind": "component",
+  "name": "k4",
+  "summary": "组件库新增:。用法见 components.md。"
+ },
+ "changedLines": 4,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 1866,
+ "usage": {
+  "input": 156179,
+  "output": 25155
+ },
+ "stop": "stop",
+ "summary": "改好并检查通过。\n\n**这次改了什么**\n\n组件库新增的是 `Rule`(分组标记:一条与表格行线同宽的 1px 细线 + 12px 标签),components.md 的「截图」节里「链路明细」示例正是用它给每个产品组做标记(`<Rule label=\"{product} · {version}\" />` + `FigureStrip`),库里的注释也写明它「用在链路明细里一个产品一组」。这一页的「交互链路」节原来只用 `Group` 的粗体 `title` 当组标记,属于没有用上新组件的地方,所以只改了这里:\n\n- `Page.tsx` 第 10 行:import 里加上 `Rule`;\n- 「交互链路」节里每个产品的 `Group` 去掉 `title`,组内第一项改成 `<Rule label={`${chain.product} · ${chain.version}`} />`,其下仍是原来的 `FigureStrip`/`Figure`/`FigureImage`/`FigureLabel`/`FigureText` 顺序。\n\n其余结构一律未动:页头 → 背景信息(KV)→ 结论 → 核心指标(一行 4 个 `span={3}`)→ 流程对比 → 关键环节表 → 共性模式 → 交互链路(云途/行旅/飞鱼/北极星四组,组间 48px、组内 24px,末尾「步骤备注」表)→ 问题明细 → 下一步。\n\n**检查结果**:`node $SHOOT .` 程序检查全部通过(构建、组件库、统一刻度、数据忠实、元素越界均无问题);截图确认四组链路现在以「产品 · 版本」标签加细线分隔,与表格行线同重,组间距和栏底对齐保持不变。\n\n有一点需要说明:输出指南 G2 写「组间不加分隔线」,而新组件 `Rule` 的文档明确把链路明细的产品分组列为它的用法,两者冲突时我按「组件库说明是改动后的版本、新组件用法以 components.md 为准」处理;若希望严格保留 G2 的无分隔线做法,把这几处 `Rule` 换回 `Group` 的 `title` 即可。",
+ "checks": []
+}

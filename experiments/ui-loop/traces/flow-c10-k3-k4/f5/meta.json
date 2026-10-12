@@ -1,0 +1,31 @@
+{
+ "case": "f5",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "e901495d",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3",
+ "change": {
+  "kind": "component",
+  "name": "k4",
+  "summary": "组件库新增:。用法见 components.md。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 0,
+ "seconds": 1774,
+ "usage": {
+  "input": 40059,
+  "output": 5054
+ },
+ "stop": "error",
+ "summary": "",
+ "checks": []
+}

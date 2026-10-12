@@ -9,6 +9,7 @@ import {
   DataTable,
   List,
   KV,
+  Rule,
   FigureStrip,
   Figure,
   FigureImage,
@@ -108,7 +109,8 @@ export default function Report() {
 
       <Section title="交互链路" description="每款 App 从首页到支付的步骤与截图" className="gap-12">
         {chains.map((chain: any) => (
-          <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>
+          <Group key={chain.product}>
+            <Rule label={`${chain.product} · ${chain.version}`} />
             <FigureStrip>
               {chain.steps.map((step: any) => (
                 <Figure key={step.no}>
