@@ -8,6 +8,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 import { Node, type SpecNode } from "./render"
 
 const SPAN = ["", "col-span-1", "col-span-2", "col-span-3", "col-span-4", "col-span-5", "col-span-6", "col-span-7", "col-span-8", "col-span-9", "col-span-10", "col-span-11", "col-span-12"]
@@ -95,13 +96,49 @@ export function Text({ children, className, span }: Placed & { children: string 
 // sideways on a shadcn ScrollArea. Every image is drawn at the same height and
 // keeps its own width, so phone screenshots and wider analysis screenshots line
 // up in one row without being cropped; anything past the right edge is clipped
-// and reached with the scrollbar.
+// and reached with the scrollbar. The scrollbar only appears while the strip is
+// hovered: an always-visible bar reads as a rule under the row of screens, which
+// is not a line the design gives.
 export function FigureStrip({ className, children, ...props }: React.ComponentProps<typeof ScrollArea>) {
   return (
-    <ScrollArea data-slot="figure-strip" type="always" className={cn("w-full min-w-0", className)} {...props}>
+    <ScrollArea data-slot="figure-strip" type="hover" className={cn("w-full min-w-0", className)} {...props}>
       <div className="flex w-max gap-12 pb-4">{children}</div>
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
+  )
+}
+
+// The screenshots in a comparison set (one interface plus its colour-vision
+// simulations) are read side by side, so they take the content width two to a
+// row instead of being shrunk to one strip height. Each image fills its cell and
+// keeps its ratio, which keeps the text inside the screenshots legible.
+export function FigureGrid({ className, children, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="figure-grid"
+      className={cn(
+        "grid w-full grid-cols-2 gap-x-6 gap-y-6",
+        "[&>[data-slot=figure]]:w-full [&>[data-slot=figure]]:min-w-0",
+        "[&_[data-slot=figure-image]]:h-auto [&_[data-slot=figure-image]]:w-full",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
+
+// A group marker: one hairline, the same 1px weight as a table's row lines, with
+// an optional label on the line above it. Used where the page groups blocks of
+// content (one product per chain-detail group) and the only other rule in sight
+// is the table's, so the two read as the same line.
+export function Rule({ label, className, ...props }: React.ComponentProps<"div"> & { label?: string }) {
+  return (
+    <div data-slot="rule" className={cn("flex flex-col gap-2", className)} {...props}>
+      {label && <span className="text-xs leading-6 text-muted-foreground">{label}</span>}
+      <Separator />
+    </div>
   )
 }
 

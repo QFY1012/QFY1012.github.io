@@ -1,0 +1,31 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 25,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 60,
+ "usage": {
+  "input": 15262,
+  "output": 1529
+ },
+ "stop": "stop",
+ "summary": "The `FigureGrid` renders the four views as a 2×2 set filling the 9 content columns, all same width with right edges aligned — replacing the earlier `FigureStrip` workaround. `Rule` isn't used since this report has no per-product step chains to group. Program checks pass.\n\nPage structure: 页头 → 结论 → 核心指标(4 个 `Stat`,问题总数在前)→ 色觉模拟(`FigureGrid` 四张对照图)→ 色差分析 → 对比度明细 → 调色板 → 问题清单 → 修复建议 → 下一步 → 背景信息。",
+ "checks": []
+}

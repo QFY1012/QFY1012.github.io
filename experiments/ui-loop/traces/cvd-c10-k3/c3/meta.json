@@ -1,0 +1,31 @@
+{
+ "case": "c3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 30,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 76,
+ "usage": {
+  "input": 15932,
+  "output": 2066
+ },
+ "stop": "stop",
+ "summary": "页面已按组件库改动更新,程序检查全部通过。\n\n改动只有一处,在「色觉模拟」一节:原来受组件限制,把 4 张 `screens` 拆成两条 `FigureStrip`(图固定高度、缩略显示),现在改用新增的 `FigureGrid` —— 4 张 `Figure` 直接排进一个 `FigureGrid`,自动两列铺满 9 列内容宽,原界面 + 红色盲/绿色盲/蓝色盲四张同宽、右端对齐成一条栏线,图内文字(路名、时间条)也清楚可读。同时删掉了为拆行写的 `screenRows` 计算和 `FigureStrip` import。`Rule` 这份数据里没有需要分组的链路明细/多组内容,所以未使用;其余部分(结论、核心指标、色板与对比度、颜色混淆、问题清单)保持原样。",
+ "checks": []
+}

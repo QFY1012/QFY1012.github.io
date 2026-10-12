@@ -1,0 +1,31 @@
+{
+ "case": "f4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 64,
+ "usage": {
+  "input": 17936,
+  "output": 6195
+ },
+ "stop": "stop",
+ "summary": "I read `Page.tsx`, `data.json`, and the current screenshots, then ran the checker to confirm the baseline.\n\n**Assessment of the two new components against this page:**\n\n- **`FigureGrid`** — per `components.md` it's for \"一版对照图(原界面 + 色觉模拟),两列铺满内容列宽\" (模拟视图). This dataset has no such view set (no 色觉模拟 / 对照视图 field), and the only figure-bearing content is `chains[].steps[]`, which G2 explicitly requires to be rendered as `FigureStrip` (一组一栏、按步骤横向排开). So `FigureGrid` has no applicable data here.\n- **`Rule`** — the only place a group divider could go is between the two product groups in 链路明细, but G2 says exactly the opposite: 每组一个 `Group`(`title` 写 `{product} · {version}`),产品组之间 48px,**组间不加分隔线**. The page already does this (Group titles `协作宝 · 7.2` / `链工 · 4.6`, `Section className=\"gap-12\"`), so adding `Rule` would violate the guide.\n\nI also re-checked the whole page for hand-rolled markup or bypassed-library content: every block (`KV` 背景信息 → `Text` 结论 → `Stat` 核心指标 → `DataTable` 流程对比/备注/问题 → `FigureStrip` 链路明细 → `List` 下一步) is a library component with no stray tags or styles.\n\n**Conclusion: no change.** The change is not applicable to this page — it already uses `FigureStrip` for the chain detail exactly as G2 prescribes, and neither `FigureGrid` (no simulation views in the data) nor `Rule` (G2 forbids dividers between product groups) fits any part of it. The program check confirms the current page passes: `程序检查全部通过`.\n\nThe page structure remains: 背景信息(KV)→ 结论(Text)→ 核心指标(4 个 Stat 一行排满)→ 流程对比(整体/分环节两张表)→ 链路明细(两个产品组各一个 FigureStrip + 每步备注表)→ 问题(带 tone 标红的表)→ 下一步(三列编号 List)。",
+ "checks": []
+}

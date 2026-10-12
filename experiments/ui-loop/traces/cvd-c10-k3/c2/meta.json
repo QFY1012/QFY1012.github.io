@@ -1,0 +1,31 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 25,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 277,
+ "usage": {
+  "input": 62817,
+  "output": 15071
+ },
+ "stop": "stop",
+ "summary": "改动完成,程序检查通过(构建、组件库、统一刻度、数据忠实、元素越界全部通过)。\n\n改动只有「色觉模拟」一节:原先用手写的分块循环把 4 张截图拆成两条 `FigureStrip`(每行两张)来绕过组件库,现在改用新组件 `FigureGrid`——4 张截图(原界面 + 红/绿/蓝三种色觉模拟)一次传入,自动排成两列铺满 9 列内容宽,同一行两张图等宽、右端对齐,每张图下仍用 `FigureLabel` 标视图名,外层的 `Block` 标题与说明保持不变。`Rule` 在这个页面里没有用武之地(没有链路明细那样需要分组标记的多组内容),所以未使用;其余各节保持原样。",
+ "checks": []
+}

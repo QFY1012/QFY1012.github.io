@@ -1,0 +1,31 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 58,
+ "usage": {
+  "input": 12987,
+  "output": 4150
+ },
+ "stop": "stop",
+ "summary": "检查通过,页面无需修改。\n\n**结论:这项改动用不上,Page.tsx 保持原样。**\n\n理由:\n\n- **`FigureGrid`** 的用途是「一版对照图(原界面 + 色觉模拟),两列铺满内容列宽」。本页数据(交互流程挖掘 flow-c10-k3)只有 `chains[].steps[]` 的链路截图和 `issues`、`suggestions`,没有模拟视图/对照视图这类成对铺满的图。链路截图按输出指南 G2 必须用 `FigureStrip`(一组一栏、横向排开、同一图高),不能换成 `FigureGrid`。\n- **`Rule`** 的用途是「两组内容之间的分组标记」,design.md 举的例子正是链路明细里一个产品一组。但输出指南 G2 明确规定链路明细「每组一个 `Group`(`title` 写 `{product} · {version}`)……组间不加分隔线」,指南与公共规范 B/C 冲突时以指南为准,所以这里应当保持 `Group` 标题分组、不加 `Rule`。页面上也没有用粗条/自绘分隔线的地方需要换成 `Rule`。\n\n页面本身没有绕过组件库自绘的内容(`Page.tsx` 里没有 `div`、`style`、任意值类名),因此没有需要借助新组件重写的地方。未做修改,`node $SHOOT .` 运行结果为「程序检查全部通过」。\n\n页面结构:页头 → 背景信息(KV)→ 结论(24px 细体)→ 核心指标(4 个 Stat 一行排满)→ 产品对比(DataTable)→ 链路明细(两个产品各一个 `Group` + `FigureStrip`,末尾附步骤备注表)→ 问题(DataTable,「高」标红)→ 下一步(List 三列)。",
+ "checks": []
+}

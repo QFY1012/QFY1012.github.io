@@ -1,0 +1,31 @@
+{
+ "case": "c5",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 24,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 103,
+ "usage": {
+  "input": 21627,
+  "output": 4523
+ },
+ "stop": "stop",
+ "summary": "改动完成,程序检查全部通过。\n\n**改了什么**:「色觉模拟」一节原来把四张截图(原界面 + 红色盲/绿色盲/蓝色盲)拆成两条 `FigureStrip`(每行两张,图被压得很小、图内文字看不清),这是 `FigureGrid` 出现之前的绕行写法。现在改用 `FigureGrid` 把 `screens` 整组四张一次排成两列、铺满正文 9 列:每行两张、右端对齐,每张图按原比例放大到半栏宽(375×760 的截图约 552px 宽),图内的价格、分时线、五档盘口都能看清,`FigureLabel` 仍在图下。其余各节(结论、核心指标、分群、配色、对比度、明细、下一步、背景信息)保持原样。\n\n`Rule` 这项新增没用上:它是给「链路明细里一个产品一组」做分组的,本页数据没有多产品的步骤链路,所以不引入。",
+ "checks": []
+}

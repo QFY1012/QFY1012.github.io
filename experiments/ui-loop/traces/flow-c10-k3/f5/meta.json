@@ -1,0 +1,31 @@
+{
+ "case": "f5",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 0,
+ "seconds": 32,
+ "usage": {
+  "input": 15850,
+  "output": 2272
+ },
+ "stop": "stop",
+ "summary": "没有修改 Page.tsx。\n\n- **FigureGrid** 用不上:它用于「原界面 + 色觉模拟」的一版对照图,而 `data.json` 里没有任何模拟视图数据(无 `views`/色觉相关字段),页面也没有需要两列铺满的对照图组。\n- **Rule** 用不上:它在组件库示例里用于链路明细的产品间分组,但本 Skill 的输出指南 G2 明确规定「产品组之间 48px、组间不加分隔线」,现有页面已按 G2 用 `Group title=\"{product} · {version}\"` + `FigureStrip` 分组,`Section className=\"gap-12\"` 也已就位;再套 `Rule` 会多出细线,与 G2 冲突。\n\n页面本身没有任何绕过组件库的写法(无原生标签、无 `style`、无颜色/任意值类名),所以这次改动对它没有影响,保持原样结束。",
+ "checks": []
+}

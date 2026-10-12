@@ -1,0 +1,31 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 29,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 469,
+ "usage": {
+  "input": 90572,
+  "output": 29698
+ },
+ "stop": "stop",
+ "summary": "改好了,程序检查全部通过。\n\n改动只在「流程明细」一节里用得上新组件的部分:\n\n- **Rule**:原来的「步骤备注」是三家银行 12 条备注混在一个 `List` 里、靠重复的产品名前缀和逐行细线区分。现在按产品拆成三组,每组用 `<Rule label=\"青禾银行 · 8.6.0\">` 做分组标记(12px 灰标签 + 与表格行线同重的细线),组内备注用 `List divided={false}`,组与组之间 24px、标签与列表之间 8px。\n- **FigureGrid**:这份数据里没有「一版对照图」(原界面 + 色觉模拟的成组截图),链路明细按输出指南 G2 仍用 `FigureStrip` 一产品一栏、步骤从左到右排,所以没有改这里,也没有动其他任何节(背景信息、结论、核心指标、产品对比、阶段对比、共性规律、问题明细、下一步保持原样)。\n\n页面结构:页头(产品/周期 + 标题)→ 背景信息(KV)→ 结论(结论句)→ 核心指标(一行 4 个 Stat)→ 产品对比(3 个 Stat)→ 阶段对比(DataTable)→ 共性规律(List)→ 流程明细(三组 FigureStrip + 按产品分组的步骤备注,Rule 标记)→ 问题明细(DataTable,严重度标红)→ 下一步(List ordered)。",
+ "checks": []
+}

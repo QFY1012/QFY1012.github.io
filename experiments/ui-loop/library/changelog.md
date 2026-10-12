@@ -29,3 +29,35 @@
 - 模拟视图:4 张色觉模拟图同样拉开到 48px,宽高比不同的图(手机 375×760、分析图 1200×760)仍按原比例并排对齐,超出部分继续靠 shadcn `ScrollArea` 横向滚动。
 
 `components.md` 里对部件的说明(有哪些部件、何时用、最小示例)保持不变,这次不涉及文档改动。
+
+## k3  结果:采用(1 版)
+
+需求 6 条。示例和说明见 library/k3.md,改动见 library/k3.patch。
+
+程序检查全部通过,页面视觉也确认无误。改动完成。
+
+## 改动说明
+
+**修改的已有组件:`app/src/components/ui/progress.tsx`**
+
+组件代码检查报出:`第 26 行 加了底色;规范不用卡片和底色`。
+
+原因:进度条的轨道写成了 `bg-border`,即用一个背景填充色来画轨道,属于规范禁止的「底色」。
+
+改法:轨道与进度条都改成**用边框画出的 1px 细线**,不再有任何背景填充色:
+
+- 轨道:`<div data-slot="progress-track" className="absolute inset-0 border-t border-border" />`,一条与表格行线同重的细线;
+- 进度:`ProgressIndicator` 改为 `border-t border-muted-foreground`,并按 `width: value%` 决定长度(原来是 `translateX` + 背景填充)。
+
+这样根元素只保留 `relative h-px w-full overflow-hidden`,整个组件里不再出现任何 `bg-` 类名(已 `grep` 确认无残留)。视觉上进度条仍是「浅色轨道线 + 深一档的进度线」两条细线,与全页细线风格一致,也仍然满足需求里「计数用细条、不与正文争夺视觉重量」的要求。
+
+其余组件与演示页未动(演示页程序检查本就是 `[]`)。
+
+**运行结果**
+
+```
+$ node $SHOOT .
+程序检查全部通过。
+```
+
+`checks.json` 为 `[]`,截图 `thumb.png` / `tile-*.png` 已重新生成;「问题分布」一栏的进度条在截图里显示为细线轨道 + 细线进度,与表格行线同重。

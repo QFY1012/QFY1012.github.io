@@ -1,0 +1,31 @@
+{
+ "case": "c6",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 26,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 89,
+ "usage": {
+  "input": 24796,
+  "output": 4482
+ },
+ "stop": "stop",
+ "summary": "程序检查通过,截图确认无误。\n\n改动只有一处:把「模拟视图」里原来两行 `FigureStrip`(固定高度、图偏小)换成组件库新增的 `FigureGrid`,四张对照图(原界面、红色盲、绿色盲、蓝色盲)按两列铺满 9 列内容宽、高度随原比例,同尺寸图宽度一致、右端对齐,图内文字更易看清;其余结构、数据和样式保持原样。新增的 `Rule` 在这份数据里没有需要分组的两组内容(没有链路明细这类分组场景),故未使用。",
+ "checks": []
+}

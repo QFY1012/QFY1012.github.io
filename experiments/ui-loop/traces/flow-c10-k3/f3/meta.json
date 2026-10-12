@@ -1,0 +1,31 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "7b38953f",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10",
+ "change": {
+  "kind": "component",
+  "name": "k3",
+  "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 71,
+ "usage": {
+  "input": 19127,
+  "output": 4814
+ },
+ "stop": "stop",
+ "summary": "检查通过,我确认这项改动对这个页面并不适用,因此 **Page.tsx 未做任何修改**:\n\n- **`FigureGrid`**:它的用途是「一版对照图(原界面 + 色觉模拟)」两列铺满。`data.json` 里只有 3 个产品的链路截图(`chains[].steps[].image`,共 12 张),没有模拟视图一类的对照数据,链路按 G2 就该用 `FigureStrip` 横向排开,所以无处可用。\n- **`Rule`**:它的用途是两组内容之间的分组标记(如链路里一个产品一组)。而本页链路明细按 Skill 指南 G2 是「一个产品一个 `Group`(title 写 `产品 · 版本`)+ 组内一个 `FigureStrip`」,并明确要求「组间不加分隔线」,用 `Rule` 反而会违反 G2。\n\n页面本身也没有绕过组件库手写的部分(无 `<div>`、无 `style`、无任意值类名),不需要借新组件重写。页面结构保持不变:页头 → 背景信息(KV)→ 结论(结论句)→ 核心指标(4 个 Stat 一行,`Grid cols={12}`)→ 产品对比(DataTable)→ 交互链路(3 个产品组,每组 FigureStrip)→ 步骤备注(List)→ 问题(DataTable)→ 下一步(List 三列)。",
+ "checks": []
+}

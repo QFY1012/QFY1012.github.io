@@ -1,0 +1,5 @@
+{
+ "kind": "component",
+ "name": "k3",
+ "summary": "组件库新增:FigureGrid、Rule。用法见 components.md。"
+}

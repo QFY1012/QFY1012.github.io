@@ -90,6 +90,9 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   )
 }
 
+// The caption is the table's note below the rows (units, thresholds). It is a
+// line of running text, so it sits on the table's left edge like the first
+// column instead of floating centred in the middle of the page.
 function TableCaption({
   className,
   ...props
@@ -97,7 +100,7 @@ function TableCaption({
   return (
     <caption
       data-slot="table-caption"
-      className={cn("mt-4 text-sm text-muted-foreground", className)}
+      className={cn("mt-4 text-left text-sm text-muted-foreground", className)}
       {...props}
     />
   )

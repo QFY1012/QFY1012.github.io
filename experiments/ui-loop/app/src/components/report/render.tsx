@@ -338,9 +338,8 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
         ) : c.bar ? (
           <div className="flex items-center gap-3">
             <span className="w-8 tabular-nums">{v}</span>
-            <div className="h-1 flex-1 rounded-full bg-primary/10">
-              <div className="h-full rounded-full bg-primary" style={{ width: `${((Number(v) || 0) / max[c.key]) * 100}%` }} />
-            </div>
+            {/* the bar is a hairline on a lighter rule, not a filled block */}
+            <Progress value={((Number(v) || 0) / max[c.key]) * 100} className="flex-1" />
           </div>
         ) : (
           v
@@ -526,7 +525,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
             {(p.items as { label: string; value: number; max?: number; display?: string }[]).map((it, i) => (
               <div key={i} className="grid h-6 grid-cols-[4.5rem_1fr_2rem] items-center gap-3 text-sm">
                 <span>{it.label}</span>
-                <Progress value={(it.value / (it.max ?? 100)) * 100} className="h-1 bg-primary/10" />
+                <Progress value={(it.value / (it.max ?? 100)) * 100} />
                 <span className="text-right tabular-nums">{it.display ?? it.value}</span>
               </div>
             ))}
