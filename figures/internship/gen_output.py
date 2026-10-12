@@ -176,6 +176,33 @@ add(station(C4, YB, 'ag', 'pen', '组件 Reviser', '05'))
 add(station(C2, YB, 'gate', 'user', '人工审批', '06', '通过才合并'))
 add(station(C1, YB, 'it', 'component', '组件库'))
 
+# ── 上线后支路 ───────────────────────────────────────
+# 用户对着某个 case 给出负反馈。人工归因先分清是 UI Spec 还是组件的问题,
+# 再拆成两份:case 作为新样本补进样本,问题带着分类补进问题清单,下一轮照常跑循环。
+# 审美 rubric 是所有 Skill 通用的,不因单个 case 改动,所以这条支路不碰 rubric。
+LN, LS = 590, 662                                  # 支路横线、起点
+XA, XN, XP = C3, C1 + 56, XS                       # 人工归因、新样本、已分类的问题
+add(f'<path class="on" d="M{XA} {LS - 8} V{LN + 10}" marker-end="url(#ma)"/>')
+add(f'<path class="on" d="M{XA - 8} {LN} H{XN + 12}" marker-end="url(#ma)"/>')
+add(f'<path class="on" d="M{XA + 8} {LN} H{XP - 12}" marker-end="url(#ma)"/>')
+for x, y_top in [(XN, TY + CH + HP + 4), (XP, YM + 12 + 4)]:
+    add(f'<rect class="ko" x="{x - 5}" y="{YB - 3}" width="10" height="6"/>')   # 跨过下轨处断开下轨
+    add(f'<path class="on" d="M{x} {LN - 8} V{y_top}" marker-end="url(#ma)"/>')
+add(f'<text class="on-l" x="{XN + 9}" y="{(TY + CH + YB) / 2 + 12}">补进样本</text>')
+add(f'<text class="on-l" x="{XP + 9}" y="{(YM + YB) / 2 + 12}">补进问题清单</text>')
+add(f'<text class="on-k" x="{XA - 16}" y="{LS + 4}" text-anchor="end">上线后</text>')
+for x, y, nm, note, up in [(XA, LS, '负反馈 + case', '', False), (XA, LN, '人工归因', '分清 UI Spec 还是组件', True),
+                           (XN, LN, '新样本', '分进训练 / 验证样本', False),
+                           (XP, LN, '已分类的问题', '布局问题或组件不够', False)]:
+    add(f'<circle class="on-st" cx="{x}" cy="{y}" r="5.5"/>')
+    if up:
+        add(f'<text class="on-n" x="{x}" y="{y - 32}">{nm}</text>')
+        add(f'<text class="on-s" x="{x}" y="{y - 15}">{note}</text>')
+    else:
+        add(f'<text class="on-n" x="{x}" y="{y + 26}">{nm}</text>')
+        if note:
+            add(f'<text class="on-s" x="{x}" y="{y + 44}">{note}</text>')
+
 defs = '''<defs>
   <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
   <marker id="mf" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk"/></marker>
@@ -189,7 +216,10 @@ ARIA = ('输出层一次迭代的信息流转,骨架与 Skill 层相同,但迭�
         '布局问题交给 UI Spec Reviser,改 UI Spec 的一条规则,写入修改记录,在验证样本上更好才升级 UI Spec;'
         '组件不够交给组件 Reviser,新增或修改组件,写入修改记录,人工审批通过才合并进组件库。'
         '两条轨道的修改记录都保留没采用的改动。'
-        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则与审美 rubric;审美 rubric 与用户排序一致 93%。')
+        'Benchmark 在本轮内冻结:训练样本 4 份、验证样本 2 份、检查规则与审美 rubric;审美 rubric 与用户排序一致 93%。'
+        '上线后:用户对着具体的 case 给出负反馈,人工归因分清是 UI Spec 还是组件的问题;'
+        'case 作为新样本分进训练和验证样本,问题带着分类补进问题清单,下一轮照常进入同一个循环。'
+        '审美 rubric 是所有 Skill 通用的,不因单个 case 改动。')
 
 
 # ── 窄屏:同一套线路语言,纵向排列 ─────────────────────
@@ -312,13 +342,28 @@ for cy, kind, ic, nm, step in [(MYS[0], 'ag', 'code', '生成 Agent', '01'), (MY
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MA[2] + 28}">更好才升级</text>')
 madd(f'<text class="m-info ac" x="{LX + 24}" y="{MO[2] + 28}">通过才合并</text>')
 
+# 上线后支路:组件库之下自上而下;人工归因后分成两份,各写明补进哪里
+MP = [1310, 1386, 1490]                          # 负反馈 + case、人工归因、两份去向
+madd(f'<text class="on-k" x="{LX}" y="{MP[0] - 26}" text-anchor="middle">上线后</text>')
+madd(f'<path class="on" d="M{LX} {MP[0] + 8} V{MP[1] - 10}" marker-end="url(#mam)"/>')
+madd(f'<path class="on" d="M{LX} {MP[1] + 8} V{MP[2] - 10}" marker-end="url(#mam)"/>')
+MPB = MP[1] + 40                                 # 分叉处在归因说明下方,不穿过文字
+madd(f'<path class="on" d="M{LX} {MPB - 8} Q{LX} {MPB} {LX + 8} {MPB} H{MBR - 8} Q{MBR} {MPB} {MBR} {MPB + 8} V{MP[2] - 10}" marker-end="url(#mam)"/>')
+for x, y, nm, note in [(LX, MP[0], '负反馈 + case', ''), (LX, MP[1], '人工归因', ''),
+                       (LX, MP[2], '新样本', '补进训练 / 验证样本'), (MBR, MP[2], '已分类的问题', '补进问题清单')]:
+    madd(f'<circle class="on-st" cx="{x}" cy="{y}" r="5"/>')
+    madd(f'<text class="m-on-n" x="{x + 14}" y="{y + 4.5}">{nm}</text>')
+    if note:
+        madd(f'<text class="m-on-s" x="{x + 14}" y="{y + 22}">{note}</text>')
+madd(f'<text class="m-on-s" x="{LX + 14}" y="{MP[1] + 22}">分清 UI Spec 还是组件</text>')
+
 mdefs = '''<defs>
   <pattern id="hatchm" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" class="hatch-bg"/><line x1="0" y1="0" x2="0" y2="7" class="hatch-ln"/></pattern>
   <marker id="mfm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk"/></marker>
   <marker id="mam" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M1 1.2 L9 5 L1 8.8 Z" class="mk ac"/></marker>
   <marker id="msm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M1 1.5 L9 5 L1 8.5 Z" class="mk soft"/></marker>
 </defs>'''
-MH = MO[3] + 40
+MH = MP[2] + 44
 mobile = f'<svg viewBox="0 30 {MW} {MH - 30}" role="img" aria-label="{ARIA}">{mdefs}{"".join(m)}</svg>'
 
 
@@ -372,6 +417,12 @@ html = f'''<!doctype html>
   .ic.store {{ color: var(--text-dim); }}
   .data-s {{ fill: var(--data-ink); }}
   .ic.data {{ color: var(--data-ink); }}
+  .on {{ fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 4 3; }}
+  .on-st {{ fill: var(--accent); }}
+  .on-n {{ font-size: 12.5px; font-weight: 500; fill: var(--ink); text-anchor: middle; }}
+  .on-s {{ font-size: 11px; fill: var(--text-dim); text-anchor: middle; }}
+  .on-l {{ font-size: 11px; fill: var(--accent); }}
+  .on-k {{ font-size: 11.5px; font-weight: 600; letter-spacing: .06em; fill: var(--accent); }}
   .supply {{ fill: none; stroke: var(--supply); stroke-width: 1.2; stroke-dasharray: 2 3; }}
 
   .st {{ stroke: none; }}
@@ -397,6 +448,7 @@ html = f'''<!doctype html>
   .lg-store {{ width: 20px; height: 12px; background: #e4e7ec; }}
   .lg-frozen {{ width: 20px; height: 12px; background: repeating-linear-gradient(45deg, #f1f2f5 0 3px, #e3e5ea 3px 5px); }}
   .lg-rub {{ width: 20px; height: 12px; background: #fff; box-shadow: inset 2.5px 0 0 var(--accent); }}
+  .lg-on {{ width: 22px; height: 0; border-top: 1.3px dashed var(--accent); }}
   .lg-data {{ width: 20px; height: 12px; background: #fff; box-shadow: inset 0 0 0 1px #e3e5ea; }}
 
   /* 窄屏:纵向线路 */
@@ -414,13 +466,15 @@ html = f'''<!doctype html>
   .m-info {{ font-size: 11.5px; fill: var(--text-dim); }}
   .m-info.sm {{ font-size: 10.5px; }}
   .m-info.ac {{ fill: var(--accent); font-size: 11px; }}
+  .m-on-n {{ font-size: 12.5px; font-weight: 500; fill: var(--ink); }}
+  .m-on-s {{ font-size: 10.5px; fill: var(--text-dim); }}
   .m-fork {{ font-size: 11.5px; font-weight: 500; fill: var(--ink); }}
 </style>
 </head>
 <body>
 <figure>
   <div class="d">
-    <svg viewBox="70 14 1010 528" role="img" aria-label="{ARIA}">
+    <svg viewBox="70 14 1010 692" role="img" aria-label="{ARIA}">
       {defs}
       {''.join(svg)}
     </svg>
@@ -436,6 +490,7 @@ html = f'''<!doctype html>
     <span><i class="lg-frozen"></i>本轮冻结</span>
     <span><i class="lg-rub"></i>规则</span>
     <span><i class="lg-data"></i>测试数据</span>
+    <span><i class="lg-on"></i>上线后</span>
   </div>
 </figure>
 </body>
