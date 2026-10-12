@@ -356,18 +356,6 @@ html = f'''<!doctype html>
   .on-l {{ font-size: 11px; fill: var(--accent); }}
   .on-k {{ font-size: 11.5px; font-weight: 600; letter-spacing: .06em; fill: var(--accent); }}
 
-  /* 图例 */
-  .legend {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; margin-top: 30px; font-size: 12px; color: var(--text-dim); }}
-  .legend span {{ display: inline-flex; align-items: center; gap: 8px; }}
-  .legend i {{ display: inline-block; flex: none; }}
-  .lg-it {{ width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(194,65,12,.12); }}
-  .lg-ag {{ width: 12px; height: 12px; border-radius: 50%; background: var(--ink); }}
-  .lg-flow {{ width: 22px; height: 1.6px; background: var(--track); }}
-  .lg-frozen {{ width: 20px; height: 12px; background: repeating-linear-gradient(45deg, #f1f2f5 0 3px, #e3e5ea 3px 5px); }}
-  .lg-rub {{ width: 20px; height: 12px; background: #fff; box-shadow: inset 2.5px 0 0 var(--accent); }}
-  .lg-data {{ width: 20px; height: 12px; background: var(--data); box-shadow: inset 0 0 0 1px #e3e5ea; }}
-  .lg-store {{ width: 20px; height: 12px; background: #e4e7ec; }}
-  .lg-on {{ width: 22px; height: 0; border-top: 1.3px dashed var(--accent); }}
   figcaption {{ margin-top: 12px; text-align: center; font-size: 12.5px; line-height: 1.7; color: var(--text-dim); }}
 
   /* 窄屏:纵向线路 */
@@ -400,17 +388,6 @@ html = f'''<!doctype html>
     </svg>
   </div>
   <div class="m">{mobile}</div>
-
-  <div class="legend">
-    <span><i class="lg-it"></i>迭代对象</span>
-    <span><i class="lg-ag"></i>Agent</span>
-    <span><i class="lg-flow"></i>流转的信息</span>
-    <span><i class="lg-store"></i>持续积累</span>
-    <span><i class="lg-frozen"></i>本轮冻结</span>
-    <span><i class="lg-rub"></i>Rubric</span>
-    <span><i class="lg-data"></i>测试数据</span>
-    <span><i class="lg-on"></i>上线后</span>
-  </div>
 </figure>
 </body>
 </html>
