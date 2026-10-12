@@ -1,0 +1,27 @@
+{
+ "case": "c1",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 298,
+ "usage": {
+  "input": 68870,
+  "output": 23554
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过。结构:页头 → 结论(判定句 24px 细体)→ 核心指标(问题总数排在最前的 4 个 48px 数字,一行靠左)→ 色觉模拟(原界面+三种模拟,每行两张 `FigureStrip`)→ 颜色混淆(ΔE 对照表,低于 12 的色差标红加粗)→ 类型分布(`ProgressList`)→ 明细(问题表,严重度用 `levels` 排三级)→ 下一步(6 条改法 `List` + 对比度修复表)→ 配色清单 → 背景信息(`KV`)。\n\n两点说明:① 组件库没有「色块/色卡」组件,`palette` 的 8 个系列色无法以色样呈现,只能退一步用表格列出系列名、hex 色值与用途;② 截图是 1200×760 的宽图,`FigureStrip` 的行高固定为 384px,一行两张会超过正文 9 列宽,右侧一张在静止时被条裁掉(悬停可横向滚动)——按 G2 仍每行排两张,如需四张都完整可见需改用 `FigureCompare`(2×2,高度封顶)。",
+ "checks": []
+}

@@ -1,0 +1,27 @@
+{
+ "case": "c3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 135,
+ "usage": {
+  "input": 38442,
+  "output": 14589
+ },
+ "stop": "stop",
+ "summary": "页面已生成，程序检查（构建、组件库、统一刻度、数据忠实、越界）一次通过。\n\n结构：页头（产品/日期 + 标题）→ **结论**（24px 判定句）→ **核心指标**（4 个 `Stat`，`issues` 排首位、各占 2 列共用基线）→ **色觉模拟**（原界面+三种模拟，每行两张 `FigureStrip`）→ **颜色与对比**（四级配色表 + 路名对比度表，不达标标红）→ **色觉混淆**（ΔE 表，低于阈值 12 的格子标红；下接 3 列 `ProgressList` 按类型计数）→ **问题明细**（7 列 `DataTable`，严重度用 `levels`）→ **下一步**（4 条建议 `List columns={3}`）→ **背景信息**（`KV`）。\n\n无组件库缺项：`screens` 的模拟图、`palette` 的色值、`confusions` 的 ΔE 矩阵都能用现有组件呈现（色值只能以文本 hex 显示，无法渲染真实色块——组件库没有色块组件，但数据本身只要求标注色值）。",
+ "checks": []
+}

@@ -1,6 +1,6 @@
 {
  "current": "g3",
- "currentRun": "cvd-c10-k3-k4-k6",
+ "currentRun": "cvd-c10-k3-k4-k6-k7",
  "versions": 3,
  "round": 12,
  "rejected": 1,
@@ -672,32 +672,33 @@
  "judged": {
   "aesthetic": {
    "c1": [
-    "cvd-c10-k3-k4-k6",
-    "cvd-c10-k3-k4-k6-twin"
+    "cvd-c10-k3-k4-k6-k7",
+    "cvd-c10-k3-k4-k6-k7-twin"
    ],
    "c2": [
-    "cvd-c10-k3-k4-k6",
-    "cvd-c10-k3-k4-k6-twin"
+    "cvd-c10-k3-k4-k6-k7",
+    "cvd-c10-k3-k4-k6-k7-twin"
    ],
    "c3": [
-    "cvd-c10-k3-k4-k6",
-    "cvd-c10-k3-k4-k6-twin"
+    "cvd-c10-k3-k4-k6-k7",
+    "cvd-c10-k3-k4-k6-k7-twin"
    ],
    "c4": [
-    "cvd-c10-k3-k4-k6",
-    "cvd-c10-k3-k4-k6-twin"
+    "cvd-c10-k3-k4-k6-k7",
+    "cvd-c10-k3-k4-k6-k7-twin"
    ]
   }
  },
  "maintained": {
-  "run": "cvd-c10-k3-k4-k6",
+  "run": "cvd-c10-k3-k4-k6-k7",
   "stage": "aesthetic"
  },
  "stop": "等组件审批:看 library/ 下的示例,再 node scripts/component-loop.mjs approve|revise|reject k<n>",
  "components": [
   "k3",
   "k4",
-  "k6"
+  "k6",
+  "k7"
  ],
  "componentStreak": 1
 }

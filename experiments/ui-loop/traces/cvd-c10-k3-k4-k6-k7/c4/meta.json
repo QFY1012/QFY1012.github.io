@@ -1,0 +1,31 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3-k4-k6",
+ "change": {
+  "kind": "component",
+  "name": "k7",
+  "summary": "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 118,
+ "usage": {
+  "input": 54795,
+  "output": 4932
+ },
+ "stop": "stop",
+ "summary": "",
+ "checks": []
+}

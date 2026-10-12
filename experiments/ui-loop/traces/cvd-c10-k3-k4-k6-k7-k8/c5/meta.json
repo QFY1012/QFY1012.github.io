@@ -1,0 +1,31 @@
+{
+ "case": "c5",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": "cvd-c10-k3-k4-k6-k7",
+ "change": {
+  "kind": "component",
+  "name": "k8",
+  "summary": "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 29,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 319,
+ "usage": {
+  "input": 145403,
+  "output": 23483
+ },
+ "stop": "stop",
+ "summary": "程序检查通过(checks.json 为空),截图确认页面正常。\n\n修改内容:组件库这次改的是色觉对照图的排法 —— `FigureCompare` 现在是「原界面 + 三种色觉模拟」四张并排一行、各占四分之一列宽、整组同屏。原页面为了绕开旧的对照排法,自己写了一段 `screenRows` 把 `screens` 每两张切一行、再喂给两条 `FigureStrip`,渲染出来是两行窄条图(每张约 190px 宽),每行右侧空掉半栏、第二行还要往下翻才看得到,不成一组对照。按 components.md 的用法把这段分块逻辑删掉,改成 `Group` 里一个 `FigureCompare` 顺序放 `data.screens` 的四张 `Figure`(图 + 名称在下);其余节、表格、数字与文案一字未动。\n\n页面结构(页头 + 九节,节名挂左 3 列、内容在右 9 列):结论(一句判断)→ 核心指标(问题总数排首、四项同一基线)→ 色觉模拟(四张对照一行)→ 分群(各类型受影响问题数 + 色差对照表)→ 配色 → 对比度(不达标标红)→ 明细(严重度分级)→ 下一步(三条并排)→ 背景信息(KV)。\n\n一点说明:改动后四张对照图按 `FigureCompare` 的规则排一行,与输出指南 G2「每两张排一行、一行一条 `FigureStrip`」的字面写法不一致;依据是本次改动后的 components.md 明确把「原界面 + 三种色觉模拟」这一组四张的对照交给 `FigureCompare`(一行四张、同屏横比),而 G2 的用意是避免单条 `FigureStrip` 超出正文 9 列被裁——四张并排后不存在这个溢出问题。若要以 G2 字面为准,把该 `Group` 换回两条各两张的 `FigureStrip` 即可。",
+ "checks": []
+}

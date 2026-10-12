@@ -229,3 +229,58 @@ $ node $SHOOT .
 - **R1 的「粗细与表格行线相同」没照字面改**:条仍是 1px(与行线同宽),靠颜色区分(墨色对浅灰)。因为 R3/R5 明确要求条「与页面细线一致的细条」「不与正文争夺视觉重量」,两条要求方向相反;取的是中间——同宽不同色,再加一条与量程等宽的基线让长度有基准。
 - **R5 的「条目标签带多种颜色」没有对应改动**:`ProgressList` 的标签本来就是正文色,那条记录来自页面自己给标签上色,组件里没有可改的地方。
 - **R5 的「刻度」只做到基线**:基线与量程等宽,长度本身就是基准;没再加刻度线/刻度值,否则会和紧凑模式右侧的数值列重复。
+
+## k8  结果:采用(1 版)
+
+需求 6 条。示例和说明见 library/k8.md,改动见 library/k8.patch。
+
+我完成了这轮工作。下面是说明。
+
+## 结论
+
+对着需求逐条核了一遍当前组件库，**六条里四条（bar、levels、ProgressList、Section 顶对齐）在当前库里已经成立**，我实测确认了；真正缺的是两条：**BarChart 的多系列默认配色**和 **FigureCompare 的排版**。这轮改的就是这两处。
+
+## 新部件
+
+这轮**没有新增部件**，缺的能力落在两个已有部件里，改的是它们：
+
+| 部件 | 位置 | 管什么 | 来自 |
+|---|---|---|---|
+| `BarChart`（`chartConfig` / `seriesInk` / `legendOrder`） | `app/src/components/report/render.tsx` | 多系列柱状图/折线图的系列取色与图例顺序 | shadcn `chart`（recharts `ChartContainer`/`ChartLegend`） |
+| `FigureCompare` | `app/src/components/report/index.tsx` | 四张对照图（原界面 + 三种色觉模拟）的排布 | 自己组合，图本身用 `Figure`/`FigureImage`/`FigureLabel` |
+
+### 1. BarChart 的系列色（需求 3）
+
+原来是 `var(--chart-1..5)`（橙、青、深蓝、黄，就是证据里写的那四种高饱和色）。现在系列改成**一条墨阶**：第一个系列 `var(--foreground)`，其余按 `color-mix(in oklab, var(--foreground) 66%/42%/26%, var(--background))` 依次变浅——纯灰阶，图表不再是全页最重的一块，红色仍然只留给判定。灰阶从页面自己的 token 混出来，不另起一套调色板。
+
+顺带修了图例顺序：recharts 3 的 `Legend` 默认 `itemSorter: 'value'`，而 Bar 的 `value` 就是 `dataKey`，所以图例是按 dataKey 字母序排的——墨阶会被打乱（实测出现「完全混淆 / 需仔细分辨 / **几乎不混淆** / 轻微」）。现在给 `ChartLegend` 传 `itemSorter={legendOrder(series)}`，图例按系列声明顺序排，灰阶读起来才是从深到浅。
+
+### 2. FigureCompare（需求 4）
+
+原来是 `grid-cols-2` + 图高封在 `max-h-64`：375×760 的长截图被压成 **126px 宽**的一条细缝，两行两列又每屏只放得下两张，第二行要滚动才看得到（截图见证据 c2/c3/c4）。
+
+现在改成**一行四张**：`grid-cols-4`，每张占列宽的四分之一、按原比例缩放，高度只封一个上限（`max-h-96`，只为了防止极长截图把整组顶出屏幕）；图注仍占满整格宽。`self-start` 是必须的——`Figure` 是 flex 列容器，默认 `align-items: stretch` 会把 `width:auto` 的图拉回整格宽（不写就会把图拉变形）。实测同一组长截图：**189×384，一行 416px 高**，比原来的 126×256、两行 584px 又大又短，整组一屏读完。要看图内细节（宽的分析视图）仍用 `FigureGrid`。
+
+## 演示页与验证
+
+`Page.tsx` 按需求六个场景各放一节（产品对比表 / 颜色混淆柱状图 / 色觉模拟四图 / 问题分布 / 对照），图片是自造的 4 张 375×760 SVG 放在 `assets/`。`node $SHOOT .` 三次运行，程序检查全过（`checks.json` 为 `[]`）。实测：
+
+- bar：步骤数列 5/4/3/2 → 条长 100%/80%/60%/40%，墨线在浅灰基线上，末端可辨；
+- levels：高 = destructive/600、中 = 600、低 = muted-foreground/400，三级可排序；
+- ProgressList：6/9/2 → 67%/100%/22%，条按列表量程画在同一条基线上；
+- Section：六个节的标题顶边与内容顶边 **delta 全为 0**，无垂直居中。
+
+## 需求里哪些没做 / 为什么
+
+- **需求 1、2、5、6 我没有改代码**：当前组件库里已经满足（`ui/progress.tsx` 的基线 + 墨线、`render.tsx` 的 `step()` 三级字重、`progress-list` 的按列表最大值定量程、`Section` 的 `items-start`）。`requests.json` 里这几条的 evidence（「细横线与表格行线同色同粗」「只有高标红」「三条横线等长 1、1、1」「标题相对 2×2 图垂直居中」）描述的是更早一版渲染出来的页面，和现在的实现对不上，所以我按「不改和需求无关的地方」处理，只在演示页里把它们摆出来验证。
+- **一处没做**：FigureCompare 对**宽**截图（1200×760）会比两行两列小（196px 宽 vs 原来的 404px）。四张同屏 + 每张尽量大，在 858px 内容列宽下和「宽图也能看清图内文字」不可兼得，而需求点名的是「截图比例偏长」的情况，所以我按长截图取最优；宽图要看细节由 `FigureGrid` 承担（2 列铺满列宽，行高不限）。如果要把两种比例都做到最优，需要让 FigureCompare 在运行时读图片原始比例来定列数，那要引入测量状态，和「几个可组合的小部件」的写法不符，我没有做。
+
+## 改了哪些已有组件（按要求列出）
+
+| 文件 | 改动 | 原因 |
+|---|---|---|
+| `app/src/components/report/render.tsx` | 删掉 `CHART_COLORS`，加 `SERIES_INK_STEPS`/`seriesInk()`；`chartConfig` 用墨阶；加 `legendOrder()`，两处 `ChartLegend` 传 `itemSorter` | 需求 3；图例乱序会让墨阶读反 |
+| `app/src/components/report/index.tsx` | `FigureCompare` 从 `grid-cols-2` + `max-h-64` 改为 `grid-cols-4` + `max-h-96`，图片加 `w-auto`/`self-start`/`max-w-full` | 需求 4 |
+| `components.md` | 更新 `BarChart`、`FigureCompare`、`FigureImage` 三行和「模拟视图」段落 | 文档跟代码一致 |
+
+`app/src/components/ui/` 和 `app/src/index.css` 没动；`shadcn/ui/` 只读参考，没动。

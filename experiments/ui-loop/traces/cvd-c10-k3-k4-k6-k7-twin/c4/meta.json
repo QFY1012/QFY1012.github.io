@@ -1,0 +1,27 @@
+{
+ "case": "c4",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 521,
+ "usage": {
+  "input": 158683,
+  "output": 41784
+ },
+ "stop": "stop",
+ "summary": "程序检查通过(`checks.json` 为空),页面已完成。\n\n**页面结构**(页头 + 7 节,节名挂左 3 列、内容在右 9 列):\n\n1. **结论** — 判断句「不友好。+ 摘要」,24px 细体,占满 9 列;节说明写标准与检查日期。\n2. **核心指标** — 4 个 `Stat`(`captionBelow`、`size=\"lg\"`、同一基线),按 G1 把 `issues`(问题总数)排第一,其余按原顺序,每个 `span={2}`,一行靠左排满。\n3. **色觉模拟** — 4 张 `screens` 按 G2 每两张一行,放在同一个 `Group` 里的两条 `FigureStrip`(原界面/红色盲,绿色盲/蓝色盲),`FigureImage` + `FigureLabel`。\n4. **拆分** — 组「按色觉类型的问题数」用 `ProgressList compact` 放在 3 列宽的 `Block` 里(红色盲 1、绿色盲 1、蓝色盲 0);组「关键颜色对的色差」用 `DataTable`(颜色对 / 正常 / 三种色盲的 ΔE / 受影响人群,数值右对齐),caption 写 ΔE 口径与两组色值。\n5. **明细** — 三组表:18 组文字与背景对比度(达标行整行 `muteWhen` 灰显,「不达标」用 `tone` 标红加粗)、问题清单(严重度用列的 `levels` 低/中/高,高红加粗、中加粗、低注释灰)、14 个色板 token。\n6. **下一步** — 组「整改建议」用 `List ordered`(问题 + 建议);组「建议色值」用 `DataTable`(位置 / 原色 / 新色 / 调整前 / 调整后)。\n7. **背景信息** — `KV labelCols={2}`,写检查对象、日期、标准、结论、模拟方法。\n\n**缺组件 / 需说明的两点**:\n\n- **色板颜色本身没有可显示的组件**:组件库没有色块(swatch)类组件,页面里又不能自己写 `<div>` 加背景色,所以 `palette` 的 14 个 token 只能用 `DataTable` 呈现名称、色值(#1890FF 等)和用途——**要显示的是每个 token 的实际颜色**,现在只能靠十六进制值读。\n- **色觉模拟每行的第二张图超出正文列宽**:`FigureStrip` 把图高固定为 384px,1100×700 的截图按比例约 603px 宽,两张一行(1254px)超过 9 列(858px),因此每行第二张在正文右缘被裁、需横向滚动查看(程序检查把滚动容器内的裁切视为有意为之)。这是按 G2「每两张排一行、一行一个 `FigureStrip`」执行的结果,组件库没有能在 9 列内放下两张同高宽图的写法(除非改用 `FigureCompare`,但那与 G2 指定的 `FigureStrip` 不符)。",
+ "checks": []
+}

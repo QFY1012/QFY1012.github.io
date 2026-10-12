@@ -9,7 +9,7 @@ import {
   DataTable,
   List,
   KV,
-  FigureCompare,
+  FigureStrip,
   Figure,
   FigureImage,
   FigureLabel,
@@ -55,6 +55,13 @@ const fixItems = data.fixes.map((f) => ({
   description: `${f.from} → ${f.to} · 对比度 ${f.before} → ${f.after}`,
 }))
 
+// 色觉模拟每两张排一行,一行一条 FigureStrip(输出指南 G2);超过四张也按每行两张继续往下排。
+const screenRows = data.screens.reduce<(typeof data.screens)[]>((rows, s, i) => {
+  if (i % 2 === 0) rows.push([])
+  rows[rows.length - 1].push(s)
+  return rows
+}, [])
+
 export default function Report() {
   return (
     <Page title={data.title} meta={[data.target, `${data.date} · ${data.standard}`]}>
@@ -82,15 +89,17 @@ export default function Report() {
 
       <Section title="色觉模拟" description="原界面与红色盲、绿色盲、蓝色盲模拟对照">
         <Group>
-          {/* 一组四张(原界面 + 三种色觉模拟):2×2 定高,整组两行、一屏读完。 */}
-          <FigureCompare>
-            {data.screens.map((s) => (
-              <Figure key={s.view}>
-                <FigureImage src={s.image} alt={`${s.view}模拟`} />
-                <FigureLabel>{s.view}</FigureLabel>
-              </Figure>
-            ))}
-          </FigureCompare>
+          {/* 每两张一行、一行一条 FigureStrip:四张分两行,每行都在正文 9 列内。 */}
+          {screenRows.map((row, i) => (
+            <FigureStrip key={i}>
+              {row.map((s) => (
+                <Figure key={s.view}>
+                  <FigureImage src={s.image} alt={`${s.view}模拟`} />
+                  <FigureLabel>{s.view}</FigureLabel>
+                </Figure>
+              ))}
+            </FigureStrip>
+          ))}
         </Group>
       </Section>
 
@@ -163,7 +172,7 @@ export default function Report() {
             { key: "title", label: "问题", span: 2 },
             { key: "type", label: "类型", span: 1 },
             { key: "location", label: "位置", span: 1 },
-            { key: "severity", label: "严重", span: 1, tone: ["高"] },
+            { key: "severity", label: "严重", span: 1, levels: ["低", "中", "高"] },
             { key: "affects", label: "影响", span: 2 },
             { key: "suggestion", label: "建议", span: 2 },
           ]}

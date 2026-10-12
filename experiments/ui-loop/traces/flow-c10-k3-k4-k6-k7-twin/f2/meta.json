@@ -1,0 +1,27 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 203,
+ "usage": {
+  "input": 42072,
+  "output": 12857
+ },
+ "stop": "stop",
+ "summary": "程序检查通过，页面完成。\n\n**页面结构**（自上而下，节标题在左 3 列、内容在右 9 列）：\n\n1. **背景信息**（`KV`，`labelCols={2}`）：任务 / 范围 / 日期，按 G3 前移到页头之后；\n2. **结论**：`Text` 结论句，写两款 App 下单链路的核心差别；\n3. **核心指标**：4 个 `kpis` 用 `<Grid cols={12} fields={false}>` 一行排满（各 `span={3}`），48px 细体数字、说明在下；\n4. **产品对比**：快送 / 小橙各一个普通大小 `Stat`（步数 + 主差别），`span={2}`；\n5. **链路明细**：一个产品一个 `Group`（`快送 · 11.2`、`小橙 · 8.9`），组内一个 `FigureStrip`，每步 `FigureImage → FigureLabel → FigureText`，`Section className=\"gap-12\"`；\n6. **步骤备注**：`DataTable`（产品 / 步骤 / 屏幕 / 备注），把 5 条 `note` 集中呈现——按 G2 这些备注不写进图注，以保证两组截图下方文字行数一致、栏底齐平，所以另起一节承载；\n7. **发现问题**：`DataTable`（编号 / 产品 / 步骤 / 问题 / 证据 / 严重度），严重度列用 `levels: [\"低\",\"中\",\"高\"]`，最高一级红加粗、次一级加粗、低为灰；\n8. **下一步**：两条建议用 `List`（`numbered`、`columns={2}`），说明里带 detail 与依据。\n\n组件库没有缺项：数据中的 `products[].inputs`（均为 0）和 `chains[].steps[].inputs`（均为 0）无可显示内容，故未单列（G2 也只要求 inputs>0 时才补进图注）。",
+ "checks": []
+}

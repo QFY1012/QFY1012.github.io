@@ -1,0 +1,31 @@
+{
+ "case": "f5",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3-k4-k6-k7",
+ "change": {
+  "kind": "component",
+  "name": "k8",
+  "summary": "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 1068,
+ "usage": {
+  "input": 353874,
+  "output": 107193
+ },
+ "stop": "length",
+ "summary": "",
+ "checks": []
+}

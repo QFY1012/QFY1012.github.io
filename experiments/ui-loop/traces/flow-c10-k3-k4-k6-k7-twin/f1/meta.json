@@ -1,0 +1,27 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 323,
+ "usage": {
+  "input": 65993,
+  "output": 22315
+ },
+ "stop": "stop",
+ "summary": "程序检查通过，页面完成。我看过整页缩略和切块，结构如下：\n\n- **页头**（标题 + 3 款银行 App / 2026 年 9 月）→ **背景信息**（KV：任务、范围、日期，按 G3 前移到页头后）→ **结论**（24px 结论句）→ **核心指标**（G1：4 个 KPI 用 12 列网格、各 span 3 排满一行）→ **对比产品**（步骤数/输入项数带计数条的 DataTable + 「分阶段对比」表）→ **共性做法**（编号 List）→ **链路明细**（G2：三个产品各一个 Group，组内 FigureStrip，图 → 第 N 步 · 屏名 → 内容 · 操作 [· 输入 N 项]，组间 48px）→ **发现问题**（编号/产品/步骤/问题/证据/严重度，严重度用 `levels` 排高低）→ **下一步**（4 条建议三列并排，编号/依据写在 meta 行）收尾。\n\n一点说明：**没有缺组件**。唯一需要变通的是 `chains[].steps[].note`——G2 要求 note 不写进图注（保证各组截图下方文字行数一致），但程序检查要求这些数据出现在页面上，所以我在「链路明细」末尾加了一个 `Group title=\"步骤备注\"`，用 DataTable（产品/步骤/屏名/备注）列出 11 条非空备注。",
+ "checks": []
+}

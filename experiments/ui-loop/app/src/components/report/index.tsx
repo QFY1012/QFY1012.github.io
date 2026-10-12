@@ -144,20 +144,24 @@ export function FigureGrid({ className, children, ...props }: React.ComponentPro
 
 // The comparison set for colour vision (the interface plus its simulations) has
 // to be read as one group: all four views together, at a size where what is
-// inside them still reads, and the whole group inside one screen. Two columns
-// give the width (a quarter of the content column would be a thumbnail); the
-// images keep their own ratio and are capped at one height, so the group is
-// always two bounded rows whatever the screenshots' proportions are, and a tall
-// screenshot is not stretched into a second screen. The caption runs the width
-// of its cell, so a narrow view does not wrap its label into a column of lines.
+// inside them still reads, and the whole group inside one screen. Four to a row
+// is what does that: the content column is wide enough for four views, and one
+// band of four is shorter than two bands of two. The earlier two-by-two put two
+// views per screen — the second band fell past the fold, so the reader never had
+// the four side by side — and the fixed cell height it needed turned a long
+// screenshot into a narrow sliver with the band half empty. Here each view takes
+// a quarter of the row and keeps its own ratio; the height is capped only so a
+// very long screenshot cannot push the group past the screen, and the caption
+// runs the width of its cell, so a narrow view does not wrap its label into a
+// column of lines.
 export function FigureCompare({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="figure-compare"
       className={cn(
-        "grid w-full grid-cols-2 gap-x-6 gap-y-6",
+        "grid w-full grid-cols-4 gap-x-6 gap-y-6",
         "[&>[data-slot=figure]]:w-full [&>[data-slot=figure]]:min-w-0",
-        "[&_[data-slot=figure-image]]:max-h-64 [&_[data-slot=figure-image]]:w-auto [&_[data-slot=figure-image]]:max-w-full",
+        "[&_[data-slot=figure-image]]:h-auto [&_[data-slot=figure-image]]:w-auto [&_[data-slot=figure-image]]:self-start [&_[data-slot=figure-image]]:max-w-full [&_[data-slot=figure-image]]:max-h-96",
         className
       )}
       {...props}

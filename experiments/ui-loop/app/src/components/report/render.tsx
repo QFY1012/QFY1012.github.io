@@ -91,13 +91,23 @@ const SPAN = [
   "col-span-12",
 ]
 
-const CHART_COLORS = [
-  "var(--chart-1)",
-  "var(--chart-2)",
-  "var(--chart-3)",
-  "var(--chart-4)",
-  "var(--chart-5)",
-]
+// Series colours. A chart on a report page is evidence under a verdict, not the
+// page's subject: a palette of four saturated hues made the chart the heaviest
+// block on the page and pulled the eye off the conclusion, and it fought the
+// page's black-and-grey with one red mark. So a series is drawn in ink, not in
+// colour: the first series at full strength and the rest stepping down through
+// greys. The order is still readable in greyscale print and to a colour-blind
+// reader, the chart's weight stays below the conclusion's, and red is left to
+// the verdict alone. The steps are mixed from the page's own tokens, so they
+// follow the theme instead of being a second palette beside it.
+const SERIES_INK_STEPS = [100, 66, 42, 26]
+
+function seriesInk(i: number) {
+  const pct = SERIES_INK_STEPS[i] ?? Math.max(8, 26 - (i - SERIES_INK_STEPS.length + 1) * 6)
+  return pct >= 100
+    ? "var(--foreground)"
+    : `color-mix(in oklab, var(--foreground) ${pct}%, var(--background))`
+}
 
 type Ctx = { span?: number; rows?: number }
 
@@ -118,9 +128,17 @@ type Series = { key: string; label: string }
 function chartConfig(series: Series[]): ChartConfig {
   const cfg: ChartConfig = {}
   series.forEach((s, i) => {
-    cfg[s.key] = { label: s.label, color: CHART_COLORS[i % CHART_COLORS.length] }
+    cfg[s.key] = { label: s.label, color: seriesInk(i) }
   })
   return cfg
+}
+
+// The legend lists the series in the order they are drawn, which is the order
+// the ink steps down: darkest first. Recharts' default sorter is the data key,
+// which shuffles an ordered palette, so the reader would see the greys out of
+// order and read the ramp backwards.
+function legendOrder(series: Series[]) {
+  return (item: { dataKey?: unknown }) => Math.max(0, series.findIndex((s) => s.key === item.dataKey))
 }
 
 export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
@@ -502,7 +520,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                     <YAxis tickLine={false} axisLine={false} width={40} />
                   </>
                 )}
-                {series.length > 1 && <ChartLegend content={<ChartLegendContent />} />}
+                {series.length > 1 && <ChartLegend content={<ChartLegendContent />} itemSorter={legendOrder(series)} />}
                 {series.map((s) => (
                   <Bar key={s.key} dataKey={s.key} fill={`var(--color-${s.key})`} radius={4} isAnimationActive={false} />
                 ))}
@@ -524,7 +542,7 @@ export function Node({ node, ctx = {} }: { node: SpecNode; ctx?: Ctx }) {
                 <XAxis dataKey={p.xKey} tickLine={false} axisLine={false} tickMargin={8} fontSize={12} />
                 {/* a trend reads by its slope, so the axis fits the data range instead of starting at 0 */}
                 <YAxis tickLine={false} axisLine={false} width={32} fontSize={12} domain={[yTicks[0], yTicks[yTicks.length - 1]]} ticks={yTicks} interval={0} />
-                {series.length > 1 && <ChartLegend content={<ChartLegendContent />} />}
+                {series.length > 1 && <ChartLegend content={<ChartLegendContent />} itemSorter={legendOrder(series)} />}
                 {series.map((s) => (
                   <Line key={s.key} dataKey={s.key} stroke={series.length > 1 ? `var(--color-${s.key})` : "var(--primary)"} strokeWidth={2} dot={{ r: 3, fill: "var(--background)", strokeWidth: 2 }} isAnimationActive={false} />
                 ))}

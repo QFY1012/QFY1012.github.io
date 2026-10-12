@@ -1,0 +1,27 @@
+{
+ "case": "c2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/cvd/guides/g3.md",
+  "sha": "14b0c49c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 241,
+ "usage": {
+  "input": 44464,
+  "output": 17753
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过。\n\n**结构**(页头 meta:产品/日期;标题:色觉无障碍分析 · 订单状态页):\n1. **结论** — 24px 细体结论句(verdict + summary)\n2. **核心指标** — 按 G1:`issues` 提到首位,4 个 `Stat`(`size=\"lg\"`、`captionBelow`)各占 2 列,一行靠左成一簇\n3. **色觉模拟** — 按 G2,4 张截图每 2 张一条 `FigureStrip`,两行排开、右端对齐\n4. **配色** — 5 个颜色的名称/色值/用途表\n5. **对比度** — 6 组文字背景的 `DataTable`,结果列 `tone` 标红「不达标」\n6. **颜色混淆** — ΔE 表(正常/三型色盲/受影响),绿色盲 9.0 标红\n7. **问题分型** — `ProgressList compact` 放在 3 列宽的块里\n8. **问题明细** — 3 个问题的编号/问题/类型/位置/受影响/严重度,严重度用 `levels`\n9. **下一步** — 3 条建议 `List columns={3} numbered` + 「改动前后」对照表(节内两组用 `gap-12`)\n10. **背景信息** — `KV labelCols={2}`(产品、日期、标准、口径、样本)\n\n**缺组件说明**:`palette` 里每个颜色的实际色块(hex 对应的颜色)没有对应的展示组件(如 swatch),只能用 `DataTable` 以文字呈现「名称 + 色值 + 用途」,看不到颜色本身;其余数据都有组件可承载。",
+ "checks": []
+}

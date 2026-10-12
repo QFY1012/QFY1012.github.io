@@ -1,6 +1,6 @@
 {
  "current": "g3",
- "currentRun": "flow-c10-k3-k4-k6-k7",
+ "currentRun": "flow-c10-k3-k4-k6-k7-k8",
  "versions": 3,
  "round": 13,
  "rejected": 2,
@@ -763,25 +763,25 @@
  "judged": {
   "aesthetic": {
    "f1": [
-    "flow-c10-k3-k4-k6",
-    "flow-c10-k3-k4-k6-twin"
+    "flow-c10-k3-k4-k6-k7",
+    "flow-c10-k3-k4-k6-k7-twin"
    ],
    "f2": [
-    "flow-c10-k3-k4-k6",
-    "flow-c10-k3-k4-k6-twin"
+    "flow-c10-k3-k4-k6-k7",
+    "flow-c10-k3-k4-k6-k7-twin"
    ],
    "f3": [
-    "flow-c10-k3-k4-k6",
-    "flow-c10-k3-k4-k6-twin"
+    "flow-c10-k3-k4-k6-k7",
+    "flow-c10-k3-k4-k6-k7-twin"
    ],
    "f4": [
-    "flow-c10-k3-k4-k6",
-    "flow-c10-k3-k4-k6-twin"
+    "flow-c10-k3-k4-k6-k7",
+    "flow-c10-k3-k4-k6-k7-twin"
    ]
   }
  },
  "maintained": {
-  "run": "flow-c10-k3-k4-k6",
+  "run": "flow-c10-k3-k4-k6-k7",
   "stage": "aesthetic"
  },
  "stop": "等组件审批:看 library/ 下的示例,再 node scripts/component-loop.mjs approve|revise|reject k<n>",
@@ -789,6 +789,7 @@
   "k3",
   "k4",
   "k6",
-  "k7"
+  "k7",
+  "k8"
  ]
 }

@@ -1,0 +1,31 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": "flow-c10-k3-k4-k6-k7",
+ "change": {
+  "kind": "component",
+  "name": "k8",
+  "summary": "组件库只修改了现有组件的样式(在组件里改好了,页面写法一般不用变)。用法见 components.md;先截图看页面在新组件下是否正常,没有问题就不用改页面。"
+ },
+ "changedLines": 0,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 421,
+ "usage": {
+  "input": 128939,
+  "output": 29854
+ },
+ "stop": "stop",
+ "summary": "我没有改 `Page.tsx`——这项改动页面用不上代码层面的调整。\n\n**这次改动**:计数条(表格里 `bar: true` 的列和 `ProgressList`)现在画成「1px 墨线压在 1px 细基线上」,基线宽度=量程、与表格行线同宽同色,条的末端靠墨色而非粗细辨认。\n\n**页面情况**:页面里唯一用到计数条的地方是「产品对比」表的 `步骤数` 列(`bar: true`),它自动跟着新样式走。我重新跑了 `node $SHOOT .`,构建、组件库、统一刻度、数据忠实、元素越界全部通过(`checks.json` 为空);截图里该列是「5 ▁▁▁▁▁▁」满量程墨线、「4 ▁▁▁▁」八成墨线,底下是同宽的浅灰基线,读得出长度差;DOM 量到基线 128px/1px、墨条 128px 与 102px/1px,与组件库说明一致。其余部分(严重度列的 `levels` 三档、分群 `Group`+`FigureStrip`、`List columns={3} numbered`、`KV`)都是既有写法,不受这次改动影响,故保持原样。\n\n**页面结构**(一句话):页头(产品与周期/标题)→ 背景信息(KV)→ 结论(结论句)→ 核心指标(4 个 KPI 一行排满)→ 产品对比(表格)→ 链路明细(快送、小橙各一组 Rule+FigureStrip 逐步截图,末尾步骤备注表)→ 问题(明细表,严重度用 levels)→ 下一步(三列编号 List)。",
+ "checks": []
+}

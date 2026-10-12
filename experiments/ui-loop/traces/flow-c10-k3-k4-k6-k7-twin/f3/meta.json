@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "g3",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "66abf7f8",
+ "guide": {
+  "file": "skills/flow/guides/g3.md",
+  "sha": "dd36935d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 111,
+ "usage": {
+  "input": 27766,
+  "output": 9654
+ },
+ "stop": "stop",
+ "summary": "程序检查通过,页面也符合规范。\n\n**页面结构**(自上而下):\n\n1. **背景信息** — `KV`(`labelCols={2}`),任务 / 范围 / 日期;按 G3 提到页头之后、结论之前。\n2. **结论** — `Text` 24px 细体,一整句判断。\n3. **核心指标** — 4 个 `Stat`(48px 细体、`captionBelow`),按 G1 用 `Grid cols={12}` 每项 `span={3}`,一行排满。\n4. **分产品** — 3 个 `Stat`(普通大小),数字是步骤数,说明里写产品名与判断。\n5. **链路明细** — 每款产品一个 `Group`(`产品 · 版本`),组内一个 `FigureStrip`,按 `FigureImage → FigureLabel(第 N 步 · 屏名)→ FigureText(内容 · 动作)` 排开;`Section className=\"gap-12\"`,组间 48px、组内 24px。\n6. **步骤备注** — `DataTable`(产品 / 步骤 / 界面 / 备注),把 `step.note` 从图里挪出来单独呈现(G2 要求 note 不写进图,但要保留数据)。\n7. **问题明细** — `DataTable`(编号 / 问题 / 产品 / 步骤 / 严重度 / 证据),严重度用列的 `levels: [\"低\",\"中\",\"高\"]`,最高一级红加粗。\n8. **下一步** — `List`(`numbered`、`columns={3}`),每条含建议标题、说明和依据。\n\n没有缺组件的地方:所有字段都能用现有组件表达。",
+ "checks": []
+}
