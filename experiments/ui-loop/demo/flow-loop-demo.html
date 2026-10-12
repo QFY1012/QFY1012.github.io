@@ -89,6 +89,23 @@ ul.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px }
 
 
 .shot { position: relative; background: #ffffff }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px }
+.toc a { color: var(--accent); text-decoration: none; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface) }
+.toc a:hover { border-color: var(--accent) }
+.part { display: grid; gap: 14px; scroll-margin-top: 16px }
+.part > h2 { font-size: 20px; font-weight: 650 }
+.part > p.lead { margin: 0; color: var(--muted); max-width: 72ch }
+.viewport.sm { height: 440px }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px 20px; font-size: 13px }
+.facts div { display: grid; gap: 2px } .facts b { font-size: 18px; font-weight: 650; font-variant-numeric: tabular-nums }
+.vers { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; align-items: stretch }
+.ver { flex: 0 0 260px; display: grid; gap: 6px; align-content: start; min-width: 0 }
+.ver .viewport { height: 300px }
+.fb { flex: 0 0 170px; align-self: center; font-size: 12px; color: var(--muted); border-left: 2px solid var(--accent); padding-left: 8px }
+.fb b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 2px }
+.reqs { margin: 0; padding-left: 18px; font-size: 13px; display: grid; gap: 4px }
+.kh { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center }
+.kh h3 { margin: 0 }
 .shot img { display: block; width: 100%; height: auto; max-width: 100% }
 .shot .mark { position: absolute; border: 2px dashed var(--accent); border-radius: 6px; pointer-events: none }
 .shot .mark span { position: absolute; top: -11px; right: 6px; font-size: 11px; line-height: 18px; padding: 0 6px; border-radius: 3px; background: var(--accent); color: var(--surface) }
@@ -97,9 +114,65 @@ ul.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px }
 <div class="wrap">
   <header class="top">
     <h1>交互流程挖掘 Skill 的输出层迭代<span class="tag">模拟迭代演示</span></h1>
-    <p>同一个训练页「下单支付」从初版 g0 改到最终版的 10 轮。每一版页面都是用组件库写的 Page.tsx，经程序检查脚本真实渲染截图；judge 意见、门禁结果和修改记录是模拟的。第 1 轮的组件改动用的是已采用的 k3。</p>
+    <p>同一个训练页「下单支付」从初版 g0 改到最终版的 10 轮。每一版页面都是用组件库写的 Page.tsx，经程序检查脚本真实渲染截图；judge 意见、门禁结果和修改记录是模拟的。第 1 轮的组件改动就是已采用的 k3。</p>
   </header>
 
+
+  <nav class="toc" aria-label="页面目录"><a href="#lib">1 有无组件库</a><a href="#agent">2 组件 Agent 的迭代</a><a href="#loop">3 输出指南 10 轮迭代（模拟）</a></nav>
+
+  <section class="part" id="lib">
+    <h2>1 · 不用组件库和用组件库</h2>
+    <p class="lead">同一份 f2「下单支付」数据。左边让模型只用 Tailwind 自己写，右边是生成 Agent 按 design.md 用组件库写的 g0。两版都用同一个程序检查脚本渲染。</p>
+    <div class="frames"><div class="frame"><div class="cap"><span>不用组件库 · <b>模型自由发挥</b></span></div><div class="viewport sm"><div class="shot"><img src="pages/free.png" alt="不用组件库生成的下单支付页" loading="lazy"></div></div></div><div class="frame"><div class="cap"><span>用组件库 · <b>g0</b></span></div><div class="viewport sm"><div class="shot"><img src="pages/g0.png" alt="用组件库生成的下单支付页" loading="lazy"></div></div></div></div>
+    <div class="grid">
+      <div class="panel"><h3>不用组件库</h3><div class="facts"><div><b style="color:var(--bad)">142</b>程序检查问题</div><div><b>9</b>种字号（含 10、11、15、32px 任意值）</div><div><b>34</b>个颜色类名（indigo、rose、amber…）</div><div><b>19</b>处圆角卡片</div><div><b>225</b>行代码</div></div><p class="small" style="margin-top:10px">卡片、色块、渐变条都是模型当场决定的，换一次生成就换一种风格；设计规范没有抓手，judge 和 Reviser 只能对着整页像素提意见。</p></div>
+      <div class="panel"><h3>用组件库</h3><div class="facts"><div><b style="color:var(--ok)">0</b>程序检查问题</div><div><b>1</b>个字号类名（结论句 text-2xl）</div><div><b>0</b>个颜色类名</div><div><b>0</b>处卡片</div><div><b>89</b>行代码</div></div><p class="small" style="margin-top:10px">字号、颜色、间距、表格线都由组件给出，页面只决定「用哪个组件、放在哪」。所以问题能分成两类：组件本身的毛病交给组件 Agent，排法的问题交给 Reviser 改输出指南。</p></div>
+    </div>
+  </section>
+
+  <section class="part" id="agent">
+    <h2>2 · 组件 Agent 的迭代</h2>
+    <p class="lead">Maintainer 把「组件不够」的问题交给组件 Agent。它在单独的工作区里修现有组件或新增组件，做一张示例页，由人审批：通过、写意见让它再改一版，或不采用。采用后，两个 Skill 当前版的页面都按新组件重新生成。以下全部是真实记录。</p>
+
+    <div class="panel" style="display:grid;gap:12px">
+      <div class="kh"><h3>k1 · 截图组件</h3><span class="pill p-ok">采用</span><span class="small">4 版 · 3 次审批意见 · 需求 2 条</span></div>
+      <ul class="reqs"><li>交互流程挖掘（程序检查）：链路明细要展示每一步的界面截图，但组件库缺少能放图片的组件，页面只能自己画 &lt;img&gt;。</li><li>色觉无障碍分析（程序检查）：模拟视图要展示原界面和三种色觉模拟的截图，组件库同样缺图片组件。</li></ul>
+      <div class="vers">
+        <div class="ver"><span class="small">第 1 版 · 截图按网格换行</span><div class="viewport"><div class="shot"><img src="pages/comp/k1-v1.png" alt="k1 第 1 版示例页" loading="lazy"></div></div></div>
+        <div class="fb"><b>审批意见</b>截图部件改成横向滚动：一组截图排成一行横向滚动，更省空间；超出宽度的部分隐藏，不把页面撑宽。图按同一高度、原比例显示，不裁剪。</div>
+        <div class="ver"><span class="small">第 2 版 · 横向滚动</span><div class="viewport"><div class="shot"><img src="pages/comp/k1-v2.png" alt="k1 第 2 版示例页" loading="lazy"></div></div></div>
+        <div class="fb"><b>审批意见</b>太挤了，而且滑条也不对。这种滑条也应该用 shadcn 的滑条。</div>
+        <div class="ver"><span class="small">第 3 版 · shadcn 滚动条</span><div class="viewport"><div class="shot"><img src="pages/comp/k1-v3.png" alt="k1 第 3 版示例页" loading="lazy"></div></div></div>
+        <div class="fb"><b>审批意见</b>还需要更宽的间距。</div>
+        <div class="ver"><span class="small">第 4 版 · 图间距 48px，采用</span><div class="viewport"><div class="shot"><img src="pages/comp/k1-v4.png" alt="k1 第 4 版示例页" loading="lazy"></div></div></div>
+      </div>
+      <p class="label">采用前后的真实页面（f2 下单支付）</p>
+      <div class="frames"><div class="frame"><div class="cap"><span>采用前 · 组件库没有图片组件，页面里没有截图</span></div><div class="viewport sm"><div class="shot"><img src="pages/comp/real-noimg.png" alt="k1 之前的下单支付页" loading="lazy"></div></div></div><div class="frame"><div class="cap"><span>采用后 · 链路明细按步骤横排截图</span></div><div class="viewport sm"><div class="shot"><img src="pages/comp/real-g0.png" alt="k1 之后的下单支付页" loading="lazy"></div></div></div></div>
+    </div>
+
+    <div class="panel" style="display:grid;gap:8px">
+      <div class="kh"><h3>k2</h3><span class="pill p-bad">未采用</span><span class="small">需求 6 条 · 没做完就停了</span></div>
+      <p style="font-size:13px">组件 Agent 对「组件样式有毛病」的问题，新造了一套平行的组件，没有去修现有组件。停掉后改了 Maintainer 的写法：组件问题分成「组件库里没有」和「现有组件的样式有毛病」两种，后一种明确写出是哪个组件的哪个样式，组件 Agent 就知道该修还是该加。</p>
+    </div>
+
+    <div class="panel" style="display:grid;gap:12px">
+      <div class="kh"><h3>k3 · 修 4 个现有组件，新增 2 个</h3><span class="pill p-ok">采用</span><span class="small">1 版 · 需求 6 条（两个 Skill）</span></div>
+      <ul class="reqs"><li>DataTable 的表注固定居中，口径说明脱离表格左边线（交互流程挖掘 P-03、色觉 P-09）→ 表注左对齐</li><li>链路明细的两组截图之间缺分组标记（交互流程挖掘 P-10）→ 新增 Rule</li><li>ProgressList 是黑色粗条，比页面其他元素重（色觉 P-06）→ Progress 改成 1px 细线</li><li>FigureStrip 的滚动条一直显示，截图下多一条灰横条（色觉 P-10）→ 只在悬停时出现</li><li>FigureImage 固定高度，四张对照图太窄（色觉 P-12）→ 新增 FigureGrid，两列铺满</li></ul>
+      <div class="frames"><div class="frame"><div class="cap"><span>组件 Agent 的示例页</span></div><div class="viewport sm"><div class="shot"><img src="pages/comp/k3-demo.png" alt="k3 示例页" loading="lazy"></div></div></div><div class="frame"><div class="cap"><span>采用前后的真实页面 · f2 当前版 c10 → c10-k3（左右拖动对比）</span></div><div class="frames" style="gap:8px"><div class="viewport sm"><div class="shot"><img src="pages/comp/real-c10.png" alt="k3 之前的当前版" loading="lazy"></div></div><div class="viewport sm"><div class="shot"><img src="pages/comp/real-c10k3.png" alt="k3 之后的当前版" loading="lazy"></div></div></div></div></div>
+      <p class="small">真实页面上的变化：产品对比表的步骤数条从粗条变成细线，每排截图下方的灰色滚动条不见了。</p>
+    </div>
+
+    <div class="panel" style="display:grid;gap:12px">
+      <div class="kh"><h3>k4、k5 · 正在等审批</h3><span class="pill p-base">待审</span></div>
+      <p style="font-size:13px">k3 采用后两个 loop 重跑，审美 judge 又找出新的组件问题。k4（5 条需求）没有新增部件，只改现有组件：严重度标红再加粗、ProgressList 对齐网格列线等。k5（4 条需求）新增 FigureCompare，让四张对照图同一高度排在一屏内，并给 Progress 加了刻度和阈值线。</p>
+      <div class="frames"><div class="frame"><div class="cap"><span>k4 示例页</span></div><div class="viewport sm"><div class="shot"><img src="pages/comp/k4-demo.png" alt="k4 示例页" loading="lazy"></div></div></div><div class="frame"><div class="cap"><span>k5 示例页</span></div><div class="viewport sm"><div class="shot"><img src="pages/comp/k5-demo.png" alt="k5 示例页" loading="lazy"></div></div></div></div>
+    </div>
+  </section>
+
+  <section class="part" id="loop" style="gap:6px">
+    <h2>3 · 输出指南 10 轮迭代（模拟）</h2>
+    <p class="lead">组件问题先交给组件 Agent，剩下的布局问题由 Reviser 改输出指南。每版页面真实渲染，judge、门禁和记录是模拟的。</p>
+  </section>
   <section class="panel track" aria-label="迭代轨迹">
     <div class="flow" id="flow"></div>
     <div class="chips" id="chips" role="tablist"></div>
@@ -144,7 +217,7 @@ const CRIT = ["留白", "分组", "容器", "字体层级", "色彩", "同类一
 const TRAIN = ["f1 线上开户", "f2 下单支付（上图）", "f3 外链分享文件", "f4 预订会议室"]
 
 const R = [
-  { n: 1, id: "k1", kind: "组件", tg: ["P-05", "P-06", "P-07"], base: "g0", cand: "g1", bl: "g0", cl: "g0 + 组件 k1", ver: "g1", focus: ["产品对比", "链路明细"],
+  { n: 1, id: "k3", kind: "组件", tg: ["P-05", "P-06", "P-07"], base: "g0", cand: "g1", bl: "g0", cl: "g0 + 组件 k3", ver: "g1", focus: ["产品对比", "链路明细"],
     comp: "修 Progress：条改成 1px 细线，与表格行线同重。修 FigureStrip：滚动条只在鼠标悬停时出现。新增 Rule：带标签的 1px 分组线，分开链路明细里的两条链路。（同一批还修了表注左对齐、加了 FigureGrid，这一页用不到。）",
     j: { o1: "hhh----", o2: "hh----h", r1: "改动后两条链路用带标签的细线分开，组间距收到 48px，一眼看出是同一节里的两组；步骤数条变细，不再比文字重；截图下的灰色横条没了。", r2: "链路明细分组清楚了，产品对比表的条和行线一样细，整页更安静。", train: "后后后后" },
     approval: { note: "看过组件 Agent 的示例页和 patch：3 处修现有组件，1 处新增分组线。采用后两个 Skill 当前版的页面按新组件重新生成，链路明细改用 Rule 分组；程序检查 0 → 0。" }, accept: true,
@@ -252,14 +325,14 @@ function problemPanel(n, r) {
   return `<div class="panel"><h3>问题清单 · 本轮开始时<span class="small">${ids.length} 个未解决</span></h3><ul class="plain">${ids.map((p) => `<li class="prob ${r.tg.includes(p) ? "tgt" : ""}"><span class="id">${p}</span><span>${PROB[p].text}</span><span class="meta"><span>${PROB[p].crit}</span>·<span>${PROB[p].cause}</span>${status(p)}</span></li>`).join("")}</ul>${done.length ? `<p class="small" style="margin-top:10px">已解决：${done.map((p) => `${p}（${R[SOLVED[p] - 1].id}）`).join("、")}</p>` : ""}</div>`
 }
 function changePanel(r) {
-  if (r.kind === "组件") return `<div class="panel"><h3>组件 Agent · 提案 k1<span class="small">针对 ${r.tg.join("、")}</span></h3><p class="rule new">${r.comp}</p><p class="small" style="margin-top:8px">问题清单里有组件不够的问题，先路由到组件 Agent，布局问题等组件采用后再改。</p></div>`
+  if (r.kind === "组件") return `<div class="panel"><h3>组件 Agent · 提案 k3<span class="small">针对 ${r.tg.join("、")}</span></h3><p class="rule new">${r.comp}</p><p class="small" style="margin-top:8px">问题清单里有组件不够的问题，先路由到组件 Agent，布局问题等组件采用后再改。</p></div>`
   const g = GUIDE.find((x) => x.id === r.rule), prev = R.slice(0, r.n - 1)
   const tried = prev.filter((x) => !x.accept && x.tg.some((t) => r.tg.includes(t)))
   return `<div class="panel"><h3>Reviser · 改输出指南<span class="small">针对 ${r.tg.join("、")}</span></h3><p class="label">${r.accept ? `新增规则 ${g.id}` : "候选规则（未采用）"}</p><p class="rule ${r.accept ? "new" : "rej"}" style="margin-top:4px">${r.accept ? g.text : r.ruleText}</p>${tried.length ? `<p class="small" style="margin-top:8px">先读了修改记录：${tried.map((x) => `${x.id} ${x.rec.result}（${x.rec.lesson}）`).join("；")}这次换了做法。</p>` : ""}</div>`
 }
 function guidePanel(n) {
   const rules = GUIDE.filter((g) => g.at <= n)
-  return `<div class="panel"><h3>本轮之后的输出指南<span class="small">新增 ${rules.length} 条${n >= 1 ? " · 组件库含 k1" : ""}</span></h3>${rules.length ? `<ul class="plain">${rules.map((g) => `<li class="prob ${g.at === n ? "tgt" : ""}"><span class="id">${g.id}</span><span>${g.text}</span></li>`).join("")}</ul>` : `<p class="small">输出指南还没有新增规则，用的是 design.md 原有的 A、B、C 三部分。</p>`}</div>`
+  return `<div class="panel"><h3>本轮之后的输出指南<span class="small">新增 ${rules.length} 条${n >= 1 ? " · 组件库含 k3" : ""}</span></h3>${rules.length ? `<ul class="plain">${rules.map((g) => `<li class="prob ${g.at === n ? "tgt" : ""}"><span class="id">${g.id}</span><span>${g.text}</span></li>`).join("")}</ul>` : `<p class="small">输出指南还没有新增规则，用的是 design.md 原有的 A、B、C 三部分。</p>`}</div>`
 }
 
 function shot(ver, focus) {
@@ -337,5 +410,5 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowLeft" && i > 0) go(order[i - 1])
 })
 const start = location.hash.slice(1)
-go(["g0", "final", ...R.map((x) => x.id)].includes(start) ? start : "k1")
+go(["g0", "final", ...R.map((x) => x.id)].includes(start) ? start : "k3")
 </script>

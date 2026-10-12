@@ -1,0 +1,711 @@
+[
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-rose;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 5
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-amber;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 6
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 7
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 12
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 13
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 13
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 13
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 14
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-lg 不在规范里(只允许结论句的 text-2xl)",
+  "line": 14
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <h2>,应使用组件库组件",
+  "line": 14
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 15
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 15
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 15
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 w-[1152px]",
+  "line": 22
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-white;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 22
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 24
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 from-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 25
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 28
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 tracking-[0.35em]",
+  "line": 28
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 28
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 28
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[32px]",
+  "line": 29
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 29
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <h1>,应使用组件库组件",
+  "line": 29
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 30
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-sm 不在规范里(只允许结论句的 text-2xl)",
+  "line": 30
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 30
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 32
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 32
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 36
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 37
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 37
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 37
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 38
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-sm 不在规范里(只允许结论句的 text-2xl)",
+  "line": 38
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 38
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 42
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 43
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 43
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 43
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[15px]",
+  "line": 44
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 44
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 44
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 49
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 54
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 56
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 56
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 56
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 57
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[32px]",
+  "line": 58
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 58
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 58
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 59
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 59
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 59
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 67
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 71
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 72
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-lg 不在规范里(只允许结论句的 text-2xl)",
+  "line": 72
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-base 不在规范里(只允许结论句的 text-2xl)",
+  "line": 77
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <h3>,应使用组件库组件",
+  "line": 77
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 78
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 78
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 78
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 81
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 81
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 81
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 85
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-sm 不在规范里(只允许结论句的 text-2xl)",
+  "line": 85
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 85
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 93
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xl 不在规范里(只允许结论句的 text-2xl)",
+  "line": 101
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <h3>,应使用组件库组件",
+  "line": 101
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 102
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 102
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 102
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 105
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-sm 不在规范里(只允许结论句的 text-2xl)",
+  "line": 105
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 105
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 106
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 106
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 106
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 115
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-lg 不在规范里(只允许结论句的 text-2xl)",
+  "line": 115
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 119
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 121
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 121
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 121
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 124
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-sm 不在规范里(只允许结论句的 text-2xl)",
+  "line": 124
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 124
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[10px]",
+  "line": 126
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-rose;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 126
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 126
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <img>,应使用组件库组件",
+  "line": 132
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 h-[300px]",
+  "line": 135
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 135
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 138
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 138
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 138
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 140
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 141
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 141
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 142
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 142
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 146
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-amber;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 146
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 146
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 162
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 166
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 167
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 167
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[15px]",
+  "line": 172
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <h3>,应使用组件库组件",
+  "line": 172
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 173
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 174
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 175
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 180
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 180
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 180
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 184
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-sm 不在规范里(只允许结论句的 text-2xl)",
+  "line": 184
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 184
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 196
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 198
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 bg-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 198
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 198
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[15px]",
+  "line": 201
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 201
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <h3>,应使用组件库组件",
+  "line": 201
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 203
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-sm 不在规范里(只允许结论句的 text-2xl)",
+  "line": 203
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <p>,应使用组件库组件",
+  "line": 203
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 205
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 text-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 205
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 205
+ },
+ {
+  "check": "组件库",
+  "msg": "直接写了 <span>,应使用组件库组件",
+  "line": 207
+ },
+ {
+  "check": "统一刻度",
+  "msg": "任意值类名 text-[11px]",
+  "line": 209
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-indigo;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 209
+ },
+ {
+  "check": "统一刻度",
+  "msg": "直接写了颜色类名 border-slate;颜色只能来自组件(下降、严重用组件的 direction、tone)",
+  "line": 220
+ },
+ {
+  "check": "统一刻度",
+  "msg": "字号类名 text-xs 不在规范里(只允许结论句的 text-2xl)",
+  "line": 220
+ },
+ {
+  "check": "组件库",
+  "msg": "页面上有不是组件库画的元素:9 个 <img>;组件库没有的能力不要自己画,在最后的说明里写出缺什么组件"
+ }
+]
