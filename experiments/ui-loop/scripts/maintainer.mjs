@@ -28,9 +28,9 @@ export const SYSTEM = (name) => `你是「${name}」这个 Skill 的 Maintainer�
 1. 合并:说的是同一件事的意见合并成一个问题,不管它出现在哪一页、哪一次检查。问题用一句话写清楚:页面上什么地方不对、对看报告的人有什么影响。写成对这个 Skill 的所有报告都成立的说法,不写某一页的行号、变量名这类细节。
 2. 算数:程序检查的结果每条都算。judge 的比较只记当前版的问题:两种顺序都提到的剩余问题算数;两种顺序都判当前版输时,让它输的做法是问题;让一版赢的做法写进相关问题的 good 里作参考。
 3. 归因,只分两类,标准是「现有组件够不够用」:
-   - 组件不够:components.md 里没有能做到的组件,怎么排都解决不了。problem 只写一句:「<页面的哪一部分>要展示<什么内容>,但组件库缺少<什么样的组件>,所以无法展示」,不写后果和页面现在的写法(那些放进 evidence)。
+   - 组件不够:components.md 里没有能做到的组件,怎么排都解决不了;或者问题出在组件自己的样式上(组件里写死的对齐、粗细、颜色、间距、滚动条等),页面按正常写法用这个组件就会出现,哪怕页面能换别的组件绕开,也算组件不够。problem 只写一句:「<页面的哪一部分>要展示<什么内容>,但组件库缺少<什么样的组件>,所以无法展示」,不写后果和页面现在的写法(那些放进 evidence)。
    - 布局问题:现有组件够用,是页面选的组件、组合和排法有问题。
-   依据必须来自给你的 components.md、Page.tsx 或 judge 的意见。
+   依据必须来自给你的 components.md、Page.tsx 或 judge 的意见。分不清时看 Page.tsx:出问题的样式页面里没写、是组件自己决定的,就是组件不够。
 4. 更新:已有的问题清单一并给你。同一个问题再次出现就沿用它的 id,更新页数和证据;只解决了一部分的,原问题 status 写「已解决」,没解决的部分作为新问题、用新 id;这一步的原始意见里已经没有它的,status 写「已解决」(只对同一步的问题这样判断,别的步骤的问题原样保留);新问题用新 id。
 5. 证据:每个问题写出现在哪几页,以及两三条原始意见的摘要。
 
@@ -49,8 +49,9 @@ export function judgeInput(stage, pairs, current) {
 
 // What one stage said about each training page.
 function stageInput(stage, run, cases, pairs, current) {
-  if (stage !== "program") return judgeInput(stage, pairs, current)
   const ws = (c) => path.join(ROOT, "traces", run, c)
+  // In a judge stage, with the current pages' code, so a problem can be traced to the page or to a component.
+  if (stage !== "program") return `${judgeInput(stage, pairs, current)}\n\n${cases.map((c) => `<当前版 ${run} 的 Page.tsx,页面 ${c}>\n${read(path.join(ws(c), "Page.tsx"))}\n</当前版 Page.tsx>`).join("\n\n")}`
   return cases.map((c) => [`<页面 ${c}>`, `<程序检查>\n${fs.existsSync(path.join(ws(c), "checks.json")) ? read(path.join(ws(c), "checks.json")) : "[]"}\n</程序检查>`,
     `<Page.tsx>\n${read(path.join(ws(c), "Page.tsx"))}\n</Page.tsx>`, `</页面 ${c}>`].join("\n")).join("\n\n")
 }

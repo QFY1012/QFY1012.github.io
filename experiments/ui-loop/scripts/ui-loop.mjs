@@ -29,9 +29,10 @@
 //                 results → record.json / changelog.md, accepted or not
 //   5. Maintainer when accepted, the problem list from that comparison (pages left unchanged keep
 //                 their earlier comparison)
-// When only 组件不够 problems are open, the loop stops and waits for the component branch; after a
-// merge (component-loop.mjs approve) the pages it edited become the current run, and the loop
-// checks them again from this stage.
+// Component problems come first: when any 组件不够 problem is open, the loop drops a candidate it
+// has not finished, asks the component agent for a proposal (component-loop.mjs propose) and stops
+// for a person to review it; after a merge (component-loop.mjs approve) the pages it edited become
+// the current run, and the loop checks them again from this stage.
 // The program stage ends early (moving on, with what is left recorded) after --stage-rounds rounds
 // or 3 rejected candidates in a row. The 审美 stage runs until no problem is left open (or only
 // 组件不够 ones); it also stops after --max-rounds (default 0: no limit), or at a human checkpoint
@@ -238,8 +239,21 @@ while (true) {
     continue
   }
   const layout = open((p) => p.cause === "布局问题"), parts = open((p) => p.cause === "组件不够")
+  if (parts.length) {
+    log(`有「组件不够」的问题(${parts.map((p) => p.id).join("、")}),先交给组件 Agent`)
+    // An unfinished candidate is dropped; its number stays used, so a later candidate never reuses its pages.
+    if (state.pending) {
+      log(`没做完的候选 ${state.pending.name} 作废`)
+      state.history.push({ round: state.round + 1, stage: state.stage, candidate: state.pending.name, base: state.current, baseRun: state.currentRun, change: state.pending.change, accept: false, void: true, why: "先解决组件问题,作废" })
+      state.round++
+      delete state.pending
+      save()
+    }
+    execFileSync("node", [path.join(ROOT, "scripts", "component-loop.mjs"), "propose"], { stdio: "inherit", cwd: ROOT })
+    state.stop = `等组件审批:看 library/ 下的示例,再 node scripts/component-loop.mjs approve|revise|reject k<n>`
+    break
+  }
   if (!layout.length) {
-    if (parts.length) { state.stop = `只剩「组件不够」的问题(${parts.map((p) => p.id).join("、")}),等组件分支:node scripts/component-loop.mjs propose`; break }
     if (state.stage === "aesthetic") { state.stop = "审美阶段没有可改的问题"; break }
     nextStage("训练样本上没有可改的问题(留出样本仍未全部通过)")
     continue
