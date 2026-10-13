@@ -29,30 +29,6 @@ const resultText = { ok: '采用', no: '未采用', void: '作废' };
 
 // 审美 Judge 的 7 条 rubric(rubric31)
 const criteria = ['留白合适', '分组清楚、有垂直韵律', '容器样式有功能', '字体层级清楚', '色彩统一', '同类组件一致', '网格对齐'];
-// 示意的版本演进(experiments/ui-loop/demo):同一份报告按 loop 的规则排出的 9 个采用版本和 4 个被拒候选,
-// 截图由组件库真实渲染,裁出这一版改动的那一节(public/images/internship/versions/)
-const stages = [
-  { no: '01', name: '无组件库', who: '模型直接写页面', items: ['v1'] },
-  { no: '02', name: '组件库 + UI Spec', who: '生成 Agent 只能拼组件', items: ['v2'] },
-  { no: '03', name: '组件迭代', who: '组件 Reviser · 人工审批', items: ['v3', 'v4'] },
-  { no: '04', name: '审美迭代', who: 'UI Spec Reviser · 验证把关', items: ['v5', 'v6', 'v7', 'v8', 'v9'] },
-];
-const shot = (img, w, h) => ({ src: `/images/internship/versions/${img}.webp`, w, h });
-const V = {
-  v1: { title: '模型自己写', text: '只给数据，不给组件库：版式、颜色、卡片、字号都由模型当场决定。看着像样，但换一次生成就换一种风格。', facts: '9 种字号 · 27 个颜色类名 · 19 处圆角卡片', img: shot('free', 1000, 946) },
-  v2: { title: '只用组件库写', text: '字号、颜色、间距、表格线都由组件给出，页面只决定用哪个组件、放在哪。但组件库里还没有放截图的组件，链路明细只剩文字。', facts: '程序检查 0 个问题 · 页面不写任何颜色和字号', img: shot('noimg', 1000, 513) },
-  v3: { title: '新增截图组件', text: 'Maintainer 归因为「组件不够」。组件 Reviser 新增 FigureStrip 等截图部件，人工提了 3 次意见（改横向滚动、换滚动条、加宽间距），第 4 版合并。', img: shot('g0', 1000, 609) },
-  v4: { title: '修现有组件', text: '进度条改成 1px 细线，截图下的滚动条只在悬停时出现；新增带标签的分组线，两条链路成为同一节里的两组。', img: shot('g1', 1000, 865) },
-  v5: { title: '核心指标排成一行', text: '4 个数字一行排满，「发现问题」不再单独掉到第二行。', img: shot('g2', 1000, 125),
-        branch: { title: '下一步改成表格', result: '没效果', why: '两种顺序判得相反：一次说表格便于比较，一次说像又一张明细表，和问题表分不开。', img: shot('c3', 1000, 151) } },
-  v6: { title: '下一步按条数分列', text: '列数等于建议条数，两条建议各占半行，右边不再空出一列。', img: shot('g3', 1000, 115),
-        branch: { title: '截图下删掉备注', result: '失败', why: '截图下方整齐了，但程序检查变差：页面缺了 5 项数据（每一步的问题备注）。', img: shot('c5', 1000, 609) } },
-  v7: { title: '截图说明固定三行', text: '每张截图下固定三行：屏名、内容与操作、问题；没有问题就写「问题：无」。一排高度一致，备注也保留下来。', img: shot('g4', 1000, 609),
-        branch: { title: '结论改成大数字', result: '失败', why: '在验证页上输了：「少 1 屏」的大数字让结论像又一组指标，优惠券的差别反而挤进小字。', img: shot('c7', 1000, 125) } },
-  v8: { title: '结论分主次', text: '结论的判断句用大字，解释换行用正文：先读到结论，再读原因。', img: shot('g5', 1000, 125),
-        branch: { title: '问题表改成列表', result: '没效果', why: '一次说列表好读，一次说严重度埋进说明里没法竖着比，「高」也不再标红。', img: shot('c9', 1000, 272) } },
-  v9: { title: '问题表合成四列', text: '编号并进问题，产品和步骤并成「位置」：问题、位置、严重度、证据四列。审美 Judge 不再提出两种顺序都认可的问题，迭代结束。', img: shot('g6', 1000, 183) },
-};
 ---
 <html lang="zh">
 <head>
@@ -105,50 +81,22 @@ const V = {
       border-left: 2px solid var(--accent); padding-left: 0.75rem; margin: 1rem 0 0;
     }
 
-    /* 版本轨道：主线是采用的版本，没采用的候选从它出发的版本向右分出去 */
-    .vtrack-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.5rem; font-size: var(--text-meta); color: var(--text-dim); }
-    .vtrack-legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
-    .lg-main { width: 22px; border-top: 1.6px solid var(--accent); }
-    .lg-branch { width: 22px; border-top: 1.4px dashed var(--text-dimmer); }
-    .vtrack { margin-top: 1.25rem; }
-    .vstage, .vrow { display: grid; grid-template-columns: 28px minmax(0, 1fr) minmax(0, 0.8fr); column-gap: 2.25rem; }
-    .vrail { position: relative; }
-    .vrail::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1.6px solid var(--accent); transform: translateX(-50%); }
-    .vstage:first-child .vrail::before { top: 1.1rem; }
-    .vrow.last .vrail::before { bottom: auto; height: 2rem; }
-    .vstage > .vstage-h { margin-top: 2rem; }
-    .vstage:first-child > .vstage-h { margin-top: 0; }
-    .vstage .dot { position: absolute; left: 50%; top: 2.55rem; width: 13px; height: 13px; border-radius: 50%; transform: translateX(-50%); background: var(--bg); border: 1.6px solid var(--accent); }
-    .vstage:first-child .dot { top: 0.55rem; }
-    .vstage-h { grid-column: 2 / 4; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.9rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
-    .vstage-no { font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.12em; color: var(--accent); }
-    .vstage-name { font-size: var(--text-title); font-weight: 700; color: var(--text); }
-    .vstage-who { font-size: var(--text-meta); color: var(--text-dim); }
-    .vrow > .vcard { padding-top: 1.5rem; }
-    .vrow .dot { position: absolute; left: 50%; top: 1.95rem; width: 9px; height: 9px; border-radius: 50%; transform: translateX(-50%); background: var(--accent); }
-    .vcard { min-width: 0; display: flex; flex-direction: column; gap: 0.35rem; }
-    .vhead { display: flex; align-items: baseline; gap: 0.6rem; }
-    .vno { font-family: var(--font-mono); font-size: var(--text-meta); font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-    .vok { font-size: var(--text-meta); color: var(--accent); }
-    .vcard h4 { font-size: var(--text-body); font-weight: 700; color: var(--text); }
-    .vcard p { font-size: var(--text-meta); line-height: 1.8; margin: 0; }
-    .vcard .facts { color: var(--text); }
-    .vimg { margin-top: 0.4rem; border: 1px solid var(--border); background: #fff; overflow: hidden; }
-    .vimg img { display: block; width: 100%; height: auto; }
-    .vimg.tall { max-height: 340px; overflow-y: auto; overscroll-behavior: contain; }
-    .vbranch { position: relative; }
-    .vbranch::before { content: ''; position: absolute; right: calc(100% + 0.35rem); top: 2.12rem; width: 2.25rem; border-top: 1.4px dashed var(--text-dimmer); }
-    .vbranch .vno, .vbranch .vx { color: var(--text-dimmer); }
-    .vx { font-size: var(--text-meta); }
-    .vbranch h4 { color: var(--text-dim); }
-    .vbranch .vimg { opacity: 0.72; filter: grayscale(0.35); }
-    .vrow:hover .vbranch .vimg { opacity: 1; filter: none; }
+    /* 三版页面对比：同高窗口，窗内上下滚动看整页 */
+    .versions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin-top: 1.75rem; }
+    .version { display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; }
+    .version-tag { font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.08em; color: var(--accent); }
+    .version h3 { margin: 0; font-size: var(--text-body); }
+    .shot {
+      height: 520px; overflow-y: auto; border: 1px solid var(--border); background: #fff;
+      overscroll-behavior: contain;
+    }
+    .shot img { display: block; width: 100%; height: auto; }
+    .version ul { list-style: none; display: flex; flex-direction: column; gap: 0.2rem; }
+    .version li { font-size: var(--text-meta); color: var(--text-dim); line-height: 1.7; }
+    .version li b { color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
     @media (max-width: 860px) {
-      .vstage, .vrow { grid-template-columns: 22px minmax(0, 1fr); column-gap: 1rem; }
-      .vstage-h { grid-column: 2; }
-      .vrow > .vbranch { grid-column: 2; margin: 1rem 0 0 1rem; padding: 0 0 0 1rem; border-left: 1.4px dashed var(--text-dimmer); }
-      .vbranch::before { display: none; }
-      .vimg.tall { max-height: 260px; }
+      .versions { grid-template-columns: 1fr; }
+      .shot { height: 420px; }
     }
 
     /* 轮次表 */
@@ -351,54 +299,46 @@ const V = {
   <section id="reproduce">
     <p class="sec-label">Public Reproduction</p>
     <h2>用虚构数据复现一遍</h2>
-    <p>实习中的报告和数据不能公开。为了能把输出层讲清楚、拿出过程数据，我在实习结束后用<strong>虚构数据</strong>把输出层的 loop 从头搭了一遍：两个 Skill（交互流程挖掘、色觉无障碍分析），每个 6 份报告，4 份训练、2 份验证；生成 Agent 和审美 Judge 都用 DeepSeek。</p>
+    <p>实习中的报告和数据不能公开。为了能把输出层讲清楚、拿出过程数据，我在实习结束后用<strong>虚构数据</strong>把输出层的 loop 从头搭了一遍：两个 Skill（交互流程挖掘、色觉无障碍分析），每个 6 份报告，4 份训练、2 份验证；生成 Agent 和审美 Judge 都用 DeepSeek。下面是「交互流程挖掘」同一份报告的三个版本。</p>
     <p class="note">本节的页面、轮次和组件提案都来自这次复现，不是实习中的数据。</p>
 
-    <h3 class="sub-h">一份报告的版本演进</h3>
-    <p>用「交互流程挖掘」的同一份报告（外卖下单支付，快送对比小橙），把输出层的几个阶段串起来：从没有组件库，到只用组件库，再到组件迭代和审美迭代。采用的版本连成主线，没采用的候选从它出发的版本分出去。每张截图只截这一版改动的那一节。</p>
-    <p class="note">这张图是为讲清过程整理的示意：版本的改动和判定按 loop 的规则编排，截图都由组件库真实渲染；真实运行的轮次记录见下一张表。</p>
-    <div class="vtrack-legend" aria-hidden="true">
-      <span><i class="lg-main"></i>主线：采用的版本</span>
-      <span><i class="lg-branch"></i>分支：没采用的候选</span>
-    </div>
-    <div class="vtrack">
-      {stages.map((st, si) => (
-        <Fragment>
-          <div class="vstage">
-            <div class="vrail"><span class="dot"></span></div>
-            <div class="vstage-h">
-              <span class="vstage-no">{st.no}</span>
-              <span class="vstage-name">{st.name}</span>
-              <span class="vstage-who">{st.who}</span>
-            </div>
-          </div>
-          {st.items.map((id, ii) => {
-            const v = V[id];
-            const last = si === stages.length - 1 && ii === st.items.length - 1;
-            const tall = v.img.h > 400;
-            return (
-              <div class={`vrow${last ? ' last' : ''}`}>
-                <div class="vrail"><span class="dot"></span></div>
-                <div class="vcard">
-                  <div class="vhead"><span class="vno">{id.toUpperCase()}</span>{id !== 'v1' && <span class="vok">采用</span>}</div>
-                  <h4>{v.title}</h4>
-                  <p>{v.text}</p>
-                  {v.facts && <p class="facts">{v.facts}</p>}
-                  <div class={`vimg${tall ? ' tall' : ''}`}><img src={v.img.src} width={v.img.w} height={v.img.h} loading="lazy" alt={`${id.toUpperCase()}「${v.title}」改动处截图`} /></div>
-                </div>
-                {v.branch && (
-                  <div class="vcard vbranch">
-                    <div class="vhead"><span class="vno">候选</span><span class="vx">未采用 · {v.branch.result}</span></div>
-                    <h4>{v.branch.title}</h4>
-                    <p>{v.branch.why}</p>
-                    <div class={`vimg${v.branch.img.h > 400 ? ' tall' : ''}`}><img src={v.branch.img.src} width={v.branch.img.w} height={v.branch.img.h} loading="lazy" alt={`没采用的候选「${v.branch.title}」截图`} /></div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </Fragment>
-      ))}
+    <div class="versions">
+      <div class="version">
+        <span class="version-tag">A · 没有组件库</span>
+        <h3>模型直接写页面</h3>
+        <div class="shot" tabindex="0" aria-label="版本 A 整页截图，可上下滚动">
+          <img src="/images/internship/flow-free.webp" width="960" height="2110" loading="lazy" alt="没有组件库时模型直接用 Tailwind 写出的交互流程挖掘报告：深色结论条、带底色的卡片、多种颜色标签" />
+        </div>
+        <ul>
+          <li>页面自己写的字号 <b>9</b> 种，颜色类名 <b>27</b> 种</li>
+          <li>圆角卡片 <b>19</b> 处</li>
+          <li>深色结论条、底色卡片、多色标签</li>
+        </ul>
+      </div>
+      <div class="version">
+        <span class="version-tag">B · 组件库 + UI Spec 初版</span>
+        <h3>迭代开始前</h3>
+        <div class="shot" tabindex="0" aria-label="版本 B 整页截图，可上下滚动">
+          <img src="/images/internship/flow-spec-v0.webp" width="960" height="2832" loading="lazy" alt="用组件库和初版 UI Spec 生成的同一份报告：左侧节标题、右侧内容的统一栅格，核心指标排成 3 + 1 两行" />
+        </div>
+        <ul>
+          <li>字号、颜色、间距全部交给组件</li>
+          <li>程序检查 <b>0</b> 个问题</li>
+          <li>还剩布局问题：指标 3 + 1 折行，背景信息落在页尾</li>
+        </ul>
+      </div>
+      <div class="version">
+        <span class="version-tag">C · 13 轮之后</span>
+        <h3>UI Spec 第 4 版 + 新组件</h3>
+        <div class="shot" tabindex="0" aria-label="版本 C 整页截图，可上下滚动">
+          <img src="/images/internship/flow-spec-v3.webp" width="960" height="2832" loading="lazy" alt="迭代 13 轮之后的同一份报告：背景信息提到页头之后，核心指标一行排满，步骤备注收成表格" />
+        </div>
+        <ul>
+          <li>UI Spec 采用 <b>3</b> 条修改</li>
+          <li>组件库合并 <b>5</b> 次更新</li>
+          <li>指标一行排满，背景信息提前，备注收成一张表</li>
+        </ul>
+      </div>
     </div>
 
     <h3 class="sub-h">每一轮改了什么</h3>
