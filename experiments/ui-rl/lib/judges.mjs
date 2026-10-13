@@ -7,11 +7,15 @@
 //   func      ui-loop 早期的需求 judge:哪版更方便使用,可以说一样;给 data.json,两版开头相同的切块略去
 //   ia        新标准(docs/criteria.md 第 1–6 条):信息组织优先、版面整齐其次,五档
 //   ia31      新标准 + rubric31 的 7 条作为平局时的参考,五档
+//   ia2       ia31 + 两条取舍规则(标准冲突时前面的条优先;只换了写法、信息的组织没变判一样),输入不变
+//   ia2s      ia2 的标准,输入换成按节对齐:两版整页缩略图 + 逐节交替给 A、B 的截图,两版相同的节略去(cache/sections,先跑 section-crops.mjs)
 import fs from "node:fs"
 import path from "node:path"
 import crypto from "node:crypto"
 import { img, RUBRIC_31 } from "../../ui-judge/scripts/pairwise-judge.mjs"
 import { systemAesthetic, SYSTEM_FUNCTION } from "../../ui-loop/scripts/compare.mjs"
+
+const ROOT = path.resolve(import.meta.dirname, "..")
 
 const tiles = (ws) => JSON.parse(fs.readFileSync(path.join(ws, "tiles.json"), "utf8"))
 const hash = (f) => crypto.createHash("sha1").update(fs.readFileSync(f)).digest("hex")
@@ -56,6 +60,50 @@ const VISUAL = `
 ${RUBRIC_31.map((c, i) => `${7 + i}. ${c.name}:${c.rule}`).join("\n")}
 `
 
+// ---------------------------------------------------------------- 第 1 阶段第 2 版
+const IA31 = IA.replace("%EXTRA%", VISUAL).replace("信息组织分不出高下再看版面整齐。", "信息组织分不出高下再看版面整齐,都分不出再看视觉细节。")
+const RULES = `
+取舍规则:
+- 一版在某条上好、在另一条上差时,按条目顺序取舍,前面的条优先。特别是第 1、4 条(相关的放一起、合在一起后分得清)上的好处,不会因为多占了一些空间(第 5 条)或次要信息占地稍多(第 3 条)而被抵消;第 3、5 条只在出现大块没有信息的空白时才算明显的缺点。
+- 两版的差别只是同一块内容换了写法或形式(例如表格换成列表、「第 3 步」换成「3」、列数不同),而信息怎么分组、放在哪、和什么挨着都没变时,判「一样」。
+`
+const IA2 = IA31.replace("\n做法:", `${RULES}\n做法:`)
+const IA2S = IA2
+  .replace("会给你上游数据 data.json 和两版的截图(每版先是整页缩略图,再是从上到下的切块)。", "会给你上游数据 data.json、两版的整页缩略图,再按节逐一对照两版的截图:两版完全相同的节只写一句、不给图;不同的节先给 A 版这一节、再给 B 版这一节;只有一版有的节会注明。")
+  .replace("1. 先找出两版不同的地方(两版常常只差一两处),写清是哪一节、各是什么样。", "1. 先看标了「两版不同」或「只有一版有」的节,写清各是什么样;再看缩略图,注意节的增减和先后顺序有没有变。")
+
+const sections = (ws) => {
+  const f = path.join(ROOT, "cache", "sections", path.basename(path.dirname(ws)), path.basename(ws), "sections.json")
+  if (!fs.existsSync(f)) throw new Error(`没有按节截图:${f}(先跑 scripts/section-crops.mjs)`)
+  return JSON.parse(fs.readFileSync(f, "utf8")).map((s) => ({ ...s, dir: path.dirname(f) }))
+}
+// 按节标题对齐(最长公共子序列),返回 [{a, b}],缺的一边为 null
+function align(A, B) {
+  const n = A.length, m = B.length, L = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0))
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i].title === B[j].title ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1])
+  const out = []
+  let i = 0, j = 0
+  while (i < n || j < m) {
+    if (i < n && j < m && A[i].title === B[j].title) out.push({ a: A[i++], b: B[j++] })
+    else if (j >= m || (i < n && L[i + 1][j] >= L[i][j + 1])) out.push({ a: A[i++], b: null })
+    else out.push({ a: null, b: B[j++] })
+  }
+  return out
+}
+function bySection(wa, wb) {
+  const shots = (s) => s.files.map((f) => img(path.join(s.dir, f)))
+  const out = [dataOf(wa),
+    { type: "text", text: "A 版整页缩略图:" }, img(path.join(wa, "thumb.png")),
+    { type: "text", text: "B 版整页缩略图:" }, img(path.join(wb, "thumb.png"))]
+  align(sections(wa), sections(wb)).forEach(({ a, b }, k) => {
+    const head = `第 ${k + 1} 节「${(a ?? b).title}」`
+    if (a && b && a.hash === b.hash) out.push({ type: "text", text: `${head}:两版相同,略去。` })
+    else if (a && b) out.push({ type: "text", text: `${head}:两版不同。A 版:` }, ...shots(a), { type: "text", text: `${head} B 版:` }, ...shots(b))
+    else out.push({ type: "text", text: `${head}:只有 ${a ? "A" : "B"} 版有这一节。` }, ...shots(a ?? b))
+  })
+  return out
+}
+
 const iaScore = (j) => {
   const s = j.better === "B" ? 1 : j.better === "A" ? -1 : 0
   return s * (s && /明显/.test(j.degree ?? "") ? 2 : 1)
@@ -78,8 +126,18 @@ export const JUDGES = {
     score: iaScore,
   },
   ia31: {
-    system: () => IA.replace("%EXTRA%", VISUAL).replace("信息组织分不出高下再看版面整齐。", "信息组织分不出高下再看版面整齐,都分不出再看视觉细节。"),
+    system: () => IA31,
     content: (wa, wb) => [dataOf(wa), ...version(wa, "A"), ...version(wb, "B")],
+    score: iaScore,
+  },
+  ia2: {
+    system: () => IA2,
+    content: (wa, wb) => [dataOf(wa), ...version(wa, "A"), ...version(wb, "B")],
+    score: iaScore,
+  },
+  ia2s: {
+    system: () => IA2S,
+    content: bySection,
     score: iaScore,
   },
 }

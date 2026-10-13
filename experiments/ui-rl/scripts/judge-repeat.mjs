@@ -1,7 +1,7 @@
 // 用一种 judge 把标注集的每对页面判几遍(第 0 阶段测基线,第 1 阶段比较几种 judge)。
 //
 //   source judge.env && JUDGE_MODEL=deepseek-v4.1-flash JUDGE_EFFORT=high \
-//     node experiments/ui-rl/scripts/judge-repeat.mjs [--judge rubric31] [--run baseline-judge] [--rounds 5] [--workers 8] [--pairs p01,p02]
+//     node experiments/ui-rl/scripts/judge-repeat.mjs [--judge rubric31] [--run baseline-judge] [--rounds 5] [--workers 8] [--pairs p01,p02] [--split dev]
 //
 // judge 的种类见 lib/judges.mjs(rubric31 是 loop 里的审美 judge,原样;页面取自 ui-loop/traces 的工作区)。
 // 每轮按 A/B、B/A 两种顺序各判一次。先跑完第 1 轮的全部对,再跑第 2 轮……额度中途用完时,已跑完的轮次是完整的。
@@ -27,7 +27,10 @@ if (!KEY) throw new Error("set DEEPSEEK_API_KEY (source judge.env)")
 
 const key = JSON.parse(fs.readFileSync(path.join(ROOT, "labels", "key.json"), "utf8"))
 const only = arg("pairs") ? new Set(arg("pairs").split(",")) : null
-const pairs = key.filter((p) => !only || only.has(p.id))
+// --split dev|test:只跑一半(划分和 eval-reward.mjs 一样)
+const DEV_CAND = new Set(["c1", "c2", "c3", "c5", "c8", "c11"])
+const splitOf = (p) => (p.kind === "cand" ? (DEV_CAND.has(p.candidate) ? "dev" : "test") : p.base === "flow-g0" ? "dev" : "test")
+const pairs = key.filter((p) => (!only || only.has(p.id)) && (!arg("split") || splitOf(p) === arg("split")))
 const OUT = path.join(ROOT, "runs", RUN)
 fs.mkdirSync(OUT, { recursive: true })
 
