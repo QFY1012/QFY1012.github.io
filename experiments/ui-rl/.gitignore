@@ -1,3 +1,12 @@
 labels/pages/
 labels/*.tmp.html
 cache/
+# 训练生成的页面:只留 Page.tsx、thumb.png、meta.json、checks.json、data.json、tiles.json
+runs/*/pages/**/.build/
+runs/*/pages/**/.private/
+runs/*/pages/**/assets/
+runs/*/pages/**/sections/
+runs/*/pages/**/session.jsonl
+runs/*/pages/**/shot.png
+runs/*/pages/**/tile-*.png
+runs/*/pages/**/tsconfig.json

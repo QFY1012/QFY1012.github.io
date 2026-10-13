@@ -6,6 +6,7 @@
 //     [--data skills/flow/data] [--guide skills/flow/guides/g0.md]      a Skill's data and output guide
 //     [--base flow-g0 --change change.json]                              edit the base run's pages for one change:
 //                                                                        a guide rule, or (kind "component") a component library change
+//     [--traces <dir>]                                                   where the workspaces go (default traces/)
 //
 // One workspace per report in traces/<run>/<case>/ (the trajectory store):
 //   data.json        the upstream Skill output (copied from ../ui-judge/data/)
@@ -34,6 +35,7 @@ const MAX_SHOOTS = Number(arg("max-shoots", "5"))
 const GUIDE = arg("guide") ? path.resolve(ROOT, arg("guide")) : null
 const BASE = arg("base")
 const CHANGE = arg("change") ? JSON.parse(fs.readFileSync(path.resolve(ROOT, arg("change")), "utf8")) : null
+const TRACES = path.resolve(ROOT, arg("traces", "traces"))
 
 const design = fs.readFileSync(DESIGN, "utf8")
 const components = fs.readFileSync(path.join(ROOT, "components.md"), "utf8")
@@ -81,7 +83,7 @@ function lineDiff(a, b) {
 }
 
 async function generate(name) {
-  const ws = path.join(ROOT, "traces", RUN, name)
+  const ws = path.join(TRACES, RUN, name)
   if (fs.existsSync(path.join(ws, "meta.json"))) return console.log(`${name}: already done`)
   console.log(`${name}: 开始${BASE ? `改页面(在 ${BASE} 上改)` : "写页面"}`)
   fs.rmSync(ws, { recursive: true, force: true })
@@ -90,7 +92,7 @@ async function generate(name) {
   // Images the data refers to as assets/<file>.
   if (fs.existsSync(path.join(DATA, name))) fs.cpSync(path.join(DATA, name), path.join(ws, "assets"), { recursive: true })
   // Edit mode: start from the base run's page and its screenshots.
-  const baseWs = BASE ? path.join(ROOT, "traces", BASE, name) : null
+  const baseWs = BASE ? path.join(TRACES, BASE, name) : null
   if (baseWs) for (const f of fs.readdirSync(baseWs)) if (f === "Page.tsx" || f === "checks.json" || f === "tiles.json" || f.endsWith(".png")) fs.copyFileSync(path.join(baseWs, f), path.join(ws, f))
 
   // Page.tsx outside a TypeScript project would pick up the site's Astro tsconfig.
@@ -107,7 +109,7 @@ ${CHANGE.old ? `原文:${CHANGE.old.trim()}\n改为:${CHANGE.new.trim()}` : `新
 请按这条规则修改 Page.tsx:只改和这条规则有关的地方,其他部分保持原样;如果页面已经符合这条规则,就不要改,直接结束。改了就运行检查。`
     : `工作目录里的 Page.tsx 是已经写好的页面。检查它是否符合规范和输出指南,需要的话修改。`
   const run = await runAgent({
-    name, ws, priv: path.join(ROOT, "traces", RUN, ".private", name), system: system(), prompt, maxShoots: MAX_SHOOTS,
+    name, ws, priv: path.join(TRACES, RUN, ".private", name), system: system(), prompt, maxShoots: MAX_SHOOTS,
     nudges: [`你还没有写出 Page.tsx。请现在用 write 写出页面,然后运行检查。`, `你还没有写出 Page.tsx。请现在用 write 写出页面,然后运行检查。`],
     missing: () => !fs.existsSync(path.join(ws, "Page.tsx")),
   })

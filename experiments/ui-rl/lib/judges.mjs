@@ -101,6 +101,8 @@ const IA5 = IA4
   .replace("先看信息组织,信息组织分不出高下再看版面。", "先看信息组织,信息组织分不出高下再看视觉。")
   .replace(/二、版面\(次要依据\)\n5\. [^\n]*\n/, `二、视觉(次要依据)\n${VISUAL5}\n`)
 const IA5S = sectionInput(IA5)
+// ia5 的评判标准(不含做法和输出格式),训练时 Maintainer 和 Reviser 用它作学习目标
+export const CRITERIA = IA5.slice(IA5.indexOf("按下面的标准比"), IA5.indexOf("\n\n做法"))
 const IA4V = sectionInput(IA4
   .replace("信息组织分不出高下再看版面。", "信息组织分不出高下再看版面,都分不出再看视觉细节。")
   .replace("\n\n做法:", `\n\n三、视觉细节(只在前面都分不出高下时参考)\n${RUBRIC_31.map((c, i) => `${6 + i}. ${c.name}:${c.rule}`).join("\n")}\n\n做法:`))
@@ -111,8 +113,10 @@ const IA2G = IA2S
   .replace(/3\. 综合判断:.*\n/, "3. 综合判断,给一个 1–9 的分:1 = A 明显更好,3 = A 稍好,5 = 一样,7 = B 稍好,9 = B 明显更好,2、4、6、8 是中间的程度。「明显」指读者一眼能感到的差别;「稍好」指仔细比才看得出;两版差别不影响阅读,或各有好坏抵消,给 5。拿不准倾向哪边时,给靠近 5 的分。\n")
   .replace(`"better":"A 或 B 或 一样","degree":"明显 或 稍好(一样时写空)",`, `"score":1 到 9 的整数,`)
 
+// 训练生成的页面把按节截图存在自己的工作目录 <ws>/sections/;标注集的页面在 cache/sections/<run>/<case>/
 const sections = (ws) => {
-  const f = path.join(ROOT, "cache", "sections", path.basename(path.dirname(ws)), path.basename(ws), "sections.json")
+  const own = path.join(ws, "sections", "sections.json")
+  const f = fs.existsSync(own) ? own : path.join(ROOT, "cache", "sections", path.basename(path.dirname(ws)), path.basename(ws), "sections.json")
   if (!fs.existsSync(f)) throw new Error(`没有按节截图:${f}(先跑 scripts/section-crops.mjs)`)
   return JSON.parse(fs.readFileSync(f, "utf8")).map((s) => ({ ...s, dir: path.dirname(f) }))
 }
