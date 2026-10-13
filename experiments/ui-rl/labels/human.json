@@ -1,0 +1,674 @@
+[
+ {
+  "at": "2026-10-13T16:52:22.389Z",
+  "pair": "p01",
+  "reason": "",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T16:55:16.748Z",
+  "pair": "p02",
+  "reason": "",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T16:56:35.823Z",
+  "pair": "p03",
+  "reason": "",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T16:57:21.517Z",
+  "pair": "p04",
+  "reason": "",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T16:59:22.158Z",
+  "pair": "p05",
+  "reason": "",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:00:33.889Z",
+  "pair": "p06",
+  "reason": "",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:01:21.080Z",
+  "pair": "p07",
+  "reason": "左边信息的分组看上去更合理和多变 少一些刻板的感觉  右边",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:02:14.702Z",
+  "pair": "p08",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:03:09.259Z",
+  "pair": "p09",
+  "reason": "左边把备注和链路合并在一起了 最方便",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:03:53.162Z",
+  "pair": "p10",
+  "reason": "在留白合理的情况下空间利用率更高",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:04:29.425Z",
+  "pair": "p11",
+  "reason": "",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:05:53.503Z",
+  "pair": "p12",
+  "reason": "核心指标合并是应该不错的选择",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:06:16.137Z",
+  "pair": "p13",
+  "reason": "",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:06:37.467Z",
+  "pair": "p14",
+  "reason": "核心指标对齐更整齐",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:07:19.678Z",
+  "pair": "p15",
+  "reason": "信息更简练",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:45:10.091Z",
+  "pair": "p16",
+  "reason": "背景信息在前面就是浪费。。",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:09:07.580Z",
+  "pair": "p17",
+  "reason": "问题建议里边把该合并的合并了 不错的选择",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:09:43.680Z",
+  "pair": "p18",
+  "reason": "左边把步骤备注合并了 不错的选择",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:10:32.815Z",
+  "pair": "p19",
+  "reason": "该合并的合并 该挪到不显眼位置的挪到不显眼的位置 改进比较好",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:11:18.678Z",
+  "pair": "p20",
+  "reason": "指标平均分在一行 更好看",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:12:25.191Z",
+  "pair": "p21",
+  "reason": "挪了下位置 没区别",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:13:16.741Z",
+  "pair": "p22",
+  "reason": "备足那里分组做得稍微好一点。。 但是也有坏处就是离相关的界面更远了",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:14:09.457Z",
+  "pair": "p23",
+  "reason": "步骤离相关的链路更近",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:15:34.013Z",
+  "pair": "p24",
+  "reason": "左边信息合并的合理 信息层级合理",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:16:34.810Z",
+  "pair": "p25",
+  "reason": "右边清楚一点点 但是都是垃圾",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:17:02.159Z",
+  "pair": "p26",
+  "reason": "把背景信息提前没啥用",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:17:32.866Z",
+  "pair": "p27",
+  "reason": "背景信息提前没啥用",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:17:52.632Z",
+  "pair": "p28",
+  "reason": "指标一排四个更好看",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:19:30.072Z",
+  "pair": "p29",
+  "reason": "左边信息的呈现看上去清楚一些，然后 主要是步骤备注那里清楚一些 但是左边的下一步那里的排版不如右边好",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:20:23.578Z",
+  "pair": "p30",
+  "reason": "右边更简洁，信息分组合理一些 关于 测评对比那里 我感觉还是右边的表达方式好一点",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:20:53.899Z",
+  "pair": "p31",
+  "reason": "没意义 换位置",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:22:11.408Z",
+  "pair": "p32",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:22:32.960Z",
+  "pair": "p33",
+  "reason": "背景信息和结论报告放到一组。。",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:45:21.299Z",
+  "pair": "p34",
+  "reason": "",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:24:03.760Z",
+  "pair": "p35",
+  "reason": "右边核心指标和测评对比排得齐很多 好看很多 （大小和 对齐都好些）",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:24:27.904Z",
+  "pair": "p36",
+  "reason": "没用单个的指标提行显然更好看",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:24:49.440Z",
+  "pair": "p37",
+  "reason": "结论和核心指标分一组是合理的",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:25:34.224Z",
+  "pair": "p38",
+  "reason": "步骤备注那里稍微清楚一些",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:25:59.963Z",
+  "pair": "p39",
+  "reason": "步骤不单独分组是对的",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:26:20.320Z",
+  "pair": "p40",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:26:37.293Z",
+  "pair": "p41",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:27:10.855Z",
+  "pair": "p42",
+  "reason": "背景和结论不该放一起",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:27:38.475Z",
+  "pair": "p43",
+  "reason": "改位置没啥用",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:28:14.366Z",
+  "pair": "p44",
+  "reason": "备注和交互链路何在一起 更易于阅读",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:28:45.049Z",
+  "pair": "p45",
+  "reason": "背景学习没啥用。。干嘛占这么长一段",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:29:16.034Z",
+  "pair": "p46",
+  "reason": "右边的表达形式好看一些",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:29:42.872Z",
+  "pair": "p47",
+  "reason": "背景和结论不该放一起",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:30:03.637Z",
+  "pair": "p48",
+  "reason": "背景和结论不该放一起",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:30:38.284Z",
+  "pair": "p49",
+  "reason": "关键指标和结论合并是一个不错的选择",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:45:30.860Z",
+  "pair": "p50",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:31:30.941Z",
+  "pair": "p51",
+  "reason": "步骤和链路合并是不错的选择",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:31:45.428Z",
+  "pair": "p52",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:32:14.094Z",
+  "pair": "p53",
+  "reason": "背景信息没啥用为啥要在前面。。。",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:32:38.448Z",
+  "pair": "p54",
+  "reason": "关键指标和结论合并是不错的选择",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:33:00.050Z",
+  "pair": "p55",
+  "reason": "背景信息为什么要和结论在一起 很奇怪",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:33:25.027Z",
+  "pair": "p56",
+  "reason": "背景信息放前面很奇怪。。。",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:33:38.780Z",
+  "pair": "p57",
+  "reason": "背景信息放前面很奇怪",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:33:53.825Z",
+  "pair": "p58",
+  "reason": "背景信息放前面很奇怪。。",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:35:15.287Z",
+  "pair": "p59",
+  "reason": "右边把链路和备注合并了 比较好 但是又确合理的视觉表达方式把备注和说明分开来。",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:35:37.676Z",
+  "pair": "p60",
+  "reason": "左边的备注清楚一些",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:36:05.177Z",
+  "pair": "p61",
+  "reason": "结论和关键指标合并得好",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:36:19.102Z",
+  "pair": "p62",
+  "reason": "背景信息和结论 不该放一起。。",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:37:28.267Z",
+  "pair": "p63",
+  "reason": "不走背景合并是好的，单曲信息的视觉表达上没分开 网完全不知道哪些是备注 哪些是说明。。",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:37:50.905Z",
+  "pair": "p64",
+  "reason": "没用指标单独占一行 更好看",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:38:12.156Z",
+  "pair": "p65",
+  "reason": "结论和指标合并是一个很好的决策",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:38:22.761Z",
+  "pair": "p66",
+  "reason": "",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:38:43.966Z",
+  "pair": "p67",
+  "reason": "背景信息放全面没用任何用处。。",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:39:05.854Z",
+  "pair": "p68",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:39:51.885Z",
+  "pair": "p69",
+  "reason": "右边的备注好读一些",
+  "round": "r1",
+  "score": 2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:40:14.474Z",
+  "pair": "p70",
+  "reason": "备注和链路好读一些",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:40:28.841Z",
+  "pair": "p71",
+  "reason": "备注好读一些",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:40:35.817Z",
+  "pair": "p72",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:40:59.758Z",
+  "pair": "p73",
+  "reason": "没用单独多出来的一行指标",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:41:49.613Z",
+  "pair": "p74",
+  "reason": "备注跟链路合并了 但是看不出来合并在那里了。。。",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:42:02.593Z",
+  "pair": "p75",
+  "reason": "链路和备注的关系更易读",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:42:37.718Z",
+  "pair": "p76",
+  "reason": "步骤和链路合并了 并且能区分出来 比较好",
+  "round": "r1",
+  "score": -2,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:42:53.002Z",
+  "pair": "p77",
+  "reason": "备注和链路合并了 较好",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:43:13.947Z",
+  "pair": "p78",
+  "reason": "右边的备注分类更易读",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:43:36.611Z",
+  "pair": "p79",
+  "reason": "背景信息在前面就是浪费空间",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:43:53.153Z",
+  "pair": "p80",
+  "reason": "背景信息在前面激素浪费空间",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:44:08.381Z",
+  "pair": "p81",
+  "reason": "左边更易读",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:44:14.754Z",
+  "pair": "p82",
+  "reason": "",
+  "round": "r1",
+  "score": 0,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:44:35.011Z",
+  "pair": "p83",
+  "reason": "背景信息在前面就是浪费空间",
+  "round": "r1",
+  "score": -1,
+  "shownSwapped": false
+ },
+ {
+  "at": "2026-10-13T17:44:47.948Z",
+  "pair": "p84",
+  "reason": "核心指标字一样打要好看些",
+  "round": "r1",
+  "score": 1,
+  "shownSwapped": false
+ }
+]
