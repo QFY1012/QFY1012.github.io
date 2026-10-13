@@ -1,4 +1,5 @@
-// 调模型(OpenAI 兼容接口,流式):从 ui-judge/scripts/pairwise-judge.mjs 原样复制(2026-10-13),ui-rl 不再依赖那个目录。
+// 调模型(OpenAI 兼容接口,流式):从 ui-judge/scripts/pairwise-judge.mjs 复制(2026-10-13),ui-rl 不再依赖那个目录。
+// 只加了一处:回复不是合法 JSON 时,错误信息里带上出错位置前后的原文。
 import fs from "node:fs"
 
 export const img = (file) => ({ type: "image_url", image_url: { url: `data:image/png;base64,${fs.readFileSync(file).toString("base64")}` } })
@@ -54,11 +55,18 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
       }
       if (!text) throw new Error(`服务端返回空回复(finish_reason ${finish ?? "无"},输出 ${usage?.completion_tokens ?? 0} token)`)
       // Some replies wrap the JSON in a ```json fence despite response_format.
-      return { json: JSON.parse(text.trim().replace(/^```(?:json)?\s*|\s*```$/g, "")), raw: text, usage, latencyMs: Date.now() - t0 }
+      const body = text.trim().replace(/^```(?:json)?\s*|\s*```$/g, "")
+      try {
+        return { json: JSON.parse(body), raw: text, usage, latencyMs: Date.now() - t0 }
+      } catch (e) {
+        // ui-rl 加的:解析失败时把出错位置前后的原文带进错误信息,看得出是哪里写坏了
+        const at = Number(e.message.match(/position (\d+)/)?.[1] ?? 0)
+        throw new Error(`${e.message};原文 …${body.slice(Math.max(0, at - 60), at + 40)}…`)
+      }
     } catch (e) {
       if (attempt >= 3) throw e
       // Say so, so a slow or failing endpoint is visible while it happens.
-      if (label) console.log(`  ↻ ${label}:第 ${attempt + 1} 次请求失败(${String(e.message).slice(0, 80)}),${2 * 2 ** attempt} 秒后重试`)
+      if (label) console.log(`  ↻ ${label}:第 ${attempt + 1} 次请求失败(${String(e.message).slice(0, 220)}),${2 * 2 ** attempt} 秒后重试`)
       await new Promise((r) => setTimeout(r, 2000 * 2 ** attempt))
     } finally {
       clearTimeout(idle)
