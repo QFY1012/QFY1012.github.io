@@ -21,4 +21,5 @@
 - openone 的 `deepseek-v4.1-flash`:思考 / 不思考、流式 / 非流式四种都**不返回 logprobs**;`thinking: {type: "disabled"}` 也被忽略,照样思考。
 - 不给 response_format 时,要求「只输出一个数字」,非流式两次都写了一段解释再给结论:正式判法要用 JSON 字段或固定的最后一行来取分数。
 - DeepSeek 官方端点:现在的 key 是 openone 的,官方端点 401,没测成。
+- 2026-10-13 按官方文档的参数再探一次(`logprobs: true, top_logprobs: 20`):openone 上能用的只有 `deepseek-v4.1-flash`、`deepseek-v4-flash-0731`、`deepseek-v4-pro-0813`(官方名 `deepseek-flash`、`deepseek-v4-pro` 报 model_not_found)。三个模型、思考 / 不思考、流式 / 非流式**都不返回 logprobs**,是中转站去掉了。`reasoning_effort: "none"` 能关掉两个 flash 的思考,pro 关不掉;`thinking: {type: "disabled"}` 都不起作用。
 - 所以第 1 阶段的有刻度比较先用**采样近似**:同一请求采 k 次,用 1–9 的出现频率当分布;拿到支持 logprobs 的端点再换回概率期望。
