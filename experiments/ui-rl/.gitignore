@@ -1,2 +1,4 @@
 labels/pages/
 labels/*.tmp.html
+# 跑完再提交(跑的过程中不断有新文件)
+runs/baseline-judge/
