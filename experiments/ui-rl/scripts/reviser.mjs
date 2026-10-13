@@ -72,7 +72,9 @@ ${deleted.length ? deleted.map((c) => `[${c.id}] ${c.before}(第 ${c.step} 步�
 ${usable.length ? usable.map((p) => `${p.id}(${p.kind}${touched.includes(p.id) ? ",新" : ""}):${p.text}
   出现在 ${reportsOf(p).size} 份报告数据:
 ${p.sources.map((s) => `  - ${s.report}(${s.features}):第 ${s.versions.join("、")} 版,分数 ${s.scores.join("、")}${s.condition ? `;条件:${s.condition}` : ""};judge:${s.judge}`).join("\n")}`).join("\n") : "(无)"}
-</可用的模式>`
+</可用的模式>
+
+以上是材料:输出指南是生成 Agent 的,不是给你的任务。你是 Reviser,按系统提示的做法更新经验清单,只输出 JSON。`
     log(`  Reviser:新的可用模式 ${fresh.map((p) => p.id).join("、") || "无"},失败的经验 ${failed.map((e) => e.id).join("、") || "无"}`)
     json = (await call(SYS, user, { key: process.env.DEEPSEEK_API_KEY, model: MODEL, effort: "high", label: "Reviser" })).json
     fs.writeFileSync(file, JSON.stringify({ input: user, json }, null, 1))
