@@ -8,21 +8,20 @@ import figSplit from '../figures/internship/bg-split.html?raw';
 import figSkill from '../figures/internship/skill-flow.html?raw';
 import figOutput from '../figures/internship/output-flow.html?raw';
 
-// 公开复现里「交互流程挖掘」这个 Skill 的 13 轮 UI Spec 候选(experiments/ui-loop/skills/flow/state.json)
+// 公开复现里「交互流程挖掘」这份报告的迭代过程(示意,experiments/ui-loop/demo/flow-loop-demo.src.html):
+// 页面都由组件库真实渲染,每轮的候选、Judge 意见和把关结果按 loop 的规则模拟
 const rounds = [
-  { n: 1, what: '核心指标一行排满，不再「3 + 1」折行', result: 'ok' },
-  { n: 2, what: '链路明细一个产品一组，截图、标签、说明按步骤对齐', result: 'ok' },
-  { n: 3, what: '步骤备注收进链路明细末尾，按产品分段', result: 'no' },
-  { n: 4, what: '结论与核心指标合成首屏，背景信息并进「下一步」', result: 'no' },
-  { n: 5, what: '步骤备注单独成表，一步一行', result: 'no' },
-  { n: 6, what: '步骤备注贴在每组截图下方', result: 'no' },
-  { n: 7, what: '背景信息移到结论之后', result: 'no' },
-  { n: 8, what: '背景信息并进结论一节', result: 'no' },
-  { n: 9, what: '步骤备注紧跟链路明细，与问题表对齐', result: 'no' },
-  { n: 10, what: '背景信息提到页头之后，单独成节', result: 'ok' },
-  { n: 11, what: '元信息并入页头，结论与指标同节', result: 'no' },
-  { n: 12, what: '元信息并入封面，问题与建议合成一节', result: 'no' },
-  { n: 13, what: '剩下的问题要靠新组件解决，这一轮作废，先交给组件 Reviser', result: 'void' },
+  { n: 'k1', what: '组件：新增截图组件，链路明细按步骤横排截图（人工提了 3 次意见，第 4 版合并）', result: 'ok' },
+  { n: 'k3', what: '组件：进度条改成 1px 细线，截图滚动条悬停才出现，新增带标签的分组线', result: 'ok' },
+  { n: 2, what: '核心指标按数字个数排，4 个一行排满', result: 'ok' },
+  { n: 3, what: '下一步改用表格（两种顺序判得相反，没效果）', result: 'no' },
+  { n: 4, what: '下一步的列数等于建议条数，右边不再空出一列', result: 'ok' },
+  { n: 5, what: '截图下删掉备注（页面缺了 5 项数据，程序检查变差）', result: 'no' },
+  { n: 6, what: '截图下固定三行：屏名、内容 · 操作、问题，没有问题写「问题：无」', result: 'ok' },
+  { n: 7, what: '结论改成一个大数字（像又一组指标，在验证页上输了）', result: 'no' },
+  { n: 8, what: '结论第一句判断用大字，解释换行用正文', result: 'ok' },
+  { n: 9, what: '问题表改成编号列表（严重度没法竖着比，没效果）', result: 'no' },
+  { n: 10, what: '问题表合成四列：问题、位置、严重度、证据', result: 'ok' },
 ];
 const resultText = { ok: '采用', no: '未采用', void: '作废' };
 
@@ -297,8 +296,8 @@ const criteria = ['留白合适', '分组清楚、有垂直韵律', '容器样�
   <section id="reproduce">
     <p class="sec-label">Public Reproduction</p>
     <h2>用虚构数据复现一遍</h2>
-    <p>实习中的报告和数据不能公开。为了能把输出层讲清楚、拿出过程数据，我在实习结束后用<strong>虚构数据</strong>把输出层的 loop 从头搭了一遍：两个 Skill（交互流程挖掘、色觉无障碍分析），每个 6 份报告，4 份训练、2 份验证；生成 Agent 和审美 Judge 都用 DeepSeek。下面是「交互流程挖掘」同一份报告的三个版本。</p>
-    <p class="note">本节的页面、轮次和组件提案都来自这次复现，不是实习中的数据。</p>
+    <p>实习中的报告和数据不能公开。为了能把输出层讲清楚、拿出过程数据，我在实习结束后用<strong>虚构数据</strong>把输出层的 loop 从头搭了一遍：两个 Skill（交互流程挖掘、色觉无障碍分析），每个 6 份报告，4 份训练、2 份验证；生成 Agent 和审美 Judge 都用 DeepSeek。下面用「交互流程挖掘」的一份报告示意 loop 怎样一步步改页面：先看三个版本，再看每一轮改了什么。</p>
+    <p class="note">本节是示意：页面都由组件库真实渲染，迭代过程按 loop 的规则模拟，不是实习中的数据。</p>
 
     <div class="versions">
       <div class="version">
@@ -317,30 +316,30 @@ const criteria = ['留白合适', '分组清楚、有垂直韵律', '容器样�
         <span class="version-tag">B · 组件库 + UI Spec 初版</span>
         <h3>迭代开始前</h3>
         <div class="shot" tabindex="0" aria-label="版本 B 整页截图，可上下滚动">
-          <img src="/images/internship/flow-spec-v0.webp" width="960" height="2832" loading="lazy" alt="用组件库和初版 UI Spec 生成的同一份报告：左侧节标题、右侧内容的统一栅格，核心指标排成 3 + 1 两行" />
+          <img src="/images/internship/flow-noimg.webp" width="960" height="2205" loading="lazy" alt="用组件库和初版 UI Spec 生成的同一份报告：左侧节标题、右侧内容的统一栅格，组件库还没有截图组件，链路明细只有文字" />
         </div>
         <ul>
           <li>字号、颜色、间距全部交给组件</li>
           <li>程序检查 <b>0</b> 个问题</li>
-          <li>还剩布局问题：指标 3 + 1 折行，背景信息落在页尾</li>
+          <li>组件库还没有截图组件，链路明细只剩文字</li>
         </ul>
       </div>
       <div class="version">
-        <span class="version-tag">C · 13 轮之后</span>
-        <h3>UI Spec 第 4 版 + 新组件</h3>
+        <span class="version-tag">C · 迭代之后</span>
+        <h3>UI Spec 第 6 版 + 新组件</h3>
         <div class="shot" tabindex="0" aria-label="版本 C 整页截图，可上下滚动">
-          <img src="/images/internship/flow-spec-v3.webp" width="960" height="2832" loading="lazy" alt="迭代 13 轮之后的同一份报告：背景信息提到页头之后，核心指标一行排满，步骤备注收成表格" />
+          <img src="/images/internship/flow-final.webp" width="960" height="2667" loading="lazy" alt="迭代之后的同一份报告：链路明细按步骤横排截图，核心指标一行排满，问题表合成四列" />
         </div>
         <ul>
-          <li>UI Spec 采用 <b>3</b> 条修改</li>
-          <li>组件库合并 <b>5</b> 次更新</li>
-          <li>指标一行排满，背景信息提前，备注收成一张表</li>
+          <li>UI Spec 采用 <b>5</b> 条修改</li>
+          <li>组件库合并 <b>2</b> 次更新</li>
+          <li>截图横排，指标一行排满，问题表合成四列</li>
         </ul>
       </div>
     </div>
 
     <h3 class="sub-h">每一轮改了什么</h3>
-    <p>「交互流程挖掘」的 13 轮 UI Spec 候选。把关很严：只要在一份验证报告上输了，候选就不采用，所以多数修改被拒。被拒的候选和理由都留在修改记录里，下一轮的 Reviser 会读到它们。</p>
+    <p>先由组件 Reviser 补组件、人工审批，再由 UI Spec Reviser 每轮改一条规则。把关很严：只要在一份验证报告上输了，或者程序检查变差，候选就不采用。被拒的候选和理由都留在修改记录里，下一轮的 Reviser 会读到它们。</p>
     <div class="table-scroll">
       <table class="rounds">
         <thead><tr><th>轮</th><th>这一轮改的规则</th><th>结果</th></tr></thead>
@@ -358,24 +357,24 @@ const criteria = ['留白合适', '分组清楚、有垂直韵律', '容器样�
 
     <div class="stat-grid">
       <div class="stat-card">
-        <div class="stat-label">交互流程挖掘</div>
-        <div class="stat-value">13 轮 · 采用 3</div>
-        <div class="stat-sub">未采用 9 · 作废 1</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">色觉无障碍分析</div>
-        <div class="stat-value">12 轮 · 采用 3</div>
-        <div class="stat-sub">未采用 8 · 作废 1</div>
+        <div class="stat-label">UI Spec</div>
+        <div class="stat-value">9 轮 · 采用 5</div>
+        <div class="stat-sub">没效果 2 · 失败 2</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">组件库</div>
-        <div class="stat-value">8 个提案 · 采用 6</div>
-        <div class="stat-sub">截图横排、色觉对照图、细线进度条等</div>
+        <div class="stat-value">5 个提案 · 采用 2</div>
+        <div class="stat-sub">未采用 1 · 待审批 2</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">审美问题清单</div>
+        <div class="stat-value">8 → 0</div>
+        <div class="stat-sub">训练页上没有两种顺序都认可的问题，loop 停止</div>
       </div>
     </div>
 
     <h3 class="sub-h">还没解决的</h3>
-    <p>验证样本只有两份，把关的结论容易被一份报告左右；Maintainer 每轮列出的问题清单也没有随着轮数明显变短，「组件不够」类的问题会反复出现，迭代还缺一个明确的终点。</p>
+    <p>验证样本只有两份，把关的结论容易被一份报告左右；用真实模型跑时，Maintainer 的问题清单并不会像示意里这样一路缩到 0，「组件不够」类的问题会反复出现，迭代还缺一个明确的终点。</p>
 
     <div style="margin-top:2.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
       <a href="/" class="btn-link">← 返回首页</a>
