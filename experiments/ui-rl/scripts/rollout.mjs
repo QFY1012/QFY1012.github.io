@@ -3,7 +3,8 @@
 //   await rollout({ report: "f7", guide: ".../guide.md", dir: "runs/<run>/pages/s01", versions: ["v1", ...] })
 //
 // 每版的工作目录 <dir>/<v>/<report>/(generate.mjs 的 --traces <dir> --run <v>),几版同时跑。
-// 一版超过 timeoutMin 分钟没写完,或者没写出页面、没有截图,就删掉重新生成,最多 retries 次;还不行就不要这一版。
+// 一版超过 timeoutMin 分钟没写完,或者没写出页面、没有截图,就重新生成(没写成的那次改名为 <report>.failed-<n> 留着查原因),
+// 最多 retries 次;还不行就不要这一版。
 // 写完删掉构建产物 .build(每版约 25MB),再按节截图到 <ws>/sections/(judge 用)。已有 meta.json 和 sections 的版本跳过。
 // 返回写成了的版本 [{ v, ws }]。
 import fs from "node:fs"
@@ -47,6 +48,11 @@ export async function rollout({ report, guide, dir, versions, timeoutMin = 20, r
     const ws = path.join(dir, v, report)
     for (let attempt = 0; attempt <= retries && !done(ws); attempt++) {
       if (attempt) log(`  ${path.basename(dir)} ${v}:没写成,第 ${attempt} 次重新生成`)
+      // 没写成的那次留着查原因(会话记录在里面),改名为 <report>.failed-<n>,不参加打分
+      if (attempt && fs.existsSync(ws)) {
+        fs.rmSync(path.join(ws, ".build"), { recursive: true, force: true })
+        fs.renameSync(ws, `${ws}.failed-${attempt}`)
+      }
       fs.rmSync(ws, { recursive: true, force: true })
       const t0 = Date.now()
       log(`  ${path.basename(dir)} ${v}:开始生成 ${report}`)
