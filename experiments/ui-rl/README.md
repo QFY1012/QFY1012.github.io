@@ -76,3 +76,13 @@
 
 `scripts/rollout.mjs` 的 20 分钟上限保留,只当兜底。
 
+
+### 组件库整理(`gen/next/`,等试点跑完再换进 `gen/app`)
+
+原来 `app/src/components/report/` 是 ui-loop 一路改过来的两层:`index.tsx` 里的 `Stat`、`DataTable`、`List`、`KV`、图表、`Text` 只是一行转发,真正的实现都在 706 行的 `render.tsx` 的一个大 switch 里,还夹着用不到的老代码(另一套 page/section 框架、card、alert、badges)。生成 Agent 想查一个组件怎么画,得先发现这层转发,再去大文件里找分支。
+
+`gen/next/report/` 按 shadcn 的写法重写:一个组件一个文件(`stat.tsx`、`data-table.tsx`、`list.tsx`、`kv.tsx`、`chart.tsx`、`progress-list.tsx`、`text.tsx`、`figure.tsx`、`layout.tsx`),`index.tsx` 只做导出。组件名、属性、类名一字不改;去掉了用不到的分支和只用来追踪 spec 的 `data-type` 属性。`List` 里写明了 `meta` 在各模式下显示在哪。
+
+核对:`gen/next/check-same.sh gen/next/check-pages.txt`(在 `experiments/` 下运行)。选的 21 页覆盖现有 263 个不同页面里用到的全部 108 种组件和属性写法,外加试点第 1 步的 6 版;新旧两套各渲染一次,检查结果、整页截图、缩略图、每张切块全部逐字节相同。
+
+训练正在用 `gen/app`,中途换掉等于换了生成环境(Agent 读到的源码不一样),所以试点跑完再换。换的时候 `components.md` 一起补上:各组件源码在哪个文件、`List` 的 `meta` 在各模式下显示在哪。
