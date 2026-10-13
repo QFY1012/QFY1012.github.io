@@ -9,6 +9,7 @@
 //   ia31      新标准 + rubric31 的 7 条作为平局时的参考,五档
 //   ia2       ia31 + 两条取舍规则(标准冲突时前面的条优先;只换了写法、信息的组织没变判一样),输入不变
 //   ia2s      ia2 的标准,输入换成按节对齐:两版整页缩略图 + 逐节交替给 A、B 的截图,两版相同的节略去(cache/sections,先跑 section-crops.mjs)
+//   ia3s      ia2s 去掉两条取舍规则(标准同 ia31,输入同 ia2s)
 //   ia2p      ia2s,但不同的节把 A、B 左右拼成一张图(左 A 右 B),没有先后
 //   ia2g      ia2s,但总体给 1–9 的分(5 = 一样),同一请求采 3 次取平均
 import fs from "node:fs"
@@ -71,9 +72,12 @@ const RULES = `
 - 两版的差别只是同一块内容换了写法或形式(例如表格换成列表、「第 3 步」换成「3」、列数不同),而信息怎么分组、放在哪、和什么挨着都没变时,判「一样」。
 `
 const IA2 = IA31.replace("\n做法:", `${RULES}\n做法:`)
-const IA2S = IA2
+// 按节对齐输入要改的两句(ia2s、ia3s 共用)
+const sectionInput = (t) => t
   .replace("会给你上游数据 data.json 和两版的截图(每版先是整页缩略图,再是从上到下的切块)。", "会给你上游数据 data.json、两版的整页缩略图,再按节逐一对照两版的截图:两版完全相同的节只写一句、不给图;不同的节先给 A 版这一节、再给 B 版这一节;只有一版有的节会注明。")
   .replace("1. 先找出两版不同的地方(两版常常只差一两处),写清是哪一节、各是什么样。", "1. 先看标了「两版不同」或「只有一版有」的节,写清各是什么样;再看缩略图,注意节的增减和先后顺序有没有变。")
+const IA2S = sectionInput(IA2)
+const IA3S = sectionInput(IA31)
 
 const IA2P = IA2S.replace("不同的节先给 A 版这一节、再给 B 版这一节", "不同的节把两版的这一节左右并排拼成一张图,左边是 A 版、右边是 B 版")
 const IA2G = IA2S
@@ -163,6 +167,11 @@ export const JUDGES = {
   },
   ia2s: {
     system: () => IA2S,
+    content: bySection,
+    score: iaScore,
+  },
+  ia3s: {
+    system: () => IA3S,
     content: bySection,
     score: iaScore,
   },
