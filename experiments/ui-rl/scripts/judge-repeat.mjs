@@ -56,12 +56,16 @@ async function worker() {
     console.log(`  ${label} 开始`)
     try {
       const content = JUDGE.content(path.join(TRACES, A, p.case), path.join(TRACES, B, p.case))
-      const res = await call(sys, content, { key: KEY, label })
-      const better = res.json.better
-      const score = JUDGE.score(res.json)
+      // 有的 judge 同一请求采几次取平均(samples),分数是各次的平均
+      const k = JUDGE.samples ?? 1
+      const res = await Promise.all(Array.from({ length: k }, () => call(sys, content, { key: KEY, label })))
+      const scores = res.map((x) => JUDGE.score(x.json))
+      const score = scores.reduce((a, b) => a + b, 0) / k
+      const better = k > 1 ? (score > 0 ? "B" : score < 0 ? "A" : "一样") : res[0].json.better
       const rightBetter = B === right ? score : -score
-      fs.writeFileSync(file, JSON.stringify({ pair: p.id, round: r, order, A, B, better, score, right: rightBetter, json: res.json, usage: res.usage, latencyMs: res.latencyMs }, null, 1))
-      console.log(`  ${label}:${better ?? "?"} ${res.json.degree ?? ""}(右边 ${rightBetter > 0 ? "+" : ""}${rightBetter})${Math.round((Date.now() - t0) / 1000)} 秒,本次 ${++done}/${N}`)
+      const usage = res.reduce((u, x) => ({ prompt_tokens: u.prompt_tokens + (x.usage?.prompt_tokens ?? 0), completion_tokens: u.completion_tokens + (x.usage?.completion_tokens ?? 0) }), { prompt_tokens: 0, completion_tokens: 0 })
+      fs.writeFileSync(file, JSON.stringify({ pair: p.id, round: r, order, A, B, better, score, right: rightBetter, json: res[0].json, ...(k > 1 && { samples: res.map((x) => x.json), scores }), usage, latencyMs: Math.max(...res.map((x) => x.latencyMs)) }, null, 1))
+      console.log(`  ${label}:${k > 1 ? `分数 ${res.map((x) => x.json.score).join("、")}` : `${better ?? "?"} ${res[0].json.degree ?? ""}`}(右边 ${rightBetter > 0 ? "+" : ""}${+rightBetter.toFixed(2)})${Math.round((Date.now() - t0) / 1000)} 秒,本次 ${++done}/${N}`)
     } catch (e) {
       failed++
       console.log(`  ✗ ${label} 失败:${String(e.message).slice(0, 160)}`)

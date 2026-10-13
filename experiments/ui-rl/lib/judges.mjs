@@ -9,9 +9,12 @@
 //   ia31      新标准 + rubric31 的 7 条作为平局时的参考,五档
 //   ia2       ia31 + 两条取舍规则(标准冲突时前面的条优先;只换了写法、信息的组织没变判一样),输入不变
 //   ia2s      ia2 的标准,输入换成按节对齐:两版整页缩略图 + 逐节交替给 A、B 的截图,两版相同的节略去(cache/sections,先跑 section-crops.mjs)
+//   ia2p      ia2s,但不同的节把 A、B 左右拼成一张图(左 A 右 B),没有先后
+//   ia2g      ia2s,但总体给 1–9 的分(5 = 一样),同一请求采 3 次取平均
 import fs from "node:fs"
 import path from "node:path"
 import crypto from "node:crypto"
+import { execFileSync } from "node:child_process"
 import { img, RUBRIC_31 } from "../../ui-judge/scripts/pairwise-judge.mjs"
 import { systemAesthetic, SYSTEM_FUNCTION } from "../../ui-loop/scripts/compare.mjs"
 
@@ -72,6 +75,11 @@ const IA2S = IA2
   .replace("会给你上游数据 data.json 和两版的截图(每版先是整页缩略图,再是从上到下的切块)。", "会给你上游数据 data.json、两版的整页缩略图,再按节逐一对照两版的截图:两版完全相同的节只写一句、不给图;不同的节先给 A 版这一节、再给 B 版这一节;只有一版有的节会注明。")
   .replace("1. 先找出两版不同的地方(两版常常只差一两处),写清是哪一节、各是什么样。", "1. 先看标了「两版不同」或「只有一版有」的节,写清各是什么样;再看缩略图,注意节的增减和先后顺序有没有变。")
 
+const IA2P = IA2S.replace("不同的节先给 A 版这一节、再给 B 版这一节", "不同的节把两版的这一节左右并排拼成一张图,左边是 A 版、右边是 B 版")
+const IA2G = IA2S
+  .replace(/3\. 综合判断:.*\n/, "3. 综合判断,给一个 1–9 的分:1 = A 明显更好,3 = A 稍好,5 = 一样,7 = B 稍好,9 = B 明显更好,2、4、6、8 是中间的程度。「明显」指读者一眼能感到的差别;「稍好」指仔细比才看得出;两版差别不影响阅读,或各有好坏抵消,给 5。拿不准倾向哪边时,给靠近 5 的分。\n")
+  .replace(`"better":"A 或 B 或 一样","degree":"明显 或 稍好(一样时写空)",`, `"score":1 到 9 的整数,`)
+
 const sections = (ws) => {
   const f = path.join(ROOT, "cache", "sections", path.basename(path.dirname(ws)), path.basename(ws), "sections.json")
   if (!fs.existsSync(f)) throw new Error(`没有按节截图:${f}(先跑 scripts/section-crops.mjs)`)
@@ -90,7 +98,21 @@ function align(A, B) {
   }
   return out
 }
-function bySection(wa, wb) {
+// 同一节的 A、B 左右拼成一张(每一张切片配对;某边张数少时那边留白),缓存在 cache/sbs
+function sideBySide(a, b) {
+  const n = Math.max(a.files.length, b.files.length), out = []
+  for (let k = 0; k < n; k++) {
+    const fa = a.files[k] ? path.join(a.dir, a.files[k]) : "-", fb = b.files[k] ? path.join(b.dir, b.files[k]) : "-"
+    const f = path.join(ROOT, "cache", "sbs", crypto.createHash("sha1").update(`${fa}|${fb}`).digest("hex") + ".png")
+    if (!fs.existsSync(f)) {
+      fs.mkdirSync(path.dirname(f), { recursive: true })
+      execFileSync("python3", [path.join(ROOT, "scripts", "side-by-side.py"), fa, fb, f])
+    }
+    out.push(img(f))
+  }
+  return out
+}
+function bySection(wa, wb, { sbs = false } = {}) {
   const shots = (s) => s.files.map((f) => img(path.join(s.dir, f)))
   const out = [dataOf(wa),
     { type: "text", text: "A 版整页缩略图:" }, img(path.join(wa, "thumb.png")),
@@ -98,11 +120,15 @@ function bySection(wa, wb) {
   align(sections(wa), sections(wb)).forEach(({ a, b }, k) => {
     const head = `第 ${k + 1} 节「${(a ?? b).title}」`
     if (a && b && a.hash === b.hash) out.push({ type: "text", text: `${head}:两版相同,略去。` })
+    else if (a && b && sbs) out.push({ type: "text", text: `${head}:两版不同,左边是 A 版,右边是 B 版:` }, ...sideBySide(a, b))
     else if (a && b) out.push({ type: "text", text: `${head}:两版不同。A 版:` }, ...shots(a), { type: "text", text: `${head} B 版:` }, ...shots(b))
     else out.push({ type: "text", text: `${head}:只有 ${a ? "A" : "B"} 版有这一节。` }, ...shots(a ?? b))
   })
   return out
 }
+
+// 1–9 换算到 -2..2(B 比 A 好多少)
+const gradedScore = (j) => (Number(j.score) - 5) / 2
 
 const iaScore = (j) => {
   const s = j.better === "B" ? 1 : j.better === "A" ? -1 : 0
@@ -139,5 +165,16 @@ export const JUDGES = {
     system: () => IA2S,
     content: bySection,
     score: iaScore,
+  },
+  ia2p: {
+    system: () => IA2P,
+    content: (wa, wb) => bySection(wa, wb, { sbs: true }),
+    score: iaScore,
+  },
+  ia2g: {
+    system: () => IA2G,
+    content: bySection,
+    score: gradedScore,
+    samples: 3,
   },
 }
