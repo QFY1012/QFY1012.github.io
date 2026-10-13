@@ -1,0 +1,42 @@
+{
+ "url": "https://openoneapi.com/v1/chat/completions",
+ "model": "deepseek-v4.1-flash",
+ "results": [
+  {
+   "label": "思考 high · 非流式",
+   "ok": true,
+   "seconds": 10,
+   "text": "B 把「每步备注」拆成两张小表,分别紧跟在各自产品(协作宝、钉工)的流程图下方,备注与对应步骤在视觉上就近关联,阅读时不用来回跳转对照;A 则把所有备注合并成一",
+   "reasoningChars": 1572,
+   "logprobTokens": 0,
+   "dist": null
+  },
+  {
+   "label": "思考 high · 流式",
+   "ok": true,
+   "seconds": 30,
+   "text": "9",
+   "reasoningChars": 3044,
+   "logprobTokens": 0,
+   "dist": null
+  },
+  {
+   "label": "不思考 · 非流式",
+   "ok": true,
+   "seconds": 26,
+   "text": "1. 比较两版:整体结构、标题、结论、核心指标、流程对比、问题、下一步、背景信息几乎完全一致。\n2. 唯一差异在「链接明细」的备注呈现:A 用一张合并的「每步备",
+   "reasoningChars": 1540,
+   "logprobTokens": 0,
+   "dist": null
+  },
+  {
+   "label": "不思考 · 流式",
+   "ok": true,
+   "seconds": 14,
+   "text": "6",
+   "reasoningChars": 1361,
+   "logprobTokens": 0,
+   "dist": null
+  }
+ ]
+}

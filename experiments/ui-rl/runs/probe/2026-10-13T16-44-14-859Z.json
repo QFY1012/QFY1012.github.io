@@ -1,0 +1,26 @@
+{
+ "url": "https://api.deepseek.com/chat/completions",
+ "model": "deepseek-v4.1-flash",
+ "results": [
+  {
+   "label": "思考 high · 非流式",
+   "ok": false,
+   "err": "401 {\"error\":{\"message\":\"Authentication Fails, Your api key: ****afCW is invalid (request_id: 94eb200d-7d76-4121-9e1c-182ffb39bef9)\",\"type\":\"authentication_error\",\"param\":null,\"code\":\"invalid_request_error\"}}"
+  },
+  {
+   "label": "思考 high · 流式",
+   "ok": false,
+   "err": "401 {\"error\":{\"message\":\"Authentication Fails, Your api key: ****afCW is invalid (request_id: 4fb491b1-bff7-404e-a09e-c9366711fca0)\",\"type\":\"authentication_error\",\"param\":null,\"code\":\"invalid_request_error\"}}"
+  },
+  {
+   "label": "不思考 · 非流式",
+   "ok": false,
+   "err": "401 {\"error\":{\"message\":\"Authentication Fails, Your api key: ****afCW is invalid (request_id: 7037236b-45eb-48ec-880b-40b5a9caffab)\",\"type\":\"authentication_error\",\"param\":null,\"code\":\"invalid_request_error\"}}"
+  },
+  {
+   "label": "不思考 · 流式",
+   "ok": false,
+   "err": "401 {\"error\":{\"message\":\"Authentication Fails, Your api key: ****afCW is invalid (request_id: 74f0b6c7-589b-43c2-a49e-b2b1080a1fe3)\",\"type\":\"authentication_error\",\"param\":null,\"code\":\"invalid_request_error\"}}"
+  }
+ ]
+}
