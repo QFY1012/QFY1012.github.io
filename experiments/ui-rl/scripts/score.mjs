@@ -24,7 +24,8 @@ export async function judgeOnce(A, B, file, label) {
   return r
 }
 
-export async function scoreGroup({ pages, dir, workers = 30, log = console.log }) {
+// workers:同时发几个 judge 请求。试点第 1 步用 30 个时,中转站常常 503 或 60 秒不开始回复,改成 10。
+export async function scoreGroup({ pages, dir, workers = Number(process.env.JUDGE_WORKERS ?? 10), log = console.log }) {
   fs.mkdirSync(dir, { recursive: true })
   const pairs = []
   for (let i = 0; i < pages.length; i++) for (let j = i + 1; j < pages.length; j++) pairs.push([pages[i], pages[j]])
