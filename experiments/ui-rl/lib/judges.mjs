@@ -11,6 +11,7 @@
 //   ia2s      ia2 的标准,输入换成按节对齐:两版整页缩略图 + 逐节交替给 A、B 的截图,两版相同的节略去(cache/sections,先跑 section-crops.mjs)
 //   ia3s      ia2s 去掉两条取舍规则(标准同 ia31,输入同 ia2s)
 //   ia4s      按人工理由重写的 5 条(去掉「简练」和 rubric31 的视觉细节,不加取舍规则),输入同 ia2s
+//   ia4v      ia4s + rubric31 的视觉细节(只在信息组织和版面都分不出高下时参考)
 //   ia2p      ia2s,但不同的节把 A、B 左右拼成一张图(左 A 右 B),没有先后
 //   ia2g      ia2s,但总体给 1–9 的分(5 = 一样),同一请求采 3 次取平均
 import fs from "node:fs"
@@ -92,6 +93,9 @@ const IA4 = IA.replace(/按下面的标准比[\s\S]*?%EXTRA%\n/, `按下面的�
 
 `)
 const IA4S = sectionInput(IA4)
+const IA4V = sectionInput(IA4
+  .replace("信息组织分不出高下再看版面。", "信息组织分不出高下再看版面,都分不出再看视觉细节。")
+  .replace("\n\n做法:", `\n\n三、视觉细节(只在前面都分不出高下时参考)\n${RUBRIC_31.map((c, i) => `${6 + i}. ${c.name}:${c.rule}`).join("\n")}\n\n做法:`))
 const IA3S = sectionInput(IA31)
 
 const IA2P = IA2S.replace("不同的节先给 A 版这一节、再给 B 版这一节", "不同的节把两版的这一节左右并排拼成一张图,左边是 A 版、右边是 B 版")
@@ -192,6 +196,11 @@ export const JUDGES = {
   },
   ia4s: {
     system: () => IA4S,
+    content: bySection,
+    score: iaScore,
+  },
+  ia4v: {
+    system: () => IA4V,
     content: bySection,
     score: iaScore,
   },
