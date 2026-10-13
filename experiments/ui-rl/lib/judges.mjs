@@ -12,6 +12,8 @@
 //   ia3s      ia2s 去掉两条取舍规则(标准同 ia31,输入同 ia2s)
 //   ia4s      按人工理由重写的 5 条(去掉「简练」和 rubric31 的视觉细节,不加取舍规则),输入同 ia2s
 //   ia4v      ia4s + rubric31 的视觉细节(只在信息组织和版面都分不出高下时参考)
+//   ia5       定下来的版本:信息组织 4 条 + 视觉一节(rubric31 的 7 条,「同类组件一致」并入「一组指标一行排满」的例子),输入同 ia2s。
+//             ia4v 只调了结构,没有单独重跑
 //   ia2p      ia2s,但不同的节把 A、B 左右拼成一张图(左 A 右 B),没有先后
 //   ia2g      ia2s,但总体给 1–9 的分(5 = 一样),同一请求采 3 次取平均
 import fs from "node:fs"
@@ -93,6 +95,12 @@ const IA4 = IA.replace(/按下面的标准比[\s\S]*?%EXTRA%\n/, `按下面的�
 
 `)
 const IA4S = sectionInput(IA4)
+// 定下来的版本:版面那一条并进视觉一节的「同类组件一致」
+const VISUAL5 = RUBRIC_31.map((c, i) => `${5 + i}. ${c.name}:${c.name === "同类组件一致" ? `${c.rule};例如一组指标一行排满,不出现单独掉到下一行的一项` : c.rule}`).join("\n")
+const IA5 = IA4
+  .replace("先看信息组织,信息组织分不出高下再看版面。", "先看信息组织,信息组织分不出高下再看视觉。")
+  .replace(/二、版面\(次要依据\)\n5\. [^\n]*\n/, `二、视觉(次要依据)\n${VISUAL5}\n`)
+const IA5S = sectionInput(IA5)
 const IA4V = sectionInput(IA4
   .replace("信息组织分不出高下再看版面。", "信息组织分不出高下再看版面,都分不出再看视觉细节。")
   .replace("\n\n做法:", `\n\n三、视觉细节(只在前面都分不出高下时参考)\n${RUBRIC_31.map((c, i) => `${6 + i}. ${c.name}:${c.rule}`).join("\n")}\n\n做法:`))
@@ -201,6 +209,11 @@ export const JUDGES = {
   },
   ia4v: {
     system: () => IA4V,
+    content: bySection,
+    score: iaScore,
+  },
+  ia5: {
+    system: () => IA5S,
     content: bySection,
     score: iaScore,
   },
