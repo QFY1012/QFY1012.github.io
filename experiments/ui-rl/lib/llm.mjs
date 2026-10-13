@@ -1,5 +1,5 @@
 // 调模型(OpenAI 兼容接口,流式):从 ui-judge/scripts/pairwise-judge.mjs 复制(2026-10-13),ui-rl 不再依赖那个目录。
-// 只加了一处:回复不是合法 JSON 时,错误信息里带上出错位置前后的原文。
+// 改了两处:等开始回复的时限 60 秒 → 120 秒;回复不是合法 JSON 时,错误信息里带上出错位置前后的原文。
 import fs from "node:fs"
 
 export const img = (file) => ({ type: "image_url", image_url: { url: `data:image/png;base64,${fs.readFileSync(file).toString("base64")}` } })
@@ -14,7 +14,8 @@ export const JUDGE_MAX_TOKENS = Number(process.env.JUDGE_MAX_TOKENS ?? 131072)
 // The reply is streamed. A request is dropped and sent again when nothing arrives: 60 seconds for
 // the first bytes (reading a dozen screenshots takes the endpoint more than 10), then 10 seconds
 // between chunks once the reply has started. A long reply that keeps arriving is not cut.
-const FIRST_MS = 60_000, IDLE_MS = 10_000
+// ui-rl:试点时中转站忙,带十几张截图的请求常常 60 秒以上才开始回复;等开始回复的时限改成 120 秒(JUDGE_FIRST_MS 可调)。
+const FIRST_MS = Number(process.env.JUDGE_FIRST_MS ?? 120_000), IDLE_MS = 10_000
 // onText: called with each piece of the reply as it arrives. Thinking is not passed: onThink(seconds) is
 // called when it starts and every 30 seconds while it lasts, so a long think still shows progress.
 export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JUDGE_EFFORT, onText, onThink, label }) {
@@ -22,7 +23,7 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
   for (let attempt = 0; ; attempt++) {
     const t0 = Date.now()
     const ac = new AbortController()
-    let idle = setTimeout(() => ac.abort(new Error("60 秒没有开始回复")), FIRST_MS)
+    let idle = setTimeout(() => ac.abort(new Error(`${FIRST_MS / 1000} 秒没有开始回复`)), FIRST_MS)
     const alive = () => { clearTimeout(idle); idle = setTimeout(() => ac.abort(new Error("10 秒没有收到回复")), IDLE_MS) }
     try {
       const r = await fetch(JUDGE_URL, {
@@ -55,13 +56,13 @@ export async function call(sys, content, { key, model = JUDGE_MODEL, effort = JU
       }
       if (!text) throw new Error(`服务端返回空回复(finish_reason ${finish ?? "无"},输出 ${usage?.completion_tokens ?? 0} token)`)
       // Some replies wrap the JSON in a ```json fence despite response_format.
-      const body = text.trim().replace(/^```(?:json)?\s*|\s*```$/g, "")
+      const reply = text.trim().replace(/^```(?:json)?\s*|\s*```$/g, "")
       try {
-        return { json: JSON.parse(body), raw: text, usage, latencyMs: Date.now() - t0 }
+        return { json: JSON.parse(reply), raw: text, usage, latencyMs: Date.now() - t0 }
       } catch (e) {
         // ui-rl 加的:解析失败时把出错位置前后的原文带进错误信息,看得出是哪里写坏了
         const at = Number(e.message.match(/position (\d+)/)?.[1] ?? 0)
-        throw new Error(`${e.message};原文 …${body.slice(Math.max(0, at - 60), at + 40)}…`)
+        throw new Error(`${e.message};原文 …${reply.slice(Math.max(0, at - 60), at + 40)}…`)
       }
     } catch (e) {
       if (attempt >= 3) throw e
