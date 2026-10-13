@@ -15,7 +15,13 @@ const ROOT = path.resolve(import.meta.dirname, "..")
 const GENERATE = path.join(ROOT, "..", "ui-loop", "scripts", "generate.mjs")
 export const DATA = path.join(ROOT, "data", "flow")
 
-const done = (ws) => ["meta.json", "Page.tsx", "thumb.png", "tiles.json"].every((f) => fs.existsSync(path.join(ws, f)))
+// 写成 = 有页面和截图,而且最后一次构建成功。生成 Agent 中途模型请求出错(例如中转站超时,meta.json 的 stop 是 error)、
+// 但页面已经写完并构建成功的,也算写成,日志里注明。
+const read = (f) => JSON.parse(fs.readFileSync(f, "utf8"))
+const built = (ws) => ["meta.json", "Page.tsx", "thumb.png", "tiles.json", "checks.json"].every((f) => fs.existsSync(path.join(ws, f)))
+  && !read(path.join(ws, "checks.json")).some((c) => c.check === "能渲染")
+const done = built
+const status = (ws) => (!built(ws) ? "没写成" : read(path.join(ws, "meta.json")).stop === "error" ? "写成(模型中途请求出错,但页面已写完并构建成功,保留)" : "写成")
 
 function runOnce({ report, guide, dir, v, timeoutMin, log }) {
   return new Promise((resolve) => {
@@ -45,7 +51,7 @@ export async function rollout({ report, guide, dir, versions, timeoutMin = 20, r
       const t0 = Date.now()
       log(`  ${path.basename(dir)} ${v}:开始生成 ${report}`)
       const code = await runOnce({ report, guide, dir, v, timeoutMin, log })
-      log(`  ${path.basename(dir)} ${v}:${done(ws) ? "写成" : `没写成(退出码 ${code})`},${Math.round((Date.now() - t0) / 1000)} 秒`)
+      log(`  ${path.basename(dir)} ${v}:${status(ws)}${built(ws) ? "" : `(退出码 ${code})`},${Math.round((Date.now() - t0) / 1000)} 秒`)
     }
     fs.rmSync(path.join(ws, ".build"), { recursive: true, force: true })
     if (done(ws)) made.push({ v, ws })
