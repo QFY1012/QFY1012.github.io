@@ -1,6 +1,6 @@
 # ui-rl
 
-输出层强化学习环境的重建,计划见 `PLAN.md`。ui-loop 原样保留,这里复用它的组件库、截图检查和生成 Agent。全部是 mock 数据;密钥只走环境变量(`source judge.env`)。
+输出层强化学习环境的重建,计划见 `PLAN.md`。运行需要的组件库、截图检查和生成 Agent 都复制在 `gen/`(先在 `gen/` 里 `npm ci`),不依赖 ui-loop;ui-loop 原样保留作对照。全部是 mock 数据;密钥只走环境变量(`source judge.env`)。
 
 ## 第 0 阶段:测基线
 
@@ -64,3 +64,15 @@
 - 划分(`data/split.json`):训练 f1–f12,验证 f13–f18,测试 f19–f24;试点训练 f1–f4 + f7–f10,试点验证 f13–f16。
 - 概览和抽查的 5 份:`reports/phase2-data.md`。
 - 程序查不出的小出入还有(例如证据里的填写项数和那一屏的 inputs 差 1),不影响排版,没有再加校验。
+
+## 生成 Agent(`gen/`,2026-10-13)
+
+从 ui-loop 复制过来(组件库、`shoot.mjs`、`generate.mjs`、`agent.mjs`、`sandbox.sh`、规范、组件说明、g0),依赖版本和 ui-loop 完全一样。复制后拿 `ui-loop/traces/flow-g0/f1` 核对过:新旧两边 `shoot.mjs` 的检查结果、整页截图、缩略图、10 张切块逐字节相同;按节截图和 `cache/sections` 里的也相同;judge 的 13 个提示词复制前后 sha1 相同。
+
+试跑第 1 步时 6 版里有一版 20 分钟没写完、两版中途报错。查日志找到的原因,改了 `gen/scripts/agent.mjs` 两处:
+
+- **等模型开始回复的时限 10 秒 → 60 秒**(主要原因)。v2、v6 一共 12 次「Request timed out」,全部发生在会话里已经有 9 张以上截图之后:图多了,中转站常常 10 秒以上才开始回复,10 秒就被当成超时重发,每次白等 30 多秒;v2 连续 4 次后会话中断。judge 的 `call()` 早就是 60 秒。
+- **沙箱里只能用 node 运行检查脚本**。v3 把截图看错了,以为页面上多了一行字,之后几分钟自己写脚本渲染、截图去查,绕过了「最多检查 5 次」。现在 bash 里用 node / npx / npm / python 运行别的东西会被拦下,提示用 `node $SHOOT .` 检查、用 read 看截图;grep、cat、ls 照常能用(包括读组件源码)。
+
+`scripts/rollout.mjs` 的 20 分钟上限保留,只当兜底。
+

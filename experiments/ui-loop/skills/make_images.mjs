@@ -12,7 +12,7 @@ import path from "node:path"
 import { chromium } from "playwright-core"
 
 const ROOT = import.meta.dirname
-export const BRAND = ["#2F6FEB", "#E8590C", "#2B8A3E", "#7048E8", "#C2255C"]
+const BRAND = ["#2F6FEB", "#E8590C", "#2B8A3E", "#7048E8"]
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c])
 const items = (s) => s.split(/[、,,]/).map((x) => x.trim()).filter(Boolean)
 
@@ -65,7 +65,7 @@ function layout(screen, content, action, inputs, brand) {
   return `<div class="body"><div style="border-radius:12px;overflow:hidden">${rows.map((x, i) => `<div class="row"><span>${esc(x)}</span><div class="radio ${i === 0 ? "on" : ""}"></div></div>`).join("")}</div></div>${btn}`
 }
 
-export function phone(product, step, brand) {
+function phone(product, step, brand) {
   return `<!doctype html><html><head><meta charset="utf-8"><style>${phoneCss(brand)}</style></head><body>
 <div class="status"><span>9:41</span><span>${esc(product)}</span><span>100%</span></div>
 <div class="nav">${step.no > 1 ? `<div class="back"></div>` : ""}${esc(step.screen)}</div>
@@ -124,8 +124,6 @@ ${roads.map(([p, k, n], i) => { const m = p.match(/M(\d+) (\d+) L(\d+) (\d+)/).m
   },
 }
 
-// Run directly to redraw every sample; other scripts import phone() to draw their own.
-if (process.argv[1] === import.meta.filename) {
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium" })
 try {
   let n = 0
@@ -159,5 +157,4 @@ try {
   console.log(`${n} images`)
 } finally {
   await browser.close()
-}
 }

@@ -20,8 +20,8 @@ import fs from "node:fs"
 import path from "node:path"
 import crypto from "node:crypto"
 import { execFileSync } from "node:child_process"
-import { img, RUBRIC_31 } from "../../ui-judge/scripts/pairwise-judge.mjs"
-import { systemAesthetic, SYSTEM_FUNCTION } from "../../ui-loop/scripts/compare.mjs"
+import { img } from "./llm.mjs"
+import { RUBRIC_31, AESTHETIC, SYSTEM_FUNCTION } from "./legacy-prompts.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
 
@@ -172,7 +172,7 @@ const iaScore = (j) => {
 
 export const JUDGES = {
   rubric31: {
-    system: () => systemAesthetic(),
+    system: () => AESTHETIC,
     content: (wa, wb) => [...version(wa, "A"), ...version(wb, "B")],
     score: (j) => (j.better === "B" ? 1 : j.better === "A" ? -1 : 0),
   },

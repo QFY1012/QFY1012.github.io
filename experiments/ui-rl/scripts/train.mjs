@@ -34,7 +34,7 @@ if (!process.env.DEEPSEEK_API_KEY) throw new Error("set DEEPSEEK_API_KEY (source
 const PASSES = Number(arg("passes", "2")), SEED = Number(arg("seed", "1")), MAX_STEPS = Number(arg("steps", "0"))
 const VERSIONS = Array.from({ length: Number(arg("versions", "6")) }, (_, i) => `v${i + 1}`)
 const DIR = path.join(ROOT, "runs", RUN)
-const G0 = path.join(ROOT, "..", "ui-loop", "skills", "flow", "guides", "g0.md")
+const G0 = path.join(ROOT, "gen", "guides", "g0.md")
 const g0 = fs.readFileSync(G0, "utf8")
 const split = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "split.json"), "utf8")).flow.pilot
 const pad = (n) => String(n).padStart(2, "0")

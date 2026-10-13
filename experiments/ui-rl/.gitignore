@@ -10,3 +10,4 @@ runs/*/pages/**/session.jsonl
 runs/*/pages/**/shot.png
 runs/*/pages/**/tile-*.png
 runs/*/pages/**/tsconfig.json
+gen/node_modules/

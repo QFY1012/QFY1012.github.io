@@ -1,4 +1,4 @@
-// 训练的生成:一份报告数据,用同一份指南从零写几版页面(ui-loop 的 generate.mjs,不改它的做法)。
+// 训练的生成:一份报告数据,用同一份指南从零写几版页面(gen/scripts/generate.mjs,从 ui-loop 复制来的生成 Agent)。
 //
 //   await rollout({ report: "f7", guide: ".../guide.md", dir: "runs/<run>/pages/s01", versions: ["v1", ...] })
 //
@@ -12,7 +12,7 @@ import { spawn } from "node:child_process"
 import { cropSections } from "../lib/sections.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
-const GENERATE = path.join(ROOT, "..", "ui-loop", "scripts", "generate.mjs")
+const GENERATE = path.join(ROOT, "gen", "scripts", "generate.mjs")
 export const DATA = path.join(ROOT, "data", "flow")
 
 // 写成 = 有页面和截图,而且最后一次构建成功。生成 Agent 中途模型请求出错(例如中转站超时,meta.json 的 stop 是 error)、

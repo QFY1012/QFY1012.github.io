@@ -7,7 +7,7 @@
 // 每版的评语:judge 在涉及这版的每次判定里的结论、理由和各条标准,A / B 换成「这版」「第 N 版」。
 import fs from "node:fs"
 import path from "node:path"
-import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
+import { call } from "../lib/llm.mjs"
 import { JUDGES } from "../lib/judges.mjs"
 
 const JUDGE = JUDGES.ia5

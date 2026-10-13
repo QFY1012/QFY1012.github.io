@@ -2,7 +2,7 @@
 //
 //   await cropSections([{ ws, out }, ...])
 //
-// ws 是页面的工作目录(Page.tsx + data.json + assets),构建、渲染的做法和 ui-loop/scripts/shoot.mjs 一样,不改 ws 里的文件。
+// ws 是页面的工作目录(Page.tsx + data.json + assets),构建、渲染的做法和 gen/scripts/shoot.mjs 一样,不改 ws 里的文件。
 // 每个页面写出 out/:
 //   sections.json  [{title, files: [...], hash}],第一项是页头(第一节之前的部分),标题「页头」
 //   s<i>-<k>.png   第 i 块的第 k 张(一节太高时按 1280px 切开,重叠 64px)
@@ -16,10 +16,10 @@ import { createRequire } from "node:module"
 import { pathToFileURL } from "node:url"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
-const LOOP = path.join(ROOT, "..", "ui-loop")
-const req = createRequire(path.join(LOOP, "package.json"))
+const GEN = path.join(ROOT, "gen")
+const req = createRequire(path.join(GEN, "package.json"))
 const load = async (m) => import(pathToFileURL(req.resolve(m)).href)
-const APP = path.join(LOOP, "app")
+const APP = path.join(GEN, "app")
 const VIEWPORT = { width: 1440, height: 900 }
 const CLIP_X = (VIEWPORT.width - 1152) / 2 - 48
 const CLIP_W = 1152 + 96

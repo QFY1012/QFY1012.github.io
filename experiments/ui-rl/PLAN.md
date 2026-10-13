@@ -2,18 +2,22 @@
 
 ui-loop 的问题和改法见对话总结,这里只写怎么做。目标:**先得到一个在 loop 实际判断上准、稳的 reward,再用 Training-Free GRPO 的方式学习**。
 
-新代码和新数据都放在这个文件夹;ui-loop 原样保留,作对照和复用。全部是 mock 数据,密钥只走环境变量。
+代码、数据、组件库和生成 Agent 都在这个文件夹,运行时不依赖别的目录;ui-loop 原样保留,作对照。全部是 mock 数据,密钥只走环境变量。
 
-## 0. 复用和新写
+## 0. 复制过来的和新写的
 
-| 复用(直接 import 或调用,不复制) | 来源 |
-|---|---|
-| 组件库、渲染截图、程序检查 | `ui-loop/app/`、`ui-loop/scripts/shoot.mjs` |
-| 生成 Agent(pi 会话、沙箱) | `ui-loop/scripts/agent.mjs` |
-| 公共规范、组件说明 | `ui-loop/design.md`、`ui-loop/components.md` |
-| 现有 12 份样本(flow f1–f6、cvd c1–c6)和画图脚本 | `ui-loop/skills/make_data.py`、`make_images.mjs`、`simulate_cvd.py` |
-| 真实 loop 的候选页面(第 0 阶段标注用) | `ui-loop/traces/` |
-| rubric31 的 7 条标准 | `ui-judge/scripts/pairwise-judge.mjs` |
+| 复制进来(2026-10-13,复制后核对过和原来一致) | 在这里 | 来源 |
+|---|---|---|
+| 组件库、渲染截图、程序检查 | `gen/app/`、`gen/scripts/shoot.mjs` | `ui-loop/app/`、`ui-loop/scripts/shoot.mjs` |
+| 生成 Agent(pi 会话、沙箱)和它的依赖 | `gen/scripts/{generate,agent}.mjs`、`sandbox.sh`、`gen/package.json`(自己的 node_modules) | `ui-loop/scripts/`、`ui-loop/package.json` |
+| 公共规范、组件说明、输出指南 g0 | `gen/design.md`、`gen/components.md`、`gen/guides/g0.md` | `ui-loop/design.md`、`components.md`、`skills/flow/guides/g0.md` |
+| 原有 f1–f6 和手机截图的画法 | `data/flow/f1–f6`、`data/draw.mjs` | `ui-loop/skills/flow/data/`、`skills/make_images.mjs` |
+| 调模型的 `call()` | `lib/llm.mjs` | `ui-judge/scripts/pairwise-judge.mjs` |
+| 第 1 阶段比较过的老 judge 的提示词(rubric31、需求 judge) | `lib/legacy-prompts.mjs`(冻结的原文) | `ui-judge/scripts/pairwise-judge.mjs`、`ui-loop/scripts/compare.mjs` |
+
+复制后改过的只有生成 Agent 的两处(`gen/scripts/agent.mjs`,原因见 README「生成 Agent」):等模型开始回复的时限 10 秒 → 60 秒;沙箱里只能用 node 运行检查脚本。`generate.mjs` 只多了 `--traces`(页面写到哪)和 `--data` 的默认目录。
+
+只读不复制的:第 0、1 阶段标注用的页面还从 `ui-loop/traces/` 读(`build-pairs.py`、`section-crops.mjs`、`judge-repeat.mjs`),那是已经标完的历史数据。
 
 | 新写 | 原因 |
 |---|---|
@@ -29,7 +33,7 @@ ui-loop 的问题和改法见对话总结,这里只写怎么做。目标:**先�
 ui-rl/
   PLAN.md
   README.md                  怎么跑(做完一步补一步)
-  package.json               只放这里新加的依赖;组件库和 vite 用 ui-loop 的
+  gen/                       生成 Agent、组件库、截图检查(从 ui-loop 复制,自己的 package.json 和 node_modules)
   lib/
     judge.mjs                有刻度的两两比较:logprobs → 期望偏好 p
     metrics.mjs              量化指标(从渲染后的 DOM 量)
@@ -148,7 +152,7 @@ ui-rl/
 
 ### 5.2 一步
 
-1. **生成**:生成 Agent(ui-loop 的 `generate.mjs`,不改)拿「设计规范 + 组件说明 + 输出指南 + 当前经验清单」,从零写 6 版页面,6 版同时跑。经验清单这样接在输出指南后面:「## 经验(写页面前先读;和上面的规则冲突时以经验为准)」加编号列表。
+1. **生成**:生成 Agent(`gen/scripts/generate.mjs`,从 ui-loop 复制)拿「设计规范 + 组件说明 + 输出指南 + 当前经验清单」,从零写 6 版页面,6 版同时跑。经验清单这样接在输出指南后面:「## 经验(写页面前先读;和上面的规则冲突时以经验为准)」加编号列表。
    - 不设温度:生成用 DeepSeek 思考模式,温度参数不起作用。同一份指南生成的几版本来就有差别:第 0 阶段 12 对 A/A 页面(同一份指南生成两次),人工判出高下的 10 对。
    - 一版超过 20 分钟没写完,或构建失败没有截图,就丢掉重新生成,最多 2 次(以前的记录里中位数 4–7 分钟,最慢一次 74 分钟)。还是不行就这一步只用剩下的版本。
 2. **打分**:judge(ia5)把 6 版两两比较,15 对,每对两种顺序,取平均得 v(-2..2)。每版的分 = 它在 5 对里的 v 之和(-10..10)。15 对的 |v| 都小于 0.5(一对都没判出高下),这一步只记录,不往下走。

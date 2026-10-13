@@ -7,7 +7,7 @@
 // 它给出的操作由程序检查后执行:编号要存在、依据的模式要可用、经验不超过 50 字(要求 40 字,超出一点只提示);不合格的操作丢掉并打印原因。
 // 经验清单 runs/<run>/lists/s<NN>.json:{ items: [{ id, text, patterns, conflict, since }], next }
 import fs from "node:fs"
-import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
+import { call } from "../lib/llm.mjs"
 import { PREAMBLE, reportsOf } from "./maintainer.mjs"
 import { verdict } from "./recorder.mjs"
 

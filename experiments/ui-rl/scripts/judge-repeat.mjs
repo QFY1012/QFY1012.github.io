@@ -11,7 +11,7 @@
 //   { pair, round, order, A, B(运行名), better, score(B 比 A 好多少,-2..2), right(换算到 pairs.json 的左右,正数 = 右边更好), json, usage }
 import fs from "node:fs"
 import path from "node:path"
-import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
+import { call } from "../lib/llm.mjs"
 import { JUDGES } from "../lib/judges.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")

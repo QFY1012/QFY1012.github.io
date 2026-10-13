@@ -2,7 +2,9 @@
 //
 //   source judge.env && node experiments/ui-rl/data/gen-data.mjs [--ids f7,f8] [--workers 6]
 //
-// 1. 原有 f1–f6 从 ui-loop/skills/flow/data 复制过来(连同截图);f6 有两处原数据的错,复制时改掉(见 FIXES)。
+// 1. 原有 f1–f6 已在 data/flow 里(2026-10-13 从 ui-loop/skills/flow/data 一次性复制过来,连同截图),这里只校验。
+//    f6 有两处原数据的错,复制时改掉了:摘要「6 到 9 步」→「5 到 9 步」(各产品实际 5–9 步);问题 P6 指向的
+//    云途第 6 步原来没有备注,补了「没有常用乘机人,每次手动填 3 项」。ui-loop 里的原文件没动,第 0 阶段的页面是用原文件生成的。
 // 2. 新写 f7–f24:按 SPECS 的规格(产品数、步骤数、问题数、有没有阶段对比和共性做法、备注多少、文字详略)让模型写原始内容,
 //    程序校验(lib/features.mjs 的 check),不通过把问题发回去改,最多改 2 次;通过后补齐派生字段(assemble),画截图。
 //    已有 <id>.json 的跳过。每次请求和回复存在 cache/gen-data/。
@@ -10,12 +12,11 @@
 import fs from "node:fs"
 import path from "node:path"
 import { createRequire } from "node:module"
-import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
+import { call } from "../lib/llm.mjs"
 import { features, describe, check, assemble, NOTES, SUMMARY } from "../lib/features.mjs"
-import { phone, BRAND } from "../../ui-loop/skills/make_images.mjs"
+import { phone, BRAND } from "./draw.mjs"
 
 const ROOT = path.resolve(import.meta.dirname, "..")
-const LOOP = path.join(ROOT, "..", "ui-loop")
 const OUT = path.join(ROOT, "data", "flow")
 const CACHE = path.join(ROOT, "cache", "gen-data")
 const arg = (k, d) => (process.argv.includes(`--${k}`) ? process.argv[process.argv.indexOf(`--${k}`) + 1] : d)
@@ -51,14 +52,6 @@ const SPLIT = {
   test: ["f19", "f20", "f21", "f22", "f23", "f24"],
   pilot: { train: ["f1", "f2", "f3", "f4", "f7", "f8", "f9", "f10"], val: ["f13", "f14", "f15", "f16"] },
 }
-// 原有数据里的错,复制时改掉(ui-loop 里的原文件不动,第 0 阶段的页面是用原文件生成的)
-const FIXES = {
-  f6: (d) => {
-    d.summary = d.summary.replace("6 到 9 步", "5 到 9 步")
-    d.chains[0].steps[5].note = "没有常用乘机人,每次手动填 3 项"
-  },
-}
-
 const SYSTEM = `你在模拟「交互流程挖掘」Skill 的输出,写一份虚构但前后一致的报告数据(JSON)。
 
 这个 Skill 做的事:同一个任务(例如线上开户),对比 2–5 款产品完成它的逐屏链路;每一屏都有分析,再按阶段比较各产品,归纳共性做法、问题和建议。产品名、品牌都是虚构的。
@@ -99,7 +92,7 @@ const raw = (d) => ({
   ...(d.stages && { stages: d.stages }), ...(d.patterns && { patterns: d.patterns }),
   issues: d.issues, suggestions: d.suggestions,
 })
-const EXAMPLE = JSON.stringify(raw(JSON.parse(fs.readFileSync(path.join(LOOP, "skills", "flow", "data", "f1.json"), "utf8"))), null, 1)
+const EXAMPLE = JSON.stringify(raw(JSON.parse(fs.readFileSync(path.join(OUT, "f1.json"), "utf8"))), null, 1)
 
 const specText = (s) => {
   const [nl, nh] = NOTES[s.notes], [sl, sh] = SUMMARY[s.text]
@@ -156,14 +149,10 @@ fs.mkdirSync(CACHE, { recursive: true })
 // 1. 原有 f1–f6
 for (const n of [1, 2, 3, 4, 5, 6]) {
   const id = `f${n}`
-  if (fs.existsSync(path.join(OUT, `${id}.json`))) continue
-  const d = JSON.parse(fs.readFileSync(path.join(LOOP, "skills", "flow", "data", `${id}.json`), "utf8"))
-  FIXES[id]?.(d)
+  const d = JSON.parse(fs.readFileSync(path.join(OUT, `${id}.json`), "utf8"))
   const errs = check(d)
   if (errs.length) throw new Error(`${id} 校验没通过:${errs.join(";")}`)
-  fs.writeFileSync(path.join(OUT, `${id}.json`), JSON.stringify(d, null, 1) + "\n")
-  fs.cpSync(path.join(LOOP, "skills", "flow", "data", id), path.join(OUT, id), { recursive: true })
-  log(`复制 ${id}${FIXES[id] ? "(改了原数据的错)" : ""}:${describe(features(d))}`)
+  log(`原有 ${id}:${describe(features(d))}`)
 }
 
 // 2. 新写的
@@ -171,7 +160,7 @@ const want = arg("ids") ? arg("ids").split(",") : Object.keys(SPECS)
 const todo = want.filter((id) => !fs.existsSync(path.join(OUT, `${id}.json`)))
 log(`新写 ${want.length} 份,要生成 ${todo.length} 份(已有的跳过),模型 ${MODEL}`)
 if (todo.length && !KEY) throw new Error("set DEEPSEEK_API_KEY (source judge.env)")
-const { chromium } = createRequire(path.join(LOOP, "package.json"))("playwright-core")
+const { chromium } = createRequire(path.join(ROOT, "gen", "package.json"))("playwright-core")
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium" })
 let ok = 0, bad = 0
 try {

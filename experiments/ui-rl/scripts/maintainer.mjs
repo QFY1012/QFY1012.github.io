@@ -9,7 +9,7 @@
 // 每条出处:{ step, report, features(数据特征), versions, scores, condition, judge }
 import fs from "node:fs"
 import path from "node:path"
-import { call } from "../../ui-judge/scripts/pairwise-judge.mjs"
+import { call } from "../lib/llm.mjs"
 import { CRITERIA } from "../lib/judges.mjs"
 
 const MODEL = process.env.TRAIN_MODEL ?? "deepseek-v4.1-flash"
