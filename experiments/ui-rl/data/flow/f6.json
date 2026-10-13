@@ -1,0 +1,500 @@
+{
+ "title": "交互流程挖掘 · 预订机票",
+ "task": "预订单程国内机票",
+ "scope": "4 款出行 App,2026 年 9 月版本",
+ "date": "2026-09-30",
+ "summary": "四款 App 订一张单程机票需要 5 到 9 步。差别集中在两处:选完航班后的舱位与附加产品,以及乘机人填写。云途和行旅在选舱位后插入了保险、接送机、优选座位等附加产品,共占 2 到 3 屏,且默认勾选;飞鱼把附加产品收在一屏且默认不选;北极星最短,但改签退票规则藏在二级页面。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 4,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 27,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(北极星)",
+   "value": 5,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 7,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "云途",
+   "steps": 9,
+   "inputs": 6,
+   "verdict": "附加产品多且默认勾选"
+  },
+  {
+   "name": "行旅",
+   "steps": 7,
+   "inputs": 4,
+   "verdict": "附加产品默认勾选"
+  },
+  {
+   "name": "飞鱼",
+   "steps": 6,
+   "inputs": 4,
+   "verdict": "附加产品收在一屏、默认不选"
+  },
+  {
+   "name": "北极星",
+   "steps": 5,
+   "inputs": 4,
+   "verdict": "最短,但规则不透明"
+  }
+ ],
+ "chains": [
+  {
+   "product": "云途",
+   "version": "9.8",
+   "verdict": "附加产品多且默认勾选",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "出发地、目的地、日期",
+     "action": "搜索",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "航班列表",
+     "content": "按时间排序,带低价日历",
+     "action": "选航班",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择舱位",
+     "content": "经济舱多个价格档",
+     "action": "选价格",
+     "inputs": 0,
+     "note": "价格档差别说明不清",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "增值服务",
+     "content": "航意险、延误险默认勾选",
+     "action": "下一步",
+     "inputs": 0,
+     "note": "保险默认勾选",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "接送机",
+     "content": "接送机优惠券",
+     "action": "跳过",
+     "inputs": 0,
+     "note": "单独一屏推销",
+     "image": "assets/p1-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "填写乘机人",
+     "content": "姓名、证件号、手机号",
+     "action": "下一步",
+     "inputs": 3,
+     "note": "没有常用乘机人,每次手动填 3 项",
+     "image": "assets/p1-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "选座",
+     "content": "付费优选座位",
+     "action": "跳过",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-07.png"
+    },
+    {
+     "no": 8,
+     "screen": "确认订单",
+     "content": "金额明细",
+     "action": "去支付",
+     "inputs": 0,
+     "note": "明细默认折叠",
+     "image": "assets/p1-08.png"
+    },
+    {
+     "no": 9,
+     "screen": "支付",
+     "content": "支付方式",
+     "action": "支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-09.png"
+    }
+   ]
+  },
+  {
+   "product": "行旅",
+   "version": "7.5",
+   "verdict": "附加产品默认勾选",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "出发地、目的地、日期",
+     "action": "搜索",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "航班列表",
+     "content": "航班和价格",
+     "action": "选航班",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择舱位",
+     "content": "价格档对比表",
+     "action": "选价格",
+     "inputs": 0,
+     "note": "价格档用表格对比,清楚",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "填写乘机人",
+     "content": "常用乘机人一键选择",
+     "action": "下一步",
+     "inputs": 1,
+     "note": "",
+     "image": "assets/p2-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "附加产品",
+     "content": "保险、贵宾厅、接送机,默认勾选保险",
+     "action": "下一步",
+     "inputs": 0,
+     "note": "保险默认勾选",
+     "image": "assets/p2-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "确认订单",
+     "content": "金额明细",
+     "action": "去支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "支付",
+     "content": "支付方式",
+     "action": "支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-07.png"
+    }
+   ]
+  },
+  {
+   "product": "飞鱼",
+   "version": "5.2",
+   "verdict": "附加产品收在一屏、默认不选",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "出发地、目的地、日期",
+     "action": "搜索",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p3-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "航班列表",
+     "content": "航班、准点率",
+     "action": "选航班",
+     "inputs": 0,
+     "note": "显示准点率",
+     "image": "assets/p3-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择舱位",
+     "content": "价格档和退改规则",
+     "action": "选价格",
+     "inputs": 0,
+     "note": "退改规则在价格档下直接展示",
+     "image": "assets/p3-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "填写乘机人",
+     "content": "常用乘机人",
+     "action": "下一步",
+     "inputs": 1,
+     "note": "",
+     "image": "assets/p3-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "附加产品",
+     "content": "保险、选座,默认不选",
+     "action": "下一步",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "确认并支付",
+     "content": "金额明细、支付方式",
+     "action": "支付",
+     "inputs": 0,
+     "note": "确认和支付合为一屏",
+     "image": "assets/p3-06.png"
+    }
+   ]
+  },
+  {
+   "product": "北极星",
+   "version": "3.3",
+   "verdict": "最短,但规则不透明",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "出发地、目的地、日期",
+     "action": "搜索",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p4-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "航班列表",
+     "content": "航班和最低价",
+     "action": "选航班",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "填写乘机人",
+     "content": "常用乘机人",
+     "action": "下一步",
+     "inputs": 1,
+     "note": "直接用最低价档,没有舱位选择",
+     "image": "assets/p4-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "确认订单",
+     "content": "金额,退改规则在二级页面",
+     "action": "去支付",
+     "inputs": 0,
+     "note": "退改规则要点开才能看到",
+     "image": "assets/p4-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "支付",
+     "content": "支付方式",
+     "action": "支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-05.png"
+    }
+   ]
+  }
+ ],
+ "stages": [
+  {
+   "stage": "选择舱位",
+   "云途": "多个价格档,说明不清",
+   "行旅": "表格对比",
+   "飞鱼": "带退改规则",
+   "北极星": "无,默认最低价"
+  },
+  {
+   "stage": "附加产品",
+   "云途": "3 屏,默认勾选",
+   "行旅": "1 屏,默认勾选保险",
+   "飞鱼": "1 屏,默认不选",
+   "北极星": "无"
+  },
+  {
+   "stage": "乘机人",
+   "云途": "手动填写 3 项",
+   "行旅": "常用乘机人",
+   "飞鱼": "常用乘机人",
+   "北极星": "常用乘机人"
+  },
+  {
+   "stage": "退改规则",
+   "云途": "确认页折叠",
+   "行旅": "确认页显示",
+   "飞鱼": "选舱位时显示",
+   "北极星": "二级页面"
+  },
+  {
+   "stage": "确认与支付",
+   "云途": "分两屏",
+   "行旅": "分两屏",
+   "飞鱼": "一屏",
+   "北极星": "分两屏"
+  }
+ ],
+ "patterns": [
+  {
+   "name": "附加产品默认勾选",
+   "products": [
+    "云途",
+    "行旅"
+   ],
+   "comment": "增加客单价,但用户容易误买,投诉多"
+  },
+  {
+   "name": "退改规则随价格档展示",
+   "products": [
+    "飞鱼"
+   ],
+   "comment": "选价格时就知道能不能退改"
+  },
+  {
+   "name": "常用乘机人一键选择",
+   "products": [
+    "行旅",
+    "飞鱼",
+    "北极星"
+   ],
+   "comment": "填写从 3 项减到 1 次点击"
+  },
+  {
+   "name": "确认与支付合并",
+   "products": [
+    "飞鱼"
+   ],
+   "comment": "少一屏"
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "云途",
+   "step": 4,
+   "title": "保险默认勾选",
+   "severity": "高",
+   "evidence": "用户不注意就会购买"
+  },
+  {
+   "id": "P2",
+   "product": "行旅",
+   "step": 5,
+   "title": "保险默认勾选",
+   "severity": "高",
+   "evidence": "同上"
+  },
+  {
+   "id": "P3",
+   "product": "北极星",
+   "step": 4,
+   "title": "退改规则藏在二级页面",
+   "severity": "高",
+   "evidence": "确认页只有一个“规则”链接"
+  },
+  {
+   "id": "P4",
+   "product": "云途",
+   "step": 5,
+   "title": "接送机单独一屏推销",
+   "severity": "中",
+   "evidence": "与订机票无关,打断流程"
+  },
+  {
+   "id": "P5",
+   "product": "云途",
+   "step": 3,
+   "title": "价格档差别说明不清",
+   "severity": "中",
+   "evidence": "三个价格档只写了名称"
+  },
+  {
+   "id": "P6",
+   "product": "云途",
+   "step": 6,
+   "title": "没有常用乘机人",
+   "severity": "中",
+   "evidence": "每次都要手动填写 3 项"
+  },
+  {
+   "id": "P7",
+   "product": "北极星",
+   "step": 3,
+   "title": "不能选择舱位价格档",
+   "severity": "低",
+   "evidence": "直接使用最低价档,退改条件最差"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "附加产品默认不选,收在一屏",
+   "detail": "",
+   "basis": [
+    "飞鱼第 5 步",
+    "P1",
+    "P2",
+    "P4"
+   ]
+  },
+  {
+   "id": "A2",
+   "title": "选价格档时展示退改规则",
+   "detail": "",
+   "basis": [
+    "飞鱼第 3 步",
+    "P3",
+    "P5"
+   ]
+  },
+  {
+   "id": "A3",
+   "title": "提供常用乘机人",
+   "detail": "",
+   "basis": [
+    "行旅第 4 步",
+    "P6"
+   ]
+  },
+  {
+   "id": "A4",
+   "title": "确认与支付合为一屏",
+   "detail": "",
+   "basis": [
+    "飞鱼第 6 步"
+   ]
+  }
+ ]
+}

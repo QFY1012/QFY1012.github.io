@@ -1,0 +1,472 @@
+{
+ "title": "交互流程挖掘 · 电影选座购票",
+ "task": "在电影票务 App 上选片、选场次、选座并完成支付",
+ "scope": "4 款电影票务 App,2026 年 7 月版本",
+ "date": "2026-07-18",
+ "summary": "四款 App 都把购票拆成选片、选场次、选座、支付四段,差别在选座与支付之间的屏数。银幕时刻只要 6 步,选座页直接带出推荐座位,确认与支付合并;其余三款都是 7 步,幕布电影把优惠和卖品合成一屏,看片儿在选座后插会员推荐。四款都没有在选座页标出银幕方向,是最普遍的问题。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 4,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 27,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(银幕时刻)",
+   "value": 6,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 5,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "银幕时刻",
+   "steps": 6,
+   "inputs": 0,
+   "verdict": "步骤最少,推荐座位省事"
+  },
+  {
+   "name": "西柚影票",
+   "steps": 7,
+   "inputs": 0,
+   "verdict": "流程顺,座位图信息偏少"
+  },
+  {
+   "name": "幕布电影",
+   "steps": 7,
+   "inputs": 0,
+   "verdict": "步骤多,优惠和卖品单独成屏"
+  },
+  {
+   "name": "看片儿",
+   "steps": 7,
+   "inputs": 0,
+   "verdict": "中途弹出会员拦截,回退丢座位"
+  }
+ ],
+ "chains": [
+  {
+   "product": "银幕时刻",
+   "version": "9.2.0",
+   "verdict": "步骤最少,推荐座位省事",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "正在热映列表、搜索框、我的订单入口",
+     "action": "点击影片海报",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "影片详情",
+     "content": "评分、剧情简介、购票按钮",
+     "action": "点击购票",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择场次",
+     "content": "日期条、影院列表、场次时间与票价",
+     "action": "选择场次",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "选择座位",
+     "content": "座位图、已推荐的最佳座位、确认按钮",
+     "action": "确认座位",
+     "inputs": 0,
+     "note": "默认带出推荐座位,可直接确认,但座位图没有银幕方向标注",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "确认订单并支付",
+     "content": "场次信息、座位号、金额、支付方式",
+     "action": "点击支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "购票成功",
+     "content": "取票码、二维码、影院地址",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-06.png"
+    }
+   ]
+  },
+  {
+   "product": "西柚影票",
+   "version": "5.7.4",
+   "verdict": "流程顺,座位图信息偏少",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "热映和即将上映两个 tab、定位影院",
+     "action": "点击影片",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "影片详情",
+     "content": "预告片、简介、购票入口",
+     "action": "点击购票",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择影院与场次",
+     "content": "影院筛选、日期、场次列表",
+     "action": "选择场次",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "选择座位",
+     "content": "座位图、图例、已选座位统计",
+     "action": "选择座位并确认",
+     "inputs": 0,
+     "note": "座位图没有银幕方向标注,后排观众容易选反",
+     "image": "assets/p2-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "确认订单",
+     "content": "场次、座位、金额、优惠券入口",
+     "action": "点击提交",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "支付",
+     "content": "支付方式列表、倒计时",
+     "action": "完成支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "购票成功",
+     "content": "取票码、二维码",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-07.png"
+    }
+   ]
+  },
+  {
+   "product": "幕布电影",
+   "version": "4.1.9",
+   "verdict": "步骤多,优惠和卖品单独成屏",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "活动 banner、影片瀑布流",
+     "action": "点击影片",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "影片详情",
+     "content": "评分、简介、购票按钮",
+     "action": "点击购票",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择场次",
+     "content": "影院、日期、场次时间",
+     "action": "选择场次",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "选择座位",
+     "content": "座位图、已售座位、确认按钮",
+     "action": "选座并确认",
+     "inputs": 0,
+     "note": "座位图不标银幕方向,心仪座位被占时也没有邻近推荐",
+     "image": "assets/p3-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "优惠与卖品",
+     "content": "可用券列表、爆米花套餐与可乐、跳过按钮",
+     "action": "选择或跳过",
+     "inputs": 0,
+     "note": "无可用券时优惠区仍占半屏,卖品跳过按钮在首屏之外",
+     "image": "assets/p3-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "确认订单并支付",
+     "content": "场次、座位、金额、支付方式",
+     "action": "支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "购票成功",
+     "content": "取票码、二维码、卖品核销码",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-07.png"
+    }
+   ]
+  },
+  {
+   "product": "看片儿",
+   "version": "7.3.1",
+   "verdict": "中途弹出会员拦截,回退丢座位",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "搜索框、附近影院、热映列表",
+     "action": "点击影片",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "影片详情",
+     "content": "简介、评分、购票按钮",
+     "action": "点击购票",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择场次",
+     "content": "日期、影院、场次与票价",
+     "action": "选择场次",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "选择座位",
+     "content": "座位图、图例、已选数量",
+     "action": "选座并确认",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "开通会员弹窗",
+     "content": "会员权益、开通按钮、关闭按钮",
+     "action": "关闭弹窗或开通",
+     "inputs": 0,
+     "note": "选座后强制弹出会员推荐,关闭按钮很小,容易误点开通",
+     "image": "assets/p4-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "确认订单并支付",
+     "content": "场次、座位、金额、优惠、支付方式",
+     "action": "支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "购票成功",
+     "content": "取票码、二维码",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-07.png"
+    }
+   ]
+  }
+ ],
+ "stages": [
+  {
+   "stage": "选片",
+   "银幕时刻": "首页直接点海报",
+   "西柚影票": "首页分热映和待映两个 tab",
+   "幕布电影": "购票入口被 banner 挤到第二屏",
+   "看片儿": "首页带附近影院入口"
+  },
+  {
+   "stage": "选场次",
+   "银幕时刻": "日期与影院同屏",
+   "西柚影票": "影院与场次合并一屏",
+   "幕布电影": "影院与场次一屏",
+   "看片儿": "影院与场次一屏"
+  },
+  {
+   "stage": "选座",
+   "银幕时刻": "默认推荐座位,可直接确认",
+   "西柚影票": "无银幕方向标注",
+   "幕布电影": "无银幕方向标注,无邻近推荐",
+   "看片儿": "选座后插会员弹窗"
+  },
+  {
+   "stage": "优惠与卖品",
+   "银幕时刻": "合并在确认订单页",
+   "西柚影票": "优惠券入口在确认页",
+   "幕布电影": "优惠与卖品合成一屏",
+   "看片儿": "优惠在确认页"
+  },
+  {
+   "stage": "支付",
+   "银幕时刻": "确认与支付合并",
+   "西柚影票": "独立支付页,15 分钟倒计时",
+   "幕布电影": "确认与支付合并",
+   "看片儿": "确认与支付合并"
+  }
+ ],
+ "patterns": [
+  {
+   "name": "影院与场次合并成一屏",
+   "products": [
+    "银幕时刻",
+    "西柚影票",
+    "幕布电影",
+    "看片儿"
+   ],
+   "comment": "四款都先定影院再看时间,减少一次页面跳转"
+  },
+  {
+   "name": "选座页展示已售座位与图例",
+   "products": [
+    "银幕时刻",
+    "西柚影票",
+    "幕布电影",
+    "看片儿"
+   ],
+   "comment": "已售座位统一用灰色,但都不标银幕方向"
+  },
+  {
+   "name": "独立购票成功页带取票码",
+   "products": [
+    "银幕时刻",
+    "西柚影票",
+    "幕布电影",
+    "看片儿"
+   ],
+   "comment": "成功页都放二维码和数字取票码,可直接给影院扫码"
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "看片儿",
+   "step": 5,
+   "title": "选座后弹会员拦截,关闭按钮过小",
+   "severity": "高",
+   "evidence": "第 4 步选完座立刻弹出全屏会员页,关闭按钮只有小字,误点后要退回重新选座"
+  },
+  {
+   "id": "P2",
+   "product": "幕布电影",
+   "step": 5,
+   "title": "卖品跳过按钮不在首屏",
+   "severity": "中",
+   "evidence": "第 5 步优惠与卖品页首屏只显示优惠券和套餐,跳过按钮在页面底部"
+  },
+  {
+   "id": "P3",
+   "product": "幕布电影",
+   "step": 5,
+   "title": "无券用户也要过一屏优惠选择",
+   "severity": "中",
+   "evidence": "第 5 步优惠区对无可用券的用户同样占半屏,仍需手动跳过"
+  },
+  {
+   "id": "P4",
+   "product": "全部",
+   "step": 4,
+   "title": "选座图不标银幕方向",
+   "severity": "中",
+   "evidence": "四款 App 的选座都在第 4 步,页面只有座位图与图例,没有银幕位置标注"
+  },
+  {
+   "id": "P5",
+   "product": "幕布电影",
+   "step": 4,
+   "title": "热门座位被占时无邻近推荐",
+   "severity": "低",
+   "evidence": "第 4 步座位图仅把已售座位显示为灰色,不提示同排邻近可选座位"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "选座页标注银幕方向并默认推荐座位",
+   "detail": "在座位图上方标出银幕位置,首次进入时默认高亮 2 到 3 个中间排座位,用户可直接确认或自行改选",
+   "basis": [
+    "银幕时刻第 4 步",
+    "P4",
+    "P5"
+   ]
+  },
+  {
+   "id": "A2",
+   "title": "会员推荐改成非阻断式提示",
+   "detail": "不要在选座和确认之间插入全屏会员页,改为在订单页顶部放一行可关闭的提示,避免用户丢选座状态",
+   "basis": [
+    "P1"
+   ]
+  },
+  {
+   "id": "A3",
+   "title": "优惠与卖品只在有可选项时出现",
+   "detail": "无可使用优惠券时收起优惠区,卖品与跳过入口放在首屏可见位置,或直接折叠到确认订单页",
+   "basis": [
+    "P2",
+    "P3"
+   ]
+  }
+ ]
+}

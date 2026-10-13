@@ -1,0 +1,703 @@
+{
+ "title": "交互流程挖掘 · 信用卡在线申请",
+ "task": "对比四家银行 App 在线申请首张信用卡的逐屏链路",
+ "scope": "4 款银行 App,2026 年 3 月版本",
+ "date": "2026-03-18",
+ "summary": "四家银行都把信用卡申请拆成选卡、协议、身份验证、资料填写、设置密码、提交六段,差别在协议屏数、资料分屏和校验时机。星耀银行 12 步,先人脸后拍证件,资料大多自动带出,汇总页还能跳回修改;聚力银行 14 步、沐风银行 13 步、恒屹银行 15 步,恒屹的地址和联系人各占一屏,填写项最多。最突出的问题是校验时机:聚力的地址错误要到确认提交时才报,恒屹要求上传收入证明却不说明口径,四家首页都没有提前说明要准备什么材料。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 4,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 54,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(星耀银行)",
+   "value": 12,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 6,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "星耀银行",
+   "steps": 12,
+   "inputs": 12,
+   "verdict": "步骤最少,资料自动带出"
+  },
+  {
+   "name": "聚力银行",
+   "steps": 14,
+   "inputs": 24,
+   "verdict": "协议和资料都拆得最碎"
+  },
+  {
+   "name": "沐风银行",
+   "steps": 13,
+   "inputs": 11,
+   "verdict": "协议合并,材料要求含糊"
+  },
+  {
+   "name": "恒屹银行",
+   "steps": 15,
+   "inputs": 28,
+   "verdict": "填写项最多,必填项偏多"
+  }
+ ],
+ "chains": [
+  {
+   "product": "星耀银行",
+   "version": "5.2.1",
+   "verdict": "步骤最少,资料自动带出",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "申请首页",
+     "content": "所需材料清单、卡片推荐、开始申请按钮",
+     "action": "点击开始申请",
+     "inputs": 0,
+     "note": "开始前列出身份证和收入证明",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择卡种",
+     "content": "3 张卡面、额度区间、年费说明",
+     "action": "选中一张卡",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "卡种详情",
+     "content": "权益介绍、费率表、免年费条件",
+     "action": "点击立即申请",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "协议确认",
+     "content": "信用卡领用协议、底部勾选框",
+     "action": "勾选并同意",
+     "inputs": 0,
+     "note": "只有一份协议,不用滚动到底",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "人脸核验",
+     "content": "取景框、光线提示",
+     "action": "完成核验",
+     "inputs": 0,
+     "note": "先核验人脸再拍证件,失败成本低",
+     "image": "assets/p1-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "拍摄身份证",
+     "content": "正反面拍摄框、实时反光提示",
+     "action": "拍摄正反面",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "核对身份信息",
+     "content": "姓名、证件号、有效期,都可修改",
+     "action": "确认无误",
+     "inputs": 3,
+     "note": "识别错误可就地修改,不用重拍",
+     "image": "assets/p1-07.png"
+    },
+    {
+     "no": 8,
+     "screen": "填写单位与收入",
+     "content": "单位名称、行业、职位、年收入,共 4 项",
+     "action": "填写后下一步",
+     "inputs": 4,
+     "note": "行业和职位支持关键词搜索",
+     "image": "assets/p1-08.png"
+    },
+    {
+     "no": 9,
+     "screen": "填写联系与地址",
+     "content": "手机号、居住地址、邮寄地址同上一键勾选",
+     "action": "下一步",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p1-09.png"
+    },
+    {
+     "no": 10,
+     "screen": "设置查询密码",
+     "content": "6 位查询密码,输入两次",
+     "action": "设置密码",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p1-10.png"
+    },
+    {
+     "no": 11,
+     "screen": "确认提交",
+     "content": "全部资料汇总、返回修改入口",
+     "action": "提交申请",
+     "inputs": 0,
+     "note": "汇总页可跳回任意一步修改",
+     "image": "assets/p1-11.png"
+    },
+    {
+     "no": 12,
+     "screen": "提交成功",
+     "content": "申请编号、预计审核时长、进度查询入口",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-12.png"
+    }
+   ]
+  },
+  {
+   "product": "聚力银行",
+   "version": "9.8.0",
+   "verdict": "协议和资料都拆得最碎",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "申请首页",
+     "content": "活动横幅、热门卡种、申请入口",
+     "action": "点击申请",
+     "inputs": 0,
+     "note": "入口在横幅下方,首屏看不到",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择卡种",
+     "content": "卡片列表、额度区间、年费",
+     "action": "选择卡种",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "协议一",
+     "content": "信用卡领用协议、底部勾选框",
+     "action": "滚动后同意",
+     "inputs": 0,
+     "note": "必须滚动到底才能勾选",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "协议二",
+     "content": "征信授权书、勾选框",
+     "action": "同意",
+     "inputs": 0,
+     "note": "征信授权单独一屏,再勾一次",
+     "image": "assets/p2-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "填写基本资料",
+     "content": "姓名、性别、手机号、证件号、邮箱、婚姻状况,共 6 项",
+     "action": "填写后下一步",
+     "inputs": 6,
+     "note": "姓名和证件号要手输,不能从证件带出",
+     "image": "assets/p2-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "拍摄身份证",
+     "content": "正反面拍摄框",
+     "action": "拍摄",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "人脸核验",
+     "content": "取景框、眨眼提示",
+     "action": "完成核验",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-07.png"
+    },
+    {
+     "no": 8,
+     "screen": "填写单位信息",
+     "content": "单位名称、行业、职位、单位电话,共 4 项",
+     "action": "下一步",
+     "inputs": 4,
+     "note": "",
+     "image": "assets/p2-08.png"
+    },
+    {
+     "no": 9,
+     "screen": "填写收入",
+     "content": "年收入、其他收入,共 2 项",
+     "action": "下一步",
+     "inputs": 2,
+     "note": "年收入没有说明是否含奖金和补贴",
+     "image": "assets/p2-09.png"
+    },
+    {
+     "no": 10,
+     "screen": "填写联系人",
+     "content": "两位联系人的姓名、关系、手机号,共 6 项",
+     "action": "下一步",
+     "inputs": 6,
+     "note": "两位联系人都必填,没有说明用途",
+     "image": "assets/p2-10.png"
+    },
+    {
+     "no": 11,
+     "screen": "填写地址",
+     "content": "省市区、详细地址、邮编,共 4 项",
+     "action": "下一步",
+     "inputs": 4,
+     "note": "地址格式错误要到提交时才提示",
+     "image": "assets/p2-11.png"
+    },
+    {
+     "no": 12,
+     "screen": "设置查询密码",
+     "content": "6 位查询密码,输入两次",
+     "action": "设置密码",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p2-12.png"
+    },
+    {
+     "no": 13,
+     "screen": "确认提交",
+     "content": "资料汇总、提交按钮",
+     "action": "提交申请",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-13.png"
+    },
+    {
+     "no": 14,
+     "screen": "提交成功",
+     "content": "申请编号、进度查询入口",
+     "action": "完成",
+     "inputs": 0,
+     "note": "成功页没有给出预计审核时长",
+     "image": "assets/p2-14.png"
+    }
+   ]
+  },
+  {
+   "product": "沐风银行",
+   "version": "3.6.4",
+   "verdict": "协议合并,材料要求含糊",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "信用卡首页",
+     "content": "卡种轮播、申请入口、客服入口",
+     "action": "点击申请",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择卡种",
+     "content": "卡面、年费、额度区间",
+     "action": "选择卡种",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "协议确认",
+     "content": "领用协议、征信授权书、一个勾选框",
+     "action": "勾选并同意",
+     "inputs": 0,
+     "note": "两份协议合在一屏,勾选一次即可",
+     "image": "assets/p3-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "拍摄身份证",
+     "content": "正反面拍摄框、自动裁边",
+     "action": "拍摄正反面",
+     "inputs": 0,
+     "note": "反光时有实时提示",
+     "image": "assets/p3-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "核对身份信息",
+     "content": "姓名、证件号、有效期",
+     "action": "确认无误",
+     "inputs": 0,
+     "note": "有效期识别错误没有编辑入口,只能重拍",
+     "image": "assets/p3-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "人脸核验",
+     "content": "取景框、动作提示",
+     "action": "完成核验",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "填写职业信息",
+     "content": "单位名称、行业、职位,共 3 项",
+     "action": "下一步",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p3-07.png"
+    },
+    {
+     "no": 8,
+     "screen": "填写收入",
+     "content": "年收入、月均支出,共 2 项",
+     "action": "下一步",
+     "inputs": 2,
+     "note": "单位和币种在字段内有说明",
+     "image": "assets/p3-08.png"
+    },
+    {
+     "no": 9,
+     "screen": "填写地址",
+     "content": "省市区、详细地址、居住年限,共 4 项",
+     "action": "下一步",
+     "inputs": 4,
+     "note": "",
+     "image": "assets/p3-09.png"
+    },
+    {
+     "no": 10,
+     "screen": "上传收入证明",
+     "content": "拍照或相册选择、示例图",
+     "action": "上传证明",
+     "inputs": 0,
+     "note": "要求近 3 个月流水,没有说明能不能跳过",
+     "image": "assets/p3-10.png"
+    },
+    {
+     "no": 11,
+     "screen": "设置查询密码",
+     "content": "6 位查询密码,输入两次",
+     "action": "设置密码",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p3-11.png"
+    },
+    {
+     "no": 12,
+     "screen": "确认提交",
+     "content": "资料汇总、提交按钮",
+     "action": "提交申请",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-12.png"
+    },
+    {
+     "no": 13,
+     "screen": "提交成功",
+     "content": "申请编号、预计审核时长、进度查询",
+     "action": "完成",
+     "inputs": 0,
+     "note": "给出预计 3 个工作日审核",
+     "image": "assets/p3-13.png"
+    }
+   ]
+  },
+  {
+   "product": "恒屹银行",
+   "version": "11.0.2",
+   "verdict": "填写项最多,必填项偏多",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "信用卡首页",
+     "content": "活动横幅、卡种推荐、申请入口",
+     "action": "点击申请",
+     "inputs": 0,
+     "note": "首页没有材料清单,直接进选卡",
+     "image": "assets/p4-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择卡种",
+     "content": "卡片列表、权益标签、额度区间",
+     "action": "选择卡种",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "协议一",
+     "content": "信用卡领用协议、勾选框",
+     "action": "滚动后同意",
+     "inputs": 0,
+     "note": "领用协议必须滚动到底",
+     "image": "assets/p4-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "协议二",
+     "content": "征信授权书、勾选框",
+     "action": "同意",
+     "inputs": 0,
+     "note": "两份协议分成两屏填写",
+     "image": "assets/p4-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "填写基本信息",
+     "content": "姓名、性别、出生日期、手机号、邮箱,共 5 项",
+     "action": "填写后下一步",
+     "inputs": 5,
+     "note": "出生日期用滚轮选择,跨度 80 年",
+     "image": "assets/p4-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "拍摄身份证",
+     "content": "正反面拍摄框",
+     "action": "拍摄正反面",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "人脸核验",
+     "content": "取景框、光线提示",
+     "action": "完成核验",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-07.png"
+    },
+    {
+     "no": 8,
+     "screen": "填写单位信息",
+     "content": "单位名称、行业、职位、单位电话、入职年份,共 5 项",
+     "action": "下一步",
+     "inputs": 5,
+     "note": "",
+     "image": "assets/p4-08.png"
+    },
+    {
+     "no": 9,
+     "screen": "填写收入与资产",
+     "content": "年收入、其他收入、房产、车产,共 4 项",
+     "action": "下一步",
+     "inputs": 4,
+     "note": "房产和车产对首卡用户基本不适用,却是必填",
+     "image": "assets/p4-09.png"
+    },
+    {
+     "no": 10,
+     "screen": "填写联系人",
+     "content": "两位联系人的姓名、关系、手机号,共 6 项",
+     "action": "下一步",
+     "inputs": 6,
+     "note": "两位联系人都必填,没有说明为什么需要",
+     "image": "assets/p4-10.png"
+    },
+    {
+     "no": 11,
+     "screen": "填写地址",
+     "content": "省市区、详细地址、居住年限、邮编,共 6 项",
+     "action": "下一步",
+     "inputs": 6,
+     "note": "",
+     "image": "assets/p4-11.png"
+    },
+    {
+     "no": 12,
+     "screen": "上传收入证明",
+     "content": "拍照或相册选择、示例图",
+     "action": "上传证明",
+     "inputs": 0,
+     "note": "只写「相关证明」,没说明是流水还是税单,也没有跳过入口",
+     "image": "assets/p4-12.png"
+    },
+    {
+     "no": 13,
+     "screen": "设置查询密码",
+     "content": "6 位查询密码,输入两次",
+     "action": "设置密码",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p4-13.png"
+    },
+    {
+     "no": 14,
+     "screen": "确认提交",
+     "content": "资料汇总、提交按钮",
+     "action": "提交申请",
+     "inputs": 0,
+     "note": "汇总页只能整页返回,不能跳到某一屏",
+     "image": "assets/p4-14.png"
+    },
+    {
+     "no": 15,
+     "screen": "提交成功",
+     "content": "申请编号、进度查询入口",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-15.png"
+    }
+   ]
+  }
+ ],
+ "patterns": [
+  {
+   "name": "证件拍摄与人脸核验相邻",
+   "products": [
+    "星耀银行",
+    "聚力银行",
+    "沐风银行",
+    "恒屹银行"
+   ],
+   "comment": "四家都把两屏排在一起,方便复用同一段活体采集,只有星耀把顺序反过来先做人脸"
+  },
+  {
+   "name": "证件 OCR 带出身份信息",
+   "products": [
+    "星耀银行",
+    "沐风银行",
+    "恒屹银行"
+   ],
+   "comment": "拍完证件后只需确认,省掉姓名、证件号等 5 到 6 项手输,聚力仍要手填"
+  },
+  {
+   "name": "单位与收入分屏填写",
+   "products": [
+    "聚力银行",
+    "沐风银行",
+    "恒屹银行"
+   ],
+   "comment": "拆成两屏后单屏字段更少,但多一次跳转;星耀合并成一屏 4 项也够用"
+  },
+  {
+   "name": "提交前有汇总确认页",
+   "products": [
+    "星耀银行",
+    "聚力银行",
+    "沐风银行",
+    "恒屹银行"
+   ],
+   "comment": "四家都会在提交前回显全部资料,只有星耀能从汇总页跳回任意一屏修改"
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "聚力银行",
+   "step": 11,
+   "title": "地址错误延后到提交才提示",
+   "severity": "高",
+   "evidence": "第 11 步填错地址,到第 13 步确认提交才报错并退回第 11 步"
+  },
+  {
+   "id": "P2",
+   "product": "沐风银行",
+   "step": 5,
+   "title": "证件识别错误只能重拍",
+   "severity": "中",
+   "evidence": "第 5 步有效期识别错误时没有编辑入口,要退回第 4 步重新拍摄"
+  },
+  {
+   "id": "P3",
+   "product": "恒屹银行",
+   "step": 10,
+   "title": "两位联系人必填且不说明用途",
+   "severity": "中",
+   "evidence": "第 10 步一屏 6 项,两位联系人的手机号都必填"
+  },
+  {
+   "id": "P4",
+   "product": "恒屹银行",
+   "step": 12,
+   "title": "收入证明口径不明且不能跳过",
+   "severity": "高",
+   "evidence": "第 12 步只写「相关证明」,没有说明要流水还是税单,也没有跳过入口"
+  },
+  {
+   "id": "P5",
+   "product": "聚力银行",
+   "step": 3,
+   "title": "协议必须滚动到底才能勾选",
+   "severity": "低",
+   "evidence": "第 3、4 步两份协议各占一屏,第一份不滚到底无法勾选"
+  },
+  {
+   "id": "P6",
+   "product": "全部",
+   "step": 1,
+   "title": "开始前不说明要准备什么材料",
+   "severity": "中",
+   "evidence": "只有星耀银行第 1 步列出身份证和收入证明,聚力、沐风、恒屹首页都没有材料清单"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "首页列出所需材料",
+   "detail": "身份证、收入流水或税单、单位信息要提前说明,并写清证明的口径",
+   "basis": [
+    "星耀银行第 1 步",
+    "P6",
+    "P4"
+   ]
+  },
+  {
+   "id": "A2",
+   "title": "字段在当前屏就校验",
+   "detail": "地址、邮编在离开字段时立刻提示格式问题,不留到确认提交",
+   "basis": [
+    "P1"
+   ]
+  },
+  {
+   "id": "A3",
+   "title": "识别结果可以直接编辑",
+   "detail": "证件有效期等字段识别错了就地改,不用退回上一步重拍",
+   "basis": [
+    "星耀银行第 7 步",
+    "P2"
+   ]
+  },
+  {
+   "id": "A4",
+   "title": "协议合并成一屏并去掉滚动限制",
+   "detail": "领用协议和征信授权放同一屏,勾选一次即可,不强制滚到底",
+   "basis": [
+    "沐风银行第 3 步",
+    "P5"
+   ]
+  }
+ ]
+}

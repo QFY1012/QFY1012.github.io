@@ -1,0 +1,191 @@
+{
+ "title": "交互流程挖掘 · 注销账号",
+ "task": "在生活服务 App 内注销已实名认证的个人账号",
+ "scope": "2 款生活服务 App,2026 年 4 月版本",
+ "date": "2026-04-18",
+ "summary": "两款 App 都先校验条件再验证身份,差别在冻结期。汐市集 5 步,要求结清订单并冻结 7 天;禾记 4 步,注销即时生效且未说明清除哪些数据。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 2,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 9,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(禾记)",
+   "value": 4,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 1,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "汐市集",
+   "steps": 5,
+   "inputs": 1,
+   "verdict": "校验清楚,但冻结期偏长"
+  },
+  {
+   "name": "禾记",
+   "steps": 4,
+   "inputs": 1,
+   "verdict": "步骤短,但后果说明不足"
+  }
+ ],
+ "chains": [
+  {
+   "product": "汐市集",
+   "version": "9.3.1",
+   "verdict": "校验清楚,但冻结期偏长",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "设置首页",
+     "content": "账号与安全、隐私、关于,共 12 项",
+     "action": "点击账号与安全",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "账号与安全",
+     "content": "手机号、实名信息、注销账号入口",
+     "action": "点击注销账号",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "注销条件校验",
+     "content": "待收货订单 0 笔、余额 0 元、无进行中售后",
+     "action": "点击下一步",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "验证身份",
+     "content": "短信验证码、人脸核验二选一",
+     "action": "输入验证码",
+     "inputs": 1,
+     "note": "",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "提交成功",
+     "content": "冻结 7 天提示、撤销入口、冻结截止日期",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-05.png"
+    }
+   ]
+  },
+  {
+   "product": "禾记",
+   "version": "5.8.0",
+   "verdict": "步骤短,但后果说明不足",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "设置首页",
+     "content": "账号、通知、通用,共 8 项",
+     "action": "点击账号",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "注销条件校验",
+     "content": "待支付订单、优惠券张数、会员有效期",
+     "action": "点击申请注销",
+     "inputs": 0,
+     "note": "只提示 3 张优惠券和 45 天会员将失效,未说明订单记录和收货地址会被清除",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "验证手机号",
+     "content": "手机号脱敏显示、验证码输入框",
+     "action": "输入验证码提交",
+     "inputs": 1,
+     "note": "",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "提交成功",
+     "content": "注销完成提示、重新注册入口",
+     "action": "完成",
+     "inputs": 0,
+     "note": "注销即时生效,没有可撤销的窗口",
+     "image": "assets/p2-04.png"
+    }
+   ]
+  }
+ ],
+ "patterns": [
+  {
+   "name": "注销入口放在设置二级页",
+   "products": [
+    "汐市集",
+    "禾记"
+   ],
+   "comment": "都在账号与安全类页面底部,路径深但符合行业惯例"
+  },
+  {
+   "name": "注销前做条件校验",
+   "products": [
+    "汐市集",
+    "禾记"
+   ],
+   "comment": "校验订单、余额、优惠券等,避免注销后还有未结清事项"
+  },
+  {
+   "name": "短信验证码验证身份",
+   "products": [
+    "汐市集",
+    "禾记"
+   ],
+   "comment": "两家都把验证码作为必要条件,汐市集另给人脸选项"
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "禾记",
+   "step": 2,
+   "title": "未说明注销会清除哪些数据",
+   "severity": "高",
+   "evidence": "第 2 步只提示 3 张优惠券和 45 天会员失效,未提订单记录和收货地址,而第 4 步显示注销即时生效不可撤销"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "注销前用一屏说明后果并给冻结期",
+   "detail": "列出将被清除的数据类型,并在提交后保留 7 天可撤销窗口,期间登录即可恢复",
+   "basis": [
+    "汐市集第 5 步",
+    "P1"
+   ]
+  }
+ ]
+}

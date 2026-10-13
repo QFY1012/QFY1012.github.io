@@ -1,0 +1,385 @@
+{
+ "title": "交互流程挖掘 · 发布闲置",
+ "task": "在二手交易 App 上发布一件闲置商品",
+ "scope": "3 款二手交易 App,2026 年 5 月版本",
+ "date": "2026-05-18",
+ "summary": "三款 App 发布链路为 6 到 9 步,差别在填写屏数和验证位置。拾集图片识别预填只要 6 步,闲置巷 9 步,快出 7 步且手机验证放在最后。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 3,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 22,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(拾集)",
+   "value": 6,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 3,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "拾集",
+   "steps": 6,
+   "inputs": 5,
+   "verdict": "识别预填,步骤最少"
+  },
+  {
+   "name": "闲置巷",
+   "steps": 9,
+   "inputs": 8,
+   "verdict": "填写拆屏多,共 9 步"
+  },
+  {
+   "name": "快出",
+   "steps": 7,
+   "inputs": 10,
+   "verdict": "字段挤一屏,验证靠后"
+  }
+ ],
+ "chains": [
+  {
+   "product": "拾集",
+   "version": "7.3.1",
+   "verdict": "识别预填,步骤最少",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "发布首页",
+     "content": "相机入口、相册入口、草稿箱",
+     "action": "点击相册入口",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择图片",
+     "content": "相册多选、已选缩略图、最多 9 张",
+     "action": "选图后进入下一步",
+     "inputs": 0,
+     "note": "选完图自动识别物品,预填标题和分类",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "填写信息",
+     "content": "标题、描述、分类带搜索、成色选择",
+     "action": "确认后下一步",
+     "inputs": 3,
+     "note": "分类可搜索,识别结果已预选",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "设置价格",
+     "content": "价格输入框、同类商品参考价、包邮开关",
+     "action": "输入价格后下一步",
+     "inputs": 2,
+     "note": "给出同类商品参考价区间",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "确认发布",
+     "content": "商品卡片预览、分类、交易方式",
+     "action": "点击发布",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "发布成功",
+     "content": "商品链接、分享按钮、曝光任务",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-06.png"
+    }
+   ]
+  },
+  {
+   "product": "闲置巷",
+   "version": "4.9.0",
+   "verdict": "填写拆屏多,共 9 步",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "搜索框、推荐信息流、底部发布按钮",
+     "action": "点击发布按钮",
+     "inputs": 0,
+     "note": "发布按钮被活动 Banner 压住一半",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择图片",
+     "content": "相册多选、最多 9 张、无拍照入口",
+     "action": "选图后下一步",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "裁剪与排序",
+     "content": "封面选择、拖拽排序、预览",
+     "action": "选封面后下一步",
+     "inputs": 0,
+     "note": "必须选封面才能继续,页面没有说明",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "填写标题",
+     "content": "标题输入、字数计数、常用标题模板",
+     "action": "下一步",
+     "inputs": 1,
+     "note": "标题单独成一屏,描述要再翻一屏",
+     "image": "assets/p2-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "填写描述",
+     "content": "描述输入、话题标签、图片插入",
+     "action": "下一步",
+     "inputs": 1,
+     "note": "",
+     "image": "assets/p2-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "选择分类与成色",
+     "content": "两级分类列表、成色 5 档",
+     "action": "选择后下一步",
+     "inputs": 2,
+     "note": "两级分类共 200 多项,没有搜索框",
+     "image": "assets/p2-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "设置价格",
+     "content": "价格、原价、运费、同类参考价",
+     "action": "下一步",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p2-07.png"
+    },
+    {
+     "no": 8,
+     "screen": "交易方式与地址",
+     "content": "自提、邮寄、面交三个选项、自提地址",
+     "action": "选择并下一步",
+     "inputs": 1,
+     "note": "自提地址要手输,不能复用已有收货地址",
+     "image": "assets/p2-08.png"
+    },
+    {
+     "no": 9,
+     "screen": "发布成功",
+     "content": "商品卡片、置顶推广入口、分享",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-09.png"
+    }
+   ]
+  },
+  {
+   "product": "快出",
+   "version": "3.2.5",
+   "verdict": "字段挤一屏,验证靠后",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "底栏中央发布按钮、草稿入口",
+     "action": "点击发布",
+     "inputs": 0,
+     "note": "首页没有说明首次发布要验证手机号",
+     "image": "assets/p3-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "拍摄或选图",
+     "content": "相机入口、相册入口、视频入口",
+     "action": "选择图片",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "填写详情",
+     "content": "标题、描述、分类与成色、标签",
+     "action": "填写后下一步",
+     "inputs": 5,
+     "note": "5 项挤在一屏,分类入口在最底部",
+     "image": "assets/p3-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "设置价格",
+     "content": "价格、可议价开关、运费模板",
+     "action": "下一步",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p3-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "发布确认",
+     "content": "预览卡片、商品位置、可见范围",
+     "action": "确认发布",
+     "inputs": 1,
+     "note": "",
+     "image": "assets/p3-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "手机验证",
+     "content": "手机号、短信验证码、实名提示",
+     "action": "输入验证码",
+     "inputs": 2,
+     "note": "填完前 5 屏才要求验证手机号",
+     "image": "assets/p3-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "发布成功",
+     "content": "商品链接、审核中状态、分享按钮",
+     "action": "完成",
+     "inputs": 0,
+     "note": "审核时长到这一步才说明",
+     "image": "assets/p3-07.png"
+    }
+   ]
+  }
+ ],
+ "stages": [
+  {
+   "stage": "发布入口",
+   "拾集": "首页相机和相册两个入口",
+   "闲置巷": "底部按钮被活动 Banner 压住一半",
+   "快出": "底栏中央按钮,旁边是草稿箱"
+  },
+  {
+   "stage": "选图",
+   "拾集": "1 屏,相册多选并自动识别",
+   "闲置巷": "2 屏,选完还要裁剪和选封面",
+   "快出": "1 屏,相机、相册、视频并列"
+  },
+  {
+   "stage": "填写信息",
+   "拾集": "1 屏 3 项,标题分类已预填",
+   "闲置巷": "3 屏,标题、描述、分类各一屏",
+   "快出": "1 屏 5 项,分类在最底部"
+  },
+  {
+   "stage": "定价",
+   "拾集": "1 屏 2 项,带参考价",
+   "闲置巷": "1 屏 3 项,另有原价",
+   "快出": "1 屏 2 项,可议价开关"
+  },
+  {
+   "stage": "身份验证与地址",
+   "拾集": "无",
+   "闲置巷": "自提地址要手输",
+   "快出": "发布最后才验证手机号"
+  },
+  {
+   "stage": "发布后",
+   "拾集": "分享按钮、曝光任务",
+   "闲置巷": "置顶推广入口",
+   "快出": "审核中状态,预计 2 小时"
+  }
+ ],
+ "patterns": [
+  {
+   "name": "首页底部中央设发布入口",
+   "products": [
+    "拾集",
+    "闲置巷",
+    "快出"
+   ],
+   "comment": "三款都把发布做成一级入口,不用先进个人中心"
+  },
+  {
+   "name": "价格页给同类参考价",
+   "products": [
+    "拾集",
+    "闲置巷"
+   ],
+   "comment": "输入价格时显示同类商品成交区间,降低定价门槛"
+  },
+  {
+   "name": "成功页引导分享",
+   "products": [
+    "拾集",
+    "闲置巷",
+    "快出"
+   ],
+   "comment": "都以分享或推广入口收尾,把发布当成一次曝光机会"
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "快出",
+   "step": 6,
+   "title": "手机验证放在发布最后",
+   "severity": "高",
+   "evidence": "第 6 步才要验证码,前 5 屏填完才被拦下"
+  },
+  {
+   "id": "P2",
+   "product": "闲置巷",
+   "step": 6,
+   "title": "分类两级 200 多项不能搜索",
+   "severity": "中",
+   "evidence": "第 6 步两级列表无搜索框,选完成色才能继续"
+  },
+  {
+   "id": "P3",
+   "product": "闲置巷",
+   "step": 4,
+   "title": "标题和描述拆成两屏",
+   "severity": "低",
+   "evidence": "第 4、5 步各只有 1 个输入项,可以并成一屏"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "手机验证前置到发布入口",
+   "detail": "首次发布在点开发布按钮时就完成验证,不要等 5 屏填完再拦",
+   "basis": [
+    "P1"
+   ]
+  },
+  {
+   "id": "A2",
+   "title": "分类支持搜索和预选",
+   "detail": "分类列表加搜索框,并用品类识别结果默认选中对应分类",
+   "basis": [
+    "拾集第 3 步",
+    "P2"
+   ]
+  }
+ ]
+}

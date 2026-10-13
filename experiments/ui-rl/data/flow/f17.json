@@ -1,0 +1,349 @@
+{
+ "title": "交互流程挖掘 · 健身房团课预约",
+ "task": "在健身 App 里预约一节健身房团课",
+ "scope": "4 款健身 App,2026 年 4 月版本",
+ "date": "2026-04-18",
+ "summary": "四款健身 App 的团课预约都在 5 到 6 步之间,差别主要在课表入口和确认环节。铁盒运动把剩余名额标在列表卡片上,拾光运动把场次并进详情页,少一屏;岚风健身要先选门店才能看课表,首次预约还要求填紧急联系人。跃动健身的已满场次仍可点击,拾光运动扣次失败只显示错误码。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 4,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 22,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(铁盒运动)",
+   "value": 5,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 4,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "跃动健身",
+   "steps": 6,
+   "inputs": 0,
+   "verdict": "名额和次卡信息不透明"
+  },
+  {
+   "name": "铁盒运动",
+   "steps": 5,
+   "inputs": 0,
+   "verdict": "名额前置,确认屏偏草率"
+  },
+  {
+   "name": "岚风健身",
+   "steps": 6,
+   "inputs": 3,
+   "verdict": "先选门店,首次填写偏重"
+  },
+  {
+   "name": "拾光运动",
+   "steps": 5,
+   "inputs": 0,
+   "verdict": "屏数最少,异常提示粗糙"
+  }
+ ],
+ "chains": [
+  {
+   "product": "跃动健身",
+   "version": "6.8.2",
+   "verdict": "名额和次卡信息不透明",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "团课列表",
+     "content": "今日课程卡片、门店筛选、课程分类",
+     "action": "打开一门课程",
+     "inputs": 0,
+     "note": "卡片上没有剩余名额,要点进详情才知道",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "课程详情",
+     "content": "课程介绍、教练、时长、场地照片",
+     "action": "查看可约场次",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择场次",
+     "content": "未来 7 天场次、剩余名额、候补按钮",
+     "action": "选中一个场次",
+     "inputs": 0,
+     "note": "名额为 0 的场次仍可点,点了才提示已满",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "确认预约",
+     "content": "课程、时间、教练、门店",
+     "action": "确认预约",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "支付",
+     "content": "次卡扣次、微信支付、合计金额",
+     "action": "完成支付",
+     "inputs": 0,
+     "note": "不显示次卡剩余次数,扣完才知道",
+     "image": "assets/p1-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "预约成功",
+     "content": "预约码、加入日历、取消规则入口",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-06.png"
+    }
+   ]
+  },
+  {
+   "product": "铁盒运动",
+   "version": "5.1.0",
+   "verdict": "名额前置,确认屏偏草率",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "搜索框、附近门店、今日推荐",
+     "action": "进入团课列表",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "团课列表",
+     "content": "课程卡片、时间、教练、剩余名额",
+     "action": "选择课程",
+     "inputs": 0,
+     "note": "名额直接标在卡片上,已满的置灰",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "课程详情",
+     "content": "课程介绍、教练简介、场地照片",
+     "action": "选择场次",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "确认订单",
+     "content": "场次、扣次方式、取消规则勾选",
+     "action": "确认预约",
+     "inputs": 0,
+     "note": "取消规则默认已勾选,用户不读就能过",
+     "image": "assets/p2-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "预约成功",
+     "content": "二维码、到店导航、开课提醒",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-05.png"
+    }
+   ]
+  },
+  {
+   "product": "岚风健身",
+   "version": "7.3.1",
+   "verdict": "先选门店,首次填写偏重",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "门店选择",
+     "content": "定位门店、门店列表、距离",
+     "action": "选择门店",
+     "inputs": 0,
+     "note": "必须先选门店才能看课表,多一步",
+     "image": "assets/p3-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "课程表",
+     "content": "按天切换的课表、课程名、时间、教练",
+     "action": "点选课程",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "课程详情",
+     "content": "课程介绍、难度、教练、剩余名额",
+     "action": "立即预约",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "填写信息",
+     "content": "手机号、紧急联系人、身体状况备注,共 3 项",
+     "action": "提交并继续",
+     "inputs": 3,
+     "note": "首次预约要填 3 项,其中紧急联系人和团课预约并无关系",
+     "image": "assets/p3-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "确认支付",
+     "content": "次卡扣次、单次付款、金额",
+     "action": "支付",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "预约成功",
+     "content": "预约编号、免费取消截止时间、教练头像",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-06.png"
+    }
+   ]
+  },
+  {
+   "product": "拾光运动",
+   "version": "4.9.5",
+   "verdict": "屏数最少,异常提示粗糙",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "今日推荐、我的次卡、团课入口",
+     "action": "点击团课",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "课程详情",
+     "content": "课程介绍、教练、门店、场次列表",
+     "action": "选一个场次",
+     "inputs": 0,
+     "note": "场次直接列在详情页,比其他产品少一屏",
+     "image": "assets/p4-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "预约确认",
+     "content": "场次、次卡扣次、取消规则",
+     "action": "确认",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "扣次确认",
+     "content": "次卡名称、剩余次数、确认按钮",
+     "action": "确认扣次",
+     "inputs": 0,
+     "note": "扣次失败时只弹出错误码,没有说明原因",
+     "image": "assets/p4-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "预约成功",
+     "content": "预约码、到店提醒、分享按钮",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p4-05.png"
+    }
+   ]
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "跃动健身",
+   "step": 3,
+   "title": "已满场次仍可点击",
+   "severity": "中",
+   "evidence": "第 3 步场次列表里名额为 0 的场次仍可点,点击后才提示已满"
+  },
+  {
+   "id": "P2",
+   "product": "岚风健身",
+   "step": 4,
+   "title": "团课预约强制填紧急联系人",
+   "severity": "中",
+   "evidence": "第 4 步首次预约要填 3 项,其中紧急联系人与团课预约无关"
+  },
+  {
+   "id": "P3",
+   "product": "铁盒运动",
+   "step": 4,
+   "title": "取消规则默认勾选",
+   "severity": "中",
+   "evidence": "第 4 步取消规则勾选框默认已勾选,用户不读即可确认"
+  },
+  {
+   "id": "P4",
+   "product": "拾光运动",
+   "step": 4,
+   "title": "扣次失败只显示错误码",
+   "severity": "低",
+   "evidence": "第 4 步扣次失败时弹出的提示只有错误码,没有原因和下一步"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "场次列表标出剩余名额,已满置灰",
+   "detail": "用户不必点进去或点击一次才知道已满;只剩 1 至 2 个名额时给出提示",
+   "basis": [
+    "铁盒运动第 2 步",
+    "P1"
+   ]
+  },
+  {
+   "id": "A2",
+   "title": "预约确认不收集非必要信息",
+   "detail": "团课预约只留手机号,紧急联系人等字段移到首次到店时补填",
+   "basis": [
+    "拾光运动第 3 步",
+    "P2"
+   ]
+  },
+  {
+   "id": "A3",
+   "title": "取消规则默认不勾选",
+   "detail": "把免费取消截止时间和扣费比例写在勾选框上方,默认不勾选",
+   "basis": [
+    "P3"
+   ]
+  }
+ ]
+}

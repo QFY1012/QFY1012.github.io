@@ -1,0 +1,354 @@
+{
+ "title": "交互流程挖掘 · 高校选课",
+ "task": "高校本科生在选课季完成一轮课程检索、加单与提交",
+ "scope": "3 款高校教务 App, 2026 年 3 月版本",
+ "date": "2026-03-16",
+ "summary": "三款选课 App 都把选课拆成检索、加单、提交、看结果四段, 差别在规则说明的位置和冲突检查的时机。明德选课 7 步, 首页先讲清学分上限和抽签规则, 课程详情里就标出冲突, 结果页直接给候补名次; 青麓教务 8 步, 余量要手动下拉才刷新, 冲突留到统一检查那一屏才第一次提示; 星桥校园 9 步, 入口藏在三级菜单里, 必修课也要写申请理由, 提交后不能撤销。最需要改的是把冲突和余量的信息提前。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 3,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 24,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(明德选课)",
+   "value": 7,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 4,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "青麓教务",
+   "steps": 8,
+   "inputs": 3,
+   "verdict": "流程标准, 冲突与余量提示偏晚"
+  },
+  {
+   "name": "明德选课",
+   "steps": 7,
+   "inputs": 2,
+   "verdict": "步骤最少, 规则和冲突都前置"
+  },
+  {
+   "name": "星桥校园",
+   "steps": 9,
+   "inputs": 3,
+   "verdict": "步骤最多, 入口深且不可撤销"
+  }
+ ],
+ "chains": [
+  {
+   "product": "青麓教务",
+   "version": "5.4.2",
+   "verdict": "流程标准, 冲突与余量提示偏晚",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "选课首页",
+     "content": "本轮选课时间、进入选课按钮",
+     "action": "点击进入选课",
+     "inputs": 0,
+     "note": "没有说明本轮学分上限和抽签规则",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "确认培养方案",
+     "content": "专业、年级、已修学分、待修学分",
+     "action": "确认无误",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "课程检索",
+     "content": "课程名搜索框、开课院系筛选、上课时间筛选",
+     "action": "输入条件并搜索",
+     "inputs": 3,
+     "note": "筛选条件返回列表后不保留",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "课程详情",
+     "content": "课程简介、任课教师、上课时间地点、余量",
+     "action": "加入选课单",
+     "inputs": 0,
+     "note": "余量要手动下拉才刷新, 与已选课程冲突也不提示",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "选课单确认",
+     "content": "已选课程列表、学分合计",
+     "action": "下一步",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "时间冲突检查",
+     "content": "冲突课程对照表、调整入口",
+     "action": "调整课程或继续",
+     "inputs": 0,
+     "note": "冲突到这一屏才第一次提示, 前面的课程详情里没有任何标记",
+     "image": "assets/p1-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "提交选课",
+     "content": "志愿顺序、提交按钮",
+     "action": "提交",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-07.png"
+    },
+    {
+     "no": 8,
+     "screen": "选课结果",
+     "content": "已选中、待抽签两组结果",
+     "action": "完成",
+     "inputs": 0,
+     "note": "待抽签课程只显示状态, 没有候补名次和公布时间",
+     "image": "assets/p1-08.png"
+    }
+   ]
+  },
+  {
+   "product": "明德选课",
+   "version": "3.9.0",
+   "verdict": "步骤最少, 规则和冲突都前置",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "选课首页",
+     "content": "本轮规则说明、学分上限、倒计时",
+     "action": "开始选课",
+     "inputs": 0,
+     "note": "开始前就说明学分上限和抽签规则",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "课程检索",
+     "content": "搜索框、按院系和教师筛选、无冲突筛选",
+     "action": "搜索",
+     "inputs": 2,
+     "note": "支持只看无冲突课程",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "课程详情",
+     "content": "课程信息、余量、冲突标记",
+     "action": "加入选课单",
+     "inputs": 0,
+     "note": "与已选课程冲突时实时标红",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "选课单确认",
+     "content": "课程列表、学分合计、冲突提示",
+     "action": "确认",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "志愿排序",
+     "content": "拖动排序列表、抽签说明",
+     "action": "排序并提交",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "提交确认",
+     "content": "最终课程清单、确认按钮",
+     "action": "提交",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "选课结果",
+     "content": "中签课程、候补队列名次",
+     "action": "完成",
+     "inputs": 0,
+     "note": "候补名次直接显示在结果里",
+     "image": "assets/p2-07.png"
+    }
+   ]
+  },
+  {
+   "product": "星桥校园",
+   "version": "7.2.1",
+   "verdict": "步骤最多, 入口深且不可撤销",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "选课入口",
+     "content": "首页活动横幅、教务模块二级菜单",
+     "action": "逐级点入选课",
+     "inputs": 0,
+     "note": "从首页到选课要经过三级菜单",
+     "image": "assets/p3-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选课须知",
+     "content": "三条规则文字、同意按钮",
+     "action": "阅读并同意",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "课程检索",
+     "content": "搜索框、开课院系筛选",
+     "action": "搜索",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p3-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "课程详情",
+     "content": "课程简介、教师、时间地点、余量",
+     "action": "加入选课单",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "选课单",
+     "content": "课程列表、学分合计",
+     "action": "下一步",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "时间冲突检查",
+     "content": "冲突课程列表、删除按钮",
+     "action": "删除冲突课程",
+     "inputs": 0,
+     "note": "冲突课程只能整条删除, 不能换到其他班",
+     "image": "assets/p3-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "申请理由",
+     "content": "申请理由输入框、提交按钮",
+     "action": "填写理由并提交",
+     "inputs": 1,
+     "note": "必修课也要写申请理由, 不填不能提交",
+     "image": "assets/p3-07.png"
+    },
+    {
+     "no": 8,
+     "screen": "提交选课",
+     "content": "课程清单、志愿顺序、提交按钮",
+     "action": "提交",
+     "inputs": 0,
+     "note": "提交后清单立刻锁定, 没有撤销入口",
+     "image": "assets/p3-08.png"
+    },
+    {
+     "no": 9,
+     "screen": "选课结果",
+     "content": "已选中、待抽签两组结果",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-09.png"
+    }
+   ]
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "青麓教务",
+   "step": 6,
+   "title": "冲突提示太晚",
+   "severity": "高",
+   "evidence": "第 4 步课程详情不标冲突, 到第 6 步才第一次提示, 用户要退回重新选课"
+  },
+  {
+   "id": "P2",
+   "product": "青麓教务",
+   "step": 4,
+   "title": "余量要手动刷新",
+   "severity": "中",
+   "evidence": "第 4 步余量不自动更新, 用户看到的是下拉前的旧数据"
+  },
+  {
+   "id": "P3",
+   "product": "星桥校园",
+   "step": 8,
+   "title": "提交后不能撤销",
+   "severity": "高",
+   "evidence": "第 8 步提交后清单立刻锁定, 没有撤销或改志愿的入口"
+  },
+  {
+   "id": "P4",
+   "product": "星桥校园",
+   "step": 7,
+   "title": "必修课也要填申请理由",
+   "severity": "中",
+   "evidence": "第 7 步必填 1 项理由, 必修课同样不能跳过"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "冲突在加入选课单时就提示",
+   "detail": "在课程详情页实时标红与已选课程冲突的时间, 不要留到统一检查那一屏",
+   "basis": [
+    "明德选课第 3 步",
+    "P1"
+   ]
+  },
+  {
+   "id": "A2",
+   "title": "余量实时更新并给出候补名次",
+   "detail": "余量为 0 时直接显示候补队列名次, 用户不用反复下拉刷新",
+   "basis": [
+    "P2",
+    "明德选课第 7 步"
+   ]
+  },
+  {
+   "id": "A3",
+   "title": "提交后保留可撤销窗口",
+   "detail": "提交后 10 分钟内可撤销或调整志愿, 降低误操作成本",
+   "basis": [
+    "P3"
+   ]
+  }
+ ]
+}

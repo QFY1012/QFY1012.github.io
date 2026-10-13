@@ -1,0 +1,316 @@
+{
+ "title": "交互流程挖掘 · 跨行转账",
+ "task": "手机银行向他人他行账户完成一笔跨行转账",
+ "scope": "3 款银行 App,2026 年 11 月版本",
+ "date": "2026-11-18",
+ "summary": "三款 App 都支持向他人他行账户转账,链路从 5 步到 7 步不等。星桥银行只有 5 步,靠收款人列表和指纹确认压缩了操作;沐川银行 6 步,收款信息和金额分两屏填写;砚山银行 7 步,多了转账类型和安全提示两屏。差别最大的是收款人环节:沐川要手选开户行,星桥只保留 3 位最近收款人,砚山则把姓名与卡号的校验拖到验证码之后,失败要回退重填。三款都要到确认环节才显示手续费,首页也都没有单笔限额说明。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 3,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 18,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(星桥银行)",
+   "value": 5,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 5,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "沐川银行",
+   "steps": 6,
+   "inputs": 8,
+   "verdict": "分屏清晰,开户行要手选"
+  },
+  {
+   "name": "星桥银行",
+   "steps": 5,
+   "inputs": 2,
+   "verdict": "步骤最少,收款人可选太少"
+  },
+  {
+   "name": "砚山银行",
+   "steps": 7,
+   "inputs": 7,
+   "verdict": "多两屏,校验时机偏晚"
+  }
+ ],
+ "chains": [
+  {
+   "product": "沐川银行",
+   "version": "9.2.1",
+   "verdict": "分屏清晰,开户行要手选",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "转账首页",
+     "content": "常用收款人、跨行转账入口、限额说明",
+     "action": "点击跨行转账",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "填写收款信息",
+     "content": "收款人姓名、收款卡号、开户行",
+     "action": "输入卡号并从列表中选开户行",
+     "inputs": 3,
+     "note": "开户行要手选,200 多家银行不能搜索",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "填写金额",
+     "content": "付款账户、转账金额、附言",
+     "action": "输入金额后下一步",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "确认转账",
+     "content": "收款人、金额、手续费、预计到账时间",
+     "action": "确认并提交",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "验证支付",
+     "content": "交易密码、短信验证码",
+     "action": "输入两项验证",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p1-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "转账成功",
+     "content": "电子回执、保存收款人、继续转账",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-06.png"
+    }
+   ]
+  },
+  {
+   "product": "星桥银行",
+   "version": "5.8.0",
+   "verdict": "步骤最少,收款人可选太少",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "转账入口、最近收款人、活动横幅",
+     "action": "点击转账",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择收款人",
+     "content": "最近 3 位收款人、新增收款人入口",
+     "action": "选择收款人",
+     "inputs": 0,
+     "note": "最近收款人只保留 3 位,常转的账户要重新输卡号",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "填写金额",
+     "content": "付款账户、转账金额、到账方式",
+     "action": "输入金额并选择到账方式",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "确认并付款",
+     "content": "收款人、金额、手续费、指纹确认",
+     "action": "指纹确认付款",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "转账成功",
+     "content": "转账结果、通知收款人、再转一笔",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-05.png"
+    }
+   ]
+  },
+  {
+   "product": "砚山银行",
+   "version": "7.3.5",
+   "verdict": "多两屏,校验时机偏晚",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "转账横幅、功能宫格、额度查询入口",
+     "action": "点击转账",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择转账类型",
+     "content": "行内转账、跨行转账、跨境汇款",
+     "action": "选择跨行转账",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "填写收款账户",
+     "content": "收款人姓名、收款卡号、开户行、手机号",
+     "action": "填写并下一步",
+     "inputs": 4,
+     "note": "姓名和卡号不匹配要到第 6 步验证后才提示,只能回退重填",
+     "image": "assets/p3-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "填写金额",
+     "content": "付款账户、转账金额、到账方式",
+     "action": "输入金额",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p3-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "确认与安全提示",
+     "content": "收款人、金额、手续费、反诈提示勾选",
+     "action": "勾选后提交",
+     "inputs": 0,
+     "note": "反诈提示强制勾选,文案超过一屏,不滚到底勾不上",
+     "image": "assets/p3-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "验证",
+     "content": "短信验证码、倒计时提示",
+     "action": "输入验证码",
+     "inputs": 1,
+     "note": "",
+     "image": "assets/p3-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "转账成功",
+     "content": "电子回执、保存收款人、完成",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p3-07.png"
+    }
+   ]
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "砚山银行",
+   "step": 3,
+   "title": "姓名与卡号不符拖到验证后才报错",
+   "severity": "高",
+   "evidence": "第 3 步填的姓名和卡号不匹配,到第 6 步输完验证码才提示,用户要退回第 3 步重填"
+  },
+  {
+   "id": "P2",
+   "product": "沐川银行",
+   "step": 2,
+   "title": "开户行要手选且不能搜索",
+   "severity": "中",
+   "evidence": "第 2 步的 3 项输入里,开户行要在 200 多家银行的列表里翻找,输入卡号不会自动带出"
+  },
+  {
+   "id": "P3",
+   "product": "星桥银行",
+   "step": 2,
+   "title": "最近收款人只保留 3 位",
+   "severity": "中",
+   "evidence": "第 2 步只列出 3 位收款人,转账对象排在第 4 位之后就要重新输卡号和姓名"
+  },
+  {
+   "id": "P4",
+   "product": "砚山银行",
+   "step": 5,
+   "title": "反诈提示强制勾选且需滚动到底",
+   "severity": "低",
+   "evidence": "第 5 步的提示文案超过一屏,不滚动到底勾选框不可点,整屏 0 项输入却最费时间"
+  },
+  {
+   "id": "P5",
+   "product": "全部",
+   "step": 1,
+   "title": "首页不说明手续费和单笔限额",
+   "severity": "中",
+   "evidence": "三款首页都只放转账入口,手续费要到确认环节才出现:沐川第 4 步、星桥第 4 步、砚山第 5 步"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "卡号输入后自动识别开户行",
+   "detail": "按卡号前缀带出开户行,用户只确认不改;仍要手选时提供关键字搜索。",
+   "basis": [
+    "P2"
+   ]
+  },
+  {
+   "id": "A2",
+   "title": "姓名与卡号在填写当时就校验",
+   "detail": "输完姓名和卡号即调校验接口,不匹配当场提示,不留到验证码之后。",
+   "basis": [
+    "P1"
+   ]
+  },
+  {
+   "id": "A3",
+   "title": "常用收款人扩容并支持搜索",
+   "detail": "最近收款人保留 10 位以上,支持按姓名或卡号后四位搜索,减少重复输卡号。",
+   "basis": [
+    "P3",
+    "沐川银行第 1 步"
+   ]
+  },
+  {
+   "id": "A4",
+   "title": "费用时效前置,安全提示减负",
+   "detail": "填写金额时就显示本次手续费和预计到账时间;反诈提示压缩到一屏内,不必滚动就能勾选。",
+   "basis": [
+    "P5",
+    "P4"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,657 @@
+{
+ "f1": {
+  "topic": "手机银行线上开立二类账户",
+  "tier": "原有",
+  "features": {
+   "products": 3,
+   "steps": [
+    9,
+    7,
+    10
+   ],
+   "screens": 26,
+   "noteRatio": 0.42,
+   "issues": 5,
+   "suggestions": 4,
+   "stages": true,
+   "patterns": true,
+   "summaryChars": 125
+  }
+ },
+ "f2": {
+  "topic": "外卖从购物车到支付成功",
+  "tier": "原有",
+  "features": {
+   "products": 2,
+   "steps": [
+    5,
+    4
+   ],
+   "screens": 9,
+   "noteRatio": 0.56,
+   "issues": 3,
+   "suggestions": 2,
+   "stages": false,
+   "patterns": false,
+   "summaryChars": 74
+  }
+ },
+ "f3": {
+  "topic": "企业网盘生成外链并发给同事",
+  "tier": "原有",
+  "features": {
+   "products": 3,
+   "steps": [
+    4,
+    3,
+    5
+   ],
+   "screens": 12,
+   "noteRatio": 0.42,
+   "issues": 3,
+   "suggestions": 2,
+   "stages": false,
+   "patterns": false,
+   "summaryChars": 68
+  }
+ },
+ "f4": {
+  "topic": "在协同办公平台预订一间会议室",
+  "tier": "原有",
+  "features": {
+   "products": 2,
+   "steps": [
+    8,
+    5
+   ],
+   "screens": 13,
+   "noteRatio": 0.54,
+   "issues": 4,
+   "suggestions": 3,
+   "stages": true,
+   "patterns": false,
+   "summaryChars": 81
+  }
+ },
+ "f5": {
+  "topic": "电商 App 申请退货并预约取件",
+  "tier": "原有",
+  "features": {
+   "products": 3,
+   "steps": [
+    7,
+    5,
+    6
+   ],
+   "screens": 18,
+   "noteRatio": 0.33,
+   "issues": 4,
+   "suggestions": 3,
+   "stages": false,
+   "patterns": true,
+   "summaryChars": 98
+  }
+ },
+ "f6": {
+  "topic": "预订单程国内机票",
+  "tier": "原有",
+  "features": {
+   "products": 4,
+   "steps": [
+    9,
+    7,
+    6,
+    5
+   ],
+   "screens": 27,
+   "noteRatio": 0.44,
+   "issues": 7,
+   "suggestions": 4,
+   "stages": true,
+   "patterns": true,
+   "summaryChars": 139
+  }
+ },
+ "f7": {
+  "topic": "寄快递(下单到预约上门取件)",
+  "tier": "小",
+  "products": 2,
+  "steps": [
+   3,
+   4
+  ],
+  "issues": 2,
+  "suggestions": 1,
+  "stages": false,
+  "patterns": false,
+  "notes": "少",
+  "text": "简短",
+  "features": {
+   "products": 2,
+   "steps": [
+    4,
+    3
+   ],
+   "screens": 7,
+   "noteRatio": 0.14,
+   "issues": 2,
+   "suggestions": 1,
+   "stages": false,
+   "patterns": false,
+   "summaryChars": 72
+  }
+ },
+ "f8": {
+  "topic": "医院预约挂号",
+  "tier": "中",
+  "products": 3,
+  "steps": [
+   5,
+   7
+  ],
+  "issues": 4,
+  "suggestions": 3,
+  "stages": true,
+  "patterns": false,
+  "notes": "中",
+  "text": "适中",
+  "features": {
+   "products": 3,
+   "steps": [
+    6,
+    5,
+    7
+   ],
+   "screens": 18,
+   "noteRatio": 0.5,
+   "issues": 4,
+   "suggestions": 3,
+   "stages": true,
+   "patterns": false,
+   "summaryChars": 131
+  }
+ },
+ "f9": {
+  "topic": "取消视频会员自动续费",
+  "tier": "中",
+  "products": 2,
+  "steps": [
+   6,
+   9
+  ],
+  "issues": 3,
+  "suggestions": 2,
+  "stages": false,
+  "patterns": true,
+  "notes": "多",
+  "text": "适中",
+  "features": {
+   "products": 2,
+   "steps": [
+    8,
+    6
+   ],
+   "screens": 14,
+   "noteRatio": 0.79,
+   "issues": 3,
+   "suggestions": 2,
+   "stages": false,
+   "patterns": true,
+   "summaryChars": 129
+  }
+ },
+ "f10": {
+  "topic": "酒店预订(搜索到支付)",
+  "tier": "大",
+  "products": 5,
+  "steps": [
+   8,
+   11
+  ],
+  "issues": 8,
+  "suggestions": 5,
+  "stages": true,
+  "patterns": true,
+  "notes": "多",
+  "text": "详细",
+  "features": {
+   "products": 5,
+   "steps": [
+    8,
+    9,
+    10,
+    11,
+    9
+   ],
+   "screens": 47,
+   "noteRatio": 0.7,
+   "issues": 8,
+   "suggestions": 5,
+   "stages": true,
+   "patterns": true,
+   "summaryChars": 189
+  }
+ },
+ "f11": {
+  "topic": "电影选座购票",
+  "tier": "中",
+  "products": 4,
+  "steps": [
+   5,
+   7
+  ],
+  "issues": 5,
+  "suggestions": 3,
+  "stages": true,
+  "patterns": true,
+  "notes": "少",
+  "text": "适中",
+  "features": {
+   "products": 4,
+   "steps": [
+    6,
+    7,
+    7,
+    7
+   ],
+   "screens": 27,
+   "noteRatio": 0.19,
+   "issues": 5,
+   "suggestions": 3,
+   "stages": true,
+   "patterns": true,
+   "summaryChars": 136
+  }
+ },
+ "f12": {
+  "topic": "高校选课",
+  "tier": "中",
+  "products": 3,
+  "steps": [
+   7,
+   9
+  ],
+  "issues": 4,
+  "suggestions": 3,
+  "stages": false,
+  "patterns": false,
+  "notes": "中",
+  "text": "详细",
+  "features": {
+   "products": 3,
+   "steps": [
+    8,
+    7,
+    9
+   ],
+   "screens": 24,
+   "noteRatio": 0.54,
+   "issues": 4,
+   "suggestions": 3,
+   "stages": false,
+   "patterns": false,
+   "summaryChars": 200
+  }
+ },
+ "f13": {
+  "topic": "共享单车首次骑行(注册到开锁)",
+  "tier": "小",
+  "products": 3,
+  "steps": [
+   3,
+   5
+  ],
+  "issues": 2,
+  "suggestions": 2,
+  "stages": true,
+  "patterns": false,
+  "notes": "中",
+  "text": "简短",
+  "features": {
+   "products": 3,
+   "steps": [
+    5,
+    3,
+    5
+   ],
+   "screens": 13,
+   "noteRatio": 0.38,
+   "issues": 2,
+   "suggestions": 2,
+   "stages": true,
+   "patterns": false,
+   "summaryChars": 78
+  }
+ },
+ "f14": {
+  "topic": "智能音箱配网",
+  "tier": "中",
+  "products": 2,
+  "steps": [
+   5,
+   8
+  ],
+  "issues": 3,
+  "suggestions": 3,
+  "stages": true,
+  "patterns": false,
+  "notes": "少",
+  "text": "简短",
+  "features": {
+   "products": 2,
+   "steps": [
+    7,
+    6
+   ],
+   "screens": 13,
+   "noteRatio": 0.23,
+   "issues": 3,
+   "suggestions": 3,
+   "stages": true,
+   "patterns": false,
+   "summaryChars": 74
+  }
+ },
+ "f15": {
+  "topic": "租车取车(下单到取车验车)",
+  "tier": "中",
+  "products": 3,
+  "steps": [
+   6,
+   8
+  ],
+  "issues": 5,
+  "suggestions": 4,
+  "stages": false,
+  "patterns": true,
+  "notes": "多",
+  "text": "详细",
+  "features": {
+   "products": 3,
+   "steps": [
+    8,
+    6,
+    7
+   ],
+   "screens": 21,
+   "noteRatio": 0.81,
+   "issues": 5,
+   "suggestions": 4,
+   "stages": false,
+   "patterns": true,
+   "summaryChars": 217
+  }
+ },
+ "f16": {
+  "topic": "家庭宽带报装",
+  "tier": "大",
+  "products": 4,
+  "steps": [
+   10,
+   14
+  ],
+  "issues": 7,
+  "suggestions": 5,
+  "stages": true,
+  "patterns": true,
+  "notes": "中",
+  "text": "详细",
+  "features": {
+   "products": 4,
+   "steps": [
+    11,
+    10,
+    14,
+    12
+   ],
+   "screens": 47,
+   "noteRatio": 0.36,
+   "issues": 7,
+   "suggestions": 5,
+   "stages": true,
+   "patterns": true,
+   "summaryChars": 197
+  }
+ },
+ "f17": {
+  "topic": "健身房团课预约",
+  "tier": "中",
+  "products": 4,
+  "steps": [
+   5,
+   6
+  ],
+  "issues": 4,
+  "suggestions": 3,
+  "stages": false,
+  "patterns": false,
+  "notes": "中",
+  "text": "适中",
+  "features": {
+   "products": 4,
+   "steps": [
+    6,
+    5,
+    6,
+    5
+   ],
+   "screens": 22,
+   "noteRatio": 0.41,
+   "issues": 4,
+   "suggestions": 3,
+   "stages": false,
+   "patterns": false,
+   "summaryChars": 134
+  }
+ },
+ "f18": {
+  "topic": "二手平台发布闲置",
+  "tier": "中",
+  "products": 3,
+  "steps": [
+   5,
+   9
+  ],
+  "issues": 3,
+  "suggestions": 2,
+  "stages": true,
+  "patterns": true,
+  "notes": "中",
+  "text": "简短",
+  "features": {
+   "products": 3,
+   "steps": [
+    6,
+    9,
+    7
+   ],
+   "screens": 22,
+   "noteRatio": 0.55,
+   "issues": 3,
+   "suggestions": 2,
+   "stages": true,
+   "patterns": true,
+   "summaryChars": 73
+  }
+ },
+ "f19": {
+  "topic": "注销账号",
+  "tier": "小",
+  "products": 2,
+  "steps": [
+   4,
+   5
+  ],
+  "issues": 1,
+  "suggestions": 1,
+  "stages": false,
+  "patterns": true,
+  "notes": "少",
+  "text": "简短",
+  "features": {
+   "products": 2,
+   "steps": [
+    5,
+    4
+   ],
+   "screens": 9,
+   "noteRatio": 0.22,
+   "issues": 1,
+   "suggestions": 1,
+   "stages": false,
+   "patterns": true,
+   "summaryChars": 72
+  }
+ },
+ "f20": {
+  "topic": "在线问诊(选医生到拿到处方)",
+  "tier": "中",
+  "products": 2,
+  "steps": [
+   7,
+   9
+  ],
+  "issues": 4,
+  "suggestions": 3,
+  "stages": true,
+  "patterns": true,
+  "notes": "多",
+  "text": "适中",
+  "features": {
+   "products": 2,
+   "steps": [
+    8,
+    9
+   ],
+   "screens": 17,
+   "noteRatio": 0.94,
+   "issues": 4,
+   "suggestions": 3,
+   "stages": true,
+   "patterns": true,
+   "summaryChars": 138
+  }
+ },
+ "f21": {
+  "topic": "跨行转账",
+  "tier": "中",
+  "products": 3,
+  "steps": [
+   5,
+   7
+  ],
+  "issues": 5,
+  "suggestions": 4,
+  "stages": false,
+  "patterns": false,
+  "notes": "少",
+  "text": "详细",
+  "features": {
+   "products": 3,
+   "steps": [
+    6,
+    5,
+    7
+   ],
+   "screens": 18,
+   "noteRatio": 0.22,
+   "issues": 5,
+   "suggestions": 4,
+   "stages": false,
+   "patterns": false,
+   "summaryChars": 201
+  }
+ },
+ "f22": {
+  "topic": "家政保洁预约",
+  "tier": "大",
+  "products": 5,
+  "steps": [
+   6,
+   9
+  ],
+  "issues": 6,
+  "suggestions": 4,
+  "stages": true,
+  "patterns": false,
+  "notes": "多",
+  "text": "适中",
+  "features": {
+   "products": 5,
+   "steps": [
+    8,
+    7,
+    9,
+    6,
+    8
+   ],
+   "screens": 38,
+   "noteRatio": 0.92,
+   "issues": 6,
+   "suggestions": 4,
+   "stages": true,
+   "patterns": false,
+   "summaryChars": 125
+  }
+ },
+ "f23": {
+  "topic": "物业报修",
+  "tier": "小",
+  "products": 2,
+  "steps": [
+   3,
+   4
+  ],
+  "issues": 2,
+  "suggestions": 2,
+  "stages": false,
+  "patterns": false,
+  "notes": "多",
+  "text": "适中",
+  "features": {
+   "products": 2,
+   "steps": [
+    4,
+    3
+   ],
+   "screens": 7,
+   "noteRatio": 0.86,
+   "issues": 2,
+   "suggestions": 2,
+   "stages": false,
+   "patterns": false,
+   "summaryChars": 130
+  }
+ },
+ "f24": {
+  "topic": "信用卡在线申请",
+  "tier": "大",
+  "products": 4,
+  "steps": [
+   12,
+   15
+  ],
+  "issues": 6,
+  "suggestions": 4,
+  "stages": false,
+  "patterns": true,
+  "notes": "中",
+  "text": "详细",
+  "features": {
+   "products": 4,
+   "steps": [
+    12,
+    14,
+    13,
+    15
+   ],
+   "screens": 54,
+   "noteRatio": 0.52,
+   "issues": 6,
+   "suggestions": 4,
+   "stages": false,
+   "patterns": true,
+   "summaryChars": 209
+  }
+ }
+}
