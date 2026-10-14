@@ -12,7 +12,7 @@ export const COLS: Record<number, string> = { 1: "grid-cols-1", 2: "grid-cols-2"
 // sit between column lines.
 export const START = ["", "col-start-1", "col-start-2", "col-start-3", "col-start-4", "col-start-5", "col-start-6", "col-start-7", "col-start-8", "col-start-9", "col-start-10", "col-start-11", "col-start-12"]
 
-export const ROWS = ["", "row-span-1", "row-span-2", "row-span-3", "row-span-4", "row-span-5", "row-span-6"]
+export const ROWS = ["", "row-span-1", "row-span-2", "row-span-3", "row-span-4", "row-span-5", "row-span-6", "row-span-7", "row-span-8", "row-span-9", "row-span-10", "row-span-11", "row-span-12"]
 
 // Every component takes `span` (columns it takes in a Grid), `start` (the column
 // it starts on; default: the next free cell), `rowSpan` (rows it spans) and `className`.

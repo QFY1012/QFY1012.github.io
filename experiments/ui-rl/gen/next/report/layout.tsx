@@ -6,7 +6,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
-import { COLS, SPAN, START, Width, place, type Placed } from "./grid"
+import { COLS, Width, place, type Placed } from "./grid"
 
 // Sections are one empty field apart (24 + 144 + 24 = 192px). The title takes the
 // 9-column field; the report's facts sit in the margin column, their last line on
@@ -104,9 +104,11 @@ function Grid({ cols, fields = true, className, children, span, start, rowSpan }
 // its content, as a bold subhead does in running text, so lines stay on the 24px
 // register. The content is flex-1: a block stretched by its grid row passes the
 // height on, so elastic content (charts, distributed lists) can fill the band.
-function Block({ span, start, rows, title, description, className, contentClassName, children }: Placed & { rows?: number; title?: string; description?: string; contentClassName?: string; children: React.ReactNode }) {
+// `rowSpan` is how many rows it spans, the same prop every other piece takes.
+// `rows` is the old name for it, kept so existing pages render as before.
+function Block({ span, start, rowSpan, rows, title, description, className, contentClassName, children }: Placed & { rows?: number; title?: string; description?: string; contentClassName?: string; children: React.ReactNode }) {
   return (
-    <div data-slot="block" className={cn("flex min-h-0 flex-col", span && SPAN[span], start && START[start], className)} style={rows ? { gridRow: `span ${rows}` } : undefined}>
+    <div data-slot="block" className={cn("flex min-h-0 flex-col", place({ span, start, rowSpan }), className)} style={rows && !rowSpan ? { gridRow: `span ${rows}` } : undefined}>
       {(title || description) && (
         <div data-slot="block-header" className="flex flex-col">
           {title && <h3 className="text-sm leading-6 font-semibold">{title}</h3>}

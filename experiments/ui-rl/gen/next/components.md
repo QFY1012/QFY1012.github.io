@@ -18,8 +18,8 @@ import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, TrendChart, B
 | `Page` | `title`, `meta?: string[]`, `className?` | 页头:`meta` 在左侧 3 列(产品、周期),`title` 在右侧 9 列。节之间默认 192px |
 | `Section` | `title`, `description?`, `layout?: "side" \| "stack"`, `className?` | `side`(默认):节标题和说明挂在左侧 3 列,子元素在右侧 9 列。`stack`:标题和说明在上,子元素占满 12 列。子元素之间默认 192px |
 | `Group` | `title?`, `className?` | 一组内容,子元素之间 24px。`title` 是节内的子块标题:标题与内容之间 8px,字号比节标题小一级(14px 粗体对节标题 20px),所以「下一步」这类节里分成几块一眼看得出,子块标题不会和节标题同字号、分不出层级 |
-| `Grid` | `cols?`, `fields?`(默认 true), `span?`, `start?`, `rowSpan?`, `className?` | 网格。不写 `cols` 时它有几列宽就分几列(`side` 节里 9,`stack` 节里 12,写了 `span` 就是 `span`),里面的东西落在页面栏线上。`fields` 为 true 时每行高 144px,子元素用 `rows` 占整行;为 false 时行高随内容 |
-| `Block` | `span?`, `start?`, `rows?`, `title?`, `description?`, `contentClassName?` | 网格里的一块,标题 14px 粗体紧贴内容。`rows` 是竖着跨几行 |
+| `Grid` | `cols?`, `fields?`(默认 true), `span?`, `start?`, `rowSpan?`, `className?` | 网格。不写 `cols` 时它有几列宽就分几列(`side` 节里 9,`stack` 节里 12,写了 `span` 就是 `span`),里面的东西落在页面栏线上。`fields` 为 true 时每行高 144px,子元素用 `rowSpan` 竖着跨几行;为 false 时行高随内容 |
+| `Block` | `span?`, `start?`, `rowSpan?`, `title?`, `description?`, `contentClassName?` | 网格里的一块,标题 14px 粗体紧贴内容。`rowSpan` 是竖着跨几行(旧写法 `rows` 还能用,新页面写 `rowSpan`) |
 
 ## 内容
 
