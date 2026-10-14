@@ -257,9 +257,8 @@ const criteria = ['留白合适', '分组清楚、有垂直韵律', '容器样�
       </div>
     </div>
 
-    <h3 class="sub-h">评测：程序检查 → 审美 Judge</h3>
-    <p><strong>程序检查</strong>读渲染后的 DOM：是否绕开组件库、字号间距是否在刻度上、是否对齐栅格、有无重叠溢出。规则能判的不交给模型。</p>
-    <p>通过后再交给<strong>审美 Judge</strong>。单页打分分不开相近的两版，而迭代比的正是相近的两版，所以改成<strong>两两比较</strong>：按 7 条 rubric 逐条对比新旧两版，左右换位再判一次，两次一致才算数。</p>
+    <h3 class="sub-h">评测：审美 Judge</h3>
+    <p>评测交给<strong>审美 Judge</strong>。单页打分分不开相近的两版，而迭代比的正是相近的两版，所以改成<strong>两两比较</strong>：按 7 条 rubric 逐条对比新旧两版，左右换位再判一次，两次一致才算数。</p>
     <ol class="criteria">
       {criteria.map((c, i) => <li><span class="no">{String(i + 1).padStart(2, '0')}</span>{c}</li>)}
     </ol>
@@ -294,7 +293,7 @@ const criteria = ['留白合适', '分组清楚、有垂直韵律', '容器样�
     <div class="pair">
       <div>
         <h3>布局问题 → 改 UI Spec</h3>
-        <p>每次只改一条规则，在验证样本上和当前版两两比较，程序检查不变差、审美 Judge 两种顺序都选新版才采用。</p>
+        <p>每次只改一条规则，在验证样本上和当前版两两比较，审美 Judge 两种顺序都选新版才采用。</p>
       </div>
       <div>
         <h3>组件不够 → 改组件库</h3>
