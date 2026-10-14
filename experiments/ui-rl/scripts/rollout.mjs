@@ -1,6 +1,7 @@
 // 训练的生成:一份报告数据,用同一份指南从零写几版页面(gen/scripts/generate.mjs,从 ui-loop 复制来的生成 Agent)。
 //
 //   await rollout({ report: "f7", guide: ".../guide.md", dir: "runs/<run>/pages/s01", versions: ["v1", ...] })
+//   design 可选:换一份规范(默认 gen/design.md),对照实验用
 //
 // 每版的工作目录 <dir>/<v>/<report>/(generate.mjs 的 --traces <dir> --run <v>),几版同时跑。
 // 一版超过 timeoutMin 分钟没写完,或者没写出页面、没有截图,就重新生成(没写成的那次改名为 <report>.failed-<n> 留着查原因),
@@ -24,9 +25,9 @@ const built = (ws) => ["meta.json", "Page.tsx", "thumb.png", "tiles.json", "chec
 const done = built
 const status = (ws) => (!built(ws) ? "没写成" : read(path.join(ws, "meta.json")).stop === "error" ? "写成(模型中途请求出错,但页面已写完并构建成功,保留)" : "写成")
 
-function runOnce({ report, guide, dir, v, timeoutMin, log }) {
+function runOnce({ report, guide, design, dir, v, timeoutMin, log }) {
   return new Promise((resolve) => {
-    const args = [GENERATE, "--run", v, "--cases", report, "--data", DATA, "--traces", dir, ...(guide ? ["--guide", guide] : [])]
+    const args = [GENERATE, "--run", v, "--cases", report, "--data", DATA, "--traces", dir, ...(guide ? ["--guide", guide] : []), ...(design ? ["--design", design] : [])]
     // 单独的进程组:超时时连同它起的沙箱进程一起结束
     const child = spawn(process.execPath, args, { env: process.env, detached: true, stdio: ["ignore", "pipe", "pipe"] })
     const tag = `${path.basename(dir)} ${v}`
@@ -41,7 +42,7 @@ function runOnce({ report, guide, dir, v, timeoutMin, log }) {
   })
 }
 
-export async function rollout({ report, guide, dir, versions, timeoutMin = 20, retries = 2, log = console.log }) {
+export async function rollout({ report, guide, design, dir, versions, timeoutMin = 20, retries = 2, log = console.log }) {
   fs.mkdirSync(dir, { recursive: true })
   const made = []
   await Promise.all(versions.map(async (v) => {
@@ -56,7 +57,7 @@ export async function rollout({ report, guide, dir, versions, timeoutMin = 20, r
       fs.rmSync(ws, { recursive: true, force: true })
       const t0 = Date.now()
       log(`  ${path.basename(dir)} ${v}:开始生成 ${report}`)
-      const code = await runOnce({ report, guide, dir, v, timeoutMin, log })
+      const code = await runOnce({ report, guide, design, dir, v, timeoutMin, log })
       log(`  ${path.basename(dir)} ${v}:${status(ws)}${built(ws) ? "" : `(退出码 ${code})`},${Math.round((Date.now() - t0) / 1000)} 秒`)
     }
     fs.rmSync(path.join(ws, ".build"), { recursive: true, force: true })
