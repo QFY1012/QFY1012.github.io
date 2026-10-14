@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { SPAN, type Placed } from "./grid"
+import { place, type Placed } from "./grid"
 
 type KVProps = Placed & {
   items: { label: string; value: string }[]
@@ -10,11 +10,11 @@ type KVProps = Placed & {
 }
 
 // Label–value pairs.
-function KV({ items, labelCols, span, className }: KVProps) {
+function KV({ items, labelCols, span, start, rowSpan, className }: KVProps) {
   return (
     <dl
       data-slot="custom-kv"
-      className={cn(cn("grid text-sm leading-6", labelCols ? "gap-x-6 gap-y-0" : "grid-cols-2 gap-x-4 gap-y-3"), span ? SPAN[span] : undefined, className)}
+      className={cn(cn("grid text-sm leading-6", labelCols ? "gap-x-6 gap-y-0" : "grid-cols-2 gap-x-4 gap-y-3"), place({ span, start, rowSpan }), className)}
       style={labelCols ? { gridTemplateColumns: `${labelCols * 98 - 24}px 1fr` } : undefined}
     >
       {items.map((it, i) => (

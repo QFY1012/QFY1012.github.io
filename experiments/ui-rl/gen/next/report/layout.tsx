@@ -6,7 +6,12 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
-import { COLS, SPAN, type Placed } from "./grid"
+import { COLS, SPAN, START, place, type Placed } from "./grid"
+
+// How many page columns the content around a piece is wide: 9 in a side section
+// body, 12 in a stacked one, or a Grid's own cols. A Grid without `cols` takes it,
+// so its columns are the page's columns and everything in it lands on them.
+const Width = React.createContext(9)
 
 // Sections are one empty field apart (24 + 144 + 24 = 192px). The title takes the
 // 9-column field; the report's facts sit in the margin column, their last line on
@@ -26,7 +31,23 @@ function Page({ title, meta = [], className, children }: { title: string; meta?:
 }
 
 // Groups inside a section are one empty field apart, so they stay on field lines.
-function Section({ title, description, className, children }: { title: string; description?: string; className?: string; children: React.ReactNode }) {
+// layout "side" (default): the title hangs in the left 3 columns, the content takes
+// the right 9. layout "stack": the title sits above the content and the content
+// takes all 12 columns, for what needs the full width (a wide table, a matrix of
+// screens). Both keep every edge on the page's column lines.
+function Section({ title, description, layout = "side", className, children }: { title: string; description?: string; layout?: "side" | "stack"; className?: string; children: React.ReactNode }) {
+  if (layout === "stack")
+    return (
+      <section data-slot="section" className="grid grid-cols-12 items-start gap-x-6 gap-y-6">
+        <div data-slot="section-header" className="col-span-12 flex flex-col">
+          <h2 className="text-xl leading-6 font-medium">{title}</h2>
+          {description && <p className="text-sm leading-6 text-muted-foreground">{description}</p>}
+        </div>
+        <div data-slot="section-body" className={cn("col-span-12 flex flex-col gap-[192px]", className)}>
+          <Width.Provider value={12}>{children}</Width.Provider>
+        </div>
+      </section>
+    )
   return (
     <section data-slot="section" className="grid grid-cols-12 items-start gap-x-6">
       <div data-slot="section-header" className="col-span-3 flex flex-col">
@@ -52,11 +73,15 @@ function Group({ title, className, children }: { title?: string; className?: str
   )
 }
 
-// Rows are 144px fields unless fields={false}; a child takes `span` columns (and a Block `rows` fields).
-function Grid({ cols = 9, fields = true, className, children, span }: Placed & { cols?: number; fields?: boolean; children: React.ReactNode }) {
+// Rows are 144px fields unless fields={false}; a child takes `span` columns from
+// column `start` (and a Block `rows` fields). Without `cols` the grid has one
+// column per page column it is wide (its `span`, else the width around it).
+function Grid({ cols, fields = true, className, children, span, start, rowSpan }: Placed & { cols?: number; fields?: boolean; children: React.ReactNode }) {
+  const around = React.useContext(Width)
+  const n = cols ?? span ?? around
   return (
-    <div data-slot="grid" className={cn("grid gap-x-6 gap-y-6", COLS[cols], span && SPAN[span], className)} style={fields ? { gridAutoRows: "144px" } : undefined}>
-      {children}
+    <div data-slot="grid" className={cn("grid gap-x-6 gap-y-6", COLS[n], place({ span, start, rowSpan }), className)} style={fields ? { gridAutoRows: "144px" } : undefined}>
+      <Width.Provider value={n}>{children}</Width.Provider>
     </div>
   )
 }
@@ -65,16 +90,16 @@ function Grid({ cols = 9, fields = true, className, children, span }: Placed & {
 // its content, as a bold subhead does in running text, so lines stay on the 24px
 // register. The content is flex-1: a block stretched by its grid row passes the
 // height on, so elastic content (charts, distributed lists) can fill the band.
-function Block({ span, rows, title, description, className, contentClassName, children }: Placed & { rows?: number; title?: string; description?: string; contentClassName?: string; children: React.ReactNode }) {
+function Block({ span, start, rows, title, description, className, contentClassName, children }: Placed & { rows?: number; title?: string; description?: string; contentClassName?: string; children: React.ReactNode }) {
   return (
-    <div data-slot="block" className={cn("flex min-h-0 flex-col", span && SPAN[span], className)} style={rows ? { gridRow: `span ${rows}` } : undefined}>
+    <div data-slot="block" className={cn("flex min-h-0 flex-col", span && SPAN[span], start && START[start], className)} style={rows ? { gridRow: `span ${rows}` } : undefined}>
       {(title || description) && (
         <div data-slot="block-header" className="flex flex-col">
           {title && <h3 className="text-sm leading-6 font-semibold">{title}</h3>}
           {description && <p className="text-sm leading-6 text-muted-foreground">{description}</p>}
         </div>
       )}
-      <div data-slot="block-content" className={cn("flex flex-1 flex-col gap-3", contentClassName)}>{children}</div>
+      <div data-slot="block-content" className={cn("flex flex-1 flex-col gap-3", contentClassName)}>{span ? <Width.Provider value={span}>{children}</Width.Provider> : children}</div>
     </div>
   )
 }

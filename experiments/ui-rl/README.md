@@ -86,3 +86,11 @@
 核对:`gen/next/check-same.sh gen/next/check-pages.txt`(在 `experiments/` 下运行)。选的 21 页覆盖现有 263 个不同页面里用到的全部 108 种组件和属性写法,外加试点第 1 步的 6 版;新旧两套各渲染一次,检查结果、整页截图、缩略图、每张切块全部逐字节相同。
 
 训练正在用 `gen/app`,中途换掉等于换了生成环境(Agent 读到的源码不一样),所以试点跑完再换。换的时候 `components.md` 一起补上:各组件源码在哪个文件、`List` 的 `meta` 在各模式下显示在哪。
+
+#### 网格内放开(也在 `gen/next/`,一起换进去)
+
+原则:网格里怎么填都可以,但每一块的左右边都要落在 12 列的栏线上。
+
+- 组件:所有内容组件和 `Figure` 多了 `start`(从第几列开始)和 `rowSpan`(竖着跨几行),`Block` 多了 `start`;`Section` 多了 `layout="stack"`(标题在上、内容占满 12 列);`Grid` 不写 `cols` 时按自己有几列宽来分(`side` 节里 9、`stack` 节里 12、写了 `span` 就是 `span`),所以里面的东西天然落在栏线上。不写新 props 的旧页面渲染结果不变(21 页逐字节核对过,`SHOOT_GRID=0`)。
+- 检查:`gen/scripts/grid-check.mjs`,`shoot.mjs` 在组件库带 `grid.ts` 时调用,量每一块的左右边,不在栏线上就报「网格」问题。拿第 1 遍观察的 16 版页面试:带清单的 3 版为了「四项一行」在 9 列宽里写了 `Grid cols={12}`,4 个指标全不在栏线上;g0 有 2 版两列的 `List` 不在栏线上。ia5 都没看出来。
+- 规范和组件说明的草稿:`gen/next/design.md`(在 `design-b2b9.md` 基础上加 A6 网格,B 改成默认排法,C2 加 `stack`,C4 改成自由组合;B9 的 2 条改用单列,因为 9 列分不成两半)、`gen/next/components.md`。

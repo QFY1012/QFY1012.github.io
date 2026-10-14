@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { place, type Placed } from "./grid"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 // Screenshots: one screen per Figure, laid out in a FigureStrip that scrolls
@@ -80,7 +81,10 @@ function FigureCompare({ className, children, ...props }: React.ComponentProps<"
 }
 
 // As wide as its image: the label and text wrap under it instead of widening (and stretching) the image.
-function Figure({ className, ...props }: React.ComponentProps<"figure">) {
+// Placed in a Grid (`span`, `start`, `rowSpan`), it takes its cells instead and the image fills their width,
+// so a row of screens can be laid on the page's columns (one product per column group, one stage per row).
+function Figure({ className, span, start, rowSpan, ...props }: React.ComponentProps<"figure"> & Placed) {
+  if (span) return <figure data-slot="figure" className={cn("flex min-w-0 flex-col gap-2", place({ span, start, rowSpan }), className)} {...props} />
   return <figure data-slot="figure" className={cn("flex w-min shrink-0 flex-col gap-2", className)} {...props} />
 }
 

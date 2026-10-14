@@ -3,7 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemSeparator, ItemTitle } from "@/components/ui/item"
-import { SPAN, type Placed } from "./grid"
+import { place, type Placed } from "./grid"
 
 // Columns for `columns` (no 6 here: a 6-column list has never been laid out on the grid).
 const LIST_COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4", 9: "grid-cols-9", 12: "grid-cols-12" }
@@ -27,11 +27,11 @@ const num = (i: number) => String(i + 1).padStart(2, "0")
 // A list. Where `meta` shows depends on the mode: with `columns` it is the small
 // line above the title (in red with metaTone="destructive"); with `numbered` it is
 // not shown; otherwise it is an outline badge at the right end of the row.
-function List({ items, numbered, ordered, columns, divided, metaTone, span, className }: ListProps) {
-  const place = (base?: string) => cn(base, span ? SPAN[span] : undefined, className)
+function List({ items, numbered, ordered, columns, divided, metaTone, span, start, rowSpan, className }: ListProps) {
+  const cls = (base?: string) => cn(base, place({ span, start, rowSpan }), className)
   if (columns)
     return (
-      <div data-slot="custom-list" className={place(cn("grid gap-x-6 gap-y-6", LIST_COLS[columns]))}>
+      <div data-slot="custom-list" className={cls(cn("grid gap-x-6 gap-y-6", LIST_COLS[columns]))}>
         {items.map((it, i) => (
           <div key={i} className="flex flex-col text-sm leading-6">
             {(numbered || it.meta) && (
@@ -47,7 +47,7 @@ function List({ items, numbered, ordered, columns, divided, metaTone, span, clas
     )
   if (numbered)
     return (
-      <ol data-slot="custom-list" className={place("flex flex-col")}>
+      <ol data-slot="custom-list" className={cls("flex flex-col")}>
         {items.map((it, i) => (
           <li key={i} className="grid grid-cols-[48px_1fr] border-b py-5 text-sm leading-6">
             <span className="text-xs leading-6 text-muted-foreground tabular-nums">{num(i)}</span>
@@ -62,7 +62,7 @@ function List({ items, numbered, ordered, columns, divided, metaTone, span, clas
   // Undivided lists: an item's title and description sit tight (two 24px lines),
   // with a 12px gap only between items.
   return (
-    <ItemGroup className={place(divided === false ? "gap-3" : undefined)}>
+    <ItemGroup className={cls(divided === false ? "gap-3" : undefined)}>
       {items.map((it, i) => (
         <React.Fragment key={i}>
           {i > 0 && divided !== false && <ItemSeparator />}

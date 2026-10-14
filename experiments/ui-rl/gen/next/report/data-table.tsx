@@ -3,7 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { SPAN, type Placed } from "./grid"
+import { place, type Placed } from "./grid"
 
 type Column = {
   key: string
@@ -60,7 +60,7 @@ function Interval({ c, r, muted }: { c: Column; r: Row; muted: boolean }) {
 
 // A table. When any column has `span`, the columns sit on the page grid: each is
 // n columns plus the gutter after it, and a row is 39px + the 1px row rule = 40px.
-function DataTable({ columns, rows, caption, span, className }: DataTableProps) {
+function DataTable({ columns, rows, caption, span, start, rowSpan, className }: DataTableProps) {
   const onGrid = columns.some((c) => c.span)
   const max = Object.fromEntries(columns.filter((c) => c.bar).map((c) => [c.key, Math.max(...rows.map((r) => Number(r[c.key]) || 0))]))
   const muted = (c: Column, r: Row) => !!c.muteWhen && r[c.muteWhen.key] === c.muteWhen.equals
@@ -79,7 +79,7 @@ function DataTable({ columns, rows, caption, span, className }: DataTableProps) 
       v
     )
   return (
-    <div data-slot="custom-table" className={cn(span ? SPAN[span] : undefined, className)}>
+    <div data-slot="custom-table" className={cn(place({ span, start, rowSpan }), className)}>
       <Table className={onGrid ? "table-fixed" : undefined}>
         {onGrid && (
           <colgroup>
