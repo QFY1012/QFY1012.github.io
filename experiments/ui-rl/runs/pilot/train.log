@@ -2978,3 +2978,9 @@ Node.js v22.22.0
     [s10 v2] f2: bash ls -la /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages
     [s10 v5] f2: bash ls -la assets; cat tsconfig.json
     [s10 v3] f2: bash ls -la assets; cat tsconfig.json; echo "---"; echo $SHOOT
+    [s10 v1] f2: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s10
+    [s10 v1] f2: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s10
+    [s10 v6] f2: bash cat tsconfig.json; ls /home/user/QFY1012.github.io/experiments/ui-rl/g
+    [s10 v1] f2: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s10/v1
+    [s10 v4] f2: write Page.tsx
+    [s10 v4] f2: bash node $SHOOT . 2>&1 | tail -40
