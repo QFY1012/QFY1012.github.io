@@ -1,0 +1,58 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "ad2242cf539155fa7947c372251246642bc2267e"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "74d9b79e9e0f2cb1953d9ca85a04032ee3869704"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "7454973940dcc45e4c0e060653ef1135ea93308c"
+ },
+ {
+  "title": "流程对比",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "6b944430cfc70cd6bc99d2e174b85580995ccbd3"
+ },
+ {
+  "title": "问题",
+  "files": [
+   "s5-1.png"
+  ],
+  "hash": "533ac2160c1c54539e936cc4f150f33e366583c3"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s6-1.png"
+  ],
+  "hash": "05a5eb5047b4cd1e3f052029bec3203364d695a0"
+ },
+ {
+  "title": "背景信息",
+  "files": [
+   "s7-1.png"
+  ],
+  "hash": "b540d524fbd3051b5b747600fe1afbd449b5c467"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s8-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]

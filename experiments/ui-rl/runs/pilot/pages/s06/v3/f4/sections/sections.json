@@ -1,0 +1,65 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "e39f7dafab120dfb59f1575ed3963dc03b974402"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "3e0573b140eb405fcc4d5cda772ebde957fdfa5f"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "6500c8b3bec5033d93a10c7b419a482392650670"
+ },
+ {
+  "title": "拆分",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "778b7a0ed1eda6d652ceb6d2cb92ed68ab4e8762"
+ },
+ {
+  "title": "明细",
+  "files": [
+   "s5-1.png"
+  ],
+  "hash": "7c89a86db79cf6a0339c96a9b30fbf9e92162cf5"
+ },
+ {
+  "title": "链路",
+  "files": [
+   "s6-1.png"
+  ],
+  "hash": "a7c6db921040b22de97e5d567d197385d74a9294"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s7-1.png"
+  ],
+  "hash": "6662f4f4d77132b1346e1ea51e5c8f643434afb3"
+ },
+ {
+  "title": "背景信息",
+  "files": [
+   "s8-1.png"
+  ],
+  "hash": "21771a095234fe1ecba876004eaddbd7689a2e7d"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s9-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]

@@ -1,0 +1,27 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s09/guide.md",
+  "sha": "9829255d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 804,
+ "usage": {
+  "input": 478062,
+  "output": 31433
+ },
+ "stop": "stop",
+ "summary": "The page is complete and all program checks pass. Here's the structure:\n\n**页面结构**（`交互流程挖掘 · 线上开户`，节标题在左 3 列、内容在右 9 列）：\n\n1. **结论** — 24px 细体结论句（三家流程总判断），占满 9 列。\n2. **核心指标** — `Grid cols={9}` 一行四项：首位放大「步骤最少 7 步」（`size=\"lg\"`），后接发现问题 5 个、对比产品 3 个、分析截图 26 张（样本与口径后置），四项说明行同有同无。\n3. **产品对比** — `DataTable`：产品 / 步骤数（`bar`）/ 输入项（`bar`）/ 结论，各列 span 合计 9。\n4. **阶段对比** — `DataTable`：开户阶段（span 3）+ 三家 App（各 span 2），横向对比同一阶段的做法差异。\n5. **链路明细** — 每个产品一组：`Rule` 标「产品 · 版本 · 结论」+ `FigureStrip` 逐步截图（一格一屏）；步骤备注用 `FigureText` 在卡内独起一行、带「备注」标签。\n6. **共同模式** — `List columns={3} numbered`，每条 `meta` 写适用产品。\n7. **问题明细** — `DataTable`：编号 P1–P5 / 产品 / 步骤（产品与步骤分列）/ 问题 / 严重度（`levels` 有序三级，高红加粗、中加粗）/ 依据。\n8. **下一步** — 单列纵向编号 `List ordered`，依据内联为徽标并保留 P 编号回指问题表。\n9. **背景信息** — `KV labelCols={2}`：任务、范围、日期、对比产品、样本量（元信息只在此处出现一次，页头不重复）。\n\n**一处需说明的组件限制**：`List` 的 `numbered` 单列分支不渲染 `meta`（只显示序号），所以「共同模式」改用 `columns={3} numbered` 才能让「适用产品」显示出来（该分支把 `meta` 显示在标题上方）。数据里没有超出组件库表达能力的内容。",
+ "checks": []
+}

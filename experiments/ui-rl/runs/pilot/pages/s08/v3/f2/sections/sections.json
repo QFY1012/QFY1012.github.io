@@ -1,0 +1,58 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "3a11095ddd45d4f240f6be675163de0276bbc9c3"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "b2719735f7ad76789ad4cd842fc7fd3523f42d43"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "9c7667e0b35504dbc095338239176e5125d7e6bc"
+ },
+ {
+  "title": "链路",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "10896f2f3c442bdd4648c777e2bdf80d3222fe92"
+ },
+ {
+  "title": "问题",
+  "files": [
+   "s5-1.png"
+  ],
+  "hash": "e95e142afb0419862fcb64981c297a74632dba0e"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s6-1.png"
+  ],
+  "hash": "4ee8888bebe5f28e40c8988506c33a4608617d58"
+ },
+ {
+  "title": "背景",
+  "files": [
+   "s7-1.png"
+  ],
+  "hash": "cedad5b9d5d98bbf905c919caeeb6f2c0c574de4"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s8-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]

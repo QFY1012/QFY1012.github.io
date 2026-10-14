@@ -1,0 +1,81 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "9754e84207ca84d3752b4c723f9875750a4a7ce1"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "53ee64c6257e6012175746341ecf68f55c1cfb90"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "a677010f87bab26312500b7c9231440a9c4643fd"
+ },
+ {
+  "title": "产品对比",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "128be02824b6726940cef373768b0b24bf20da59"
+ },
+ {
+  "title": "阶段差异",
+  "files": [
+   "s5-1.png"
+  ],
+  "hash": "b826bc351030ff976b89162798cf06429f0e0e43"
+ },
+ {
+  "title": "共性问题",
+  "files": [
+   "s6-1.png"
+  ],
+  "hash": "ac45311e91e2c0b5d0f590359a699546b699e126"
+ },
+ {
+  "title": "问题明细",
+  "files": [
+   "s7-1.png"
+  ],
+  "hash": "d89d12f98f3365024f9f55abc94439d0f2d32504"
+ },
+ {
+  "title": "链路明细",
+  "files": [
+   "s8-1.png",
+   "s8-2.png",
+   "s8-3.png"
+  ],
+  "hash": "7ea002d08d06cea27ae66b77e1cba0356060945b"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s9-1.png"
+  ],
+  "hash": "425691a23ab12e7ad7ac8c8564c4a38fd7dec2b7"
+ },
+ {
+  "title": "背景信息",
+  "files": [
+   "s10-1.png"
+  ],
+  "hash": "a0236fe7f552b77d64069027ce80f955d23424c3"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s11-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]

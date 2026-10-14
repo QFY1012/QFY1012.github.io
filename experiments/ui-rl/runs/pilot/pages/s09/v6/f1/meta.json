@@ -1,0 +1,27 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s09/guide.md",
+  "sha": "9829255d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 382,
+ "usage": {
+  "input": 190129,
+  "output": 16944
+ },
+ "stop": "stop",
+ "summary": "检查通过。最终页面结构：\n\n**页头**（手机银行 / 2026 年 9 月版本 + 标题）→ **结论**（24px 细体一句话判断）→ **核心指标**（四项一行，步骤最少 7 步放大为首位主指标，其余等大，每项都有副行注释）→ **流程对比**（产品 / 步骤数 / 输入项 / 结论四列表，计数列带细条）→ **阶段差异**（5 个阶段 × 3 家银行对照表）→ **共性模式**（编号列表）→ **链路明细**（每家银行一个 `Rule` + `FigureStrip`，逐屏截图、步骤说明、备注独起一行）→ **问题清单**（编号 / 产品 / 步骤 / 问题 / 证据 / 严重度，严重度用 `levels` 分三级）→ **下一步**（单列纵向 `ordered` 列表，依据编号内联）→ **背景信息**（任务、范围、日期、产品版本、样本量、步骤区间，`KV` 两列标签）。\n\n组件库没有为图卡备注和「建议依据」提供专门字段：备注用图卡内单独的 `FigureText` 加「备注:」标签呈现，建议依据（如「远川银行第 2 步、P1」）拼进 `List` 的 description 里内联显示。",
+ "checks": []
+}

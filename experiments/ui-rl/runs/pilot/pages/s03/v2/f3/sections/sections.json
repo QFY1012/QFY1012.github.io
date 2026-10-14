@@ -1,0 +1,66 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "471bcc45c886e91f646dab72ef17c41456b5dfa1"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "c9135784da2efb3523ccdf5160846b436e65eabe"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "cf942bdc56e7f6dc0fc6e9856f44707d1d07bdfb"
+ },
+ {
+  "title": "产品对比",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "e03bb0fe2ec31ec4abda731c653cb862d04851a7"
+ },
+ {
+  "title": "流程链路",
+  "files": [
+   "s5-1.png",
+   "s5-2.png"
+  ],
+  "hash": "5999c4b565c16e28d7adf78c08b7fe21adb0ca24"
+ },
+ {
+  "title": "问题",
+  "files": [
+   "s6-1.png"
+  ],
+  "hash": "90c7f5ba35601e52319d66a3ea2ee89198e8e5a6"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s7-1.png"
+  ],
+  "hash": "332cc3fdc8c24ce394626243deb5ef6b1ab1d23c"
+ },
+ {
+  "title": "背景信息",
+  "files": [
+   "s8-1.png"
+  ],
+  "hash": "377e1b9a664b8658286ef1e986bf749e224efa08"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s9-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]

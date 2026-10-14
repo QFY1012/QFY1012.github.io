@@ -1,0 +1,59 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "99cb8b7cd0baa790b1c0af487853524dad5af6b5"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "379042ed6a24dfbd9615754c991f522f9b5958d9"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "9cd8b78c4d9e8dd4dc28a84044643142bb6baed1"
+ },
+ {
+  "title": "拆分",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "74aec944b24de94fa8d0ed5918a34bf2ccb42e34"
+ },
+ {
+  "title": "明细",
+  "files": [
+   "s5-1.png",
+   "s5-2.png"
+  ],
+  "hash": "a53c31be7aab0573e8b265aecadc61fcb57c84b4"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s6-1.png"
+  ],
+  "hash": "8b76247a0696d5927445263baf38a353637def1b"
+ },
+ {
+  "title": "背景信息",
+  "files": [
+   "s7-1.png"
+  ],
+  "hash": "0bbed3a5a2266d8b31d67185b2f2812b7bf136a5"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s8-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]

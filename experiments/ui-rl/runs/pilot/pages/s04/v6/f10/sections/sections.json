@@ -1,0 +1,81 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "648394b4eba7071b1f84071e12b0b3163866622f"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "9b1d5c4cb1f4d2c7a6c4304bd942db493ee3566f"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "ffade655eebf8ea136cf68ebe57c4b1eb3c7380f"
+ },
+ {
+  "title": "步骤对比",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "a048501def3ef484f269fa13ec5a04edcde2cffc"
+ },
+ {
+  "title": "分阶段",
+  "files": [
+   "s5-1.png"
+  ],
+  "hash": "c697a5b5205568270d57d0e14852cd8a43ecca1f"
+ },
+ {
+  "title": "共性模式",
+  "files": [
+   "s6-1.png"
+  ],
+  "hash": "e183a1a63ce702aed48b3e2ec3705cd0bf34ab8f"
+ },
+ {
+  "title": "链路明细",
+  "files": [
+   "s7-1.png",
+   "s7-2.png",
+   "s7-3.png"
+  ],
+  "hash": "2f8d28497ae5aaad748a625993b93f56e5d81d89"
+ },
+ {
+  "title": "问题明细",
+  "files": [
+   "s8-1.png"
+  ],
+  "hash": "636ead536ed8526d344925d216f7d0edbc00e1a2"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s9-1.png"
+  ],
+  "hash": "0f8996e62c0cd3b7d56738c1abb1882752991cbf"
+ },
+ {
+  "title": "背景信息",
+  "files": [
+   "s10-1.png"
+  ],
+  "hash": "bd5539b2b4ce07ea5f14c1ab7ece0f55dd511989"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s11-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]

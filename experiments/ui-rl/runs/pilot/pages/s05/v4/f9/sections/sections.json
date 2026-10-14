@@ -1,0 +1,73 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "6a85734632c4bbfa0b9e7ed778cd43124185ce12"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "bfbe6f1edfb309f0a16779b7050da79cdf4928ec"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "31c6bcd7f69f4e38ca941bd12ee6bc368cda4701"
+ },
+ {
+  "title": "对比结果",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "4609a9bac8fbb39768b3b2fb3f125b8199e6f96a"
+ },
+ {
+  "title": "共性模式",
+  "files": [
+   "s5-1.png"
+  ],
+  "hash": "86eda13ee801f5523d1cc40d0b3942c35cd9bf8c"
+ },
+ {
+  "title": "流程链路",
+  "files": [
+   "s6-1.png",
+   "s6-2.png"
+  ],
+  "hash": "d822b7c2bf83d92565e3bc333b3399d670880788"
+ },
+ {
+  "title": "问题清单",
+  "files": [
+   "s7-1.png"
+  ],
+  "hash": "d94858045e84b715da5e5a5eae7b752fe6633efb"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s8-1.png"
+  ],
+  "hash": "ee35ab9d589664661e2ed6413230a41c62843f6d"
+ },
+ {
+  "title": "背景信息",
+  "files": [
+   "s9-1.png"
+  ],
+  "hash": "81e42e676ca96c8dd57d1bb52edb7a6c28f0f1c8"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s10-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]

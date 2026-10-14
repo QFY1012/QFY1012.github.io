@@ -2730,3 +2730,251 @@ Node.js v22.22.0
     [s09 v2] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
     [s09 v6] f1: nudge
     [s09 v5] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v5] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v5
+    [s09 v3] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v2] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v2] f1: bash sed -n 1,120p /home/user/QFY1012.github.io/experiments/ui-rl/gen/scrip
+    [s09 v2] f1: bash sed -n 120,400p /home/user/QFY1012.github.io/experiments/ui-rl/gen/scr
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl && ls gen gen/script
+    [s09 v2] f1: bash ls /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/ 2>/dev/
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl && sed -n 60,220p ge
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app && ls -R src
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v2] f1: bash ls /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/report; 
+    [s09 v2] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app && ls -R src
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v6] f1: bash ls /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v2] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v6] f1: write /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/components/
+    [s09 v6] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v2] f1: bash sed -n 1,200p /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/s
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v2] f1: bash sed -n 200,470p /home/user/QFY1012.github.io/experiments/ui-rl/gen/app
+    [s09 v5] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v2] f1: bash sed -n 470,706p /home/user/QFY1012.github.io/experiments/ui-rl/gen/app
+    [s09 v5] f1: write /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v5
+    [s09 v1] f1: nudge
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v5] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v6] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v5] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v5
+    [s09 v5] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v5
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v4] f1: nudge
+    [s09 v5] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v5
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v2] f1: bash cat /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/lib/uti
+    [s09 v2] f1: bash find /home/user/QFY1012.github.io/experiments/ui-rl -name "Page.tsx" -
+    [s09 v5] f1: done, 1 shoots, 0 check findings
+  s09 v5:写成,218 秒
+    [s09 v2] f1: bash ls -R /home/user/QFY1012.github.io/experiments/ui-rl/runs | head -30; 
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v2] f1: write /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v2] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v3] f1: write /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v4] f1: bash ls assets/ | head -30; echo "---count---"; ls assets/ | wc -l; echo "-
+    [s09 v3] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v4] f1: write Page.tsx
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v4] f1: bash node $SHOOT . 2>&1 | tail -40
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v6] f1: edit /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v4] f1: read thumb.png
+    [s09 v6] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v4] f1: read tile-1.png
+    [s09 v4] f1: read tile-2.png
+    [s09 v1] f1: write /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v4] f1: read tile-4.png
+    [s09 v4] f1: read tile-8.png
+    [s09 v1] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v1] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v1] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v4] f1: read tile-5.png
+    [s09 v4] f1: read tile-7.png
+    [s09 v1] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v1] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v1] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v1] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v4] f1: bash ls -la; echo "---"; ls .shoot 2>/dev/null; find . -maxdepth 2 -name "*
+    [s09 v4] f1: bash ls -R .build | head -40; echo "---grep---"; grep -rl "远川银行" .build 2>/
+    [s09 v1] f1: edit /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v6] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v6
+    [s09 v4] f1: bash find / -path /proc -prune -o -name "*.tsx" -path "*report*" -print 2>/
+    [s09 v1] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v6] f1: done, 2 shoots, 0 check findings
+  s09 v6:写成,390 秒
+    [s09 v3] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v4] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/components/
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v1] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v1
+    [s09 v4] f1: bash cd .build/assets; grep -o "metaTone[^;]\{0,200\}" index-BZAcpdrg.js | 
+    [s09 v3] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v3] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v1] f1: done, 2 shoots, 0 check findings
+  s09 v1:写成,428 秒
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v4] f1: bash cd .build/assets; grep -o ".\{80\}data-slot.\{600\}" index-BZAcpdrg.js
+    [s09 v3] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v4] f1: bash cd .build/assets; grep -o ".\{60\}padStart.\{120\}" index-BZAcpdrg.js 
+    [s09 v2] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v2
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/components/
+    [s09 v3] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/src/componen
+    [s09 v4] f1: bash cd .build/assets; grep -o "case\`list\`.\{0,2500\}" index-BZAcpdrg.js 
+    [s09 v2] f1: done, 1 shoots, 0 check findings
+  s09 v2:写成,499 秒
+    [s09 v3] f1: edit /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s09/v3
+    [s09 v3] f1: done, 2 shoots, 0 check findings
+  s09 v3:写成,602 秒
+    [s09 v4] f1: read tile-9.png
+    [s09 v4] f1: read tile-10.png
+    [s09 v4] f1: edit Page.tsx
+    [s09 v4] f1: bash node $SHOOT . 2>&1 | tail -20
+    [s09 v4] f1: read tile-8.png
+    [s09 v4] f1: read tile-3.png
+    [s09 v4] f1: read tile-7.png
+    [s09 v4] f1: read thumb.png
+    [s09 v4] f1: done, 2 shoots, 0 check findings
+  s09 v4:写成,813 秒
+  按节截图 6 版
+  按节截图 runs/pilot/pages/s09/v1/f1:页头(1) / 结论(1) / 核心指标(1) / 流程拆分(1) / 共性与差异(1) / 链路明细(2) / 问题明细(1) / 下一步(1) / 背景信息(1) / 页尾(1)  1/6
+  按节截图 runs/pilot/pages/s09/v2/f1:页头(1) / 结论(1) / 核心指标(1) / 产品对比(1) / 流程链路(2) / 环节差异(1) / 可复用模式(1) / 问题明细(1) / 下一步(1) / 背景信息(1) / 页尾(1)  2/6
+  按节截图 runs/pilot/pages/s09/v3/f1:页头(1) / 结论(1) / 核心指标(1) / 产品对比(1) / 链路明细(2) / 问题清单(1) / 下一步(1) / 背景信息(1) / 页尾(1)  3/6
+  按节截图 runs/pilot/pages/s09/v4/f1:页头(1) / 结论(1) / 核心指标(1) / 产品对比(1) / 阶段对比(1) / 链路明细(2) / 共同模式(1) / 问题明细(1) / 下一步(1) / 背景信息(1) / 页尾(1)  4/6
+  按节截图 runs/pilot/pages/s09/v5/f1:页头(1) / 结论(1) / 核心指标(1) / 流程拆分(1) / 链路明细(2) / 问题清单(1) / 下一步(1) / 背景信息(1) / 页尾(1)  5/6
+  按节截图 runs/pilot/pages/s09/v6/f1:页头(1) / 结论(1) / 核心指标(1) / 流程对比(1) / 阶段差异(1) / 共性模式(1) / 链路明细(2) / 问题清单(1) / 下一步(1) / 背景信息(1) / 页尾(1)  6/6
+2. 打分
+  打分:6 版,15 对 × 两种顺序 = 30 次判定,要跑 30 次
+    第 2 版(A) vs 第 1 版(B):B 稍好(1/30)
+    第 1 版(A) vs 第 4 版(B):B 稍好(2/30)
+    第 1 版(A) vs 第 5 版(B):A 稍好(3/30)
+    第 1 版(A) vs 第 3 版(B):B 稍好(4/30)
+    第 5 版(A) vs 第 1 版(B):B 稍好(5/30)
+    第 2 版(A) vs 第 3 版(B):B 稍好(6/30)
+    第 2 版(A) vs 第 4 版(B):B 稍好(7/30)
+  ↻ 第 1 版(A) vs 第 6 版(B):第 1 次请求失败(10 秒没有收到回复),2 秒后重试
+    第 4 版(A) vs 第 2 版(B):A 稍好(8/30)
+  ↻ 第 4 版(A) vs 第 1 版(B):第 1 次请求失败(120 秒没有开始回复),2 秒后重试
+  ↻ 第 2 版(A) vs 第 6 版(B):第 1 次请求失败(Unexpected token '#', "## 结论
+
+两版*"... is not valid JSON;原文 …## 结论
+
+两版**骨架相同**（头 → 结论 → 指标 → 对比表 → 链路…),2 秒后重试
+    第 6 版(A) vs 第 1 版(B):A 稍好(9/30)
+  ↻ 第 2 版(A) vs 第 5 版(B):第 1 次请求失败(Unterminated string in JSON at position 805 (line 1 column 806);原文 …一致"},{"no":9,"better":"一样","why":"两版都以中性色为主，仅用少量产品色区分对象，色彩系统…),2 秒后重试
+  ↻ 第 1 版(A) vs 第 6 版(B):第 2 次请求失败(Unterminated string in JSON at position 232 (line 2 column 231);原文 …(高=回退重填、中=增加操作成本),A 版没有;B 版背景信息多一项「步骤区间 7-10 步」且样本口径写得更全;B 版…),4 秒后重试
+  ↻ 第 4 版(A) vs 第 1 版(B):第 2 次请求失败(Unexpected token '#', "## 总体判断
+
+两"... is not valid JSON;原文 …## 总体判断
+
+两版不是「好坏」关系，而是**报告版（A）与摘要版（B）**的…),4 秒后重试
+    第 3 版(A) vs 第 2 版(B):A 稍好(10/30)
+    第 2 版(A) vs 第 5 版(B):B 稍好(11/30)
+    第 5 版(A) vs 第 2 版(B):B 稍好(12/30)
+    第 3 版(A) vs 第 1 版(B):B 稍好(13/30)
+    第 1 版(A) vs 第 6 版(B):A 稍好(14/30)
+    第 6 版(A) vs 第 2 版(B):B 稍好(15/30)
+    第 5 版(A) vs 第 3 版(B):B 稍好(16/30)
+    第 4 版(A) vs 第 1 版(B):A 稍好(17/30)
+    第 3 版(A) vs 第 4 版(B):B 稍好(18/30)
+  ↻ 第 2 版(A) vs 第 6 版(B):第 2 次请求失败(120 秒没有开始回复),4 秒后重试
+    第 3 版(A) vs 第 5 版(B):B 稍好(19/30)
+    第 4 版(A) vs 第 5 版(B):A 稍好(20/30)
+    第 1 版(A) vs 第 2 版(B):B 稍好(21/30)
+    第 6 版(A) vs 第 3 版(B):B 稍好(22/30)
+    第 4 版(A) vs 第 3 版(B):B 稍好(23/30)
+  ↻ 第 3 版(A) vs 第 6 版(B):第 1 次请求失败(10 秒没有收到回复),2 秒后重试
+    第 4 版(A) vs 第 6 版(B):B 稍好(24/30)
+    第 6 版(A) vs 第 4 版(B):B 稍好(25/30)
+    第 2 版(A) vs 第 6 版(B):一样(26/30)
+    第 6 版(A) vs 第 5 版(B):B 稍好(27/30)
+    第 5 版(A) vs 第 4 版(B):B 稍好(28/30)
+    第 3 版(A) vs 第 6 版(B):B 稍好(29/30)
+    第 5 版(A) vs 第 6 版(B):B 稍好(30/30)
+  打分结果:第 1 版 0,第 2 版 -1.5,第 3 版 +1,第 4 版 +3,第 5 版 -2,第 6 版 -0.5;15 对里判出高下 6 对
+3. Maintainer
+  Maintainer:总结第 1 版
+  Maintainer:总结第 2 版
+  Maintainer:总结第 3 版
+  Maintainer:总结第 4 版
+  Maintainer:总结第 5 版
+  Maintainer:总结第 6 版
+  ↻ Maintainer 总结第 3 版:第 1 次请求失败(Expected ',' or '}' after property value in JSON at position 552 (line 1 column 553);原文 … 编号与步骤」内联在同一段描述里。","背景信息节:压在页面最末,用 KV 两列键值列出任务、范围、日期、样本口径。"]","judge":"好的方面:信息组织上被反复判为好——「产品规模、各阶段做法…),2 秒后重试
+  Maintainer:第 4 版总结完,11 条排版决定,照了经验 E1、E2、E3、E5、E6
+  Maintainer:第 2 版总结完,10 条排版决定,照了经验 E1、E2、E3、E5、E6
+  Maintainer:第 1 版总结完,9 条排版决定,照了经验 E1、E2、E3、E4、E5、E6
+  Maintainer:第 6 版总结完,11 条排版决定,照了经验 E1、E2、E3、E5、E6
+  Maintainer:第 3 版总结完,12 条排版决定,照了经验 E1、E2、E3、E5、E6
+  Maintainer:第 5 版总结完,11 条排版决定,照了经验 E1、E2、E3、E5、E6、E7
+  Maintainer:整组比较
+  Maintainer:归纳出 4 条模式:成功「产品对比与阶段对比两张表相邻成组,放在链路明细之前」;成功「共性做法这类结论性发现单独成节,不与数据表混在一节」;成功「建议的「依据」从正文句末抽出,做成右对齐独立标签」;失败「一节内堆两张表加一个列表,超过三种模块且留白失衡」
+  Maintainer:新模式和模式清单对照
+  模式清单:S10 补出处(f1)
+  模式清单:新加 S12(成功):共性做法这类结论性发现单独成节,不与数据表混在一节
+  模式清单:新加 S13(成功):建议的「依据」从正文句末抽出,做成右对齐独立标签
+  模式清单:新加 F10(失败):一节内堆两张表加一个列表,超过三种模块且留白失衡
+4. Reviser
+  Reviser:新的可用模式 S10,失败的经验 无
+  Reviser:修改 E8:有阶段对比或产品数为 2 时，链路前用对比表并排各产品步骤数、输入项与结论
+第 9 步完成,24 分钟;经验清单 8 条
+
+===== 第 10 步(第 2 遍):f2(2 个产品,每个产品的步骤数 5 / 4(共 9 屏),56% 的步骤有备注,3 个问题,2 条建议,没有阶段对比,没有共性做法,摘要 74 字);经验清单 8 条
+1. 生成 6 版
+  s10 v1:开始生成 f2
+  s10 v2:开始生成 f2
+  s10 v3:开始生成 f2
+  s10 v4:开始生成 f2
+  s10 v5:开始生成 f2
+  s10 v6:开始生成 f2
+    [s10 v2] f2: 开始写页面
+    [s10 v3] f2: 开始写页面
+    [s10 v1] f2: 开始写页面
+    [s10 v4] f2: 开始写页面
+    [s10 v6] f2: 开始写页面
+    [s10 v5] f2: 开始写页面
+    [s10 v2] f2: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s10/v2
+    [s10 v2] f2: bash ls -la /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages
+    [s10 v4] f2: read data.json
+    [s10 v4] f2: bash ls -la; echo "---"; cat data.json | head -200
+    [s10 v6] f2: read data.json
+    [s10 v6] f2: bash ls -la; echo "---"; node -e "const d=require('./data.json'); console.l
+    [s10 v1] f2: bash ls -la /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages
+    [s10 v1] f2: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s10/v1
+    [s10 v3] f2: read data.json
+    [s10 v3] f2: bash ls -la
+    [s10 v5] f2: read data.json
+    [s10 v5] f2: bash ls -la
+    [s10 v6] f2: bash ls -la; ls assets 2>/dev/null | head -20
+    [s10 v2] f2: bash ls -la /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages
+    [s10 v5] f2: bash ls -la assets; cat tsconfig.json
+    [s10 v3] f2: bash ls -la assets; cat tsconfig.json; echo "---"; echo $SHOOT

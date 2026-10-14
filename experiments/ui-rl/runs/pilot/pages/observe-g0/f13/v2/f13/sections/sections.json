@@ -1,0 +1,73 @@
+[
+ {
+  "title": "页头",
+  "files": [
+   "s1-1.png"
+  ],
+  "hash": "1f2a21bc1271b08312ce3cf4edc69b46fa96f904"
+ },
+ {
+  "title": "结论",
+  "files": [
+   "s2-1.png"
+  ],
+  "hash": "f997867604eb233ac5039c27f269611048b84ad2"
+ },
+ {
+  "title": "核心指标",
+  "files": [
+   "s3-1.png"
+  ],
+  "hash": "cee3b625c70997f651ab554c70ddc043fe9d7a9f"
+ },
+ {
+  "title": "分群对比",
+  "files": [
+   "s4-1.png"
+  ],
+  "hash": "6bad6289d1a90a9992313d1a4272ef5645f9d146"
+ },
+ {
+  "title": "阶段对比",
+  "files": [
+   "s5-1.png"
+  ],
+  "hash": "06f4a6de18562ac7f924f311df1aff2efd5b3719"
+ },
+ {
+  "title": "链路明细",
+  "files": [
+   "s6-1.png",
+   "s6-2.png"
+  ],
+  "hash": "16a1cc7db232ad9a8cfd9906e1c1ee0a40965efb"
+ },
+ {
+  "title": "问题",
+  "files": [
+   "s7-1.png"
+  ],
+  "hash": "a6274f5c6831b9ce1fbcd4796dedc76ba68382ea"
+ },
+ {
+  "title": "下一步",
+  "files": [
+   "s8-1.png"
+  ],
+  "hash": "47b09119b6efb89e1e301807e844101b8da89914"
+ },
+ {
+  "title": "背景信息",
+  "files": [
+   "s9-1.png"
+  ],
+  "hash": "3cfbbf36b7f1385153ed87f5fecac1fa8e5f2cb1"
+ },
+ {
+  "title": "页尾",
+  "files": [
+   "s10-1.png"
+  ],
+  "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+ }
+]
