@@ -18,9 +18,9 @@ type StatProps = Placed & {
 }
 
 // A key figure.
-function Stat({ label, value, unit, size, captionBelow, quiet, delta, note, direction, span, start, rowSpan, className }: StatProps) {
+function Stat({ label, value, unit, size, captionBelow, quiet, delta, note, direction, span, start, rowSpan, rowStart, className }: StatProps) {
   return (
-    <div data-slot="custom-stat" className={cn(cn("flex flex-col", captionBelow ? "gap-0" : "gap-2"), place({ span, start, rowSpan }), className)}>
+    <div data-slot="custom-stat" className={cn(cn("flex flex-col", captionBelow ? "gap-0" : "gap-2"), place({ span, start, rowSpan, rowStart }), className)}>
       {label && !captionBelow && <span className="text-sm leading-6 text-muted-foreground">{label}</span>}
       <div className="flex items-baseline gap-2">
         <span className={cn("font-light tabular-nums", size === "lg" ? "text-5xl leading-[60px]" : size === "xl" ? "text-[44px] leading-[56px]" : "text-3xl leading-9")}>{value}</span>

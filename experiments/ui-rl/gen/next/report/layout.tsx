@@ -90,11 +90,11 @@ function Group({ title, className, children }: { title?: string; className?: str
 // Rows are 144px fields unless fields={false}; a child takes `span` columns from
 // column `start` (and a Block `rows` fields). Without `cols` the grid has one
 // column per page column it is wide (its `span`, else the width around it).
-function Grid({ cols, fields = true, className, children, span, start, rowSpan }: Placed & { cols?: number; fields?: boolean; children: React.ReactNode }) {
+function Grid({ cols, fields = true, className, children, span, start, rowSpan, rowStart }: Placed & { cols?: number; fields?: boolean; children: React.ReactNode }) {
   const around = React.useContext(Width)
   const n = cols ?? span ?? around
   return (
-    <div data-slot="grid" className={cn("grid gap-x-6 gap-y-6", COLS[n], place({ span, start, rowSpan }), className)} style={fields ? { gridAutoRows: "144px" } : undefined}>
+    <div data-slot="grid" className={cn("grid gap-x-6 gap-y-6", COLS[n], place({ span, start, rowSpan, rowStart }), className)} style={fields ? { gridAutoRows: "144px" } : undefined}>
       <Width.Provider value={n}>{children}</Width.Provider>
     </div>
   )
@@ -106,9 +106,9 @@ function Grid({ cols, fields = true, className, children, span, start, rowSpan }
 // height on, so elastic content (charts, distributed lists) can fill the band.
 // `rowSpan` is how many rows it spans, the same prop every other piece takes.
 // `rows` is the old name for it, kept so existing pages render as before.
-function Block({ span, start, rowSpan, rows, title, description, className, contentClassName, children }: Placed & { rows?: number; title?: string; description?: string; contentClassName?: string; children: React.ReactNode }) {
+function Block({ span, start, rowSpan, rowStart, rows, title, description, className, contentClassName, children }: Placed & { rows?: number; title?: string; description?: string; contentClassName?: string; children: React.ReactNode }) {
   return (
-    <div data-slot="block" className={cn("flex min-h-0 flex-col", place({ span, start, rowSpan }), className)} style={rows && !rowSpan ? { gridRow: `span ${rows}` } : undefined}>
+    <div data-slot="block" className={cn("flex min-h-0 flex-col", place({ span, start, rowSpan, rowStart }), className)} style={rows && !rowSpan ? { gridRow: `span ${rows}` } : undefined}>
       {(title || description) && (
         <div data-slot="block-header" className="flex flex-col">
           {title && <h3 className="text-sm leading-6 font-semibold">{title}</h3>}

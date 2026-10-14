@@ -10,11 +10,11 @@ type KVProps = Placed & {
 }
 
 // Label–value pairs.
-function KV({ items, labelCols, span, start, rowSpan, className }: KVProps) {
+function KV({ items, labelCols, span, start, rowSpan, rowStart, className }: KVProps) {
   return (
     <dl
       data-slot="custom-kv"
-      className={cn(cn("grid text-sm leading-6", labelCols ? "gap-x-6 gap-y-0" : "grid-cols-2 gap-x-4 gap-y-3"), place({ span, start, rowSpan }), className)}
+      className={cn(cn("grid text-sm leading-6", labelCols ? "gap-x-6 gap-y-0" : "grid-cols-2 gap-x-4 gap-y-3"), place({ span, start, rowSpan, rowStart }), className)}
       style={labelCols ? { gridTemplateColumns: `${labelCols * 98 - 24}px 1fr` } : undefined}
     >
       {items.map((it, i) => (

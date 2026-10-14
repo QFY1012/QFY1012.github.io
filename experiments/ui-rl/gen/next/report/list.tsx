@@ -27,8 +27,8 @@ const num = (i: number) => String(i + 1).padStart(2, "0")
 // A list. Where `meta` shows depends on the mode: with `columns` it is the small
 // line above the title (in red with metaTone="destructive"); with `numbered` it is
 // not shown; otherwise it is an outline badge at the right end of the row.
-function List({ items, numbered, ordered, columns, divided, metaTone, span, start, rowSpan, className }: ListProps) {
-  const cls = (base?: string) => cn(base, place({ span, start, rowSpan }), className)
+function List({ items, numbered, ordered, columns, divided, metaTone, span, start, rowSpan, rowStart, className }: ListProps) {
+  const cls = (base?: string) => cn(base, place({ span, start, rowSpan, rowStart }), className)
   if (columns)
     return (
       <div data-slot="custom-list" className={cls(cn("grid gap-x-6 gap-y-6", LIST_COLS[columns]))}>

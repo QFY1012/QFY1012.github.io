@@ -18,12 +18,12 @@ import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, TrendChart, B
 | `Page` | `title`, `meta?: string[]`, `className?` | 页头:`meta` 在左侧 3 列(产品、周期),`title` 在右侧 9 列。节之间默认 192px |
 | `Section` | `title`, `description?`, `layout?: "side" \| "stack"`, `className?` | `side`(默认):节标题和说明挂在左侧 3 列,子元素在右侧 9 列。`stack`:标题和说明在上,子元素占满 12 列。子元素之间默认 192px |
 | `Group` | `title?`, `className?` | 一组内容,子元素之间 24px。`title` 是节内的子块标题:标题与内容之间 8px,字号比节标题小一级(14px 粗体对节标题 20px),所以「下一步」这类节里分成几块一眼看得出,子块标题不会和节标题同字号、分不出层级 |
-| `Grid` | `cols?`, `fields?`(默认 true), `span?`, `start?`, `rowSpan?`, `className?` | 网格。不写 `cols` 时它有几列宽就分几列(`side` 节里 9,`stack` 节里 12,写了 `span` 就是 `span`),里面的东西落在页面栏线上。`fields` 为 true 时每行高 144px,子元素用 `rowSpan` 竖着跨几行;为 false 时行高随内容 |
-| `Block` | `span?`, `start?`, `rowSpan?`, `title?`, `description?`, `contentClassName?` | 网格里的一块,标题 14px 粗体紧贴内容。`rowSpan` 是竖着跨几行(旧写法 `rows` 还能用,新页面写 `rowSpan`) |
+| `Grid` | `cols?`, `fields?`(默认 true), `span?`, `start?`, `rowSpan?`, `rowStart?`, `className?` | 网格。不写 `cols` 时它有几列宽就分几列(`side` 节里 9,`stack` 节里 12,写了 `span` 就是 `span`),里面的东西落在页面栏线上。`fields` 为 true 时每行高 144px,子元素用 `rowSpan` 竖着跨几行;为 false 时行高随内容 |
+| `Block` | `span?`, `start?`, `rowSpan?`, `rowStart?`, `title?`, `description?`, `contentClassName?` | 网格里的一块,标题 14px 粗体紧贴内容。`rowSpan` 是竖着跨几行(旧写法 `rows` 还能用,新页面写 `rowSpan`) |
 
 ## 内容
 
-所有内容组件都接受 `span`(在 `Grid` 里占几列)、`start`(从第几列开始;不写就接着排)、`rowSpan`(竖着跨几行)和 `className`。位置只用这三个 props 表达:网格里怎么填都可以,包括留空格,但每一块的左右边都要落在栏线上(design.md A6),`shoot.mjs` 的「网格」检查会量出来。
+所有内容组件都接受 `span`(在 `Grid` 里占几列)、`start`(从第几列开始;不写就接着排)、`rowSpan`(竖着跨几行)、`rowStart`(从第几行开始;在默认的 `fields` 网格里一行就是一场;不写就接着排)和 `className`。位置只用这四个 props 表达:网格里怎么填都可以,包括留空格,但每一块的左右边都要落在栏线上(design.md A6),`shoot.mjs` 的「网格」检查会量出来。
 
 | 组件 | props | 说明 |
 |---|---|---|
@@ -46,7 +46,7 @@ import { Page, Section, Group, Grid, Block, Text, Stat, DataTable, TrendChart, B
 | `FigureStrip` | children | 一行截图,放在 shadcn `ScrollArea` 里横向滚动,滚动条是 shadcn 的样式(不是浏览器原生滚动条),只在鼠标悬停时出现,静止时不占地方也不画横条;超出宽度的部分裁掉,不把页面撑宽。行高由这条自己定:所有图同高、宽度各按原比例,所以手机 375×760 和分析图 1200×760 能并排对齐 |
 | `FigureGrid` | children | 一版对照图,两列铺满内容列宽,每格一张 `Figure`;图按列宽显示、高度随原比例,用于要看清图内细节的对照,行高不限 |
 | `FigureCompare` | children | 一组四张的对照图(原界面 + 三种色觉模拟),一行四张铺满内容列宽。四张并排是一屏能读完的最短排法:内容列宽正好放四张,一行比两行两列少占一半高度,四张始终在同一屏里,可以直接横向比。每张图占行的四分之一、按原比例缩放,高度只封一个上限(`max-h-96`),所以再长的截图也不会把这一组顶出屏幕;每格的图注占满整格宽,窄图的长图注不会折成多行把整组撑高。要看图内细节(宽的分析视图)用 `FigureGrid`,不在这里把图放大成两行 |
-| `Figure` | children, `span?`, `start?`, `rowSpan?` | 一张截图的外框,纵向排图、标签和说明;宽度随所在布局,不收缩。直接放在 `Grid` 里并写 `span` 时,它占满这几列、图按列宽显示,可以把截图排成「一行一个阶段、一列一个产品」这样的对照 |
+| `Figure` | children, `span?`, `start?`, `rowSpan?`, `rowStart?` | 一张截图的外框,纵向排图、标签和说明;宽度随所在布局,不收缩。直接放在 `Grid` 里并写 `span` 时,它占满这几列、图按列宽显示,可以把截图排成「一行一个阶段、一列一个产品」这样的对照 |
 | `FigureImage` | `src`, `alt` | 截图本体。宽度随所在布局、高度随原比例,自己不定高(定高的是容器):在 `FigureStrip` 里由条给统一高度(比例不同的图才对得齐),在 `FigureGrid` 里铺满所在列宽(图内文字才看得清),在 `FigureCompare` 里占行宽的四分之一、高度封在上限内(四张同屏)。不裁剪 |
 | `FigureLabel` | children(字符串) | 图下面或上面的视图名(屏名、步号),12px 灰色 |
 | `FigureText` | children(字符串) | 图下面的说明(内容、操作、输入项),14px 正文 |

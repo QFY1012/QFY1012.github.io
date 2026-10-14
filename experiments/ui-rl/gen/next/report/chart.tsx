@@ -62,10 +62,10 @@ type TrendChartProps = ChartProps & {
 }
 
 // A line chart.
-function TrendChart({ series, data, xKey, height: h, band, yTicks: ticks, pointLabels, zero, xInterval, lastLabel, span, start, rowSpan, className }: TrendChartProps) {
+function TrendChart({ series, data, xKey, height: h, band, yTicks: ticks, pointLabels, zero, xInterval, lastLabel, span, start, rowSpan, rowStart, className }: TrendChartProps) {
   const cfg = chartConfig(series)
   const { fill, height } = frame(h)
-  const wrap = cn(fill ? "flex min-h-0 flex-1 flex-col" : undefined, place({ span, start, rowSpan }), className)
+  const wrap = cn(fill ? "flex min-h-0 flex-1 flex-col" : undefined, place({ span, start, rowSpan, rowStart }), className)
   // One series drawn as a quiet trend: optional y ticks with a grid, a shaded range
   // (band), a zero line, sparse x labels and only the last point labelled.
   if (series.length === 1 && (band || ticks || pointLabels === "last")) {
@@ -137,7 +137,7 @@ function TrendChart({ series, data, xKey, height: h, band, yTicks: ticks, pointL
 }
 
 // A bar chart; layout="horizontal" draws the bars sideways.
-function BarChart({ series, data, xKey, height: h, layout, span, start, rowSpan, className }: ChartProps & { layout?: "horizontal" }) {
+function BarChart({ series, data, xKey, height: h, layout, span, start, rowSpan, rowStart, className }: ChartProps & { layout?: "horizontal" }) {
   const cfg = chartConfig(series)
   const { fill, height } = frame(h)
   const horizontal = layout === "horizontal"
@@ -147,7 +147,7 @@ function BarChart({ series, data, xKey, height: h, layout, span, start, rowSpan,
   if (horizontal && series.length === 1) {
     const key = series[0].key
     return (
-      <div data-slot="custom-chart" className={cn(place({ span, start, rowSpan }), className)}>
+      <div data-slot="custom-chart" className={cn(place({ span, start, rowSpan, rowStart }), className)}>
         <ChartContainer config={cfg} className="aspect-auto w-full" style={{ height: data.length * 30 }}>
           <RechartsBarChart data={data} layout="vertical" margin={{ left: 0, right: 40, top: 0, bottom: 0 }} barCategoryGap={0}>
             <XAxis type="number" hide domain={[0, "dataMax"]} />
@@ -161,7 +161,7 @@ function BarChart({ series, data, xKey, height: h, layout, span, start, rowSpan,
     )
   }
   return (
-    <div data-slot="custom-chart" className={cn(fill ? "flex min-h-0 flex-1 flex-col" : undefined, place({ span, start, rowSpan }), className)}>
+    <div data-slot="custom-chart" className={cn(fill ? "flex min-h-0 flex-1 flex-col" : undefined, place({ span, start, rowSpan, rowStart }), className)}>
       <ChartContainer config={cfg} className={cn("aspect-auto w-full", height)}>
         <RechartsBarChart data={data} layout={horizontal ? "vertical" : "horizontal"} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
           <CartesianGrid vertical={horizontal} horizontal={!horizontal} />

@@ -14,7 +14,7 @@ type ProgressListProps = Placed & {
 // the list unless an item names its own max, so the lengths are comparable inside
 // the list. (Falling back to a fixed 0..100 left every count a sliver of the same
 // length, which reads as a dashed rule rather than as a value.)
-function ProgressList({ items, compact, span, start, rowSpan, className }: ProgressListProps) {
+function ProgressList({ items, compact, span, start, rowSpan, rowStart, className }: ProgressListProps) {
   const scale = Math.max(1, ...items.map((it) => Number(it.value) || 0))
   const bar = (it: { value: number; max?: number }) => ((Number(it.value) || 0) / (it.max ?? scale)) * 100
   // compact: the label column is one grid column (74px) plus the gutter (24px), so
@@ -22,7 +22,7 @@ function ProgressList({ items, compact, span, start, rowSpan, className }: Progr
   // line of its own. The value is tabular so the counts line up.
   if (compact)
     return (
-      <div data-slot="custom-progress-list" className={cn("flex flex-col gap-2", place({ span, start, rowSpan }), className)}>
+      <div data-slot="custom-progress-list" className={cn("flex flex-col gap-2", place({ span, start, rowSpan, rowStart }), className)}>
         {items.map((it, i) => (
           <div key={i} className="grid h-6 grid-cols-[74px_1fr_2rem] items-center gap-6 text-sm">
             <span>{it.label}</span>
@@ -33,7 +33,7 @@ function ProgressList({ items, compact, span, start, rowSpan, className }: Progr
       </div>
     )
   return (
-    <div data-slot="custom-progress-list" className={cn("flex flex-col gap-4", place({ span, start, rowSpan }), className)}>
+    <div data-slot="custom-progress-list" className={cn("flex flex-col gap-4", place({ span, start, rowSpan, rowStart }), className)}>
       {items.map((it, i) => (
         <div key={i} className="flex flex-col gap-2">
           <div className="flex items-center justify-between text-sm">
