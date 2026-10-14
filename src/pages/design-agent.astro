@@ -243,27 +243,27 @@ const criteria = ['留白合适', '分组清楚、有垂直韵律', '容器样�
   <section>
     <p class="sec-label">Output Layer</p>
     <h2>输出层：规范、评测与自迭代</h2>
-    <p>输出层要解决「每份报告都长得不一样」。做法是三件事：给 Agent 一套只能这样用的<strong>规范</strong>，一套能说清好坏的<strong>评测</strong>，再让 Agent 按评测结果<strong>自己改规范</strong>。</p>
+    <p>输出层要解决「每份报告都长得不一样」：给 Agent 一套<strong>规范</strong>、一套<strong>评测</strong>，再按评测结果<strong>迭代规范</strong>。</p>
 
     <h3 class="sub-h">规范：组件库 + UI Spec</h3>
     <div class="pair" style="margin-top:0.75rem;">
       <div>
         <h3>组件库（所有 Skill 共用）</h3>
-        <p>基于 Radix UI 搭的报告组件库，定好视觉规范和 design token：字号、间距刻度、栅格、颜色都收在组件里。Agent 只能拼组件，不再自己写样式。</p>
+        <p>基于 Radix UI 搭建，字号、间距、栅格、颜色都收进 design token。Agent 只拼组件，不自己写样式。</p>
       </div>
       <div>
         <h3>UI Spec（每个 Skill 一份）</h3>
-        <p>写给 Agent 的输出指南：这个 Skill 的数据该放进哪些节、用哪个组件、怎么排。它只影响这一个 Skill，是自迭代主要修改的对象。</p>
+        <p>告诉 Agent 这个 Skill 的数据放进哪些节、用哪个组件。自迭代主要改的就是它。</p>
       </div>
     </div>
 
     <h3 class="sub-h">评测：程序检查 → 审美 Judge</h3>
-    <p><strong>程序检查</strong>读渲染后的 DOM 和几何尺寸：有没有绕开组件库、字号和间距是否在刻度上、是否对齐栅格、元素有没有重叠溢出。能用规则判的，都不交给模型。</p>
-    <p>全部通过之后才轮到<strong>审美 Judge</strong>。实验发现，让模型给单张页面打分，只能分开好坏差得远的页面，名次接近的两版常常同分（认出第一名只有 31–43%）；而迭代时比较的新旧两版恰恰就是名次接近的。所以改成<strong>两两比较</strong>：把新旧两版并排给它，按 7 条 rubric 逐条先写两版的观察，再判哪版更好，最后给出总的结论和还剩下的问题。同一对页面换个左右顺序再判一次，两次一致才算数，抵消位置偏差。</p>
+    <p><strong>程序检查</strong>读渲染后的 DOM：是否绕开组件库、字号间距是否在刻度上、是否对齐栅格、有无重叠溢出。规则能判的不交给模型。</p>
+    <p>通过后再交给<strong>审美 Judge</strong>。单页打分分不开相近的两版，而迭代比的正是相近的两版，所以改成<strong>两两比较</strong>：按 7 条 rubric 逐条对比新旧两版，左右换位再判一次，两次一致才算数。</p>
     <ol class="criteria">
       {criteria.map((c, i) => <li><span class="no">{String(i + 1).padStart(2, '0')}</span>{c}</li>)}
     </ol>
-    <p>这 7 条 rubric 是用设计师的人工排序校准出来的：一次只改一条、每改一次都和人的排序对一遍，从 rubric7 一路改到 rubric31。</p>
+    <p>这 7 条 rubric 对照设计师的人工排序逐版校准而来。</p>
     <div class="result-grid">
       <div class="result-card">
         <div class="metric">96%</div>
@@ -288,20 +288,20 @@ const criteria = ['留白合适', '分组清楚、有垂直韵律', '容器样�
     </div>
 
     <h3 class="sub-h">自迭代：两个迭代对象，两条轨道</h3>
-    <p>骨架和 Skill 层一样，不同在于 Maintainer 写出问题清单之后会先<strong>归因</strong>：是布局没排好，还是组件库里根本没有合适的组件。</p>
+    <p>骨架和 Skill 层一样，只多一步<strong>归因</strong>：问题出在布局，还是组件库缺组件。</p>
     <div class="fig fig-output-flow" set:html={figOutput}></div>
     <p class="img-caption">输出层自迭代：布局问题改 UI Spec，组件不够改组件库，两条轨道结构相同</p>
     <div class="pair">
       <div>
         <h3>布局问题 → 改 UI Spec</h3>
-        <p>UI Spec Reviser 每次只改一条规则，按新规则重做训练页，再在验证样本上和当前版两两比较：程序检查不能变差，审美 Judge 两种顺序都选新版才采用。</p>
+        <p>每次只改一条规则，在验证样本上和当前版两两比较，程序检查不变差、审美 Judge 两种顺序都选新版才采用。</p>
       </div>
       <div>
         <h3>组件不够 → 改组件库</h3>
-        <p>组件 Reviser 写出新组件和演示页。组件库影响所有 Skill，所以合并前要人工审批；合并后，每个 Skill 的页面都按新组件重做一遍。</p>
+        <p>写出新组件和演示页。组件库影响所有 Skill，所以人工审批后才合并。</p>
       </div>
     </div>
-    <p style="margin-top:1.5rem;">上线后，设计师反馈的 badcase 经人工归类，一部分写成「反馈 rubric」交给审美 Judge，一部分补成新的训练和验证样本。这套机制落地为团队的验收标准，Agent 的 HTML 输出统一成一种风格。</p>
+    <p style="margin-top:1.5rem;">上线后，设计师反馈的 badcase 经人工归类，补成新的 rubric 和样本。</p>
   </section>
 
   <section id="reproduce">
