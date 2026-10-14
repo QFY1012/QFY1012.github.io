@@ -1,0 +1,27 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s10/guide.md",
+  "sha": "0c928345"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 142,
+ "usage": {
+  "input": 75568,
+  "output": 11906
+ },
+ "stop": "stop",
+ "summary": "",
+ "checks": []
+}

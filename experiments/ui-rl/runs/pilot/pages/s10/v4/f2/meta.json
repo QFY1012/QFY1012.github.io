@@ -1,0 +1,27 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s10/guide.md",
+  "sha": "0c928345"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 115,
+ "usage": {
+  "input": 66968,
+  "output": 12041
+ },
+ "stop": "stop",
+ "summary": "程序检查一次通过,页面已符合规范。最终结构如下:\n\n**页面结构**(`Page`:左侧 meta「快送 · 小橙 / 2026 年 9 月」+ 标题「交互流程挖掘 · 下单支付」)\n\n1. **结论** — 一句 24px 细体判断,占满 9 列\n2. **核心指标** — 4 个 `Stat`(captionBelow)一行排满 9 列(span 3/2/2/2),首位「对比产品 2 个」用 `size=\"lg\"` 放大,其余普通字号\n3. **链路对比** — `DataTable`:产品(含版本)/ 步骤数 / 输入项 / 结论,表下灰字说明输入项口径\n4. **链路明细** — 每产品一组,`Rule` 标「产品 · 版本 · 结论」,`FigureStrip` 按步骤横向排开;每格为图 + 屏名/步号 + 「内容 · 操作」+ 单独一行的「备注 ·」(12px 灰,与步骤说明分两级)\n5. **问题** — `DataTable`:编号 / 产品 / 步骤 分列(未合并位置),问题 / 严重度(`levels` 低-中-高,高标红加粗)/ 证据\n6. **下一步** — 单列纵向 `numbered` 列表,依据内联在每条建议内并回指 P1/P2\n7. **背景信息** — `KV`(labelCols 2):任务、范围、版本、日期,元信息只在页尾出现一次\n\n无组件库缺失项;9 张截图全部通过 `FigureStrip` 呈现(快送 5 步超出内容列宽时按组件规则横向滚动)。",
+ "checks": []
+}
