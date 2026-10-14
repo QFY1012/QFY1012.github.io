@@ -1,0 +1,27 @@
+{
+ "case": "f10",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s13/guide.md",
+  "sha": "af93cf58"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 303,
+ "usage": {
+  "input": 177671,
+  "output": 17883
+ },
+ "stop": "stop",
+ "summary": "All program checks pass. Final verification of the rendered page is complete:\n\n**页面结构**（结论 → 核心指标 → 拆分 → 明细 → 下一步 → 背景信息，节标题在左侧 3 列、内容在右侧 9 列）：\n\n1. **结论** — 整段判断用 24px 细体 `Text` 占满 9 列。\n2. **核心指标** — 一行 4 个 `Stat`（首位「步骤最少(云栖旅行) 8 步」`size=\"lg\"` 占 3 列、强调唯一，其余各占 2 列），数字在上说明在下、无 note。\n3. **产品对照** — `DataTable`：产品 2 列 / 步骤数 2 列（`bar`）/ 输入项 2 列（`bar`）/ 结论 3 列。\n4. **阶段对比** — 6 个阶段各一个 `Group`（子块标题为阶段名），内含 `KV`（`labelCols={2}`）逐款列出 5 个产品在该阶段的做法。\n5. **链路明细** — 每款产品一组（`Rule` 标「产品 · 版本 · 步数」+ `FigureStrip` 横向滚动），每屏一张 `Figure`：图 + `FigureLabel`（第 N 步 · 屏名）+ `FigureText`（内容 · 操作 · 输入项数）+ 备注独起一行。\n6. **共性问题** — `List numbered`，每条含问题名、涉及产品与评述。\n7. **问题明细** — `DataTable`：编号（唯一编号列）/ 产品 / 步骤分列，问题、严重度（`levels` 低中高，高红加粗、中加粗、低灰）、证据。\n8. **下一步** — `List numbered` 单列纵向 5 条，每条把依据编号（如 P3、P4）内联在建议说明里。\n9. **背景信息** — `KV`（`labelCols={2}`）：分析任务、覆盖范围、采集日期、截图样本，元信息只在此出现一次。\n\n一处组件限制：`List` 的 `meta` 字段在本渲染器里不显示（截图验证后已把建议的依据、共性问题涉及的产品改为内联进 `description`），因此没有用它承载信息。",
+ "checks": []
+}

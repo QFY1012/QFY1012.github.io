@@ -1,0 +1,27 @@
+{
+ "case": "f10",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s13/guide.md",
+  "sha": "af93cf58"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 471,
+ "usage": {
+  "input": 560997,
+  "output": 35193
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查全部通过（构建、组件库、统一刻度、数据忠实、元素越界均无问题）。\n\n**页面结构**：`Page` 页头（左：酒店预订 App / 2026 年 4 月，右：报告标题）下按 C3 排 9 节——结论（24px 结论句 + 唯一的 48px 放大数字「8–11 步」）→ 核心指标（4 项 `Stat` 一行排满）→ 产品对照（`DataTable`，步骤数带计数条）→ 阶段对比（6 阶段 × 5 产品的对比表）→ 共性问题（模式 / 涉及产品 / 说明）→ 流程链路（5 个 `Group`，每款产品一条 `FigureStrip`，逐步截图 + 步号 / 屏名 / 内容·操作·输入项 / 备注）→ 问题明细（编号 P1–P8、产品与步骤分列、严重度用 `levels`）→ 下一步（单列编号 `List`，依据内联对回编号与步骤）→ 背景信息（`KV`，任务 / 范围 / 日期 / 样本口径只在页尾出现一次）。\n\n**一处组件缺口**：链路卡内的「备注」需要一个比 `FigureText` 低一级（12px 灰、独立一行并带标签）的说明行组件，组件库没有，我用 `FigureLabel`（同为 12px 灰）承载「备注 · …」，与 14px 的步骤说明形成两级，但它在语义上是「视图名」组件，属于借用。",
+ "checks": []
+}

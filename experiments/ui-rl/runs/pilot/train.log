@@ -3642,3 +3642,306 @@ Node.js v22.22.0
     [s13 v3] f10: 开始写页面
     [s13 v2] f10: 开始写页面
     [s13 v6] f10: 开始写页面
+    [s13 v3] f10: bash ls -la /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages
+    [s13 v3] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v3
+    [s13 v6] f10: bash ls -la; echo "---"; cat data.json
+    [s13 v1] f10: read data.json
+    [s13 v1] f10: bash ls -la; echo "---"; cat data.json | head -50
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v4] f10: bash ls -la /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages
+    [s13 v6] f10: bash ls assets | head -60; echo "---"; ls assets | wc -l; echo "---"; cat t
+    [s13 v4] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v2] f10: read data.json
+    [s13 v2] f10: bash ls -la
+    [s13 v5] f10: read data.json
+    [s13 v5] f10: bash ls -la; echo "---"; ls -la *.png 2>/dev/null
+    [s13 v2] f10: bash ls assets | head -50; echo "---"; ls assets | wc -l; echo "---"; cat t
+    [s13 v2] f10: bash ls -a /; ls /home/user 2>/dev/null; find / -maxdepth 4 -name "*.mjs" -
+    [s13 v5] f10: bash cat tsconfig.json; ls assets | head -60; ls assets | wc -l; echo $SHOO
+    [s13 v2] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/gen/scripts/shoot.mjs
+    [s13 v2] f10: write Page.tsx
+    [s13 v3] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v2] f10: bash node $SHOOT . 2>&1 | tail -60
+    [s13 v5] f10: write Page.tsx
+    [s13 v3] f10: write /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v3
+    [s13 v5] f10: bash node $SHOOT .
+    [s13 v3] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v2] f10: read tile-14.png
+    [s13 v2] f10: read tile-13.png
+    [s13 v5] f10: read thumb.png
+    [s13 v3] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v3
+    [s13 v2] f10: edit Page.tsx
+    [s13 v2] f10: bash node $SHOOT . 2>&1 | tail -30
+    [s13 v6] f10: bash echo "SHOOT=$SHOOT"; ls -la / \ 2>/dev/null | head -30; find / -maxdep
+    [s13 v6] f10: bash cat $SHOOT | head -120; echo "======"; ls /home/user/QFY1012.github.io
+    [s13 v2] f10: read tile-1.png
+    [s13 v2] f10: read tile-2.png
+    [s13 v6] f10: bash sed -n 120,400p $SHOOT
+    [s13 v3] f10: done, 1 shoots, 0 check findings
+  s13 v3:写成,196 秒
+    [s13 v4] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v2] f10: read tile-4.png
+    [s13 v2] f10: read tile-6.png
+    [s13 v4] f10: write /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v2] f10: read thumb.png
+    [s13 v2] f10: read tile-12.png
+    [s13 v4] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v2] f10: read tile-15.png
+    [s13 v2] f10: read tile-3.png
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v6] f10: write /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v5] f10: read tile-2.png
+    [s13 v5] f10: read tile-3.png
+    [s13 v5] f10: read tile-4.png
+    [s13 v5] f10: read tile-11.png
+    [s13 v5] f10: read tile-1.png
+    [s13 v5] f10: read tile-13.png
+    [s13 v5] f10: read tile-12.png
+    [s13 v5] f10: read tile-15.png
+    [s13 v2] f10: read Page.tsx
+    [s13 v6] f10: bash pwd; ls -la; ls /home/user/QFY1012.github.io/experiments/ui-rl/runs/pi
+    [s13 v4] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v5] f10: read assets/p1-01.png
+    [s13 v5] f10: read tile-5.png
+    [s13 v6] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v2] f10: done, 2 shoots, 0 check findings
+  s13 v2:写成,315 秒
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v5] f10: done, 1 shoots, 0 check findings
+  s13 v5:写成,327 秒
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v1] f10: bash ls assets | head -60; echo "---count---"; ls assets | wc -l; echo "---
+    [s13 v1] f10: bash which node; echo "SHOOT=$SHOOT"; env | grep -i -E "shoot|node|path" | 
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v1] f10: bash sed -n 1,200p /home/user/QFY1012.github.io/experiments/ui-rl/gen/scrip
+    [s13 v1] f10: bash ls -R /home/user/QFY1012.github.io/experiments/ui-rl/gen | head -60
+    [s13 v1] f10: bash sed -n 1,260p /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/s
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v1] f10: bash sed -n 260,620p /home/user/QFY1012.github.io/experiments/ui-rl/gen/app
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v1] f10: bash sed -n 620,900p /home/user/QFY1012.github.io/experiments/ui-rl/gen/app
+    [s13 v1] f10: bash sed -n 1,160p /home/user/QFY1012.github.io/experiments/ui-rl/gen/app/s
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v1] f10: bash sed -n 160,209p /home/user/QFY1012.github.io/experiments/ui-rl/gen/app
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v6] f10: edit /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v4] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v6] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v1] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v6] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v6
+    [s13 v1] f10: write Page.tsx
+    [s13 v1] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v4] f10: edit /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v4] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v1] f10: read thumb.png
+    [s13 v6] f10: done, 2 shoots, 0 check findings
+  s13 v6:写成,481 秒
+    [s13 v1] f10: read tile-1.png
+    [s13 v1] f10: read tile-2.png
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v1] f10: read tile-3.png
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v1] f10: read tile-6.png
+    [s13 v1] f10: read tile-7.png
+    [s13 v4] f10: read /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13/v4
+    [s13 v4] f10: done, 2 shoots, 0 check findings
+  s13 v4:写成,653 秒
+    [s13 v1] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v1] f10: read tile-14.png
+    [s13 v1] f10: read tile-13.png
+    [s13 v1] f10: edit Page.tsx
+    [s13 v1] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v1] f10: read tile-7.png
+    [s13 v1] f10: read thumb.png
+    [s13 v1] f10: edit Page.tsx
+    [s13 v1] f10: bash cd /home/user/QFY1012.github.io/experiments/ui-rl/runs/pilot/pages/s13
+    [s13 v1] f10: done, 2 shoots, 0 check findings
+  s13 v1:写成,906 秒
+  按节截图 6 版
+  按节截图 runs/pilot/pages/s13/v1/f10:页头(1) / 结论(1) / 核心指标(1) / 产品对照(1) / 阶段对比(1) / 共性模式(1) / 发现问题(1) / 链路明细(3) / 下一步(1) / 背景信息(1) / 页尾(1)  1/6
+  按节截图 runs/pilot/pages/s13/v2/f10:页头(1) / 结论(1) / 核心指标(1) / 产品对照(1) / 阶段对比(1) / 链路明细(3) / 共性问题(1) / 问题明细(1) / 下一步(1) / 背景信息(1) / 页尾(1)  2/6
+  按节截图 runs/pilot/pages/s13/v3/f10:页头(1) / 结论(1) / 核心指标(1) / 产品对照(1) / 链路明细(3) / 阶段对比(1) / 共性模式(1) / 问题明细(1) / 下一步(1) / 背景信息(1) / 页尾(1)  3/6
+  按节截图 runs/pilot/pages/s13/v4/f10:页头(1) / 结论(1) / 核心指标(1) / 产品对照(1) / 链路明细(3) / 分阶段对比(1) / 共性问题(1) / 问题明细(1) / 下一步(1) / 背景信息(1) / 页尾(1)  4/6
+  按节截图 runs/pilot/pages/s13/v5/f10:页头(1) / 结论(1) / 核心指标(1) / 产品对照(1) / 阶段差异(1) / 链路明细(3) / 问题明细(1) / 共性模式(1) / 下一步(1) / 背景信息(1) / 页尾(1)  5/6
+  按节截图 runs/pilot/pages/s13/v6/f10:页头(1) / 结论(1) / 核心指标(1) / 产品对照(1) / 阶段对比(1) / 共性问题(1) / 流程链路(3) / 问题明细(1) / 下一步(1) / 背景信息(1) / 页尾(1)  6/6
+2. 打分
+  打分:6 版,15 对 × 两种顺序 = 30 次判定,要跑 30 次
+    第 5 版(A) vs 第 1 版(B):B 稍好(1/30)
+    第 4 版(A) vs 第 1 版(B):B 稍好(2/30)
+    第 1 版(A) vs 第 4 版(B):B 稍好(3/30)
+    第 3 版(A) vs 第 1 版(B):B 稍好(4/30)
+    第 1 版(A) vs 第 2 版(B):B 明显(5/30)
+    第 6 版(A) vs 第 1 版(B):A 明显(6/30)
+    第 2 版(A) vs 第 1 版(B):B 稍好(7/30)
+  ↻ 第 1 版(A) vs 第 5 版(B):第 1 次请求失败(400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}),2 秒后重试
+  ↻ 第 5 版(A) vs 第 2 版(B):第 1 次请求失败(400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}),2 秒后重试
+  ↻ 第 1 版(A) vs 第 3 版(B):第 1 次请求失败(120 秒没有开始回复),2 秒后重试
+  ↻ 第 1 版(A) vs 第 6 版(B):第 1 次请求失败(120 秒没有开始回复),2 秒后重试
+    第 2 版(A) vs 第 4 版(B):A 稍好(8/30)
+  ↻ 第 5 版(A) vs 第 2 版(B):第 2 次请求失败(400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}),4 秒后重试
+    第 1 版(A) vs 第 5 版(B):B 稍好(9/30)
+    第 2 版(A) vs 第 3 版(B):A 稍好(10/30)
+    第 3 版(A) vs 第 2 版(B):B 明显(11/30)
+  ↻ 第 5 版(A) vs 第 2 版(B):第 3 次请求失败(400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}),8 秒后重试
+  ↻ 第 1 版(A) vs 第 6 版(B):第 2 次请求失败(Unexpected token '#', "# A 版 vs B"... is not valid JSON;原文 …# A 版 vs B 版对比评审
+
+## 总体判断
+
+两版信息结构基本一致（页头…),4 秒后重试
+  ↻ 第 4 版(A) vs 第 2 版(B):第 1 次请求失败(400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}),2 秒后重试
+    第 2 版(A) vs 第 6 版(B):B 稍好(12/30)
+  ↻ 第 2 版(A) vs 第 5 版(B):第 1 次请求失败(120 秒没有开始回复),2 秒后重试
+    第 3 版(A) vs 第 4 版(B):B 稍好(13/30)
+    第 4 版(A) vs 第 3 版(B):B 稍好(14/30)
+    第 1 版(A) vs 第 6 版(B):B 稍好(15/30)
+file:///home/user/QFY1012.github.io/experiments/ui-rl/lib/llm.mjs:35
+      if (!r.ok) throw new Error(`${r.status} ${(await r.text()).slice(0, 300)}`)
+                       ^
+
+Error: 400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}
+    at call (file:///home/user/QFY1012.github.io/experiments/ui-rl/lib/llm.mjs:35:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async judgeOnce (file:///home/user/QFY1012.github.io/experiments/ui-rl/scripts/score.mjs:21:15)
+    at async file:///home/user/QFY1012.github.io/experiments/ui-rl/scripts/score.mjs:44:24
+    at async Promise.all (index 9)
+    at async scoreGroup (file:///home/user/QFY1012.github.io/experiments/ui-rl/scripts/score.mjs:40:3)
+    at async file:///home/user/QFY1012.github.io/experiments/ui-rl/scripts/train.mjs:102:18
+
+Node.js v22.22.0
+===== 完整训练进程退出,退出码 1
+===== 训练异常退出,1 分钟后第 3 次续跑
+===== 开始完整训练(2 遍 16 步,做完的部分跳过;judge 并发 10)
+训练 pilot:2 遍 × 8 份 = 16 步,每步 6 版
+顺序:1.f1 2.f7 3.f3 4.f10 5.f9 6.f4 7.f8 8.f2 9.f1 10.f2 11.f3 12.f9 13.f10 14.f7 15.f4 16.f8
+第 1 步(f1)已做完,跳过
+第 2 步(f7)已做完,跳过
+第 3 步(f3)已做完,跳过
+第 4 步(f10)已做完,跳过
+第 5 步(f9)已做完,跳过
+第 6 步(f4)已做完,跳过
+第 7 步(f8)已做完,跳过
+第 8 步(f2)已做完,跳过
+第 9 步(f1)已做完,跳过
+第 10 步(f2)已做完,跳过
+第 11 步(f3)已做完,跳过
+第 12 步(f9)已做完,跳过
+
+===== 第 13 步(第 2 遍):f10(5 个产品,每个产品的步骤数 8 / 9 / 10 / 11 / 9(共 47 屏),70% 的步骤有备注,8 个问题,5 条建议,有阶段对比,有共性做法,摘要 189 字);经验清单 9 条
+1. 生成 6 版
+2. 打分
+  打分:6 版,15 对 × 两种顺序 = 30 次判定,要跑 15 次
+    第 3 版(A) vs 第 6 版(B):B 明显(1/15)
+    第 2 版(A) vs 第 5 版(B):A 稍好(2/15)
+    第 3 版(A) vs 第 5 版(B):B 稍好(3/15)
+    第 1 版(A) vs 第 3 版(B):B 明显(4/15)
+    第 4 版(A) vs 第 5 版(B):B 稍好(5/15)
+  ↻ 第 4 版(A) vs 第 2 版(B):第 1 次请求失败(服务端返回空回复(finish_reason stop,输出 671 token)),2 秒后重试
+    第 6 版(A) vs 第 2 版(B):B 稍好(6/15)
+    第 6 版(A) vs 第 3 版(B):A 稍好(7/15)
+    第 5 版(A) vs 第 3 版(B):B 稍好(8/15)
+  ↻ 第 5 版(A) vs 第 2 版(B):第 1 次请求失败(120 秒没有开始回复),2 秒后重试
+  ↻ 第 5 版(A) vs 第 4 版(B):第 1 次请求失败(400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}),2 秒后重试
+  ↻ 第 6 版(A) vs 第 4 版(B):第 1 次请求失败(terminated),2 秒后重试
+  ↻ 第 4 版(A) vs 第 2 版(B):第 2 次请求失败(terminated),4 秒后重试
+  ↻ 第 4 版(A) vs 第 6 版(B):第 1 次请求失败(503 upstream connect error or disconnect/reset before headers. reset reason: connection termination),2 秒后重试
+    第 4 版(A) vs 第 2 版(B):B 稍好(9/15)
+  ↻ 第 5 版(A) vs 第 2 版(B):第 2 次请求失败(400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}),4 秒后重试
+    第 5 版(A) vs 第 6 版(B):B 明显(10/15)
+    第 6 版(A) vs 第 4 版(B):A 稍好(11/15)
+    第 6 版(A) vs 第 5 版(B):A 稍好(12/15)
+  ↻ 第 5 版(A) vs 第 4 版(B):第 2 次请求失败(120 秒没有开始回复),4 秒后重试
+  ↻ 第 4 版(A) vs 第 6 版(B):第 2 次请求失败(120 秒没有开始回复),4 秒后重试
+  ↻ 第 5 版(A) vs 第 2 版(B):第 3 次请求失败(400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}),8 秒后重试
+    第 4 版(A) vs 第 6 版(B):B 稍好(13/15)
+file:///home/user/QFY1012.github.io/experiments/ui-rl/lib/llm.mjs:35
+      if (!r.ok) throw new Error(`${r.status} ${(await r.text()).slice(0, 300)}`)
+                       ^
+
+Error: 400 {"error":{"message":"模型请求失败，请稍后重试或更换模型。","type":"server_error","param":"","code":null}}
+    at call (file:///home/user/QFY1012.github.io/experiments/ui-rl/lib/llm.mjs:35:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async judgeOnce (file:///home/user/QFY1012.github.io/experiments/ui-rl/scripts/score.mjs:21:15)
+    at async file:///home/user/QFY1012.github.io/experiments/ui-rl/scripts/score.mjs:44:24
+    at async Promise.all (index 3)
+    at async scoreGroup (file:///home/user/QFY1012.github.io/experiments/ui-rl/scripts/score.mjs:40:3)
+    at async file:///home/user/QFY1012.github.io/experiments/ui-rl/scripts/train.mjs:102:18
+
+Node.js v22.22.0
+===== 完整训练进程退出,退出码 1
+===== 训练异常退出,1 分钟后第 1 次续跑
+===== 开始完整训练(2 遍 16 步,做完的部分跳过;judge 并发 10)
+训练 pilot:2 遍 × 8 份 = 16 步,每步 6 版
+顺序:1.f1 2.f7 3.f3 4.f10 5.f9 6.f4 7.f8 8.f2 9.f1 10.f2 11.f3 12.f9 13.f10 14.f7 15.f4 16.f8
+第 1 步(f1)已做完,跳过
+第 2 步(f7)已做完,跳过
+第 3 步(f3)已做完,跳过
+第 4 步(f10)已做完,跳过
+第 5 步(f9)已做完,跳过
+第 6 步(f4)已做完,跳过
+第 7 步(f8)已做完,跳过
+第 8 步(f2)已做完,跳过
+第 9 步(f1)已做完,跳过
+第 10 步(f2)已做完,跳过
+第 11 步(f3)已做完,跳过
+第 12 步(f9)已做完,跳过
+
+===== 第 13 步(第 2 遍):f10(5 个产品,每个产品的步骤数 8 / 9 / 10 / 11 / 9(共 47 屏),70% 的步骤有备注,8 个问题,5 条建议,有阶段对比,有共性做法,摘要 189 字);经验清单 9 条
+1. 生成 6 版
+2. 打分
+  打分:6 版,15 对 × 两种顺序 = 30 次判定,要跑 2 次
+    第 5 版(A) vs 第 2 版(B):B 明显(1/2)
+    第 5 版(A) vs 第 4 版(B):B 稍好(2/2)
+  打分结果:第 1 版 -2.5,第 2 版 +4.5,第 3 版 -2.5,第 4 版 -2,第 5 版 -3,第 6 版 +5.5;15 对里判出高下 9 对
+3. Maintainer
+  Maintainer:总结第 1 版
+  Maintainer:总结第 2 版
+  Maintainer:总结第 3 版
+  Maintainer:总结第 4 版
+  Maintainer:总结第 5 版
+  Maintainer:总结第 6 版
+  ↻ Maintainer 总结第 1 版:第 1 次请求失败(Expected ',' or '}' after property value in JSON at position 672 (line 1 column 673);原文 …和「依据 · 编号」","背景信息节:放在页尾,用两列 label 的 KV 一次列出任务、范围、日期、五款产品版本"]","judge":"好的一面:核心指标排序被多次判为优于对手——「A 版把结论…),2 秒后重试
+  Maintainer:第 3 版总结完,11 条排版决定,照了经验 E2、E3、E5、E6、E7、E8、E9
+  Maintainer:第 6 版总结完,10 条排版决定,照了经验 E1、E2、E3、E5、E6、E8、E9
+  Maintainer:第 5 版总结完,11 条排版决定,照了经验 E2、E3、E5、E6、E7、E8、E9
+  Maintainer:第 2 版总结完,11 条排版决定,照了经验 E1、E2、E3、E5、E6、E8、E9
+  Maintainer:第 4 版总结完,10 条排版决定,照了经验 E2、E3、E5、E6、E8、E9
+  Maintainer:第 1 版总结完,10 条排版决定,照了经验 E1、E2、E3、E5、E6、E7、E8、E9
+  Maintainer:整组比较
+  Maintainer:归纳出 4 条模式:成功「阶段对比按阶段分组或矩阵，同阶段五款产品并排对齐。」;成功「产品对照与阶段对比相邻前置，截图链路后置作证据。」;成功「问题明细把问题与证据分列，严重度紧挨问题。」;失败「核心指标四项排成3+1，第四项掉行、右下留空。」
+  Maintainer:新模式和模式清单对照
+  ↻ Maintainer 对照模式清单:第 1 次请求失败(10 秒没有收到回复),2 秒后重试
+  模式清单:S6 补出处(f10)
+  模式清单:S10 补出处(f10)
+  模式清单:S9 补出处(f10)
+  模式清单:F1 补出处(f10)
+4. Reviser
+  Reviser:新的可用模式 F1、S9、S10,失败的经验 无
+  Reviser:修改 E8:有阶段对比或产品数为2时，两张对比表相邻成组并排步骤数输入项，放在链路截图前
+  Reviser:新增 E10:问题表把问题与支撑它的证据放同一行分列，严重度紧挨问题
+第 13 步完成,5 分钟;经验清单 10 条
+
+===== 第 14 步(第 2 遍):f7(2 个产品,每个产品的步骤数 4 / 3(共 7 屏),14% 的步骤有备注,2 个问题,1 条建议,没有阶段对比,没有共性做法,摘要 72 字);经验清单 10 条
+1. 生成 6 版
+  s14 v1:开始生成 f7
+  s14 v2:开始生成 f7
+  s14 v3:开始生成 f7
+  s14 v4:开始生成 f7
+  s14 v5:开始生成 f7
+  s14 v6:开始生成 f7
+    [s14 v6] f7: 开始写页面
+    [s14 v4] f7: 开始写页面
+    [s14 v1] f7: 开始写页面
+    [s14 v3] f7: 开始写页面
+    [s14 v5] f7: 开始写页面
+    [s14 v2] f7: 开始写页面
