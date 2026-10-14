@@ -1,0 +1,109 @@
+diff -ru next/report/data-table.tsx /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/data-table.tsx
+--- next/report/data-table.tsx	2026-10-14 06:17:59.455810185 +0000
++++ /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/data-table.tsx	2026-10-14 06:44:11.415668982 +0000
+@@ -89,11 +89,11 @@
+             ))}
+           </colgroup>
+         )}
+-        {caption && <TableCaption>{caption}</TableCaption>}
+-        <TableHeader>
+-          <TableRow>
++        {caption && <TableCaption className="mt-0 leading-6">{caption}</TableCaption>}
++        <TableHeader className="[&_tr]:border-b-0">
++          <TableRow className="border-b-0">
+             {columns.map((c, i) => (
+-              <TableHead key={c.key} className={cn(c.align === "right" && "text-right", onGrid && "h-[39px] pl-0 pr-6 text-muted-foreground font-normal", onGrid && i === columns.length - 1 && "pr-0")}>
++              <TableHead key={c.key} className={cn(c.align === "right" && "text-right", onGrid && "h-12 pl-0 pr-6 align-bottom leading-6 text-muted-foreground font-normal shadow-[inset_0_-1px_0_var(--border)]", onGrid && i === columns.length - 1 && "pr-0")}>
+                 {c.label}
+               </TableHead>
+             ))}
+@@ -101,13 +101,13 @@
+         </TableHeader>
+         <TableBody>
+           {rows.map((r, i) => (
+-            <TableRow key={i}>
++            <TableRow key={i} className="border-b-0">
+               {columns.map((c, i) => (
+                 <TableCell
+                   key={c.key}
+                   className={cn(
+                     c.align === "right" && "text-right tabular-nums",
+-                    onGrid && "h-[39px] py-0 pl-0 pr-6 whitespace-normal",
++                    onGrid && "h-12 py-0 pl-0 pr-6 align-bottom leading-6 whitespace-normal shadow-[inset_0_-1px_0_var(--border)]",
+                     onGrid && i === columns.length - 1 && "pr-0",
+                     c.tone?.includes(String(r[c.key])) && "font-semibold text-destructive",
+                     step(c, r[c.key]),
+diff -ru next/report/figure.tsx /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/figure.tsx
+--- next/report/figure.tsx	2026-10-14 06:25:32.896614551 +0000
++++ /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/figure.tsx	2026-10-14 06:42:17.612013585 +0000
+@@ -43,8 +43,8 @@
+       <div
+         data-slot="figure-strip-row"
+         className={cn(
+-          "flex w-max gap-12 pb-4",
+-          "[&_[data-slot=figure-image]]:h-96 [&_[data-slot=figure-image]]:w-auto",
++          "flex w-max gap-6 pb-6",
++          "[&>[data-slot=figure]]:w-[172px] [&_[data-slot=figure-image]]:h-[360px] [&_[data-slot=figure-image]]:w-[172px] [&_[data-slot=figure-image]]:object-contain [&_[data-slot=figure-image]]:object-top",
+         )}
+       >
+         {children}
+@@ -108,7 +108,7 @@
+ // so a row of screens can be laid on the page's columns (one product per column group, one stage per row).
+ function Figure({ className, span, start, rowSpan, ...props }: React.ComponentProps<"figure"> & Placed) {
+   if (span) return <figure data-slot="figure" className={cn("flex min-w-0 flex-col gap-2", place({ span, start, rowSpan }), className)} {...props} />
+-  return <figure data-slot="figure" className={cn("flex w-min shrink-0 flex-col gap-2", className)} {...props} />
++  return <figure data-slot="figure" className={cn("flex w-min shrink-0 flex-col gap-0", className)} {...props} />
+ }
+ 
+ // The image takes the width its cell gives it and keeps its own ratio: nothing
+diff -ru next/report/layout.tsx /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/layout.tsx
+--- next/report/layout.tsx	2026-10-14 06:37:46.912336164 +0000
++++ /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/layout.tsx	2026-10-14 06:42:17.611489855 +0000
+@@ -80,7 +80,7 @@
+ // instead of repeating the section heading at its own size.
+ function Group({ title, className, children }: { title?: string; className?: string; children: React.ReactNode }) {
+   return (
+-    <div data-slot="group" className="flex flex-col gap-2">
++    <div data-slot="group" className="flex flex-col gap-0">
+       {title && <h3 data-slot="group-title" className="text-sm leading-6 font-semibold">{title}</h3>}
+       <div data-slot="group-body" className={cn("flex flex-col gap-6", className)}>{children}</div>
+     </div>
+@@ -124,9 +124,8 @@
+ // is the table's, so the two read as the same line.
+ function Rule({ label, className, ...props }: React.ComponentProps<"div"> & { label?: string }) {
+   return (
+-    <div data-slot="rule" className={cn("flex flex-col gap-2", className)} {...props}>
++    <div data-slot="rule" className={cn("flex h-6 flex-col justify-end border-b", className)} {...props}>
+       {label && <span className="text-xs leading-6 text-muted-foreground">{label}</span>}
+-      <Separator />
+     </div>
+   )
+ }
+diff -ru next/report/list.tsx /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/list.tsx
+--- next/report/list.tsx	2026-10-14 06:17:59.457105370 +0000
++++ /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/list.tsx	2026-10-14 06:43:08.220494979 +0000
+@@ -49,7 +49,7 @@
+     return (
+       <ol data-slot="custom-list" className={cls("flex flex-col")}>
+         {items.map((it, i) => (
+-          <li key={i} className="grid grid-cols-[48px_1fr] border-b py-5 text-sm leading-6">
++          <li key={i} className="grid grid-cols-[48px_1fr] border-b pt-6 pb-[23px] text-sm leading-6">
+             <span className="text-xs leading-6 text-muted-foreground tabular-nums">{num(i)}</span>
+             <div className="flex flex-col">
+               {it.title && <span className="font-semibold">{it.title}</span>}
+diff -ru next/report/stat.tsx /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/stat.tsx
+--- next/report/stat.tsx	2026-10-14 06:17:59.457821870 +0000
++++ /tmp/claude-0/-home-user-QFY1012-github-io/6140c6fd-f314-54f8-a2de-36e9386010db/scratchpad/stripdemo/hand/app/src/components/report/stat.tsx	2026-10-14 06:42:17.611913330 +0000
+@@ -20,10 +20,10 @@
+ // A key figure.
+ function Stat({ label, value, unit, size, captionBelow, quiet, delta, note, direction, span, start, rowSpan, className }: StatProps) {
+   return (
+-    <div data-slot="custom-stat" className={cn(cn("flex flex-col", captionBelow ? "gap-0" : "gap-2"), place({ span, start, rowSpan }), className)}>
++    <div data-slot="custom-stat" className={cn(cn("flex flex-col", "gap-0"), place({ span, start, rowSpan }), className)}>
+       {label && !captionBelow && <span className="text-sm leading-6 text-muted-foreground">{label}</span>}
+       <div className="flex items-baseline gap-2">
+-        <span className={cn("font-light tabular-nums", size === "lg" ? "text-5xl leading-[60px]" : size === "xl" ? "text-[44px] leading-[56px]" : "text-3xl leading-9")}>{value}</span>
++        <span className={cn("font-light tabular-nums", size === "lg" ? "text-5xl leading-[48px]" : size === "xl" ? "text-[44px] leading-[56px]" : "text-3xl leading-[48px]")}>{value}</span>
+         {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
+       </div>
+       {label && captionBelow && <span className={quiet ? "text-xs leading-6 text-muted-foreground" : "text-sm leading-6"}>{label}</span>}
