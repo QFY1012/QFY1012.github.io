@@ -3,7 +3,7 @@
 // shoot.mjs 在组件库带 grid.ts(能写 start、rowSpan 的那一版)时调用;SHOOT_GRID=0 关掉。
 //
 // 量的是这些块:节标题和节内容、Group、Grid、Block、Rule、各内容组件(Text、Stat、表格、图表、列表、KV、
-// 进度条列表、截图条),放在 Grid 里的 Figure,以及多列 List 的每一条。表格、图表里面的东西不量;
+// 进度条列表、截图条),放在 Grid 或按网格换行的截图条(写了 span)里的 Figure,以及多列 List 的每一条。表格、图表里面的东西不量;
 // FigureGrid、FigureCompare 是色觉模拟那一组的固定排法,里面的每张图也不量,只量整组。
 export function gridOffenders() {
   const main = document.querySelector("main")
@@ -25,7 +25,7 @@ export function gridOffenders() {
     const parent = el.parentElement
     const measured =
       SLOTS.has(slot) ||
-      (slot === "figure" && parent?.getAttribute("data-slot") === "grid") ||
+      (slot === "figure" && ["grid", "figure-strip"].includes(parent?.getAttribute("data-slot")) && isGrid(parent)) ||
       (parent?.getAttribute("data-slot") === "custom-list" && isGrid(parent))
     // A block inside one already reported is off because its parent is: report only the outer one.
     if (!measured || clipped(el) || reported.some((p) => p.contains(el))) continue

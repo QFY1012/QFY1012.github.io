@@ -6,12 +6,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
-import { COLS, SPAN, START, place, type Placed } from "./grid"
-
-// How many page columns the content around a piece is wide: 9 in a side section
-// body, 12 in a stacked one, or a Grid's own cols. A Grid without `cols` takes it,
-// so its columns are the page's columns and everything in it lands on them.
-const Width = React.createContext(9)
+import { COLS, SPAN, START, Width, place, type Placed } from "./grid"
 
 // Sections are one empty field apart (24 + 144 + 24 = 192px). The title takes the
 // 9-column field; the report's facts sit in the margin column, their last line on

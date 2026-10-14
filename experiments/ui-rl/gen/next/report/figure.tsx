@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { place, type Placed } from "./grid"
+import { COLS, Width, place, type Placed } from "./grid"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 // Screenshots: one screen per Figure, laid out in a FigureStrip that scrolls
@@ -14,7 +14,30 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 // scrollbar. The scrollbar only appears while the strip is hovered: an
 // always-visible bar reads as a rule under the row of screens, which is not a
 // line the design gives.
-function FigureStrip({ className, children, ...props }: React.ComponentProps<typeof ScrollArea>) {
+//
+// With `span`, the strip does not scroll: it is a grid on the page's columns,
+// each screen takes `span` columns, and the screens wrap onto as many rows as
+// they need. Every screen is on the page (a reader, a print and a screenshot see
+// all of them) and every one sits on the column lines.
+const STRIP_SPAN: Record<number, string> = {
+  1: "[&>[data-slot=figure]]:col-span-1",
+  2: "[&>[data-slot=figure]]:col-span-2",
+  3: "[&>[data-slot=figure]]:col-span-3",
+  4: "[&>[data-slot=figure]]:col-span-4",
+  6: "[&>[data-slot=figure]]:col-span-6",
+}
+
+function FigureStrip({ className, children, span, ...props }: React.ComponentProps<typeof ScrollArea> & { span?: number }) {
+  const around = React.useContext(Width)
+  if (span)
+    return (
+      <div
+        data-slot="figure-strip"
+        className={cn("grid gap-x-6 gap-y-12", COLS[around], STRIP_SPAN[span], "[&>[data-slot=figure]]:w-full [&>[data-slot=figure]]:min-w-0", className)}
+      >
+        {children}
+      </div>
+    )
   return (
     <ScrollArea data-slot="figure-strip" type="hover" className={cn("w-full min-w-0", className)} {...props}>
       <div
