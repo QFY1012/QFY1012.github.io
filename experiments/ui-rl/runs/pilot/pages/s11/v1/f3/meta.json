@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s11/guide.md",
+  "sha": "cd0e41e2"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 198,
+ "usage": {
+  "input": 62484,
+  "output": 10963
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查全部通过。\n\n结构说明：页头（产品/周期 + 标题）下按 C3 顺序排 7 节——结论（24px 细体结论句）→ 核心指标（4 个 `Stat` 一行，首位「对比产品」放大、四项各自带副行注释）→ 产品对比（`DataTable`，步骤数列带计数条，并列出步骤数/输入项/结论）→ 链路明细（每产品一个 `Rule` 分组 + `FigureStrip`，图下依次是步号·屏名、内容·操作、独立的「备注」行）→ 问题明细（编号/产品/步骤分列，严重度用 `levels` 排出低中高）→ 下一步（单列 `ordered` 列表，依据内联在每条建议里）→ 背景信息（`KV`，任务/范围/日期只在此出现一次）。\n\n数据里没有时间趋势、分维度得分等内容，相应节已跳过；`products[].inputs` 全为 0，仍按指南 E8 保留「输入项」列。没有组件库无法呈现的数据。",
+ "checks": []
+}

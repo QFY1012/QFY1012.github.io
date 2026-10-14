@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s11/guide.md",
+  "sha": "cd0e41e2"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 136,
+ "usage": {
+  "input": 78371,
+  "output": 9373
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查全部通过。\n\n**页面结构**（按 C3 顺序，7 节）：\n\n1. **结论** — `summary` 用 24px 细体结论句占满 9 列。\n2. **核心指标** — 4 个 `Stat` 一行排满（`Grid cols={9} fields={false} items-baseline`）；把\"步骤最少 3 步\"放首位并用 `size=\"lg\"` 唯一强调，其余三个普通字号，说明文字在数字下方。\n3. **产品对比** — `DataTable`：产品 / 步骤数（`bar` 细条）/ 输入项 / 结论，各列 span 合计 9，下方 `caption` 说明口径（输入项三款均为 0）。\n4. **链路明细** — 每个产品一组（`Rule` 式的 `Group` 标题写\"产品 · 版本 · 结论\"），组内 `FigureStrip` 横向排开该产品全部步骤截图；每格 `FigureLabel` 写\"第 N 步 · 屏名\"，`FigureText` 写\"内容 · 操作\"，有备注的步骤另起一行 `FigureText` 写\"备注 · …\"（E6 的两级间距）。\n5. **问题明细** — `DataTable`：编号 / 产品 / 步骤 / 问题 / 严重度（`levels` 低中高，高红加粗、中加粗、低灰）/ 证据，产品与步骤分列、保留唯一编号（E3、E5）。\n6. **下一步** — 单列纵向 `List ordered`，两条建议的依据内联在每条里并写回编号（E2、E5）。\n7. **背景信息** — `KV labelCols={2}`，任务、范围、日期只在页尾出现一次（E7）；页头 `meta` 只写三个产品名。\n\n没有缺失的组件：数据中的 12 张截图、对比表、问题表、建议与元信息都能由现有组件表达；没有时间序列数据，故未出现趋势/图表节。",
+ "checks": []
+}
