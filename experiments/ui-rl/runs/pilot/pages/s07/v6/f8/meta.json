@@ -1,0 +1,27 @@
+{
+ "case": "f8",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s07/guide.md",
+  "sha": "7770faaf"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 325,
+ "usage": {
+  "input": 272253,
+  "output": 23953
+ },
+ "stop": "stop",
+ "summary": "<thinking>The 下一步 list looks good: numbered, single column, basis inline, A1/A2/A3 badges.\n\nThe issues table: I see P4 row — the 证据 column wraps \"确认挂号页只列出已有档案,没有新增入口\". Note the \"出\" at top is from the previous row's evidence overflow (\"没有新增入口\" wrapped). Fine.\n\nLet me check tile-7 for the full issues table.\n\nOne issue: in the issues table, the severity column (span 1, 74px) shows \"低\" gray, \"中\" bold, \"高\" red bold. Good.\n\nLet me view tile-7.</thinking>",
+ "checks": []
+}

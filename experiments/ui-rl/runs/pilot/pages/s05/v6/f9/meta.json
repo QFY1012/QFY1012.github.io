@@ -1,0 +1,27 @@
+{
+ "case": "f9",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s05/guide.md",
+  "sha": "063f6398"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 207,
+ "usage": {
+  "input": 325607,
+  "output": 20912
+ },
+ "stop": "stop",
+ "summary": "The page passes all program checks. Final structure:\n\n- **页头**:产品与周期在左侧 3 列,标题「交互流程挖掘 · 取消视频会员自动续费」在右侧 9 列\n- **结论**:summary 结论句 24px 细体\n- **核心指标**:四项一行排满,「6 步(橙果视频)」放大前置,样本量「14 张分析截图」后置,星幕 8 步/输入项/高 2 中 1 等对照值写在注释里\n- **产品对比**:DataTable,产品、步骤数、输入项、判断分列\n- **常见模式**:编号 List,每条标题+说明\n- **链路明细**:每个产品一组(`Rule` 标产品·版本),`FigureStrip` 按步骤横向排开 14 张截图,每格图名、内容·操作·输入项、以及该步的问题注释\n- **问题清单**:DataTable,编号/产品/步骤/问题/严重度/依据分列,严重度用 `levels` 三级(高红加粗、中灰)\n- **下一步**:单列纵向编号 List,两条建议的依据内联在每条里\n- **背景信息**:KV(任务、范围、对比产品、截图数、日期)\n\n一处组件能力限制:`List` 的 `meta` 在本页没有渲染出来(常见模式里原本想用它放「涉及产品」),已改为把产品名并入每条说明文字,信息未丢。另外链路明细按组件库设计横向滚动,一行只显示前 4 步,其余步骤需要横向滚动查看。",
+ "checks": []
+}

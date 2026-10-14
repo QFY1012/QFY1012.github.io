@@ -1,0 +1,27 @@
+{
+ "case": "f8",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s07/guide.md",
+  "sha": "7770faaf"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 275,
+ "usage": {
+  "input": 115238,
+  "output": 20653
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过（`checks.json` 为空）。页面已写好。\n\n**页面结构**（7 节，全部按 C3 顺序）：\n1. **结论** — 24px 细体结论句占满 9 列，点出三家在入口位置与就诊人填法上的差别。\n2. **核心指标** — 4 个数字一行排满（`Grid cols={9}` + 各 `span={2}`），数字放大、说明在下，样本量「分析截图 18 张」后置。\n3. **阶段对比** — `DataTable` 把六段流程逐段横向对照，一列一款 App（安沁/望山/澄心）。\n4. **链路明细** — 一款 App 一组（`Rule` 标产品 · 版本），每组一行 `FigureStrip` 按步骤排开 18 张截图，图下写内容、操作、输入项数，再用「需要注意的点」`List` 逐条列出该产品的步骤备注。\n5. **问题清单** — `DataTable`：编号、产品、步骤分列（不合并成「位置」），问题与证据各占一列，严重度用列的 `levels`（高红加粗 / 中加粗 / 低灰）。\n6. **下一步** — 单列纵向 `List ordered`，三条建议各带依据，依据写 P 编号对回问题清单。\n7. **背景信息** — `KV`（labelCols=2）写任务、范围、日期、产品版本。\n\n没有缺组件、需要绕开的数据：数据里的时间序列类内容（TrendChart/BarChart）本来就不存在，分群数字没有用 KPI/大数字/横条图重复表达。",
+ "checks": []
+}

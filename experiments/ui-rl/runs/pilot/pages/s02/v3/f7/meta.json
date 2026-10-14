@@ -1,0 +1,27 @@
+{
+ "case": "f7",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s02/guide.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 345,
+ "usage": {
+  "input": 185898,
+  "output": 27948
+ },
+ "stop": "stop",
+ "summary": "The page is complete and all program checks pass.\n\n**页面结构**(自上而下,`Page` 页头 + 7 节,节标题挂左侧 3 列、内容在右侧 9 列):结论(24px 细体结论句)→ 核心指标(4 个 `Stat`,数字在下说明在上,`size=\"lg\"`)→ 产品对比(`DataTable`,步骤数/输入项数为带计数条的右对齐列,span 3+3+3)→ 流程明细(两款 App 各一组 `Rule` + `FigureStrip`,7 张截图按步骤横排,图下是步号、屏名和「内容 · 操作 · 输入项数」,第 2 步另带一行注释)→ 发现问题(`DataTable`,编号/问题/位置/证据 + 严重度列用 `levels` 排出低-中-高)→ 下一步(左 6 列 `List ordered` 写建议,右 3 列 `KV` 写依据 P1 与位置)→ 背景信息(`KV` 写任务、范围、版本、日期)。\n\n说明:第 4 步的截图在 4 张一排的 `FigureStrip` 里超出 9 列内容宽,按组件库设定被裁掉、悬停滚动可见(该条横向滚动的既定行为);数据里的步骤注释用 `FigureText` 呈现,缺少一个能把长注释与图并置摘成两行的组件,现在只能跟图同宽折行。",
+ "checks": []
+}

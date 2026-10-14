@@ -1,0 +1,27 @@
+{
+ "case": "f4",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s06/guide.md",
+  "sha": "ce92fdcf"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 114,
+ "usage": {
+  "input": 156016,
+  "output": 10551
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查一次通过。\n\n**结构**（页头 + 7 节，节名挂左侧 3 列，内容在右 9 列）：\n\n- **页头**：`meta` 写产品/周期/日期，`title` 写「交互流程挖掘 · 预订会议室」。\n- **结论**：`summary` 用 24px 细体结论句占满 9 列。\n- **核心指标**：一行四个 `Stat`（`fields={false}` + `items-baseline`，数字底部对齐）：结论数字「链工 5 步」放大前置（`size=\"lg\"`，说明里写对照的协作宝 8 步），样本量「分析截图 13 张」后置，避免末项掉行。\n- **拆分**：`Group` 两块——「两款产品的做法与代价」用 `DataTable`（步骤数列带 `bar`，输入项、做法分列），「四个阶段的对照」用 `DataTable` 按阶段横向比协作宝/链工。\n- **明细**：问题 `DataTable`，产品与步骤分列（不合并成「位置」），严重度列用 `levels: [\"低\",\"中\",\"高\"]`（高标红加粗、中加粗、低灰），证据单列。\n- **链路**：每个产品一组，`Rule` 标产品与版本，`FigureStrip` 按步骤横排截图（图名 + 内容·操作·输入项数·备注）。\n- **下一步**：三条建议用 `List numbered` 单列纵向排，依据（链工第 1、2 步、P1…）内联在每条内，不会掉行。\n- **背景信息**：`KV labelCols={2}` 放任务、范围、对比产品、样本量、日期。\n\n没有缺组件。唯一需说明的是组件行为：`FigureStrip` 一行放不下时横向滚动，所以 8 步的协作宝链路一屏内显示前 4 步、其余需横向滚动查看（这是该组件的既定表现，不是数据缺失）。",
+ "checks": []
+}

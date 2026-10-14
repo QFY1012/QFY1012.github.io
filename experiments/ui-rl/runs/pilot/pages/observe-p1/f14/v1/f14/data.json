@@ -1,0 +1,266 @@
+{
+ "title": "交互流程挖掘 · 智能音箱配网",
+ "task": "把智能音箱接入家里的 Wi-Fi 并完成与 App 的绑定",
+ "scope": "2 款智能音箱 App,2026 年 3 月版本",
+ "date": "2026-03-18",
+ "summary": "两款 App 都经过发现设备、选网、配网三段,聆动 7 步,云雀 6 步。差别在聆动的 Wi-Fi 列表不区分 2.4G 和 5G,选错就配网失败。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 2,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 13,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(云雀音箱)",
+   "value": 6,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 3,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "聆动音箱",
+   "steps": 7,
+   "inputs": 1,
+   "verdict": "步骤多一屏,网络列表不标频段"
+  },
+  {
+   "name": "云雀音箱",
+   "steps": 6,
+   "inputs": 3,
+   "verdict": "步骤少,失败原因不提示"
+  }
+ ],
+ "chains": [
+  {
+   "product": "聆动音箱",
+   "version": "3.2.0",
+   "verdict": "步骤多一屏,网络列表不标频段",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "设备卡片、添加设备按钮、扫一扫入口",
+     "action": "点击添加设备",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "选择型号",
+     "content": "音箱系列图标、型号列表、搜索框",
+     "action": "选择对应型号",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "重置音箱",
+     "content": "长按重置键 5 秒图示、指示灯说明、已重置按钮",
+     "action": "确认已重置",
+     "inputs": 0,
+     "note": "指示灯说明只有一句,用户不确定是否真的进入配网模式",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "连接蓝牙",
+     "content": "附近设备列表、信号强度、刷新按钮",
+     "action": "点击音箱名称",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "选择 Wi-Fi",
+     "content": "Wi-Fi 列表、密码输入框、显示密码开关",
+     "action": "输入密码并连接",
+     "inputs": 1,
+     "note": "列表不区分 2.4G 和 5G,选到 5G 后配网失败并退回第 4 步",
+     "image": "assets/p1-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "配网中",
+     "content": "进度环、当前阶段提示、取消按钮",
+     "action": "等待配网完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-06.png"
+    },
+    {
+     "no": 7,
+     "screen": "配网成功",
+     "content": "音箱名称、常见问题入口、完成按钮",
+     "action": "点击完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-07.png"
+    }
+   ]
+  },
+  {
+   "product": "云雀音箱",
+   "version": "1.8.5",
+   "verdict": "步骤少,失败原因不提示",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "首页",
+     "content": "设备列表、添加设备入口",
+     "action": "点击添加设备",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "连接蓝牙",
+     "content": "蓝牙扫描动画、附近设备列表",
+     "action": "选择音箱",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择 Wi-Fi",
+     "content": "仅列出 2.4G 网络、密码输入框",
+     "action": "输入密码并下一步",
+     "inputs": 1,
+     "note": "",
+     "image": "assets/p2-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "配网中",
+     "content": "进度条、失败提示、重试按钮",
+     "action": "等待配网结果",
+     "inputs": 0,
+     "note": "失败只显示连接失败,不说明原因,重试要回到第 3 步重新输入密码",
+     "image": "assets/p2-04.png"
+    },
+    {
+     "no": 5,
+     "screen": "命名设备",
+     "content": "设备名称输入框、房间选择",
+     "action": "输入名称并下一步",
+     "inputs": 2,
+     "note": "",
+     "image": "assets/p2-05.png"
+    },
+    {
+     "no": 6,
+     "screen": "完成",
+     "content": "设备卡片、开始使用按钮",
+     "action": "点击开始使用",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-06.png"
+    }
+   ]
+  }
+ ],
+ "stages": [
+  {
+   "stage": "入口",
+   "聆动音箱": "首页设备列表内,一步可达",
+   "云雀音箱": "首页顶部添加设备入口"
+  },
+  {
+   "stage": "发现设备",
+   "聆动音箱": "先选型号,再连蓝牙",
+   "云雀音箱": "直接蓝牙扫描,不选型号"
+  },
+  {
+   "stage": "重置引导",
+   "聆动音箱": "单独一屏,只有图示和一句说明",
+   "云雀音箱": "无,默认用户已完成重置"
+  },
+  {
+   "stage": "选择网络",
+   "聆动音箱": "列出全部 Wi-Fi,不标频段",
+   "云雀音箱": "只列 2.4G 网络"
+  },
+  {
+   "stage": "配网过程",
+   "聆动音箱": "进度环,可取消",
+   "云雀音箱": "进度条,失败可直接重试"
+  },
+  {
+   "stage": "完成",
+   "聆动音箱": "配网成功直接结束",
+   "云雀音箱": "先命名设备和选房间"
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "聆动音箱",
+   "step": 5,
+   "title": "Wi-Fi 列表不区分频段",
+   "severity": "高",
+   "evidence": "第 5 步把 2.4G 和 5G 混在同一列表,选错后配网失败并退回第 4 步"
+  },
+  {
+   "id": "P2",
+   "product": "云雀音箱",
+   "step": 4,
+   "title": "配网失败不给原因,重试要重输密码",
+   "severity": "高",
+   "evidence": "第 4 步失败只显示连接失败,重试回到第 3 步重新输入密码"
+  },
+  {
+   "id": "P3",
+   "product": "聆动音箱",
+   "step": 3,
+   "title": "重置引导只有一句指示灯说明",
+   "severity": "中",
+   "evidence": "第 3 步只有图示和一句说明,用户不确定音箱是否已进入配网模式"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "网络列表只显示并默认选中 2.4G",
+   "detail": "把 5G 网络折叠或标注不支持,默认选 2.4G,避免配网中途失败重来",
+   "basis": [
+    "云雀音箱第 3 步",
+    "P1"
+   ]
+  },
+  {
+   "id": "A2",
+   "title": "失败要说明原因并支持原地重试",
+   "detail": "区分密码错误、信号弱、未进入配网模式三种提示,重试不必再输一遍密码",
+   "basis": [
+    "聆动音箱第 6 步",
+    "P2"
+   ]
+  },
+  {
+   "id": "A3",
+   "title": "把重置步骤写具体",
+   "detail": "写明长按秒数和指示灯闪烁状态,并在开始前提示需要 2.4G Wi-Fi 密码",
+   "basis": [
+    "P3"
+   ]
+  }
+ ]
+}

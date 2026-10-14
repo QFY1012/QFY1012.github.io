@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s03/guide.md",
+  "sha": "ebccfe21"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 665,
+ "usage": {
+  "input": 283525,
+  "output": 10310
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过(构建、组件库、统一刻度、数据忠实、元素越界均无问题)。\n\n结构:页头(任务/范围/日期 + 标题)→「结论」一句 24px 细体判断 →「核心指标」四项计数一行排满(结论数字「3 步」放大前置、样本量「12 张分析截图」后置,依据 E1)→「流程对比」产品 × 步骤数(带计数条)× 流程结论表 →「链路明细」每款产品一组(`Rule` 标产品·版本,`FigureStrip` 按步骤横向排开截图、屏名、内容/操作/输入项与备注)→「问题明细」表(严重度列用 `levels` 低/中/高,最高一级标红加粗)→「下一步」两条建议并排 →「背景信息」KV。数据全部来自组件库组件,没有缺组件的内容;唯一需要说明的是链路截图每行放不下 4–5 张手机截图,按 `FigureStrip` 的设计裁掉右缘、悬停横向滚动,静态截图里最后一张只露出一部分。",
+ "checks": []
+}

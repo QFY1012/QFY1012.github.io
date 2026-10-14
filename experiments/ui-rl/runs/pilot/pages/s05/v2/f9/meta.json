@@ -1,0 +1,27 @@
+{
+ "case": "f9",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s05/guide.md",
+  "sha": "063f6398"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 262,
+ "usage": {
+  "input": 507338,
+  "output": 21233
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过（`checks.json` 为空），页面已定稿。\n\n**页面结构**（`Page.tsx`，按 C3 顺序组装）：\n- 页头：产品版本与范围日期挂在左侧 3 列，标题占右侧 9 列；\n- **结论**：一句话判断用结论句字号（24px 细体）占满 9 列；\n- **核心指标**：四项一行、数字在下带说明，结论数字「6 步」用 `size=\"lg\"` 前置、样本量「14 张」后置（E1）；\n- **分产品**：`DataTable`（产品/版本/步骤数带计数条/输入项/判断），步骤数与输入项分列；\n- **共性模式**：`List numbered`，每条标题 + 涉及产品与说明；\n- **问题明细**：`DataTable` 把产品与步骤分列（E3），严重度用列的 `levels`（高红加粗、中加粗），证据单独一列；\n- **链路明细**：一个产品一组，`Rule` 标产品版本与判断，`FigureStrip` 按步骤横向排 14 张截图，每格图下是屏名、内容/操作/输入项与该步备注；\n- **下一步**：单列纵向编号 `List`，依据内联在每条建议里（E2）；\n- **背景信息**：`KV labelCols={2}` 写任务、范围、样本、版本与日期。\n\n说明：数据全部由组件库呈现，没有缺组件；唯一需要留意的是链路截图条按组件库设计是横向滚动（静止时不出现横条），一屏能看到每个产品的前 4 张，其余截图需悬停横向滚动查看。",
+ "checks": []
+}

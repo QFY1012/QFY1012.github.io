@@ -1,0 +1,154 @@
+{
+ "title": "交互流程挖掘 · 寄快递",
+ "task": "从下单到预约快递员上门取件的寄件流程",
+ "scope": "2 款寄件 App,2026 年 5 月版本",
+ "date": "2026-05-18",
+ "summary": "两款寄件 App 分别用 4 步和 3 步下单,差别在信息填写。闪兔快递拆成两屏,寄件人信息每次重填;云鸽寄件一屏填完,首页未说明最快何时上门。",
+ "kpis": [
+  {
+   "key": "products",
+   "label": "对比产品",
+   "value": 2,
+   "unit": "个"
+  },
+  {
+   "key": "screens",
+   "label": "分析截图",
+   "value": 7,
+   "unit": "张"
+  },
+  {
+   "key": "fewest",
+   "label": "步骤最少(云鸽寄件)",
+   "value": 3,
+   "unit": "步"
+  },
+  {
+   "key": "issues",
+   "label": "发现问题",
+   "value": 2,
+   "unit": "个"
+  }
+ ],
+ "products": [
+  {
+   "name": "闪兔快递",
+   "steps": 4,
+   "inputs": 9,
+   "verdict": "信息分两屏,寄件人不能复用"
+  },
+  {
+   "name": "云鸽寄件",
+   "steps": 3,
+   "inputs": 7,
+   "verdict": "一屏填完,步骤最少"
+  }
+ ],
+ "chains": [
+  {
+   "product": "闪兔快递",
+   "version": "4.7.2",
+   "verdict": "信息分两屏,寄件人不能复用",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "寄件首页",
+     "content": "寄件入口、历史地址、优惠券横幅",
+     "action": "点击寄快递",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "填写寄件信息",
+     "content": "寄件人姓名、寄件人电话、收件人姓名、收件人电话、物品类型、预估重量",
+     "action": "填写后下一步",
+     "inputs": 6,
+     "note": "寄件人信息没有从上次寄件带出,6 项里只有手机号自动填好,其余 5 项要重填",
+     "image": "assets/p1-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "选择上门时间",
+     "content": "上门日期、时间段、备注",
+     "action": "选择后提交",
+     "inputs": 3,
+     "note": "",
+     "image": "assets/p1-03.png"
+    },
+    {
+     "no": 4,
+     "screen": "预约成功",
+     "content": "取件码、快递员姓名、预计上门时间",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p1-04.png"
+    }
+   ]
+  },
+  {
+   "product": "云鸽寄件",
+   "version": "2.9.0",
+   "verdict": "一屏填完,步骤最少",
+   "steps": [
+    {
+     "no": 1,
+     "screen": "寄件首页",
+     "content": "常用地址、一键寄件入口",
+     "action": "点击寄快递",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-01.png"
+    },
+    {
+     "no": 2,
+     "screen": "确认寄件信息",
+     "content": "寄件人姓名电话、收件人姓名电话、物品类型、上门时间",
+     "action": "确认并预约",
+     "inputs": 7,
+     "note": "",
+     "image": "assets/p2-02.png"
+    },
+    {
+     "no": 3,
+     "screen": "预约成功",
+     "content": "取件码、快递员联系方式",
+     "action": "完成",
+     "inputs": 0,
+     "note": "",
+     "image": "assets/p2-03.png"
+    }
+   ]
+  }
+ ],
+ "issues": [
+  {
+   "id": "P1",
+   "product": "闪兔快递",
+   "step": 2,
+   "title": "寄件人信息不能复用上次寄件",
+   "severity": "中",
+   "evidence": "第 2 步共 6 项输入,只有手机号带出,其余 5 项每次都要重填"
+  },
+  {
+   "id": "P2",
+   "product": "全部",
+   "step": 1,
+   "title": "首页不说明最快可上门时间",
+   "severity": "低",
+   "evidence": "闪兔快递首页只有入口、历史地址和优惠券,云鸽寄件首页只有常用地址和入口,都看不到今天能否取件"
+  }
+ ],
+ "suggestions": [
+  {
+   "id": "A1",
+   "title": "把上次寄件信息带出为默认值",
+   "detail": "寄件人姓名和电话、常用收件人默认填好,用户只改变化的部分,减少重复输入",
+   "basis": [
+    "P1"
+   ]
+  }
+ ]
+}

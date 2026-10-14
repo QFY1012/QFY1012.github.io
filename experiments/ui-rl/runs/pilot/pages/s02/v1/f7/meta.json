@@ -1,0 +1,27 @@
+{
+ "case": "f7",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s02/guide.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 821,
+ "usage": {
+  "input": 260756,
+  "output": 21387
+ },
+ "stop": "stop",
+ "summary": "页面已通过程序检查。整页结构如下：\n\n- **页头**：`meta` 写「2 款寄件 App,2026 年 5 月版本 / 2026-05-18」，标题为「交互流程挖掘 · 寄快递」。\n- **结论**（24px 细体结论句）→ **核心指标**（4 个 `Stat`，主指标「步骤最少 3 步」用 `size=\"lg\"`，其余普通字号，一行 3 个）→ **产品对比**（按产品分群的 2 个 `Stat`，`span={2}`，注里写填写项数）→ **流程链路**（每个产品一组，`Rule` 标签写「产品 · 版本 · 步数 · 判断」，`FigureStrip` 里逐步排屏，图注为视图名与内容/操作/输入项，第 2 步另附信息复用说明）→ **问题明细**（`DataTable`，严重度用 `levels: [\"低\",\"中\",\"高\"]` 排等级，证据单列，caption 写口径）→ **下一步**（6 列 `List`（`ordered`）配 3 列 `KV`，两块都放在 `Block` 里同行）→ **背景信息**（`KV`，`labelCols={2}`）。\n\n数据里没有组件库表达不了的内容，全部字段都已在页面呈现。",
+ "checks": []
+}

@@ -1,0 +1,27 @@
+{
+ "case": "f4",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s06/guide.md",
+  "sha": "ce92fdcf"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 478,
+ "usage": {
+  "input": 441028,
+  "output": 22705
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过。\n\n**页面结构**:页头(产品/周期在左 3 列、标题在右 9 列)下依次是七节——**结论**(一句话判断,24px 细体占满 9 列)、**核心指标**(一行四个 `Stat`,步骤最少 5 步放大前置、样本量 13 张后置,主指标下注「协作宝 8 步」)、**阶段对比**(`DataTable` 三个阶段 × 两款产品)、**流程链路**(两款产品各一组:`Rule` 标出「产品·版本·步数·输入项数·判断」,`FigureStrip` 按步骤横排每屏的截图 + 屏名 + 内容/操作/输入项 + 现场观察)、**问题明细**(`DataTable`,产品与步骤分列的五个字段,严重度列用 `levels` 排低/中/高)、**下一步**(单列纵向编号 `List`,依据内联在每条建议里)、**背景信息**(`KV`,任务、范围、产品版本、数据日期)。\n\n数据里没有随时间变化的序列,故跳过该节;也没有组件库表达不了的内容(13 张截图全部按 `FigureStrip` 呈现——该组按设计在内容列宽处裁切、横向滚动,一屏内只能看到前 4 张左右,这是链条明细的既定做法,不是缺组件)。",
+ "checks": []
+}

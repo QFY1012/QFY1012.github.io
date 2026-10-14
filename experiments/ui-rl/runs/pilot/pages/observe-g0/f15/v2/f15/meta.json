@@ -1,0 +1,27 @@
+{
+ "case": "f15",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 340,
+ "usage": {
+  "input": 195740,
+  "output": 18920
+ },
+ "stop": "stop",
+ "summary": "程序检查一次通过,截图逐块核对后没有需要改的地方。\n\n**页面结构**:页头(3 款租车 App · 2026 年 4 月版本)下按「结论 → 核心指标 → 流程对比 → 链路明细 → 问题明细 → 下一步 → 背景信息」七节排列:结论用 24px 细体整段;核心指标 4 个 `Stat`(3 个一行 + 1 个换行,均 `size=\"lg\"`);流程对比是三款产品的步骤数 `Stat`(2 列宽)加右侧 3 列「输入项数」`ProgressList`,下接共同模式 `DataTable`;链路明细每个产品一组 `Rule` + `FigureStrip`(图下是步骤名、内容/操作/输入项数、当步观察);问题明细用 `DataTable`(编号/产品/步骤/问题/严重度 `levels`)加证据 `List`;下一步是 6 列建议 `List` 配 3 列依据 `KV`;背景信息用 `KV labelCols={2}`。\n\n**一点说明**:链路明细按规范「一组一行」用 `FigureStrip`,每行静止时可见约 4 张截图,其余步骤(如途野第 5–8 步、云驾第 5–7 步)需在该行内横向滚动查看,组件库没有能在一屏内平铺全部 8 张手机截图且不缩小的组件。数据里没有随时间变化的序列,所以没有「随时间变化」这一节。",
+ "checks": []
+}

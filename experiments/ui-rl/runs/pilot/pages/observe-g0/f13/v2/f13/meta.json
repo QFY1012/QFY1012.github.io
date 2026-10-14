@@ -1,0 +1,27 @@
+{
+ "case": "f13",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 297,
+ "usage": {
+  "input": 182575,
+  "output": 18440
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查（构建、组件库、统一刻度、数据忠实、元素越界）一次通过。\n\n结构：页头（3 款 App / 2026 年 3 月版本）之后依次是——**结论**（24px 细体一句话判断）→ **核心指标**（4 个 `Stat`，主指标「步骤最少 3 步」用 `size=\"lg\"`，基线对齐）→ **分群对比**（3 款 App 各一个 `Stat`，注里写输入项数与结论）→ **阶段对比**（5 行 × 4 列表格，阶段占 3 列、三款产品各 2 列）→ **链路明细**（按产品用 `Rule` 分组，每组一条 `FigureStrip`，13 张截图逐步横排，图下是\"第 N 步 · 屏名 + 内容 · 操作 · 输入 N 项\"，步骤备注另起一行说明）→ **问题**（`List` 三列，严重度作 `meta` 标红）→ **下一步**（`List` 三列带序号，右边 `KV` 放 A1/A2 的依据）→ **背景信息**（`KV`）。\n\n一处说明：`FigureStrip` 一行放不下时按设计横向滚动，因此 5 步链路的最后一步（开锁成功）在静止画面里需要悬停滚动才可见——这是组件既定行为，不是数据缺失。",
+ "checks": []
+}

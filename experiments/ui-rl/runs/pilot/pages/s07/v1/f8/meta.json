@@ -1,0 +1,27 @@
+{
+ "case": "f8",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s07/guide.md",
+  "sha": "7770faaf"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 137,
+ "usage": {
+  "input": 61055,
+  "output": 4036
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查（构建、组件库、统一刻度、数据忠实、元素越界）全部通过。\n\n**页面结构**（页头 + 8 节，节标题挂左侧 3 列、内容在右侧 9 列）：\n\n1. **结论** — `summary` 用结论句字号（24px 细体），占满内容列\n2. **核心指标** — 四项一行排满（对比产品 3 / 步骤最少 5 / 发现问题 4 / 分析截图 18），`Stat` 数字在上说明在下、`size=\"lg\"`，样本量（分析截图）后置\n3. **产品对比** — `DataTable`，步骤数与手填项数两列带 `bar` 计数条\n4. **阶段对比** — `DataTable`，阶段 × 三款产品的 6 行实现差异\n5. **链路明细** — 每个产品一个 `Group`，`Rule` 做产品分组标记，`FigureStrip` 按步骤横向排开截图（图 + 图注 + 说明），超出宽度横向滚动\n6. **问题清单** — `DataTable`，产品与步骤分列（E3）、保留唯一编号列（E5），严重度用列的 `levels`（低/中/高）排等级而非单一红色 `tone`\n7. **下一步** — 单列纵向编号 `List`，依据（P1–P4、望山医院第 2、3 步）内联在每条建议里（E2、E5）\n8. **背景信息** — `KV`（任务、范围、对比产品、分析截图、报告日期）\n\n没有发现数据里有组件库无法表达的内容。",
+ "checks": []
+}

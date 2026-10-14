@@ -1,0 +1,27 @@
+{
+ "case": "f7",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s02/guide.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 739,
+ "usage": {
+  "input": 383172,
+  "output": 24331
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过(构建、组件库、统一刻度、数据忠实、元素越界均无问题)。\n\n结构:页头左侧 3 列写产品与周期、右侧 9 列写标题;正文按「结论(24px 细体结论句)→ 核心指标(三个 `Stat`,48px、数字在上说明在下,注里带上次值与严重度分布)→ 产品对比(步骤数、输入项数两列带计数条)→ 流程明细(每款 App 一个 `Group`,组内 `FigureStrip` 横向排步骤截图,图注为步号+屏名,图下写内容·操作·输入项数,闪兔第 2 步的复用问题另起一行)→ 发现问题(问题/位置/严重度/证据,严重度用 `levels` 排出低—中)→ 下一步(6 列有序 `List` 放建议、3 列 `KV` 放依据)→ 背景信息(`KV` 写任务、产品版本、截图数)」依次排列,节间 192px、节内多组 48px。数据里没有组件库表达不了的内容,7 张截图全部显示。",
+ "checks": []
+}

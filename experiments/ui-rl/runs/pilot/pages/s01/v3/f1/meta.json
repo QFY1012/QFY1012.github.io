@@ -1,0 +1,27 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s01/guide.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 661,
+ "usage": {
+  "input": 185722,
+  "output": 16470
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查全部通过（构建、组件库、统一刻度、数据忠实、元素越界）。\n\n结构：页头（产品/周期 + 标题）下依次是 **结论**（24px 细体结论句）→ **核心指标**（4 个 `Stat`，步骤最少 7 步为主指标用 lg）→ **产品对比**（`DataTable`，步骤数带计数条）→ **环节对比**（环节 × 三家银行的 `DataTable`）→ **流程链路**（每个产品一个 `Rule` 分组 + `FigureStrip`，26 张截图按步骤横排，图注为步骤名、内容/操作/输入项，步内备注用灰色小字）→ **共性模式**（`List` numbered）→ **问题明细**（`DataTable`，严重度用 `levels` 三级）→ **下一步**（`List` numbered，含依据）→ **背景信息**（`KV` labelCols 2）。\n\n说明：`chains` 里没有链级 `inputs` 字段（该值只在 `products` 上），分组标题中的输入项由该产品各步骤 `inputs` 求和得到；组件库能力足够，没有需要绕过的数据。",
+ "checks": []
+}

@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s03/guide.md",
+  "sha": "ebccfe21"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 501,
+ "usage": {
+  "input": 145915,
+  "output": 13873
+ },
+ "stop": "stop",
+ "summary": "页面完成，程序检查全部通过。\n\n**页面结构**（页头 + 7 节，节标题在左 3 列、内容在右 9 列）：\n\n1. **结论** — `Text` 结论句（24px 细体），整段判断占满 9 列。\n2. **核心指标** — 四项一行排满：主指标「步骤最少 3 步」用 `size=\"lg\"` 前置，发现问题、对比产品、分析截图依次在后（样本量后置），对照值写在 `note`。\n3. **产品对比** — 三款产品各一个 `Stat`（步骤数），说明里带该产品的结论。\n4. **链路明细** — 每个产品一组：`Rule` 标出「产品 · 版本 · 步数 · 结论」，`FigureStrip` 按操作顺序横排步骤截图，每格是步号/屏名 + 内容·操作 + 该步注记。\n5. **问题** — `DataTable`：问题、位置、证据、严重度；严重度用列的 `levels=[\"低\",\"中\",\"高\"]`，高红加粗、中加粗、低注释灰，按顺序排开；表下 `caption` 说明口径。\n6. **下一步** — `List`（ordered，6 列）列两条建议，右侧 `KV`（3 列）放各自的依据。\n7. **背景信息** — `KV`（labelCols 2）：任务、范围、日期、产品版本、样本。\n\n无缺失组件；数据里的 `inputs`（均为 0）没有单独的图表位，已并入样本一行说明。",
+ "checks": []
+}

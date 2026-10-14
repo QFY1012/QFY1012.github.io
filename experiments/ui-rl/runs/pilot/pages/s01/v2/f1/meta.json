@@ -1,0 +1,27 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s01/guide.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 322,
+ "usage": {
+  "input": 99751,
+  "output": 10898
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查(构建、组件库、统一刻度、数据忠实、元素越界)全部通过。\n\n**页面结构**(`Page` 页头 + 9 个 `Section`,节标题在左 3 列、内容在右 9 列):\n\n1. **结论** — 一句话判断,24px 细体,占满 9 列\n2. **核心指标** — 4 个 `Stat`(48px 细体、数字在上说明在下),数字底部对齐\n3. **产品对比** — `DataTable`:产品 / 步骤数(带计数条)/ 输入项(带计数条)/ 特点\n4. **环节对照** — `DataTable`:五个开户环节 × 三家银行的逐格对照\n5. **流程链路** — 三个产品各一个 `Group`,用 `Rule` 标产品·版本·结论,`FigureStrip` 横向排开 26 张逐屏截图(每格图 + 第 N 步屏名 + 内容/操作/输入项,有关键提示的格子再加一行说明)\n6. **问题明细** — `DataTable`:编号 / 产品 / 步骤 / 问题 / 依据 / 严重度(严重度用 `levels: [\"低\",\"中\",\"高\"]`,高标红加粗、中加粗,可排序)\n7. **共性做法** — `List`(numbered):做法名 + 一句说明 + 出现范围\n8. **下一步** — `List`(numbered, columns={3}):建议、改法、依据\n9. **背景信息** — `KV`(labelCols={2}):任务、覆盖范围、样本(青禾 9 屏 · 远川 7 屏 · 北辰 10 屏)、报告日期\n\n没有需要说明的缺失组件:数据里的字段(商品步骤、输入项、问题严重度、建议依据)都能由现有组件表达;数据中没有时间序列,「随时间变化」一节按要求跳过,`TrendChart`/`BarChart`/`ProgressList` 未使用。",
+ "checks": []
+}

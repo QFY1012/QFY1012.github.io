@@ -1,0 +1,27 @@
+{
+ "case": "f15",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s08/guide-after.md",
+  "sha": "9829255d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 259,
+ "usage": {
+  "input": 150898,
+  "output": 15652
+ },
+ "stop": "stop",
+ "summary": "<thinking>From the attached images, here are the key observations and fixes needed:\n\n**1. KPI Section (Tile 1)**\n- The \"步骤最少 · 星驰出行\" label is correctly placed below the large number (6 步).\n- The grid layout for 4 stats works (span={3} for main, span={2} for others).\n- The \"对比产品\" stat shows \"3 个\" — correct.\n\n**2. 流程对比 (Tile 2)**\n- The DataTable shows 3 products with step counts (8, 6, 7) and input counts.\n- The verdict column text is slightly long but fits.\n- The bar columns for steps/inputs work.\n\n**3. 流程链路 (Tiles 3-5)**\n- **Critical Issue**: The FigureStrip images are **too small** (scaled down to ~150px width) and the strip scrolls horizontally, making it hard to read details.\n  - **Fix**: Adjust FigureStrip's image width or use `FigureImage` with explicit `width` prop (e.g., `width={300}`). The strip should show images at a readable size (~300px width).\n  - **Note**: The note text (e.g., \"备注 · 未输入押金\") appears in grey but is cut off due to small image height. Ensure `FigureLabel` has enough vertical space.\n\n**4. 共性模式 (Tile 6)**\n- The DataTable shows patterns with coverage bars (3, 3, 2, 3).\n- The \"说明\" column wraps but is readable.\n\n**5. 问题明细 (Tile 7)**\n- The table columns are slightly cramped, but the **严重度** levels (高/中/低) are correctly styled.\n- The **证据** column wraps but is legible.\n\n**6. 下一步 (Tile 8)**\n- The numbered list (`numbered`) with meta (依据) is correct.\n- The \"A1\" IDs are clear.\n\n**7. 背景信息 (Tile 8)**\n- The KV table is clean.\n\n---\n\n### **Fixes Required**\n#### **1. FigureStrip Image Size**\nIn the `流程链路` section, the `FigureStrip` images are too small. Update the `FigureImage` component to enforce a minimum width:\n```tsx\n<FigureImage\n  src={step.image}\n  alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}\n  width={300}  // Explicit width\n/>\n```\nThis ensures images are large enough to read.\n\n#### **2. FigureStrip Scrolling**\nThe strip scrolls horizontally, which is fine, but the images should be tall enough to avoid cutting off captions (e.g., notes). Ensure the `FigureStrip` container has enough height:\n```tsx\n<FigureStrip className=\"h-[700px]\">  // Adjust height as needed\n  {/* Figures */}\n</FigureStrip>\n```\n\n#### **3. Note Text Overflow**\nIf notes (e.g., \"备注 · 未输入押金\") are cut off, add `white-space: pre-wrap` to `FigureLabel`:\n```tsx\n<FigureLabel className=\"whitespace-pre-wrap\">\n  备注 · {step.note}\n</FigureLabel>\n```\n\n---\n\n### **Final Code Adjustments**\nHere’s the corrected `流程链路` section:\n```tsx\n<Section title=\"流程链路\" description=\"每款 App 从首页到取车完成的步骤截图与备注\" className=\"gap-12\">\n  {data.chains.map((chain) => (\n    <Group key={chain.product} title={`${chain.product} · ${chain.version}`}>\n      <FigureStrip className=\"h-[700px]\">\n        {chain.steps.map((step) => (\n          <Figure key={step.no}>\n            <FigureImage\n              src={step.image}\n              alt={`${chain.product} 第 ${step.no} 步:${step.screen}`}\n              width={300}\n            />\n            <FigureLabel>第 {step.no} 步 · {step.screen}</FigureLabel>\n            <FigureText>{step.content} · {step.action} · 输入 {step.inputs} 项</FigureText>\n            {step.note && (\n              <FigureLabel className=\"whitespace-pre-wrap\">\n                备注 · {step.note}\n              </FigureLabel>\n            )}\n          </Figure>\n        ))}\n      </FigureStrip>\n    </Group>\n  ))}\n</Section>\n```\n\n---\n### **Next Steps**\n1. **Apply the fixes** above to the `流程链路` section.\n2. **Re-run the build** to check if the images and notes render properly.\n3. **Verify the scrollable strip** works as intended (users should be able to scroll horizontally if needed).\n\nThe rest of the report (KPIs, tables, etc.) looks correct. The main issue is the **image sizing** in the chains section. After fixing this, the report should meet all visual and functional requirements.",
+ "checks": []
+}

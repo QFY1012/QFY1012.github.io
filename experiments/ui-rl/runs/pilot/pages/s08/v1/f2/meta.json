@@ -1,0 +1,27 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s08/guide.md",
+  "sha": "e443d20c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 217,
+ "usage": {
+  "input": 109535,
+  "output": 16735
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过。\n\n结构:页头(产品/周期 + 标题)后依次是「结论」(24px 结论句)→「核心指标」(四项一行,主指标\"步骤最少 4 步\"48px 放大,其余 30px,副行 note 四项同有)→「链路对比」(产品/版本/步骤数计数条/优惠券处理对照表)→「链路明细」(快送 5 步、小橙 4 步各一条截图链,按 Rule 分组、FigureStrip 横排,每格图注含内容·操作·输入项·注意点)→「问题清单」(编号/产品/步骤分列,问题与证据同格,严重度用 levels 高红粗、中粗、低灰)→「下一步」(单列编号列表,依据内联指向小橙步号与问题编号)→「背景信息」(KV 任务、范围、日期、版本、截图样本)。\n\n一点说明:快送的链路有 5 屏,一行放不下第 5 屏,按组件库的 FigureStrip 规则需要横向滚动才能看到(这是组件库的既定行为,不是数据缺失)。",
+ "checks": []
+}

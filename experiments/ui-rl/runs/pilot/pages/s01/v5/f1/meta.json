@@ -1,0 +1,27 @@
+{
+ "case": "f1",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s01/guide.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 449,
+ "usage": {
+  "input": 84068,
+  "output": 4901
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过，页面已完成。\n\n页面结构：页头下方依次是「结论」（24px 细体结论句）、「核心指标」（一行 3 个 `Stat`，主指标\"步骤最少 7 步\"用 48px 细体并带 note）、「产品对比」「环节对比」（两张 `DataTable`，步骤数/输入项列带计数条，口径写在 caption）、「流程模式」（编号 `List`）、「流程明细」（三家银行各一条 `Rule` 分组的 `FigureStrip`，26 张截图横向排列，图下是步号、屏名与操作说明）、「问题」（`DataTable`，严重度用 `levels` 排出高/中两级）、「下一步」（三列编号 `List`，括号内标依据）、「背景信息」（`KV`）。\n\n数据里没有组件库表达不了的内容，所有字段（含 26 张截图）都用现有组件呈现了。",
+ "checks": []
+}

@@ -1,0 +1,27 @@
+{
+ "case": "f7",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s02/guide.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 393,
+ "usage": {
+  "input": 41539,
+  "output": 5320
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过。\n\n**页面结构**(数据里的信息按规范分节):\n\n- **页头**:标题「交互流程挖掘 · 寄快递」,左侧 meta 写任务和对比范围。\n- **结论**:summary 用 24px 细体整句放满 9 列。\n- **核心指标**:4 个 `Stat` 一行(`Grid cols={9} fields={false}`,span 2/2/3/2),主指标「步骤最少 3 步」用 `size=\"lg\"`,数字底部对齐。\n- **产品对比**:`DataTable`,产品/步骤数(带 `bar`)/输入项/判断,span 合计 9;表下一行口径注释。\n- **流程链路**:两个产品各一组,`Rule` 标「产品 · 版本 · 步数 · 输入项」,`FigureStrip` 按步骤横排 7 张截图(第 2 步的「寄件人信息不能复用」备注用图注行紧跟该步),组间靠留白分开。\n- **问题明细**:`DataTable`,编号/产品/步骤/问题/依据/严重度(1/1/1/2/3/1 = 9),严重度用 `levels` 三级(高红加粗、中加粗、低灰)。\n- **下一步**:建议用 `List numbered`(标题 + 做法 + 依据编号)。\n- **背景信息**:`KV labelCols={2}`,写任务、范围、日期、截图数与分布。\n\n没有缺失的组件:截图、流程链路、严重度等级、建议都各有对应组件表达。",
+ "checks": []
+}

@@ -1,0 +1,27 @@
+{
+ "case": "f4",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s06/guide.md",
+  "sha": "ce92fdcf"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 279,
+ "usage": {
+  "input": 156128,
+  "output": 12352
+ },
+ "stop": "stop",
+ "summary": "程序检查一次通过,页面符合规范。\n\n页面结构(共 7 节,节名挂左侧 3 列、内容在右 9 列):\n- **结论**:`Text` 24px 细体放整句判断(两条流程相反、8 步 vs 5 步);页头 `meta` 写范围、产品版本、日期。\n- **核心指标**:`Grid cols={12}` 一行四个 `Stat`(`captionBelow`),按 E1 把结论数字「步骤最少 5 步」用 `size=\"lg\"` 放大前置,样本量「分析截图 13 张」后置,保证四项不掉行。\n- **流程对比**:一组「两款产品」`DataTable`(产品 / 步骤数 / 输入项数 / 预订思路),一组「分环节对比」`DataTable`(环节 × 协作宝 / 链工),按 E3 把产品与步骤分列。\n- **链路明细**:`FigureStrip`,每款产品一条,产品之间用 `Rule` 分组,每格是截图 + 屏名 + 「内容 · 操作 · 输入 n 项 · 备注」。\n- **问题**:`DataTable`,`编号 / 产品 / 步骤 / 问题 / 证据 / 严重度` 六列,严重度用列的 `levels`(高红加粗、中加粗、低注释灰)。\n- **下一步**:`List ordered` 单列纵向编号(依 E2),依据内联在每条建议说明里。\n- **背景信息**:`KV labelCols={2}`,放任务、范围、产品版本、样本、日期。\n\n一处需要说明的呈现限制:链路明细的 13 张截图都放进了 `FigureStrip`,一屏内每行只能看到约 4 张,后面的步骤要横向滚动才看得到(这是组件库对链路明细的既定呈现方式,不是缺组件);没有出现组件库表达不了的数据。",
+ "checks": []
+}

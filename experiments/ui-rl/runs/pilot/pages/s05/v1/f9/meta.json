@@ -1,0 +1,27 @@
+{
+ "case": "f9",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s05/guide.md",
+  "sha": "063f6398"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 169,
+ "usage": {
+  "input": 193460,
+  "output": 17417
+ },
+ "stop": "stop",
+ "summary": "页面已完成，程序检查全部通过。\n\n**结构**：页头（左侧产品与周期、右侧标题）→ 结论（一句判断，24px 细体占满 9 列）→ 核心指标（四项一行排满，`步骤最少 6 步` 放大前置，样本量 14 张后置）→ 产品对比（步骤数带计数条、输入项、结论）→ 共性规律（编号列表，每条标注出现产品）→ 链路明细（星幕 8 步 / 橙果 6 步各一条 `FigureStrip`，用 `Rule` 按产品分组，每格图下写屏名、内容·操作·输入项与观察备注）→ 问题明细（编号、产品、步骤分列，严重度用 `levels` 排中/高，证据独立成列）→ 下一步（单列纵向编号，依据内联在每条建议内）→ 背景信息（`KV`，任务、版本、样本量、关闭步骤）。\n\n数据里没有时间序列，因此没有图表节；所有数据都能用现有组件表达，没有缺组件的情况。",
+ "checks": []
+}

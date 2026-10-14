@@ -1,0 +1,27 @@
+{
+ "case": "f2",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s08/guide.md",
+  "sha": "e443d20c"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 413,
+ "usage": {
+  "input": 234085,
+  "output": 22783
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过(`checks.json` 为空)。\n\n**页面结构**(`Page.tsx`,页头 meta 为任务/范围/日期,标题为报告名):\n\n1. **结论** — summary 用 24px 细体结论句占满 9 列。\n2. **核心指标** — 4 个 `Stat` 用 `Grid cols={12}` 一行排满(每项 `span={3}`):结论数字「步骤最少(小橙)4 步」放大为 `size=\"lg\"` 并放在首位,`note` 写对照值「快送 5 步」;样本量(分析截图 9 张)与背景口径(对比产品 2 个)后置为普通大小。\n3. **产品对照** — `DataTable`(产品 2 / 步骤数 2 右对齐 / 输入项 2 右对齐 / 结论 3),对照两款 App 的步骤数与结论。\n4. **链路** — 每个产品一个 `Group`:先 `Rule` 标产品与版本,再 `FigureStrip` 按步骤横向排开 9 张截图,`FigureLabel` 写「第 N 步 · 屏名」,`FigureText` 写内容、操作、输入项与每屏注意点。\n5. **问题** — `DataTable`,产品与步骤分列(E3)、保留唯一编号列 P1–P3(E5);严重度列用 `levels: [\"低\",\"中\",\"高\"]`,最高一级红加粗、次一级加粗、最低一级灰。\n6. **下一步** — 单列纵向 `List numbered`(E2),每条建议的「依据」内联在说明里并对回问题编号(小橙第 2 步、P1)。\n7. **背景信息** — `KV labelCols={2}`:任务、范围、日期、产品版本。\n\n说明:数据里没有组件库表达不了的内容,因此没有缺组件的部分;唯一的表现取舍是快送 5 屏超出内容列宽时,`FigureStrip` 按组件库既定行为把最后一屏裁在右边缘、靠悬停滚动条查看(不换行、不缩小),这是该组件本身的排法,不是数据缺失。",
+ "checks": []
+}

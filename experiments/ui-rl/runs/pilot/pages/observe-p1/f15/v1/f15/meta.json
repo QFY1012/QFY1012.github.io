@@ -1,0 +1,27 @@
+{
+ "case": "f15",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s08/guide-after.md",
+  "sha": "9829255d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 606,
+ "usage": {
+  "input": 461189,
+  "output": 28138
+ },
+ "stop": "stop",
+ "summary": "The page builds and passes all program checks (build, component library, uniform scale, data fidelity, element bounds). Final structure:\n\n**Page.tsx 结构**(页头 + 7 节,节标题挂左侧 3 列、内容在右侧 9 列):\n- **结论** — `Text` 24px 细体的整段判断(summary 原句占满 9 列)。\n- **核心指标** — 4 项一行排满(`Grid cols={12} fields={false}` + `items-baseline`):结论数字「6 步」用 `size=\"lg\"` 放大置首,其余发现问题、对比产品、分析截图用普通大小,样本量口径的描述写在数字下方(`captionBelow`),无副行。\n- **产品对比** — `DataTable` 列产品/步骤数/输入项/结论(计数列带 `bar`),同节第二组 `List numbered` 列 4 条共性模式(覆盖产品 + 共性的说明)。\n- **流程链路** — 每个产品一组,用 `Rule` 标「产品 · 版本 · 步数 · 结论」分组,`FigureStrip` 按步骤横向排开截图;每格图下依次是「第 N 步 · 屏名」、「内容」、「操作 · 输入 N 项」,有备注的步骤把备注独起一行、以 12px 灰的图注行加「备注 ·」标签,与正文的步骤说明分开一级。\n- **问题清单** — `DataTable` 列编号/产品/步骤/问题/严重度/证据(产品与步骤分列,编号列保留,严重度用 `levels` 从低到高的等级),表下 `caption` 写严重度口径。\n- **下一步** — 单列纵向编号 `List`,4 条建议每条 title + 一句话 detail,依据(P1 等编号、云驾租车第 3 步)内联在每条内,对回问题清单。\n- **背景信息** — `KV labelCols={2}` 放任务、范围、日期;页头 meta 只写三个产品名,任务/范围/日期不在页头重复。\n\n缺的能力:E6 要求备注与步骤说明之间「分两级间距」,`Figure` 只给固定的 8px 行距、没有控制行距的 props,所以备注只做到了「独起一行 + 12px 灰标签」这一级视觉区分,间距上与说明行相同。",
+ "checks": []
+}

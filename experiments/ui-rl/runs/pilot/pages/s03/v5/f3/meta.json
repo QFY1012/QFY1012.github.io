@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s03/guide.md",
+  "sha": "ebccfe21"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 445,
+ "usage": {
+  "input": 116764,
+  "output": 13728
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过,页面完成。\n\n**页面结构**(`Page.tsx`,7 节,均按 C3 顺序):\n- **结论**:summary 用 24px 细体结论句占满 9 列。\n- **核心指标**:四项指标一行排满(按 E1:结论数字「步骤最少 3 步」放大前置,样本量「分析截图 12 张」后置),`Grid cols={12}` 每项 `span={3}`、`items-baseline`。\n- **产品对照**:三款产品的步骤数(带计数条)、输入项、一句话判断,列宽合计 9。\n- **流程链路**:一款产品一组,`Rule` 标「产品 · 版本」,`FigureStrip` 内每格是「截图 + 第 N 步·屏名 + 内容·操作 + 步骤备注」。\n- **问题明细**:编号 / 产品 / 步骤 / 问题 / 严重度(`levels: 低→中→高`,高红加粗、中加粗、低灰)/ 证据。\n- **下一步**:左「建议」`List`(ordered,6 列)+ 右「依据」`KV`(3 列,按 A1/A2 对应)。\n- **背景信息**:任务、范围、分析日期、样本量 `KV`。\n\n两点说明:① 方舟链路有 5 步,`FigureStrip` 一行放不下第 5 步,需横向滚动(组件未提供高度/缩放参数,无法让 5 张同屏);② 「输入项」在数据里三款产品全为 0,没有能表达「均为零」的组件,只能按原样列出这一列 0。",
+ "checks": []
+}

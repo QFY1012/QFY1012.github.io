@@ -1,0 +1,27 @@
+{
+ "case": "f7",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s02/guide.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 378,
+ "usage": {
+  "input": 91269,
+  "output": 12459
+ },
+ "stop": "stop",
+ "summary": "All program checks pass (build, component library, unified scale, data fidelity, no overflow) and the rendered page matches the spec.\n\n**页面结构**（7 节，左侧 3 列节标题 + 右侧 9 列内容）：\n\n1. **结论** — `Text` 24px 细体，整句判断（4 步 vs 3 步、差别在信息填写）占满 9 列。\n2. **核心指标** — `Grid cols={9} fields={false}`，4 个 `Stat`（`size=\"lg\"`、`captionBelow`，含单位），每行 3 个。\n3. **产品对比** — `DataTable`：产品 / 步骤数（右对齐）/ 输入项（右对齐 + `bar` 计数条）/ 结论，列宽合计 9。\n4. **链路明细** — 每个产品一个 `Group`，用 `Rule` 标产品 · 版本 · 结论，`FigureStrip` 按步骤横排截图（`FigureImage` + 步骤名 + 内容 · 操作 · 输入项数，第 2 步另附重填说明）。\n5. **问题明细** — `DataTable`：编号 / 产品 / 问题 / 证据 / 严重度（`levels=[\"低\",\"中\"]`，最高级红加粗，低为注释灰）。\n6. **下一步** — `List ordered`（`divided={false}`）：建议标题 + 说明 + 依据 P1。\n7. **背景信息** — `KV labelCols={2}`：任务、范围、日期、产品版本、样本量。\n\n数据里没有随时间变化的内容，故按 C3 跳过该节；也没有组件库无法表达的数据。",
+ "checks": []
+}

@@ -1,0 +1,27 @@
+{
+ "case": "f13",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 381,
+ "usage": {
+  "input": 197096,
+  "output": 16606
+ },
+ "stop": "stop",
+ "summary": "程序检查通过,页面已定稿。\n\n页面结构(共 8 节,节名挂左 3 列、内容在右 9 列):\n\n1. **页头**:左侧 3 列写范围与日期,右侧标题「交互流程挖掘 · 共享单车首次骑行」。\n2. **结论**:24px 细体一句话结论(summary)。\n3. **核心指标**:4 个 `Stat`(`size=\"lg\"`、`captionBelow`、`span={3}`),对比产品 / 分析截图 / 步骤最少 / 发现问题。\n4. **链路对比**:`DataTable`(产品、步骤数带计数条 `bar`、输入项右对齐、结论),caption 写口径。\n5. **阶段对比**:`DataTable`,行是 5 个阶段、列是三家 App(3+2+2+2 = 9 列),caption 写版本。\n6. **链路明细**:一个产品一个 `Group`,组内 `Rule` 标「产品 · 版本 · 共 N 步」,`FigureStrip` 按步骤横向排开 13 张截图,每格是图 + 第 N 步 · 屏名 + 内容/操作/输入项 + 该步观察(有则显示)。\n7. **问题**:`DataTable`(编号、产品、步骤、问题含证据、严重度用 `levels: [\"中\",\"高\"]`,高一级红加粗、中加粗),caption 写严重度口径。\n8. **下一步**:`List numbered columns={2}`,两条建议的标题、详情与「依据」。\n9. **背景信息**:`KV`(`labelCols={2}`)写任务、范围、日期、对比产品版本、样本量。\n\n缺组件说明:没有缺失的组件——数据里的内容都能用现有组件表达。唯一受限处是 `FigureStrip` 的一行宽度(内容列 858px)放不下 5 张 375×760 的截图,青岚单车、骑点单车的第 5 步要横向滚动才看得到(组标题已写明「共 5 步」);组件库没有能在同一行内既保持同高又不裁切的排法,`FigureGrid` 会把这些竖屏图放大到超出一屏,所以仍按规范用 `FigureStrip`。",
+ "checks": []
+}

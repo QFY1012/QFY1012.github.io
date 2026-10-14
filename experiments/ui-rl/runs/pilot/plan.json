@@ -1,0 +1,103 @@
+{
+ "passes": 2,
+ "seed": 1,
+ "versions": 6,
+ "train": [
+  "f1",
+  "f2",
+  "f3",
+  "f4",
+  "f7",
+  "f8",
+  "f9",
+  "f10"
+ ],
+ "val": [
+  "f13",
+  "f14",
+  "f15",
+  "f16"
+ ],
+ "steps": [
+  {
+   "pass": 1,
+   "report": "f1",
+   "step": 1
+  },
+  {
+   "pass": 1,
+   "report": "f7",
+   "step": 2
+  },
+  {
+   "pass": 1,
+   "report": "f3",
+   "step": 3
+  },
+  {
+   "pass": 1,
+   "report": "f10",
+   "step": 4
+  },
+  {
+   "pass": 1,
+   "report": "f9",
+   "step": 5
+  },
+  {
+   "pass": 1,
+   "report": "f4",
+   "step": 6
+  },
+  {
+   "pass": 1,
+   "report": "f8",
+   "step": 7
+  },
+  {
+   "pass": 1,
+   "report": "f2",
+   "step": 8
+  },
+  {
+   "pass": 2,
+   "report": "f1",
+   "step": 9
+  },
+  {
+   "pass": 2,
+   "report": "f2",
+   "step": 10
+  },
+  {
+   "pass": 2,
+   "report": "f3",
+   "step": 11
+  },
+  {
+   "pass": 2,
+   "report": "f9",
+   "step": 12
+  },
+  {
+   "pass": 2,
+   "report": "f10",
+   "step": 13
+  },
+  {
+   "pass": 2,
+   "report": "f7",
+   "step": 14
+  },
+  {
+   "pass": 2,
+   "report": "f4",
+   "step": 15
+  },
+  {
+   "pass": 2,
+   "report": "f8",
+   "step": 16
+  }
+ ]
+}

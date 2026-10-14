@@ -1,0 +1,27 @@
+{
+ "case": "f10",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s04/guide.md",
+  "sha": "ebccfe21"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 712,
+ "usage": {
+  "input": 453941,
+  "output": 29506
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过，页面结构与规范一致。最终页面如下：\n\n**页面结构**（`Page` 页头 + 9 节，节标题在左 3 列、内容在右 9 列）：\n\n1. **结论** — `Text` 24px 细体，整段 summary 占满 9 列\n2. **核心指标** — 4 个 `Stat`（`captionBelow`、`items-baseline`）一行排满：结论数字「步骤最少 8 步」放大前置（`size=\"lg\"`），样本量「分析截图 47 张」后置，注释写最长步数与严重度分布\n3. **流程对比** — `DataTable`：产品 / 步骤数（`bar`）/ 填写项（`bar`）/ 结论\n4. **阶段差异** — 6 个 `Group`（阶段名）+ `KV`（`labelCols={2}`，行为 5 款产品），组间 48px\n5. **共性模式** — `DataTable`：模式 / 涉及产品 / 说明\n6. **问题明细** — `DataTable`：产品 / 步骤 / 严重度（`levels` 低中高，高标红加粗）/ 问题 / 证据\n7. **链路明细** — 一个 `Group` 里 5 组 `Rule`（产品 · 版本 · 结论）+ `FigureStrip`，每格 `FigureImage` + 步骤标签 + 内容·操作·输入项数 + 12px 灰注释，共 47 张截图\n8. **下一步** — `List` `numbered`（5 条：标题 + 建议 + 依据）\n9. **背景信息** — `KV`（`labelCols={2}`）：任务 / 范围 / 样本 / 日期\n\n一点取舍：stage × 产品 是 6 列的对照矩阵，而 9 列网格里无法放下 6 个可读的表格列（列宽会压到 98px 以下），所以用「每个阶段一个 `Group` + `KV`」按阶段横向对照，信息完整且不挤。组件库没有缺项，所有数据都能呈现。",
+ "checks": []
+}

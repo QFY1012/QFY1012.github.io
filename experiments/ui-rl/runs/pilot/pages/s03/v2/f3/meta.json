@@ -1,0 +1,27 @@
+{
+ "case": "f3",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s03/guide.md",
+  "sha": "ebccfe21"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 577,
+ "usage": {
+  "input": 162062,
+  "output": 18435
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查(构建、组件库、统一刻度、数据忠实、元素越界)全部通过。\n\n结构说明:页头 `meta` 放产品与范围、`title` 是报告标题;正文依次为 **结论**(24px 细体一句话判断)、**核心指标**(四个 `Stat` 一行排满,结论数「步骤最少 3 步」放大前置、样本量「12 张截图」后置)、**产品对比**(`DataTable`:产品 / 步骤数带计数条 / 流程特点)、**流程链路**(每个产品一组 `Group` 标题 + `FigureStrip` 逐步截图,图下写屏名与操作、问题备注)、**问题**(`DataTable`,`严重度` 用 `levels` 排 低/中/高)、**下一步**(两条建议并排,`meta` 写 A1/A2 与依据的步骤、问题编号)、**背景信息**(`KV`,`labelCols={2}`)。\n\n两点组件限制:一是方舟 5 步的截图在一行内放不下,第 5 张需横向滚动 `FigureStrip` 才能看到(组件按固定行高、超出裁掉);二是 `List` 在设了 `columns` 并排时不渲染 `numbered`/`ordered` 的序号,所以两条建议只靠 `meta` 里的 A1、A2 区分。",
+ "checks": []
+}

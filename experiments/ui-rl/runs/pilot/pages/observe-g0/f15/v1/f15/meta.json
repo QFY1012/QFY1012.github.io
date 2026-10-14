@@ -1,0 +1,27 @@
+{
+ "case": "f15",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "guides/g0.md",
+  "sha": "c6c9cc5e"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 446,
+ "usage": {
+  "input": 394255,
+  "output": 22977
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过(checks.json 为空)。\n\n**页面结构**(节标题在左侧 3 列、内容在右侧 9 列):\n- **结论**:一句总结用 24px 细体占满 9 列。\n- **核心指标**:4 个 `Stat`(48px 细体、数字在上说明在下,一行 3 个)给出对比产品 3 个、分析截图 21 张、步骤最少 6 步、发现问题 5 个。\n- **产品对比**:`DataTable`,产品 / 步骤数 / 输入项数(计数条)/ 结论。\n- **流程链路**:三款 App 各一组,`Rule` 标产品与版本,`FigureStrip` 按步骤横向排开 21 张截图,每格是屏名、内容·操作·输入项数,以及该步的备注。\n- **共性规律**:`List numbered`,四条规律各配覆盖产品与说明。\n- **发现问题**:`DataTable`,编号 / 问题 / 位置 / 严重度(`levels` 高红加粗、中加粗、低灰)/ 证据。\n- **下一步**:`List numbered columns={3}`,四条建议带依据。\n- **背景信息**:`KV labelCols={2}`,任务、范围、产品与版本、数量、日期。\n\n组件库没有表达不了的内容,所有数据(含 21 张截图和全部步骤备注)都已呈现。",
+ "checks": []
+}

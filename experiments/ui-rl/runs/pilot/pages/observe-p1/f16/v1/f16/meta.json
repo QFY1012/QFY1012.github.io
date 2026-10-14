@@ -1,0 +1,27 @@
+{
+ "case": "f16",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s08/guide-after.md",
+  "sha": "9829255d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 848,
+ "usage": {
+  "input": 742046,
+  "output": 51267
+ },
+ "stop": "stop",
+ "summary": "程序检查通过。页面结构如下:\n\n**页面结构**(宽 1152px,节标题挂左 3 列、内容右 9 列,节间 192px):\n\n1. **结论** —— `Text` 24px 细体,整段判断占满 9 列。\n2. **核心指标** —— `Grid cols={9} fields={false}` 一行四个 `Stat`(步骤最少 10 步放大为 `size=\"lg\"` 在首位,问题数、产品数、截图数按样本量后置,四条都带 `note`,底部对齐);下接「四款产品对照」`DataTable`(产品 / 步骤数 / 输入项带计数条 / 结论)。\n3. **分阶段对比** —— 9 行 × 5 列 `DataTable`(阶段 + 四款产品,每列 span 1+2×4=9)。\n4. **报装链路** —— 四款各一组 `Rule`(产品 · 版本)+ `FigureStrip`:47 张截图按统一行高横向排开,图下依次是「第 N 步 · 屏名」、内容/操作/输入项,有备注的步骤独起一行加「备注」标签再写备注文字。\n5. **共性模式** —— `DataTable`(模式 / 涉及产品 / 说明)。\n6. **问题明细** —— `DataTable` 保留唯一编号列,产品与步骤分列,严重度用列的 `levels`(高红加粗、中加粗、低灰),问题与证据各一列。\n7. **下一步** —— `List numbered` 单列纵向排,依据编号(P1…P6)内联在每条建议里。\n8. **背景信息** —— `KV labelCols={2}`,任务、范围、日期、产品与版本只在页尾出现一次(页头只留产品类别)。\n\n一点说明:规范 E6 要求备注与步骤说明「分两级间距」,但允许写的类名有限(不能加自定义外边距),所以备注的层级改由「12px 灰标签『备注』+ 正文」承担;没有无法用组件库表达的数据。",
+ "checks": []
+}

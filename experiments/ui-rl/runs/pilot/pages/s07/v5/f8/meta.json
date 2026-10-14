@@ -1,0 +1,27 @@
+{
+ "case": "f8",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s07/guide.md",
+  "sha": "7770faaf"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 3,
+ "seconds": 273,
+ "usage": {
+  "input": 155813,
+  "output": 16259
+ },
+ "stop": "stop",
+ "summary": "页面已完成,程序检查全部通过。\n\n**结构说明**:页头(产品/周期 + 报告标题)之后按 C3 顺序排 7 节——结论(一句判断,24px 细体)、核心指标(4 项一行排满、数字 48px 在上说明在下,样本量类指标后置)、流程对比(环节 × 3 家产品的 9 列交叉表)、链路明细(每个产品一组,`Rule` 标注产品·版本·结论,`FigureStrip` 按步骤横向排开 6/5/7 屏并附每步内容、操作、输入项与注意点)、问题明细(编号/产品/步骤/问题/严重度/证据六列,严重度用 `levels` 从低到高分级)、下一步(单列纵向编号,依据内联对回 P 编号)、背景信息(`KV` 任务、范围、版本、日期)。\n\n**缺组件说明**:无——数据里的全部字段(含 18 张链路截图)都由组件库现有组件呈现;截图行超出内容列宽时靠 `FigureStrip` 的横向滚动查看,静态截图上每行只能看到前 3–4 张(第 4 张被裁切,提示可滚动)。",
+ "checks": []
+}

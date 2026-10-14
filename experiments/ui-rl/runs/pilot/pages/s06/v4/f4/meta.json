@@ -1,0 +1,27 @@
+{
+ "case": "f4",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s06/guide.md",
+  "sha": "ce92fdcf"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 1,
+ "seconds": 278,
+ "usage": {
+  "input": 149380,
+  "output": 21369
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过，页面已完成。\n\n**页面结构**（`Page.tsx`，节标题挂左侧 3 列、内容在右侧 9 列）：\n\n1. **结论** — `Text` 24px 细体，一句判断（两款产品路径相反，8 步 vs 5 步）。\n2. **核心指标** — 一行四个 `Stat`（`captionBelow`）：按 E1 把结论数字「步骤最少 5 步」放大前置（`size=\"lg\"`、span 3、note 写对照的「协作宝 8 步」），「分析截图 13 张」作为样本量后置，四项 span 3+2+2+2 正好铺满 9 列不掉行。\n3. **拆分** — 两个 `Group`：两款产品的路径（`DataTable`：产品/步骤数/输入项数/路径特点）、按环节对照（`DataTable`：环节/协作宝/链工）。\n4. **明细** — 发现的问题用 `DataTable`，按 E3 把产品与步骤分列，严重度用 `levels:[\"低\",\"中\",\"高\"]`（最高一级红加粗）；下方流程链路按产品用 `Rule` 分组、`FigureStrip` 逐屏排开 8 步与 5 步（图注为步号、屏名、内容/操作/输入项数与备注）。\n5. **下一步** — 按 E2 用单列纵向编号 `List`（`numbered`），依据内联在每条建议的说明里（如「依据：链工第 1、2 步、P1、P2」）。\n6. **背景信息** — `KV`（`labelCols={2}`）：任务、范围、产品版本、日期。\n\n数据中没有时间序列，故跳过「随时间变化」节；步骤数只在大数字行与拆分表格中出现一次强调层级，未再叠加横条图（E4）。\n\n**需要说明的一点**：协作宝有 8 步截图，`FigureStrip` 按规范是横向滚动条，整页截图里只呈现前 4 张、其余需横向滚动查看；若希望 8 张全部同屏，需要组件库提供可指定列数的多行网格（`FigureGrid` 固定两列，对竖向手机截图会过高）。",
+ "checks": []
+}

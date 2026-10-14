@@ -1,0 +1,27 @@
+{
+ "case": "f13",
+ "design": {
+  "version": "v0",
+  "file": "design.md",
+  "sha": "d967390d"
+ },
+ "components": "5efe877c",
+ "guide": {
+  "file": "../runs/pilot/steps/s08/guide-after.md",
+  "sha": "9829255d"
+ },
+ "base": null,
+ "change": null,
+ "changedLines": null,
+ "model": "deepseek-v4.1-flash",
+ "effort": "high",
+ "shoots": 2,
+ "seconds": 491,
+ "usage": {
+  "input": 287985,
+  "output": 22936
+ },
+ "stop": "stop",
+ "summary": "程序检查全部通过（`checks.json` 为空），页面符合规范。\n\n**页面结构**：页头（产品/周期挂在左 3 列，标题在右 9 列）以下是七节——① 结论（24px 细体结论句，占满 9 列）；② 核心指标（一行 4 个 `Stat`，结论数字「3 步」首位 `size=\"lg\"`，其余普通大小，说明在数字下）；③ 链路（先一份三家对比表列步骤数/输入项〔计数列带细条〕与结论，再按产品用 `Rule` 分组、`FigureStrip` 横向排开每步截图，图注为「第 N 步·屏名」「内容·操作·输入 N 项」，步骤有备注时备注独起一行加「备注 ·」标签）；④ 环节对比（`DataTable`，五环节 × 三产品）；⑤ 问题明细（`DataTable`：唯一编号、产品、步骤分列，严重度用 `levels` 三级、证据单列，表下注明编号与依据的对应关系）；⑥ 下一步（`ordered` 单列纵向编号，依据内联在每条建议里，编号 P1/P2 对回问题表）；⑦ 背景信息（`KV` `labelCols={2}`，任务、范围、日期、样本量后置，页头不重复）。\n\n组件库没有缺的东西：数据里 13 张截图、全部数值与文本都能用 `FigureStrip`/`Figure*`、`Stat`、`DataTable`、`List`、`KV` 表达，无需自绘元素。",
+ "checks": []
+}
