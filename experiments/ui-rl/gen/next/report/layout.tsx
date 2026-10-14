@@ -25,31 +25,50 @@ function Page({ title, meta = [], className, children }: { title: string; meta?:
   )
 }
 
+// The page's rows are fields: 144px tall with a 24px gutter, so field lines are
+// 168px apart, counted from the top of the page header (itself one field).
+// A section takes a whole number of fields: once its content is laid out, its
+// height is rounded up to n fields (n × 168 − 24), the rest left empty. With the
+// 192px gap (24 + 144 + 24, one empty field) every section then starts on a field
+// line. Inside a section the content is free: several pieces can share a field as
+// long as they fit.
+const FIELD = 168, GUTTER = 24
+
+function useWholeFields() {
+  const ref = React.useRef<HTMLElement>(null)
+  React.useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const fit = () => {
+      // the content's own height: the header and the body, without the rounding
+      const h = Math.max(...[...el.children].map((c) => c.getBoundingClientRect().bottom)) - el.getBoundingClientRect().top
+      el.style.minHeight = `${Math.ceil((h + GUTTER) / FIELD) * FIELD - GUTTER}px`
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    for (const c of el.children) ro.observe(c)
+    return () => ro.disconnect()
+  }, [])
+  return ref
+}
+
 // Groups inside a section are one empty field apart, so they stay on field lines.
 // layout "side" (default): the title hangs in the left 3 columns, the content takes
 // the right 9. layout "stack": the title sits above the content and the content
 // takes all 12 columns, for what needs the full width (a wide table, a matrix of
 // screens). Both keep every edge on the page's column lines.
 function Section({ title, description, layout = "side", className, children }: { title: string; description?: string; layout?: "side" | "stack"; className?: string; children: React.ReactNode }) {
-  if (layout === "stack")
-    return (
-      <section data-slot="section" className="grid grid-cols-12 items-start gap-x-6 gap-y-6">
-        <div data-slot="section-header" className="col-span-12 flex flex-col">
-          <h2 className="text-xl leading-6 font-medium">{title}</h2>
-          {description && <p className="text-sm leading-6 text-muted-foreground">{description}</p>}
-        </div>
-        <div data-slot="section-body" className={cn("col-span-12 flex flex-col gap-[192px]", className)}>
-          <Width.Provider value={12}>{children}</Width.Provider>
-        </div>
-      </section>
-    )
+  const ref = useWholeFields()
+  const stack = layout === "stack"
   return (
-    <section data-slot="section" className="grid grid-cols-12 items-start gap-x-6">
-      <div data-slot="section-header" className="col-span-3 flex flex-col">
+    <section ref={ref} data-slot="section" className={cn("grid grid-cols-12 content-start items-start gap-x-6", stack && "gap-y-6")}>
+      <div data-slot="section-header" className={cn(stack ? "col-span-12" : "col-span-3", "flex flex-col")}>
         <h2 className="text-xl leading-6 font-medium">{title}</h2>
         {description && <p className="text-sm leading-6 text-muted-foreground">{description}</p>}
       </div>
-      <div data-slot="section-body" className={cn("col-span-9 flex flex-col gap-[192px]", className)}>{children}</div>
+      <div data-slot="section-body" className={cn(stack ? "col-span-12" : "col-span-9", "flex flex-col gap-[192px]", className)}>
+        {stack ? <Width.Provider value={12}>{children}</Width.Provider> : children}
+      </div>
     </section>
   )
 }

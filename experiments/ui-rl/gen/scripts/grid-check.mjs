@@ -1,4 +1,5 @@
-// 网格检查:页面上每一块内容的左右边都要落在页面的栏线上(12 列,每列 74px,列间距 24px)。
+// 网格检查:页面上每一块内容的左右边都要落在页面的栏线上(12 列,每列 74px,列间距 24px);
+// 每一节的上边落在场线上(场高 144px、场间距 24px)。
 // 网格里怎么填都可以(从哪一列开始、占几列、留不留空格),但不能落在两条栏线之间。
 // shoot.mjs 在组件库带 grid.ts(能写 start、rowSpan 的那一版)时调用;SHOOT_GRID=0 关掉。
 //
@@ -39,6 +40,15 @@ export function gridOffenders() {
     if (Math.abs(dr) > 1) where.push(`右边离第 ${col(r.right, ends)} 列的终点 ${Math.round(dr)}px`)
     reported.push(el)
     out.push(`${slot ?? el.tagName.toLowerCase()}「${t}」没有落在栏线上:${where.join(",")}`)
+  }
+  // 横线:每一节占整数个场,上边落在场线上。场高 144px、场间距 24px,场线相隔 168px,从页头的上边算起。
+  const head = main.querySelector("[data-slot=page-header]")
+  if (head) {
+    const top = head.getBoundingClientRect().top
+    for (const sec of main.querySelectorAll("[data-slot=section]")) {
+      const y = sec.getBoundingClientRect().top - top, d = y - Math.round(y / 168) * 168
+      if (Math.abs(d) > 1) out.push(`节「${sec.querySelector("h2")?.textContent ?? ""}」的上边没有落在场线上:离最近的场线 ${Math.round(d)}px`)
+    }
   }
   return out
 }
