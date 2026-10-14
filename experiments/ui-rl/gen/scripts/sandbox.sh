@@ -7,7 +7,7 @@
 # command sees only:
 #   <workspace>                      read-write (data.json, Page.tsx, screenshots)
 #   gen/app, node_modules,           read-only (the component library and the
-#   scripts/shoot.mjs                 build/screenshot tooling)
+#   scripts/shoot.mjs, grid-check.mjs build/screenshot tooling)
 #   /usr, /opt/node22, /opt/pw-browsers, /etc/fonts and a few /etc files, read-only
 #   /tmp, /dev/shm                   empty tmpfs
 # Nothing else of the repository, no home directory, no environment variables
@@ -29,7 +29,7 @@ ro() { # bind $1 read-only at the same path inside the new root
 for d in /usr /opt/node22 /opt/pw-browsers /etc/fonts; do ro "$d"; done
 for f in /etc/passwd /etc/group /etc/hosts /etc/ld.so.cache; do [ -e "$f" ] && ro "$f"; done
 ln -s usr/bin "$R/bin"; ln -s usr/lib "$R/lib"; ln -s usr/lib64 "$R/lib64"; ln -s usr/sbin "$R/sbin"
-ro "$LOOP/app"; ro "$LOOP/node_modules"; ro "$LOOP/scripts/shoot.mjs"
+ro "$LOOP/app"; ro "$LOOP/node_modules"; ro "$LOOP/scripts/shoot.mjs"; ro "$LOOP/scripts/grid-check.mjs"
 mkdir -p "$R$WS"; mount --bind "$WS" "$R$WS"
 mkdir -p "$R/dev" "$R/proc" "$R/tmp" "$R/dev/shm"
 for d in null zero random urandom; do touch "$R/dev/$d"; mount --bind "/dev/$d" "$R/dev/$d"; done

@@ -17,7 +17,6 @@ import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import { chromium } from "playwright-core"
 import { createRequire } from "node:module"
-import { gridOffenders } from "./grid-check.mjs"
 
 const require = createRequire(import.meta.url)
 
@@ -139,6 +138,8 @@ try {
   for (const o of dom.out) add("元素越界", o)
   // 组件库能写 start、rowSpan(带 grid.ts)时才量网格:旧组件库没有让内容落到任意栏线上的办法。
   if (process.env.SHOOT_GRID !== "0" && fs.existsSync(path.join(APP, "src", "components", "report", "grid.ts"))) {
+    // loaded only here: the old component library never needs it
+    const { gridOffenders } = await import("./grid-check.mjs")
     const offGrid = await page.evaluate(gridOffenders)
     for (const o of offGrid.slice(0, 8)) add("网格", o)
     if (offGrid.length > 8) add("网格", `还有 ${offGrid.length - 8} 块没有落在栏线上`)

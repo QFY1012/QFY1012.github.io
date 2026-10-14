@@ -40,9 +40,20 @@ export async function runAgent({ name, ws, priv, system, prompt, nudges = [], mi
     extendResources: () => {},
     reload: async () => {},
   }
+  // The path has to stay inside the workspace after symlinks are followed: a bash
+  // command can create a link in the workspace (it is bound read-write into the
+  // sandbox), and a link to a directory outside would otherwise let read / write /
+  // edit reach it (a pilot run wrote into gen/scripts through one). The deepest
+  // part of the path that exists is resolved; the rest cannot be a link yet.
+  const real = fs.realpathSync(ws)
   const inside = (p) => {
     const abs = path.resolve(ws, p ?? "")
-    return abs === ws || abs.startsWith(ws + path.sep)
+    if (!(abs === ws || abs.startsWith(ws + path.sep))) return false
+    let head = abs, tail = ""
+    while (!fs.existsSync(head) && head !== path.dirname(head)) { tail = path.join(path.basename(head), tail); head = path.dirname(head) }
+    let target
+    try { target = path.join(fs.realpathSync(head), tail) } catch { return false }
+    return target === real || target.startsWith(real + path.sep)
   }
   const fence = (def) => ({
     ...def,
